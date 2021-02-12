@@ -1,0 +1,7 @@
+mypy
+pycodestyle
+sphinx
+sphinx-rtd-theme
+treys
+twine
+wheel
