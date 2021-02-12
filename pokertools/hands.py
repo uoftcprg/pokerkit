@@ -50,11 +50,11 @@ class TreysHand(Hand):
         return hash(self.__hand_rank)
 
     def __repr__(self) -> str:
-        return self.treys_evaluator.class_to_string(self.treys_evaluator.get_rank_class(
-            self.__hand_rank))  # type: ignore
+        return self.treys_evaluator.class_to_string(self.treys_evaluator.get_rank_class(  # type: ignore
+            self.__hand_rank))
 
     @staticmethod
     def translate(card_like: CardLike) -> int:
         card = parse_card(card_like)
 
-        return TreysCard.new(f'{card.rank.value}{card.suit.value}')
+        return TreysCard.new(f'{card.rank.value}{card.suit.value}')  # type: ignore
