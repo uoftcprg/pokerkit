@@ -13,11 +13,10 @@ class Evaluator(ABC):
     def hand(self, hole_cards: Collection[CardLike], board_cards: Collection[CardLike]) -> Hand:
         """Evaluates the hand of the combinations of the hole cards and the board cards.
 
-        If the number of cards are insufficient, None is returned
-
         :param hole_cards: the hole cards
         :param board_cards: the board cards
-        :return: None if the number of cards are insufficient, else the hand of the combinations
+        :return: the hand of the combinations
+        :raise ValueError: if the number of cards are insufficient
         """
         pass
 

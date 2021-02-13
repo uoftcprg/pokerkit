@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum, unique
 from typing import Any, Union
 
@@ -63,23 +65,6 @@ class Card:
         return self.__suit
 
 
-CardLike = Union[str, Card]
-
-
-def parse_card(card: CardLike) -> Card:
-    """Parses the card-like object.
-
-    :param card: the card-like object.
-    :return: the parsed card
-    """
-    if isinstance(card, str) and len(card) == 2:
-        return Card(Rank(card[0]), Suit(card[1]))
-    elif isinstance(card, Card):
-        return card
-    else:
-        raise TypeError('Invalid card type')
-
-
 class HoleCard(Card):
     """HoleCard is the class for hole cards."""
 
@@ -96,6 +81,23 @@ class HoleCard(Card):
     @property
     def status(self) -> bool:
         """
-        :return: True if the hole card is exposed, else False
+        :return: True if this hole card is exposed, else False
         """
         return self.__status
+
+
+CardLike = Union[str, Card]
+
+
+def parse_card(card: CardLike) -> Card:
+    """Parses the card-like object.
+
+    :param card: the card-like object.
+    :return: the parsed card
+    """
+    if isinstance(card, str) and len(card) == 2:
+        return Card(Rank(card[0]), Suit(card[1]))
+    elif isinstance(card, Card):
+        return card
+    else:
+        raise TypeError('Invalid card type')

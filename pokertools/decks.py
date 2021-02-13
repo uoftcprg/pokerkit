@@ -21,10 +21,10 @@ class Deck(Collection[Card], ABC):
         return __x in self.__cards
 
     def remove(self, cards: Iterable[Card]) -> None:
-        """Removes the cards from the deck.
+        """Removes the cards from this deck.
 
         :param cards: the cards to be removed
-        :return: a list of drawn cards
+        :return: None
         """
         for card in cards:
             self.__cards.remove(card)
