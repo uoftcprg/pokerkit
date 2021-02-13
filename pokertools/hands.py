@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections import Iterable
+from collections import Hashable, Iterable
 from typing import Any
 
 from treys import Card as TreysCard, Evaluator as TreysEvaluator  # type: ignore
@@ -7,7 +7,7 @@ from treys import Card as TreysCard, Evaluator as TreysEvaluator  # type: ignore
 from pokertools.cards import CardLike, parse_card
 
 
-class Hand(ABC):
+class Hand(Hashable, ABC):
     """Hand is the abstract base class for all hands."""
 
     @abstractmethod
@@ -16,14 +16,6 @@ class Hand(ABC):
 
     @abstractmethod
     def __eq__(self, other: Any) -> bool:
-        pass
-
-    @abstractmethod
-    def __hash__(self) -> int:
-        pass
-
-    @abstractmethod
-    def __repr__(self) -> str:
         pass
 
 
