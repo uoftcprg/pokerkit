@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from enum import Enum, unique
+from enum import unique
+from functools import total_ordering
 from typing import Any, Union
+
+from pokertools.utils import OrderedEnum
 
 
 @unique
-class Rank(Enum):
+class Rank(OrderedEnum):
     """Rank is the enum for ranks."""
     TWO = '2'
     THREE = '3'
@@ -23,7 +26,7 @@ class Rank(Enum):
 
 
 @unique
-class Suit(Enum):
+class Suit(OrderedEnum):
     """Suit is the enum for suits."""
     CLUB = 'c'
     DIAMOND = 'd'
@@ -31,6 +34,7 @@ class Suit(Enum):
     SPADE = 's'
 
 
+@total_ordering
 class Card:
     """Card is the base class for all cards."""
 
@@ -40,6 +44,12 @@ class Card:
 
     def __repr__(self) -> str:
         return self.rank.value + self.suit.value
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, Card):
+            return self.suit < other.suit if self.rank == other.rank else self.rank < other.rank
+        else:
+            return NotImplemented
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Card):

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import Hashable, Iterable
+from functools import total_ordering
 from typing import Any
 
 from treys import Card as TreysCard, Evaluator as TreysEvaluator  # type: ignore
@@ -7,6 +8,7 @@ from treys import Card as TreysCard, Evaluator as TreysEvaluator  # type: ignore
 from pokertools.cards import CardLike, parse_card
 
 
+@total_ordering  # type: ignore
 class Hand(Hashable, ABC):
     """Hand is the abstract base class for all hands."""
 
