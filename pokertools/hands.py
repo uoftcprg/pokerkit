@@ -51,4 +51,4 @@ class TreysHand(Hand):
     def translate(card_like: CardLike) -> int:
         card = parse_card(card_like)
 
-        return TreysCard.new(f'{card.rank.value}{card.suit.value}')  # type: ignore
+        return TreysCard.new(card.rank.value + card.suit.value)  # type: ignore
