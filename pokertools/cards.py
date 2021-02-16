@@ -40,15 +40,6 @@ class Card:
         self.__rank = rank
         self.__suit = suit
 
-    def __repr__(self) -> str:
-        return self.rank.value + self.suit.value
-
-    def __lt__(self, other: Any) -> bool:
-        if isinstance(other, Card):
-            return self.suit < other.suit if self.rank == other.rank else self.rank < other.rank
-        else:
-            return NotImplemented
-
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Card):
             return self.rank == other.rank and self.suit == other.suit
@@ -57,6 +48,15 @@ class Card:
 
     def __hash__(self) -> int:
         return hash(self.rank) ^ hash(self.suit)
+
+    def __repr__(self) -> str:
+        return self.rank.value + self.suit.value
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, Card):
+            return self.suit < other.suit if self.rank == other.rank else self.rank < other.rank
+        else:
+            return NotImplemented
 
     @property
     def rank(self) -> Rank:

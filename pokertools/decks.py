@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
-from collections import Collection, Iterable, Iterator, MutableSequence
+from abc import ABC
+from collections import Collection, Iterator, MutableSequence
 from typing import Any
 
 from pokertools.cards import Card, Rank, Suit
@@ -8,19 +8,19 @@ from pokertools.cards import Card, Rank, Suit
 class Deck(Collection[Card], ABC):
     """Deck is the abstract base class for all decks."""
 
-    def __init__(self) -> None:
-        self.__cards = self._create_cards()
+    def __init__(self, cards: set[Card]) -> None:
+        self.__cards = cards
 
     def __iter__(self) -> Iterator[Card]:
         return iter(self.__cards)
 
-    def __len__(self) -> int:
-        return len(self.__cards)
-
     def __contains__(self, __x: Any) -> bool:
         return __x in self.__cards
 
-    def remove(self, cards: Iterable[Card]) -> None:
+    def __len__(self) -> int:
+        return len(self.__cards)
+
+    def remove(self, *cards: Card) -> None:
         """Removes the cards from this deck.
 
         :param cards: the cards to be removed
@@ -29,16 +29,12 @@ class Deck(Collection[Card], ABC):
         for card in cards:
             self.__cards.remove(card)
 
-    @abstractmethod
-    def _create_cards(self) -> MutableSequence[Card]:
-        pass
-
 
 class StandardDeck(Deck):
     """StandardDeck is the class for standard decks."""
 
-    def _create_cards(self) -> MutableSequence[Card]:
-        return [Card(rank, suit) for rank in Rank for suit in Suit]
+    def __init__(self) -> None:
+        super().__init__({Card(rank, suit) for rank in Rank for suit in Suit})
 
 
 class ShortDeck(Deck):
@@ -47,5 +43,7 @@ class ShortDeck(Deck):
     The minimum rank of cards in short decks is 6.
     """
 
-    def _create_cards(self) -> MutableSequence[Card]:
-        return [Card(rank, suit) for rank in Rank if rank.value.isalpha() or int(rank.value) >= 6 for suit in Suit]
+    def __init__(self) -> None:
+        super().__init__({
+            Card(rank, suit) for rank in Rank if rank.value.isalpha() or int(rank.value) >= 6 for suit in Suit
+        })
