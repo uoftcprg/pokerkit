@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import unique
 from functools import total_ordering
-from typing import Any, Union
+from typing import Any, Sequence, Union
 
 from pokertools.utils import OrderedEnum
 
@@ -107,7 +107,28 @@ def parse_card(card: CardLike) -> Card:
     """
     if isinstance(card, str) and len(card) == 2:
         return Card(Rank(card[0]), Suit(card[1]))
+    elif isinstance(card, str):
+        raise ValueError('Invalid card representation')
     elif isinstance(card, Card):
         return card
     else:
         raise TypeError('Invalid card type')
+
+
+def parse_cards(cards: str) -> set[Card]:
+    """Parses the string of card representations.
+
+    :param cards: the string of card representations.
+    :return: the parsed cards
+    """
+    if isinstance(cards, str) and len(cards) % 2 == 0:
+        parsed_cards = set()
+
+        for i in range(0, len(cards), 2):
+            parsed_cards.add(parse_card(cards[i:i + 2]))
+
+        return parsed_cards
+    elif isinstance(cards, str):
+        raise ValueError('Invalid card representations')
+    else:
+        raise TypeError('Invalid cards type')
