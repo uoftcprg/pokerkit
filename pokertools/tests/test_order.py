@@ -24,8 +24,10 @@ class OrderTestCase(TestCase):
     def test_hands(self) -> None:
         evaluator = OmahaEvaluator()
 
-        self.assertLessEqual(evaluator.hand(['6c', '7c', '8c', '9c'], ['8s', '9s', 'Tc']),
-                             evaluator.hand(['6c', '7c', '8s', '9s'], ['8c', '9c', 'Tc']))
+        self.assertLessEqual(evaluator.hand(map(parse_card, ['6c', '7c', '8c', '9c']),
+                                            map(parse_card, ['8s', '9s', 'Tc'])),
+                             evaluator.hand(map(parse_card, ['6c', '7c', '8s', '9s']),
+                                            map(parse_card, ['8c', '9c', 'Tc'])))
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ from typing import Any
 
 from treys import Card as TreysCard, Evaluator as TreysEvaluator  # type: ignore
 
-from pokertools.cards import CardLike, parse_card
+from pokertools.cards import Card
 
 
 @total_ordering  # type: ignore
@@ -24,9 +24,12 @@ class Hand(Hashable, ABC):
 class TreysHand(Hand):
     treys_evaluator = TreysEvaluator()
 
-    def __init__(self, hole_cards: Iterable[CardLike], board_cards: Iterable[CardLike]):
-        self.__hand_rank = self.treys_evaluator.evaluate(list(map(self.translate, hole_cards)),
-                                                         list(map(self.translate, board_cards)))
+    def __init__(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]):
+        try:
+            self.__hand_rank = self.treys_evaluator.evaluate(list(map(self.translate, hole_cards)),
+                                                             list(map(self.translate, board_cards)))
+        except KeyError:
+            raise ValueError('Insufficient number of cards')
 
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, TreysHand):
@@ -48,7 +51,5 @@ class TreysHand(Hand):
             self.__hand_rank))
 
     @staticmethod
-    def translate(card_like: CardLike) -> int:
-        card = parse_card(card_like)
-
+    def translate(card: Card) -> int:
         return TreysCard.new(card.rank.value + card.suit.value)  # type: ignore

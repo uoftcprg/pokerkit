@@ -7,8 +7,10 @@ from typing import Any
 class OrderedEnum(Enum):
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, type(self)):
-            items: list[Enum] = list(type(self))
-
-            return items.index(self) < items.index(other)
+            return self.index < other.index
         else:
             return NotImplemented
+
+    @property
+    def index(self) -> int:
+        return list(type(self)).index(self)  # type: ignore

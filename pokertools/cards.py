@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from enum import unique
 from functools import total_ordering
-from typing import Any, Sequence, Union
+from typing import Any
 
 from pokertools.utils import OrderedEnum
 
@@ -78,9 +76,7 @@ class Card:
 class HoleCard(Card):
     """HoleCard is the class for hole cards."""
 
-    def __init__(self, card_like: CardLike, status: bool):
-        card = parse_card(card_like)
-
+    def __init__(self, card: Card, status: bool):
         super().__init__(card.rank, card.suit)
 
         self.__status = status
@@ -96,39 +92,32 @@ class HoleCard(Card):
         return self.__status
 
 
-CardLike = Union[str, Card]
+def parse_card(card: str) -> Card:
+    """Parses the string of the card representation.
 
-
-def parse_card(card: CardLike) -> Card:
-    """Parses the card-like object.
-
-    :param card: the card-like object.
+    :param card: the string of the card representation
     :return: the parsed card
     """
     if isinstance(card, str) and len(card) == 2:
         return Card(Rank(card[0]), Suit(card[1]))
     elif isinstance(card, str):
         raise ValueError('Invalid card representation')
-    elif isinstance(card, Card):
-        return card
     else:
         raise TypeError('Invalid card type')
 
 
-def parse_cards(cards: str) -> set[Card]:
+def parse_cards(cards: str) -> frozenset[Card]:
     """Parses the string of card representations.
 
-    :param cards: the string of card representations.
+    :param cards: the string of card representations
     :return: the parsed cards
     """
-    if isinstance(cards, str) and len(cards) % 2 == 0:
+    if isinstance(cards, str):
         parsed_cards = set()
 
         for i in range(0, len(cards), 2):
             parsed_cards.add(parse_card(cards[i:i + 2]))
 
-        return parsed_cards
-    elif isinstance(cards, str):
-        raise ValueError('Invalid card representations')
+        return frozenset(parsed_cards)
     else:
         raise TypeError('Invalid cards type')
