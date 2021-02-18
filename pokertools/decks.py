@@ -1,5 +1,5 @@
 from abc import ABC
-from collections import Collection, Iterator, MutableSequence
+from collections import Collection, Iterable, Iterator
 from typing import Any
 
 from pokertools.cards import Card, Rank, Suit
@@ -8,8 +8,8 @@ from pokertools.cards import Card, Rank, Suit
 class Deck(Collection[Card], ABC):
     """Deck is the abstract base class for all decks."""
 
-    def __init__(self, cards: set[Card]) -> None:
-        self.__cards = cards
+    def __init__(self, cards: Iterable[Card]) -> None:
+        self.__cards = list(cards)
 
     def __iter__(self) -> Iterator[Card]:
         return iter(self.__cards)
