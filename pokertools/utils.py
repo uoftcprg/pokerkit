@@ -1,5 +1,5 @@
 from enum import Enum
-from functools import total_ordering
+from functools import cached_property, total_ordering
 from typing import Any
 
 
@@ -11,6 +11,6 @@ class OrderedEnum(Enum):
         else:
             return NotImplemented
 
-    @property
+    @cached_property
     def index(self) -> int:
         return list(type(self)).index(self)  # type: ignore
