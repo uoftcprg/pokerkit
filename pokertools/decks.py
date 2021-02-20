@@ -9,7 +9,7 @@ class Deck(Collection[Card], ABC):
     """Deck is the abstract base class for all decks."""
 
     def __init__(self, cards: Iterable[Card]) -> None:
-        self.__cards = list(cards)
+        self.__cards = set(cards)
 
     def __iter__(self) -> Iterator[Card]:
         return iter(self.__cards)
@@ -26,8 +26,7 @@ class Deck(Collection[Card], ABC):
         :param cards: the cards to be removed
         :return: None
         """
-        for card in cards:
-            self.__cards.remove(card)
+        self.__cards -= set(cards)
 
 
 class StandardDeck(Deck):
@@ -44,6 +43,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self) -> None:
-        super().__init__({
-            Card(rank, suit) for rank in Rank if rank.value.isalpha() or int(rank.value) >= 6 for suit in Suit
-        })
+        super().__init__({Card(rank, suit) for rank in Rank if rank >= Rank.SIX for suit in Suit})

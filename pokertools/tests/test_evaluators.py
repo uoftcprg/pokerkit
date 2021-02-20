@@ -1,7 +1,8 @@
 from unittest import TestCase, main
 
+from auxiliary.utils import window
+
 from pokertools import GreekEvaluator, OmahaEvaluator, StandardEvaluator, parse_card
-from pokertools._utils import window
 
 
 class EvaluatorTestCase(TestCase):
@@ -37,8 +38,8 @@ class EvaluatorTestCase(TestCase):
     def test_data(self) -> None:
         evaluator = StandardEvaluator()
 
-        with open('hands.txt', 'r') as file:
-            hands = [evaluator.hand(map(parse_card, line.split()), []) for line in file.readlines()]
+        with open('hands.txt', 'r') as hands_file:
+            hands = [evaluator.hand(map(parse_card, line.split()), []) for line in hands_file.readlines()]
 
             for h1, h2 in window(hands, 2):
                 self.assertLessEqual(h1, h2)

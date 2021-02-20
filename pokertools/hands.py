@@ -13,11 +13,7 @@ class Hand(Hashable, ABC):
     _lookup: Lookup
 
     def __init__(self, *cards: Card):
-        self.__tmp_cards = cards  # TODO REMOVE
         self.__index = self._lookup.index(*cards)
-
-    def __repr__(self):  # TODO REMOVE
-        return f'{self.__tmp_cards} -> {self.__index}'
 
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, Hand):

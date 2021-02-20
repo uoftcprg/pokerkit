@@ -2,7 +2,7 @@ from enum import unique
 from functools import total_ordering
 from typing import Any
 
-from pokertools._utils import OrderedEnum
+from auxiliary.enums import OrderedEnum
 
 
 @unique
@@ -126,7 +126,7 @@ def parse_cards(cards: str) -> frozenset[Card]:
 def suited(*cards: Card) -> bool:
     """Checks if all cards are of the same suit.
 
-    :param cards: the cards
-    :return: True if all cards are of the same suit, else False
+    :param cards: the cards to check
+    :return: True if the cards are suited, else False
     """
     return not cards or all(cards[0].suit == card.suit for card in cards)

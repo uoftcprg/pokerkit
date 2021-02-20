@@ -4,7 +4,8 @@ from functools import reduce
 from itertools import chain, combinations
 from operator import mul
 
-from pokertools._utils import rotate, window
+from auxiliary.utils import rotate, window
+
 from pokertools.cards import Card, Rank, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
@@ -15,7 +16,7 @@ def ranks_key(*ranks: Rank) -> int:
 
 
 def mask_key(mask: int) -> int:
-    return reduce(mul, (prime for i, prime in enumerate(PRIMES) if mask & (1 << i)))
+    return reduce(mul, (prime for i, prime in enumerate(PRIMES) if mask & (1 << i)), 1)
 
 
 def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
@@ -30,8 +31,8 @@ def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
 
 def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> list[int]:
     if frequencies:
-        count, frequency = max(frequencies), frequencies.pop(max(frequencies))
         keys = []
+        count, frequency = max(frequencies), frequencies.pop(max(frequencies))
 
         for samples in combinations(sorted(ranks, reverse=True), frequency):
             key_base = ranks_key(*samples * count)
@@ -65,28 +66,26 @@ class StandardLookup(Lookup):
     def __init__(self) -> None:
         self.suited_indices = {}
         self.unsuited_indices = {}
-        index_count = 0
+        self.index_count = 0
         ranks = set(Rank)
 
         for key in straights(5, ranks):
-            self.suited_indices[key] = index_count
-            index_count += 1
+            self.register(self.suited_indices, key)
 
         for key in chain(multiples({4: 1, 1: 1}, ranks), multiples({3: 1, 2: 1}, ranks)):
-            if key not in self.unsuited_indices:
-                self.unsuited_indices[key] = index_count
-                index_count += 1
+            self.register(self.unsuited_indices, key)
 
         for key in multiples({1: 5}, ranks):
-            if key not in self.suited_indices:
-                self.suited_indices[key] = index_count
-                index_count += 1
+            self.register(self.suited_indices, key)
 
         for key in chain(straights(5, ranks), multiples({3: 1, 1: 2}, ranks), multiples({2: 2, 1: 1}, ranks),
                          multiples({2: 1, 1: 3}, ranks), multiples({1: 5}, ranks)):
-            if key not in self.unsuited_indices:
-                self.unsuited_indices[key] = index_count
-                index_count += 1
+            self.register(self.unsuited_indices, key)
+
+    def register(self, indices: dict[int, int], key: int) -> None:
+        if key not in indices:
+            indices[key] = self.index_count
+            self.index_count += 1
 
     def index(self, *cards: Card) -> int:
         return min(super(StandardLookup, self).index(*samples) for samples in combinations(cards, 5))
