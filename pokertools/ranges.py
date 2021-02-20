@@ -36,9 +36,8 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
         for card_1 in cards:
             for card_2 in cards:
                 if card_1.rank == ranks[0] and card_2.rank == ranks[1] and card_1 != card_2:
-                    if not flag \
-                            or (flag == 's' and card_1.suit == card_2.suit) \
-                            or (flag == 'o' and card_1.suit != card_2.suit):
+                    if (flag == 's' and card_1.suit == card_2.suit) or (flag == 'o' and card_1.suit != card_2.suit) \
+                            or not flag:
                         card_sets.add(frozenset({card_1, card_2}))
     elif match := re.fullmatch(r'(\w)(\w)(\w?)\+', pattern):
         ranks = list(map(Rank, match.groups()[:2]))

@@ -1,55 +1,40 @@
-from abc import ABC, abstractmethod
-from collections import Hashable, Iterable
+from abc import ABC
+from collections import Hashable
 from functools import total_ordering
 from typing import Any
 
-from treys import Card as TreysCard, Evaluator as TreysEvaluator  # type: ignore
-
+from pokertools._lookups import Lookup, StandardLookup
 from pokertools.cards import Card
 
 
-@total_ordering  # type: ignore
+@total_ordering
 class Hand(Hashable, ABC):
-    """Hand is the abstract base class for all hands."""
+    """Hand is the base class for all hands."""
+    _lookup: Lookup
 
-    @abstractmethod
-    def __lt__(self, other: Any) -> bool:
-        pass
+    def __init__(self, *cards: Card):
+        self.__tmp_cards = cards  # TODO REMOVE
+        self.__index = self._lookup.index(*cards)
 
-    @abstractmethod
-    def __eq__(self, other: Any) -> bool:
-        pass
-
-
-class TreysHand(Hand):
-    treys_evaluator = TreysEvaluator()
-
-    def __init__(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]):
-        try:
-            self.__hand_rank = self.treys_evaluator.evaluate(list(map(self.translate, hole_cards)),
-                                                             list(map(self.translate, board_cards)))
-        except KeyError:
-            raise ValueError('Insufficient number of cards')
+    def __repr__(self):  # TODO REMOVE
+        return f'{self.__tmp_cards} -> {self.__index}'
 
     def __lt__(self, other: Any) -> bool:
-        if isinstance(other, TreysHand):
-            return self.__hand_rank > other.__hand_rank  # type: ignore
+        if isinstance(other, Hand):
+            return self.__index > other.__index
         else:
             return NotImplemented
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, TreysHand):
-            return self.__hand_rank == other.__hand_rank  # type: ignore
+        if isinstance(other, Hand):
+            return self.__index == other.__index
         else:
             return NotImplemented
 
     def __hash__(self) -> int:
-        return hash(self.__hand_rank)
+        return hash(self.__index)
 
-    def __repr__(self) -> str:
-        return self.treys_evaluator.class_to_string(self.treys_evaluator.get_rank_class(  # type: ignore
-            self.__hand_rank))
 
-    @staticmethod
-    def translate(card: Card) -> int:
-        return TreysCard.new(card.rank.value + card.suit.value)  # type: ignore
+class StandardHand(Hand):
+    """StandardHand is the base class for all standard hands."""
+    _lookup = StandardLookup()

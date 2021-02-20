@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from collections import Iterable
-from itertools import combinations
+from itertools import chain, combinations
 
-from pokertools import Card
-from pokertools.hands import Hand, TreysHand
+from pokertools.cards import Card
+from pokertools.hands import Hand, StandardHand
 
 
 class Evaluator(ABC):
@@ -24,25 +24,21 @@ class Evaluator(ABC):
 class StandardEvaluator(Evaluator):
     """StandardEvaluator is the class for standard evaluators."""
 
-    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
-        return TreysHand(hole_cards, board_cards)
+    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
+        return StandardHand(*chain(hole_cards, board_cards))
 
 
 class GreekEvaluator(StandardEvaluator):
     """GreekEvaluator is the class for Greek evaluators."""
 
-    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
-        hand = super().hand
+    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
         hole_cards = list(hole_cards)
-
-        return max(hand(hole_cards, combination) for combination in combinations(board_cards, 3))
+        return max(super(GreekEvaluator, self).hand(hole_cards, combo) for combo in combinations(board_cards, 3))
 
 
 class OmahaEvaluator(GreekEvaluator):
     """OmahaEvaluator is the class for Omaha evaluators."""
 
-    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
-        hand = super().hand
+    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
         board_cards = list(board_cards)
-
-        return max(hand(combination, board_cards) for combination in combinations(hole_cards, 2))
+        return max(super(OmahaEvaluator, self).hand(combo, board_cards) for combo in combinations(hole_cards, 2))

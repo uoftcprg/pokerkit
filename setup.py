@@ -23,5 +23,4 @@ setup(
         'Programming Language :: Python :: 3.10',
     ],
     python_requires='>=3.9',
-    install_requires=['treys'],
 )
