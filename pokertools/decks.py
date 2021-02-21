@@ -33,7 +33,7 @@ class StandardDeck(Deck):
     """StandardDeck is the class for standard decks."""
 
     def __init__(self) -> None:
-        super().__init__({Card(rank, suit) for rank in Rank for suit in Suit})
+        super().__init__(Card(rank, suit) for rank in Rank for suit in Suit)
 
 
 class ShortDeck(Deck):
@@ -43,4 +43,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self) -> None:
-        super().__init__({Card(rank, suit) for rank in Rank if rank >= Rank.SIX for suit in Suit})
+        super().__init__(Card(rank, suit) for rank in Rank if rank >= Rank.SIX for suit in Suit)
