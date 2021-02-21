@@ -52,6 +52,7 @@ def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> list[int]:
 class Lookup(ABC):
     suited_indices: dict[int, int]
     unsuited_indices: dict[int, int]
+    index_count: int
 
     def index(self, *cards: Card) -> int:
         key = ranks_key(*(card.rank for card in cards))
@@ -61,12 +62,18 @@ class Lookup(ABC):
         else:
             return self.unsuited_indices[key]
 
+    def register(self, indices: dict[int, int], key: int) -> None:
+        if key not in indices:
+            indices[key] = self.index_count
+            self.index_count += 1
+
 
 class StandardLookup(Lookup):
     def __init__(self) -> None:
         self.suited_indices = {}
         self.unsuited_indices = {}
         self.index_count = 0
+
         ranks = set(Rank)
 
         for key in straights(5, ranks):
@@ -81,11 +88,6 @@ class StandardLookup(Lookup):
         for key in chain(straights(5, ranks), multiples({3: 1, 1: 2}, ranks), multiples({2: 2, 1: 1}, ranks),
                          multiples({2: 1, 1: 3}, ranks), multiples({1: 5}, ranks)):
             self.register(self.unsuited_indices, key)
-
-    def register(self, indices: dict[int, int], key: int) -> None:
-        if key not in indices:
-            indices[key] = self.index_count
-            self.index_count += 1
 
     def index(self, *cards: Card) -> int:
         return min(super(StandardLookup, self).index(*samples) for samples in combinations(cards, 5))
