@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections import Hashable
 from functools import total_ordering
 from typing import Any
@@ -11,25 +11,23 @@ from pokertools.cards import Card
 class Hand(Hashable, ABC):
     """Hand is the base class for all hands."""
 
+    def __init__(self, index: int):
+        self.__index = index
+
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, Hand):
-            return self.index > other.index
+            return self.__index > other.__index
         else:
             return NotImplemented
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Hand):
-            return self.index == other.index
+            return self.__index == other.__index
         else:
             return NotImplemented
 
     def __hash__(self) -> int:
-        return hash(self.index)
-
-    @property
-    @abstractmethod
-    def index(self) -> int:
-        pass
+        return hash(self.__index)
 
 
 class LookupHand(Hand):
@@ -37,11 +35,7 @@ class LookupHand(Hand):
     _lookup: Lookup
 
     def __init__(self, *cards: Card):
-        self.__index = self._lookup.index(*cards)
-
-    @property
-    def index(self) -> int:
-        return self.__index
+        super().__init__(self._lookup.index(*cards))
 
 
 class StandardHand(LookupHand):
