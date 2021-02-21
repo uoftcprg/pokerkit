@@ -1,10 +1,8 @@
 from abc import ABC
 from collections import Iterable
-from functools import reduce
 from itertools import chain, combinations
-from operator import mul
 
-from auxiliary.utils import rotate, window
+from auxiliary.utils import product, rotate, window
 
 from pokertools.cards import Card, Rank, suited
 
@@ -12,11 +10,11 @@ PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
 def ranks_key(*ranks: Rank) -> int:
-    return reduce(mul, (PRIMES[rank.index] for rank in ranks), 1)
+    return product(PRIMES[rank.index] for rank in ranks) if ranks else 1
 
 
 def mask_key(mask: int) -> int:
-    return reduce(mul, (prime for i, prime in enumerate(PRIMES) if mask & (1 << i)), 1)
+    return product(prime for i, prime in enumerate(PRIMES) if mask & (1 << i)) if mask else 1
 
 
 def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
