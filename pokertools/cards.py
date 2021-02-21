@@ -1,6 +1,6 @@
 from enum import unique
 from functools import total_ordering
-from typing import Any
+from typing import Any, Sequence
 
 from auxiliary.enums import OrderedEnum
 
@@ -106,19 +106,19 @@ def parse_card(card: str) -> Card:
         raise TypeError('Invalid card type')
 
 
-def parse_cards(cards: str) -> frozenset[Card]:
+def parse_cards(cards: str) -> Sequence[Card]:
     """Parses the string of card representations.
 
     :param cards: the string of card representations
     :return: the parsed cards
     """
     if isinstance(cards, str):
-        parsed_cards = set()
+        parsed_cards = []
 
         for i in range(0, len(cards), 2):
-            parsed_cards.add(parse_card(cards[i:i + 2]))
+            parsed_cards.append(parse_card(cards[i:i + 2]))
 
-        return frozenset(parsed_cards)
+        return parsed_cards
     else:
         raise TypeError('Invalid cards type')
 

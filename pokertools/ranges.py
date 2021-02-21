@@ -50,6 +50,6 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
             for rank in list(Rank)[ranks[1].index:ranks[0].index]:
                 card_sets |= parse_range(ranks[0].value + rank.value + flag)
     else:
-        card_sets.add(parse_cards(pattern))
+        card_sets.add(frozenset(parse_cards(pattern)))
 
     return frozenset(card_sets)
