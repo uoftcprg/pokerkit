@@ -4,8 +4,8 @@ from itertools import chain, combinations
 
 from auxiliary.utils import product, rotate, window
 
-from pokertools.decks import ShortDeck
 from pokertools.cards import Card, Rank, suited
+from pokertools.decks import ShortDeck
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
