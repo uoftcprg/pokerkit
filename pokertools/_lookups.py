@@ -4,6 +4,7 @@ from itertools import chain, combinations
 
 from auxiliary.utils import product, rotate, window
 
+from pokertools.decks import ShortDeck
 from pokertools.cards import Card, Rank, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
@@ -55,10 +56,13 @@ class Lookup(ABC):
     def index(self, *cards: Card) -> int:
         key = ranks_key(*(card.rank for card in cards))
 
-        if suited(*cards):
-            return min(self.suited_indices[key], self.unsuited_indices[key])
-        else:
-            return self.unsuited_indices[key]
+        try:
+            if suited(*cards):
+                return min(self.suited_indices[key], self.unsuited_indices[key])
+            else:
+                return self.unsuited_indices[key]
+        except KeyError:
+            raise ValueError('Cards do not form a valid hand')
 
     def register(self, indices: dict[int, int], key: int) -> None:
         if key not in indices:
@@ -89,3 +93,28 @@ class StandardLookup(Lookup):
 
     def index(self, *cards: Card) -> int:
         return min(super(StandardLookup, self).index(*samples) for samples in combinations(cards, 5))
+
+
+class ShortLookup(Lookup):
+    def __init__(self) -> None:
+        self.suited_indices = {}
+        self.unsuited_indices = {}
+        self.index_count = 0
+
+        ranks = set(card.rank for card in ShortDeck())
+
+        for key in straights(5, ranks):
+            self.register(self.suited_indices, key)
+
+        for key in multiples({4: 1, 1: 1}, ranks):
+            self.register(self.unsuited_indices, key)
+
+        for key in multiples({1: 5}, ranks):
+            self.register(self.suited_indices, key)
+
+        for key in chain(multiples({3: 1, 2: 1}, ranks), straights(5, ranks), multiples({3: 1, 1: 2}, ranks),
+                         multiples({2: 2, 1: 1}, ranks), multiples({2: 1, 1: 3}, ranks), multiples({1: 5}, ranks)):
+            self.register(self.unsuited_indices, key)
+
+    def index(self, *cards: Card) -> int:
+        return min(super(ShortLookup, self).index(*samples) for samples in combinations(cards, 5))

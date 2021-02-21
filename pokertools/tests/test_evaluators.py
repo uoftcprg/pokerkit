@@ -2,7 +2,7 @@ from unittest import TestCase, main
 
 from auxiliary.utils import window
 
-from pokertools import GreekEvaluator, OmahaEvaluator, StandardEvaluator, parse_card
+from pokertools import GreekEvaluator, OmahaEvaluator, ShortEvaluator, StandardEvaluator, parse_card
 
 
 class EvaluatorTestCase(TestCase):
@@ -34,6 +34,16 @@ class EvaluatorTestCase(TestCase):
                                        map(parse_card, ['8s', '9s', 'Tc', '2s', 'Ks'])),
                         evaluator.hand(map(parse_card, ['6c', '7c', '8s', '9s']),
                                        map(parse_card, ['8c', '9c', 'Tc', '2s', 'Ks'])))
+
+    def test_short(self) -> None:
+        evaluator = ShortEvaluator()
+
+        self.assertRaises(ValueError, lambda: evaluator.hand(map(parse_card, ['As', '2s']),
+                                                             map(parse_card, ['Ah', 'As', 'Kc', 'Kd', 'Kh'])))
+        self.assertLess(evaluator.hand(map(parse_card, ['Ac', 'Ks']), map(parse_card, ['Ah', 'As', 'Kc', 'Js', 'Ts'])),
+                        evaluator.hand(map(parse_card, ['Ac', '6c']), map(parse_card, ['Ah', 'As', 'Kc', 'Jc', 'Tc'])))
+        self.assertLess(evaluator.hand(map(parse_card, ['Ac', 'Ad']), map(parse_card, ['6s', '6c', 'Kc', 'Kd'])),
+                        evaluator.hand(map(parse_card, ['Ac', '9d']), map(parse_card, ['6s', '7s', '8c'])))
 
     def test_data(self) -> None:
         evaluator = StandardEvaluator()

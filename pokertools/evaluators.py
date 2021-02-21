@@ -3,7 +3,7 @@ from collections import Iterable
 from itertools import chain, combinations
 
 from pokertools.cards import Card
-from pokertools.hands import Hand, StandardHand
+from pokertools.hands import Hand, ShortHand, StandardHand
 
 
 class Evaluator(ABC):
@@ -44,3 +44,10 @@ class OmahaEvaluator(GreekEvaluator):
         board_cards = list(board_cards)
 
         return max(super(OmahaEvaluator, self).hand(combo, board_cards) for combo in combinations(hole_cards, 2))
+
+
+class ShortEvaluator(Evaluator):
+    """ShortEvaluator is the class for short evaluators."""
+
+    def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> ShortHand:
+        return ShortHand(*chain(hole_cards, board_cards))
