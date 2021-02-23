@@ -1,8 +1,10 @@
+from collections import Iterable, Sequence
 from enum import unique
 from functools import total_ordering
-from typing import Any, Sequence
+from typing import Any
 
 from auxiliary.enums import OrderedEnum
+from auxiliary.utils import constant
 
 
 @unique
@@ -113,20 +115,15 @@ def parse_cards(cards: str) -> Sequence[Card]:
     :return: the parsed cards
     """
     if isinstance(cards, str):
-        parsed_cards = []
-
-        for i in range(0, len(cards), 2):
-            parsed_cards.append(parse_card(cards[i:i + 2]))
-
-        return parsed_cards
+        return [parse_card(cards[i:i + 2]) for i in range(0, len(cards), 2)]
     else:
         raise TypeError('Invalid cards type')
 
 
-def suited(*cards: Card) -> bool:
+def suited(cards: Iterable[Card]) -> bool:
     """Checks if all cards are of the same suit.
 
     :param cards: the cards to check
     :return: True if the cards are suited, else False
     """
-    return not cards or all(cards[0].suit == card.suit for card in cards)
+    return constant(card.suit for card in cards)

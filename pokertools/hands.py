@@ -1,5 +1,5 @@
 from abc import ABC
-from collections import Hashable
+from collections import Hashable, Iterable
 from functools import total_ordering
 from typing import Any
 
@@ -34,8 +34,8 @@ class LookupHand(Hand):
     """LookupHand is the abstract base class for all lookup hands."""
     _lookup: Lookup
 
-    def __init__(self, *cards: Card):
-        super().__init__(self._lookup.index(*cards))
+    def __init__(self, cards: Iterable[Card]):
+        super().__init__(self._lookup.index(cards))
 
 
 class StandardHand(LookupHand):

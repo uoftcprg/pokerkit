@@ -20,7 +20,7 @@ class Deck(Collection[Card], ABC):
     def __len__(self) -> int:
         return len(self.__cards)
 
-    def remove(self, *cards: Card) -> None:
+    def remove(self, cards: Iterable[Card]) -> None:
         """Removes the cards from this deck.
 
         :param cards: the cards to be removed

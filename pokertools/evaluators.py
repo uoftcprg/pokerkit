@@ -25,7 +25,7 @@ class StandardEvaluator(Evaluator):
     """StandardEvaluator is the class for standard evaluators."""
 
     def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        return StandardHand(*chain(hole_cards, board_cards))
+        return StandardHand(chain(hole_cards, board_cards))
 
 
 class GreekEvaluator(StandardEvaluator):
@@ -50,4 +50,4 @@ class ShortEvaluator(Evaluator):
     """ShortEvaluator is the class for short evaluators."""
 
     def hand(self, hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> ShortHand:
-        return ShortHand(*chain(hole_cards, board_cards))
+        return ShortHand(chain(hole_cards, board_cards))
