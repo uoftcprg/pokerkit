@@ -58,5 +58,6 @@ class CardTestCase(TestCase):
         })
         self.assertSetEqual(frozenset(map(lambda cards: frozenset(map(str, cards)), parse_range('9T+'))), set())
 
-        if __name__ == '__main__':
-            main()
+
+if __name__ == '__main__':
+    main()
