@@ -1,4 +1,4 @@
-from collections import Iterable, Sequence
+from collections import Iterable
 from enum import unique
 from functools import total_ordering
 from typing import Any
@@ -108,14 +108,14 @@ def parse_card(card: str) -> Card:
         raise TypeError('Invalid card type')
 
 
-def parse_cards(cards: str) -> Sequence[Card]:
+def parse_cards(cards: str) -> Iterable[Card]:
     """Parses the string of card representations.
 
     :param cards: the string of card representations
     :return: the parsed cards
     """
     if isinstance(cards, str):
-        return [parse_card(cards[i:i + 2]) for i in range(0, len(cards), 2)]
+        return (parse_card(cards[i:i + 2]) for i in range(0, len(cards), 2))
     else:
         raise TypeError('Invalid cards type')
 
