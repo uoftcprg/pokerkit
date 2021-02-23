@@ -14,12 +14,6 @@ class Hand(Hashable, ABC):
     def __init__(self, index: int):
         self.__index = index
 
-    def __lt__(self, other: Any) -> bool:
-        if isinstance(other, Hand):
-            return self.__index > other.__index
-        else:
-            return NotImplemented
-
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Hand):
             return self.__index == other.__index
@@ -28,6 +22,12 @@ class Hand(Hashable, ABC):
 
     def __hash__(self) -> int:
         return hash(self.__index)
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, Hand):
+            return self.__index > other.__index
+        else:
+            return NotImplemented
 
 
 class LookupHand(Hand):
