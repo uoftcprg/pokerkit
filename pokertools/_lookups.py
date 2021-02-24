@@ -14,7 +14,7 @@ def ranks_key(ranks: Iterable[Rank]) -> int:
 
 
 def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
-    keys = [ranks_key(rotate(sorted(ranks), -1)[:count])]
+    keys = [ranks_key(tuple(rotate(sorted(ranks), -1))[:count])]
 
     for sub_ranks in window(sorted(ranks), count):
         keys.append(ranks_key(sub_ranks))
