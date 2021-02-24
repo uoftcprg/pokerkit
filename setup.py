@@ -5,7 +5,7 @@ with open('README.rst', 'r') as long_description_file:
 
 setup(
     name='pokertools',
-    version='0.0.2.dev4',
+    version='0.0.2.dev5',
     author='Juho Kim',
     author_email='juho-kim@outlook.com',
     description='A Python package for various poker tools',
