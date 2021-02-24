@@ -43,4 +43,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self) -> None:
-        super().__init__(Card(rank, suit) for rank in Rank if not rank < Rank.SIX for suit in Suit)
+        super().__init__(Card(rank, suit) for rank in Rank if Rank.FIVE < rank for suit in Suit)

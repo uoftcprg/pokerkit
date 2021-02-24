@@ -5,7 +5,6 @@ from itertools import chain, combinations
 from auxiliary.utils import constant, product, rotate, window
 
 from pokertools.cards import Card, Rank
-from pokertools.decks import ShortDeck, StandardDeck
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
@@ -72,7 +71,7 @@ class StandardLookup(Lookup):
         self.unsuited_indices = {}
         self.index_count = 0
 
-        ranks = set(card.rank for card in StandardDeck())
+        ranks = set(Rank)
 
         for key in straights(5, ranks):
             self.register(self.suited_indices, key)
@@ -97,7 +96,7 @@ class ShortLookup(Lookup):
         self.unsuited_indices = {}
         self.index_count = 0
 
-        ranks = set(card.rank for card in ShortDeck())
+        ranks = set(rank for rank in Rank if Rank.FIVE < rank)
 
         for key in straights(5, ranks):
             self.register(self.suited_indices, key)
