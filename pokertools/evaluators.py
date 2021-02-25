@@ -35,7 +35,7 @@ class GreekEvaluator(Evaluator):
 
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        hole_cards = list(hole_cards)
+        hole_cards = tuple(hole_cards)
 
         return max(StandardEvaluator.hand(hole_cards, combo) for combo in combinations(board_cards, 3))
 
@@ -45,7 +45,7 @@ class OmahaEvaluator(Evaluator):
 
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        board_cards = list(board_cards)
+        board_cards = tuple(board_cards)
 
         return max(GreekEvaluator.hand(combo, board_cards) for combo in combinations(hole_cards, 2))
 

@@ -1,4 +1,5 @@
 import re
+from itertools import islice
 
 from pokertools.cards import Card, Rank, Suit, parse_cards
 
@@ -25,7 +26,7 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
     card_sets = set()
 
     if match := re.fullmatch(r'(\w)(\w)(\w?)', pattern):
-        ranks = list(map(Rank, match.groups()[:2]))
+        ranks = tuple(map(Rank, match.groups()[:2]))
         flag = match.groups()[2]
         cards = set()
 
@@ -40,14 +41,14 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
                             or not flag:
                         card_sets.add(frozenset({card_1, card_2}))
     elif match := re.fullmatch(r'(\w)(\w)(\w?)\+', pattern):
-        ranks = list(map(Rank, match.groups()[:2]))
+        ranks = tuple(map(Rank, match.groups()[:2]))
         flag = match.groups()[2]
 
         if ranks[0] == ranks[1]:
-            for rank in list(Rank)[ranks[0].index:]:
+            for rank in tuple(Rank)[ranks[0].index:]:
                 card_sets |= parse_range(rank.value + rank.value + flag)
         else:
-            for rank in list(Rank)[ranks[1].index:ranks[0].index]:
+            for rank in tuple(Rank)[ranks[1].index:ranks[0].index]:
                 card_sets |= parse_range(ranks[0].value + rank.value + flag)
     else:
         card_sets.add(frozenset(parse_cards(pattern)))
