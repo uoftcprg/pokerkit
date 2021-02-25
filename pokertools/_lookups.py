@@ -22,7 +22,7 @@ def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
     return reversed(keys)
 
 
-def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> list[int]:
+def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> Iterable[int]:
     if frequencies:
         keys = []
         count, frequency = max(frequencies), frequencies.pop(max(frequencies))

@@ -1,4 +1,4 @@
-from collections import Iterable
+from collections import Iterable, Iterator
 from enum import unique
 from functools import total_ordering
 from typing import Any, Final
@@ -87,7 +87,7 @@ def parse_card(card: str) -> Card:
         raise TypeError('Invalid card type')
 
 
-def parse_cards(cards: str) -> Iterable[Card]:
+def parse_cards(cards: str) -> Iterator[Card]:
     """Parses the string of card representations.
 
     :param cards: the string of card representations
