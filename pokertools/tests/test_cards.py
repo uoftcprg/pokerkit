@@ -1,13 +1,16 @@
-from unittest import TestCase, main
+from unittest import main
+
+from auxiliary.tests import ExtendedTestCase
 
 from pokertools import HoleCard, parse_card, parse_cards, suited
 
 
-class CardTestCase(TestCase):
+class CardTestCase(ExtendedTestCase):
     def test_cards(self) -> None:
         self.assertEqual(repr(parse_card('4h')), '4h')
         self.assertEqual(str(parse_card('4h')), '4h')
-        self.assertSetEqual(set(map(str, parse_cards('4h4s4cAs'))), {'4h', '4s', '4c', 'As'})
+        self.assertIterableEqual(map(str, parse_cards('4h4s4cAs')), ('4h', '4s', '4c', 'As'))
+
         self.assertTrue(suited([]))
         self.assertFalse(suited(parse_cards('4h4s4cAs')))
         self.assertTrue(suited(parse_cards('4sAs')))

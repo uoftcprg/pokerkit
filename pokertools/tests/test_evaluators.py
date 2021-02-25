@@ -1,58 +1,44 @@
 from unittest import TestCase, main
 
-from auxiliary.utils import window
-
-from pokertools import GreekEvaluator, OmahaEvaluator, ShortEvaluator, StandardEvaluator, parse_card
+from pokertools import GreekEvaluator, OmahaEvaluator, ShortEvaluator, StandardEvaluator, parse_cards
 
 
 class EvaluatorTestCase(TestCase):
     def test_standard(self) -> None:
-        evaluator = StandardEvaluator()
+        hand = StandardEvaluator.hand
 
-        self.assertRaises(ValueError, lambda: evaluator.hand([], []))
-        self.assertLess(evaluator.hand(map(parse_card, ['Ac', 'Ad']), map(parse_card, ['Ah', 'As', 'Kc', 'Kd', 'Kh'])),
-                        evaluator.hand(map(parse_card, ['Ac', 'Ks']), map(parse_card, ['Ah', 'As', 'Qs', 'Js', 'Ts'])))
-        self.assertGreater(evaluator.hand(map(parse_card, ['Ac', 'Ad']), map(parse_card, ['Ah', 'As', 'Kc', 'Kd'])),
-                           evaluator.hand(map(parse_card, ['Ac', 'Ks']), map(parse_card, ['Ah', 'As', 'Qs', 'Js'])))
-        self.assertGreater(evaluator.hand(map(parse_card, ['Ac', 'Ad']), map(parse_card, ['Ah', 'As', 'Kc'])),
-                           evaluator.hand(map(parse_card, ['Ac', 'Ks']), map(parse_card, ['Ah', 'As', 'Qs'])))
-        self.assertEqual(evaluator.hand(map(parse_card, ['Ac', '2d']), map(parse_card, ['Qd', 'Jd', 'Th', '2s', 'Ks'])),
-                         evaluator.hand(map(parse_card, ['As', 'Ks']), map(parse_card, ['Qd', 'Jd', 'Th', '2s', '2s'])))
+        self.assertRaises(ValueError, hand, (), ())
+        self.assertLess(hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')),
+                        hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')))
+        self.assertGreater(hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')),
+                           hand(parse_cards('AcKs'), parse_cards('AhAsQsJs')))
+        self.assertGreater(hand(parse_cards('AcAd'), parse_cards('AhAsKc')),
+                           hand(parse_cards('AcKs'), parse_cards('AhAsQs')))
+        self.assertEqual(hand(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
+                         hand(parse_cards('AsKs'), parse_cards('QdJdTh2s2s')))
 
     def test_greek(self) -> None:
-        evaluator = GreekEvaluator()
+        hand = GreekEvaluator.hand
 
-        self.assertLess(evaluator.hand(map(parse_card, ['Ac', '2d']), map(parse_card, ['Qd', 'Jd', 'Th', '2s', 'Ks'])),
-                        evaluator.hand(map(parse_card, ['As', 'Ks']), map(parse_card, ['Qd', 'Jd', 'Th', '2s', '2d'])))
+        self.assertLess(hand(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
+                        hand(parse_cards('AsKs'), parse_cards('QdJdTh2s2d')))
 
     def test_omaha(self) -> None:
-        evaluator = OmahaEvaluator()
+        hand = OmahaEvaluator.hand
 
-        self.assertLess(evaluator.hand(map(parse_card, ['6c', '7c', '8c', '9c']), map(parse_card, ['8s', '9s', 'Tc'])),
-                        evaluator.hand(map(parse_card, ['6c', '7c', '8s', '9s']), map(parse_card, ['8c', '9c', 'Tc'])))
-        self.assertLess(evaluator.hand(map(parse_card, ['6c', '7c', '8c', '9c']),
-                                       map(parse_card, ['8s', '9s', 'Tc', '2s', 'Ks'])),
-                        evaluator.hand(map(parse_card, ['6c', '7c', '8s', '9s']),
-                                       map(parse_card, ['8c', '9c', 'Tc', '2s', 'Ks'])))
+        self.assertLess(hand(parse_cards('6c7c8c9c'), parse_cards('8s9sTc')),
+                        hand(parse_cards('6c7c8s9s'), parse_cards('8c9cTc')))
+        self.assertLess(hand(parse_cards('6c7c8c9c'), parse_cards('8s9sTc2sKs')),
+                        hand(parse_cards('6c7c8s9s'), parse_cards('8c9cTc2sKs')))
 
     def test_short(self) -> None:
-        evaluator = ShortEvaluator()
+        hand = ShortEvaluator.hand
 
-        self.assertRaises(ValueError, lambda: evaluator.hand(map(parse_card, ['As', '2s']),
-                                                             map(parse_card, ['Ah', 'As', 'Kc', 'Kd', 'Kh'])))
-        self.assertLess(evaluator.hand(map(parse_card, ['Ac', 'Ks']), map(parse_card, ['Ah', 'As', 'Kc', 'Js', 'Ts'])),
-                        evaluator.hand(map(parse_card, ['Ac', '6c']), map(parse_card, ['Ah', 'As', 'Kc', 'Jc', 'Tc'])))
-        self.assertLess(evaluator.hand(map(parse_card, ['Ac', 'Ad']), map(parse_card, ['6s', '6c', 'Kc', 'Kd'])),
-                        evaluator.hand(map(parse_card, ['Ac', '9d']), map(parse_card, ['6s', '7s', '8c'])))
-
-    def test_data(self) -> None:
-        evaluator = StandardEvaluator()
-
-        with open('hands.txt', 'r') as hands_file:
-            hands = [evaluator.hand(map(parse_card, line.split()), []) for line in hands_file.readlines()]
-
-            for h1, h2 in window(hands, 2):
-                self.assertLessEqual(h1, h2)
+        self.assertRaises(ValueError, hand, parse_cards('As2s'), parse_cards('AhAsKcKdKh'))
+        self.assertLess(hand(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
+                        hand(parse_cards('Ac6c'), parse_cards('AhAsKcJcTc')))
+        self.assertLess(hand(parse_cards('AcAd'), parse_cards('6s6cKcKd')),
+                        hand(parse_cards('Ac9d'), parse_cards('6s7s8c')))
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from pokertools import OmahaEvaluator, Rank, Suit, parse_card
+from pokertools import OmahaEvaluator, Rank, Suit, parse_card, parse_cards
 
 
 class OrderTestCase(TestCase):
@@ -24,10 +24,8 @@ class OrderTestCase(TestCase):
     def test_hands(self) -> None:
         evaluator = OmahaEvaluator()
 
-        self.assertLessEqual(evaluator.hand(map(parse_card, ['6c', '7c', '8c', '9c']),
-                                            map(parse_card, ['8s', '9s', 'Tc'])),
-                             evaluator.hand(map(parse_card, ['6c', '7c', '8s', '9s']),
-                                            map(parse_card, ['8c', '9c', 'Tc'])))
+        self.assertLessEqual(evaluator.hand(parse_cards('6c7c8c9c'), parse_cards('8s9sTc')),
+                             evaluator.hand(parse_cards('6c7c8s9s'), parse_cards('8c9cTc')))
 
 
 if __name__ == '__main__':
