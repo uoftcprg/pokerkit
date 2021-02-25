@@ -1,7 +1,7 @@
 from collections import Iterable
 from enum import unique
 from functools import total_ordering
-from typing import Any
+from typing import Any, Final
 
 from auxiliary.enums import OrderedEnum
 from auxiliary.utils import constant
@@ -39,8 +39,8 @@ class Card:
     """Card is the base class for all cards."""
 
     def __init__(self, rank: Rank, suit: Suit):
-        self.__rank = rank
-        self.__suit = suit
+        self.rank: Final = rank
+        self.suit: Final = suit
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Card):
@@ -60,20 +60,6 @@ class Card:
         else:
             return NotImplemented
 
-    @property
-    def rank(self) -> Rank:
-        """
-        :return: the rank of this card
-        """
-        return self.__rank
-
-    @property
-    def suit(self) -> Suit:
-        """
-        :return: the suit of this card
-        """
-        return self.__suit
-
 
 class HoleCard(Card):
     """HoleCard is the class for hole cards."""
@@ -81,17 +67,10 @@ class HoleCard(Card):
     def __init__(self, card: Card, status: bool):
         super().__init__(card.rank, card.suit)
 
-        self.__status = status
+        self.status: Final = status
 
     def __repr__(self) -> str:
         return super().__repr__() if self.status else '??'
-
-    @property
-    def status(self) -> bool:
-        """
-        :return: True if this hole card is exposed, else False
-        """
-        return self.__status
 
 
 def parse_card(card: str) -> Card:
