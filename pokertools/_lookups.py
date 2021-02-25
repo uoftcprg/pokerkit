@@ -87,7 +87,7 @@ class StandardLookup(Lookup):
             self.register(self.unsuited_indices, key)
 
     def index(self, cards: Iterable[Card]) -> int:
-        return min(super(StandardLookup, self).index(samples) for samples in combinations(cards, 5))
+        return min(super(StandardLookup, self).index(combination) for combination in combinations(cards, 5))
 
 
 class ShortLookup(Lookup):
@@ -112,4 +112,4 @@ class ShortLookup(Lookup):
             self.register(self.unsuited_indices, key)
 
     def index(self, cards: Iterable[Card]) -> int:
-        return min(super(ShortLookup, self).index(samples) for samples in combinations(cards, 5))
+        return min(super(ShortLookup, self).index(combination) for combination in combinations(cards, 5))
