@@ -1,6 +1,6 @@
 from abc import ABC
 from collections import Iterable
-from itertools import chain, combinations
+from itertools import chain, combinations, islice
 
 from auxiliary.utils import constant, product, rotate, window
 
@@ -14,7 +14,7 @@ def ranks_key(ranks: Iterable[Rank]) -> int:
 
 
 def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
-    keys = [ranks_key(tuple(rotate(sorted(ranks), -1))[:count])]
+    keys = [ranks_key(islice(rotate(sorted(ranks), -1), 0, count))]
 
     for sub_ranks in window(sorted(ranks), count):
         keys.append(ranks_key(sub_ranks))

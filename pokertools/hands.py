@@ -9,7 +9,7 @@ from pokertools.cards import Card
 
 @total_ordering
 class Hand(Hashable, ABC):
-    """Hand is the base class for all hands."""
+    """Hand is the abstract base class for all hands."""
 
     def __init__(self, index: int):
         self.__index = index
@@ -30,7 +30,7 @@ class Hand(Hashable, ABC):
             return NotImplemented
 
 
-class LookupHand(Hand):
+class LookupHand(Hand, ABC):
     """LookupHand is the abstract base class for all lookup hands."""
     _lookup: Lookup
 
@@ -39,10 +39,10 @@ class LookupHand(Hand):
 
 
 class StandardHand(LookupHand):
-    """StandardHand is the base class for all standard hands."""
+    """StandardHand is the class for standard hands."""
     _lookup = StandardLookup()
 
 
 class ShortHand(LookupHand):
-    """ShortHand is the base class for all short hands."""
+    """ShortHand is the class for short hands."""
     _lookup = ShortLookup()
