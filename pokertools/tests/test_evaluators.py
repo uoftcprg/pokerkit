@@ -1,6 +1,7 @@
 from unittest import TestCase, main
 
 from pokertools import GreekEvaluator, OmahaEvaluator, ShortEvaluator, StandardEvaluator, parse_cards
+from pokertools.evaluators import RankEvaluator
 
 
 class EvaluatorTestCase(TestCase):
@@ -39,6 +40,14 @@ class EvaluatorTestCase(TestCase):
                         hand(parse_cards('Ac6c'), parse_cards('AhAsKcJcTc')))
         self.assertLess(hand(parse_cards('AcAd'), parse_cards('6s6cKcKd')),
                         hand(parse_cards('Ac9d'), parse_cards('6s7s8c')))
+
+    def test_rank(self) -> None:
+        hand = RankEvaluator.hand
+
+        self.assertGreater(hand(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
+                           hand(parse_cards('9c6c'), parse_cards('9h9sKcJcTc')))
+        self.assertEqual(hand(parse_cards('AcAd'), parse_cards('6s6cKcKd')),
+                         hand(parse_cards('Ac9d'), parse_cards('6s7s8c')))
 
 
 if __name__ == '__main__':
