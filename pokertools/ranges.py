@@ -45,10 +45,10 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
         flag = match.groups()[2]
 
         if ranks[0] == ranks[1]:
-            for rank in tuple(Rank)[ranks[0].index:]:
+            for rank in islice(Rank, ranks[0].index, None):
                 card_sets |= parse_range(rank.value + rank.value + flag)
         else:
-            for rank in tuple(Rank)[ranks[1].index:ranks[0].index]:
+            for rank in islice(Rank, ranks[1].index, ranks[0].index):
                 card_sets |= parse_range(ranks[0].value + rank.value + flag)
     else:
         card_sets.add(frozenset(parse_cards(pattern)))
