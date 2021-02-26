@@ -1,10 +1,11 @@
 import re
+from collections import Set
 from itertools import islice
 
 from pokertools.cards import Card, Rank, Suit, parse_cards
 
 
-def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
+def parse_range(pattern: str) -> Set[Set[Card]]:
     """Parses the supplied pattern.
 
     >>> parse_range('AKo')
@@ -23,7 +24,7 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
     :param pattern: the supplied pattern to be parsed.
     :return: the parsed card sets
     """
-    card_sets = set()
+    card_sets: set[Set[Card]] = set()
 
     if match := re.fullmatch(r'(\w)(\w)(\w?)', pattern):
         ranks = tuple(map(Rank, match.groups()[:2]))
@@ -53,4 +54,4 @@ def parse_range(pattern: str) -> frozenset[frozenset[Card]]:
     else:
         card_sets.add(frozenset(parse_cards(pattern)))
 
-    return frozenset(card_sets)
+    return card_sets
