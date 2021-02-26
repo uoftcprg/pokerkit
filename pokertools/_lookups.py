@@ -25,7 +25,8 @@ def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
 def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> Iterable[int]:
     if frequencies:
         keys = []
-        count, frequency = max(frequencies), frequencies.pop(max(frequencies))
+        count = max(frequencies)
+        frequency = frequencies.pop(count)
 
         for samples in combinations(sorted(ranks, reverse=True), frequency):
             key_base = ranks_key(samples * count)
