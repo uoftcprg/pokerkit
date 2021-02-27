@@ -4,7 +4,7 @@ from functools import total_ordering
 from typing import Any, Final
 
 from auxiliary.enums import OrderedEnum
-from auxiliary.utils import constant
+from auxiliary.utils import chunk, constant
 
 
 @unique
@@ -94,7 +94,7 @@ def parse_cards(cards: str) -> Iterator[Card]:
     :return: the parsed cards
     """
     if isinstance(cards, str):
-        return (parse_card(cards[i:i + 2]) for i in range(0, len(cards), 2))
+        return map(parse_card, map(str, chunk(cards, 2)))
     else:
         raise TypeError('Invalid cards type')
 
