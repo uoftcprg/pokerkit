@@ -39,8 +39,8 @@ class Card:
     """Card is the base class for all cards."""
 
     def __init__(self, rank: Rank, suit: Suit):
-        self.rank: Final = rank
-        self.suit: Final = suit
+        self.__rank = rank
+        self.__suit = suit
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Card):
@@ -60,6 +60,20 @@ class Card:
         else:
             return NotImplemented
 
+    @property
+    def rank(self) -> Rank:
+        """
+        :return: the rank of this card
+        """
+        return self.__rank
+
+    @property
+    def suit(self) -> Suit:
+        """
+        :return: the suit of this card
+        """
+        return self.__suit
+
 
 class HoleCard(Card):
     """HoleCard is the class for hole cards."""
@@ -67,10 +81,17 @@ class HoleCard(Card):
     def __init__(self, card: Card, status: bool):
         super().__init__(card.rank, card.suit)
 
-        self.status: Final = status
+        self.__status = status
 
     def __repr__(self) -> str:
         return super().__repr__() if self.status else '??'
+
+    @property
+    def status(self) -> bool:
+        """
+        :return: the status of this hole card
+        """
+        return self.__status
 
 
 def parse_card(card: str) -> Card:
