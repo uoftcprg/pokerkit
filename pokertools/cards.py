@@ -1,7 +1,7 @@
 from collections import Iterable, Iterator
 from enum import unique
 from functools import total_ordering
-from typing import Any, Final
+from typing import Any
 
 from auxiliary.enums import OrderedEnum
 from auxiliary.utils import chunk, constant
