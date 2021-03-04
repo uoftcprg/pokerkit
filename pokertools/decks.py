@@ -24,7 +24,7 @@ class Deck(Collection[Card], ABC):
         """Removes the cards from this deck.
 
         :param cards: The cards to be removed.
-        :return: None
+        :return: None.
         """
         self.__cards -= set(cards)
 
