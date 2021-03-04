@@ -54,7 +54,6 @@ class ShortEvaluator(Evaluator):
     """ShortEvaluator is the class for short evaluators."""
 
     @staticmethod
-    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> ShortHand:
         return ShortHand(chain(hole_cards, board_cards))
 
@@ -63,6 +62,5 @@ class RankEvaluator(Evaluator):
     """RankEvaluator is the class for rank evaluators."""
 
     @staticmethod
-    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
         return Hand(-max(card.rank.index for card in chain(hole_cards, board_cards)))
