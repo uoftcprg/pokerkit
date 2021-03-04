@@ -21,8 +21,8 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
     >>> parse_range('QT+')
     frozenset({frozenset({Qd, Ts}), frozenset({Qd, Th}), frozenset({Jd, Qc}), ..., frozenset({Jh, Qc})})
 
-    :param pattern: the supplied pattern to be parsed.
-    :return: the parsed card sets
+    :param pattern: The supplied pattern to be parsed.
+    :return: The parsed card sets.
     """
     card_sets: set[Set[Card]] = set()
 

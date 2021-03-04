@@ -2,7 +2,8 @@ from abc import ABC
 from collections import Iterable
 from itertools import chain, combinations, islice
 
-from auxiliary.utils import constant, product, rotate, window
+from auxiliary import const, rotate, window
+from math2.misc import product
 
 from pokertools.cards import Card, Rank
 
@@ -53,7 +54,7 @@ class Lookup(ABC):
         key = ranks_key(ranks)
 
         try:
-            if constant(suits):
+            if const(suits):
                 return min(self.suited_indices[key], self.unsuited_indices[key])
             else:
                 return self.unsuited_indices[key]

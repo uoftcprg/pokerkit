@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from auxiliary.utils import window
+from auxiliary import window
 
 from pokertools import StandardEvaluator, parse_cards
 

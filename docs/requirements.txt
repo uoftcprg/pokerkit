@@ -1,4 +1,5 @@
 auxiliary
+math2
 mypy
 sphinx
 sphinx-rtd-theme

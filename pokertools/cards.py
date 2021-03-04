@@ -3,8 +3,7 @@ from enum import unique
 from functools import total_ordering
 from typing import Any
 
-from auxiliary.enums import OrderedEnum
-from auxiliary.utils import chunk, constant
+from auxiliary import OrderedEnum, chunk, const
 
 
 @unique
@@ -63,14 +62,14 @@ class Card:
     @property
     def rank(self) -> Rank:
         """
-        :return: the rank of this card
+        :return: The rank of this card.
         """
         return self.__rank
 
     @property
     def suit(self) -> Suit:
         """
-        :return: the suit of this card
+        :return: The suit of this card.
         """
         return self.__suit
 
@@ -89,7 +88,7 @@ class HoleCard(Card):
     @property
     def status(self) -> bool:
         """
-        :return: the status of this hole card
+        :return: The status of this hole card.
         """
         return self.__status
 
@@ -97,8 +96,8 @@ class HoleCard(Card):
 def parse_card(card: str) -> Card:
     """Parses the string of the card representation.
 
-    :param card: the string of the card representation
-    :return: the parsed card
+    :param card: The string of the card representation.
+    :return: The parsed card.
     """
     if isinstance(card, str) and len(card) == 2:
         return Card(Rank(card[0]), Suit(card[1]))
@@ -111,11 +110,11 @@ def parse_card(card: str) -> Card:
 def parse_cards(cards: str) -> Iterator[Card]:
     """Parses the string of card representations.
 
-    :param cards: the string of card representations
-    :return: the parsed cards
+    :param cards: The string of card representations.
+    :return: The parsed cards.
     """
     if isinstance(cards, str):
-        return map(parse_card, map(str, chunk(cards, 2)))
+        return map(parse_card, (''.join(card) for card in chunk(cards, 2)))
     else:
         raise TypeError('Invalid cards type')
 
@@ -123,7 +122,7 @@ def parse_cards(cards: str) -> Iterator[Card]:
 def suited(cards: Iterable[Card]) -> bool:
     """Checks if all cards are of the same suit.
 
-    :param cards: the cards to check
-    :return: True if the cards are suited, else False
+    :param cards: The cards to check.
+    :return: True if the cards are suited, else False.
     """
-    return constant(card.suit for card in cards)
+    return const(card.suit for card in cards)

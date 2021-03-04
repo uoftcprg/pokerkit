@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-from collections import Collection, Iterable
+from collections import Iterable
 from itertools import chain, combinations
+
+from auxiliary import retain_iter
 
 from pokertools.cards import Card
 from pokertools.hands import Hand, ShortHand, StandardHand
@@ -14,10 +16,10 @@ class Evaluator(ABC):
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
         """Evaluates the hand of the combinations of the hole cards and the board cards.
 
-        :param hole_cards: the hole cards
-        :param board_cards: the board cards
-        :return: the hand of the combinations
-        :raise ValueError: if the number of cards are insufficient
+        :param hole_cards: The hole cards.
+        :param board_cards: The board cards.
+        :return: The hand of the combinations.
+        :raise ValueError: If the number of cards are insufficient.
         """
         ...
 
@@ -34,28 +36,25 @@ class GreekEvaluator(Evaluator):
     """GreekEvaluator is the class for Greek evaluators."""
 
     @staticmethod
+    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        if isinstance(hole_cards, Collection):
-            return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
-        else:
-            return GreekEvaluator.hand(tuple(hole_cards), board_cards)
+        return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
 
 
 class OmahaEvaluator(Evaluator):
     """OmahaEvaluator is the class for Omaha evaluators."""
 
     @staticmethod
+    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        if isinstance(board_cards, Collection):
-            return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
-        else:
-            return OmahaEvaluator.hand(hole_cards, tuple(board_cards))
+        return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
 
 
 class ShortEvaluator(Evaluator):
     """ShortEvaluator is the class for short evaluators."""
 
     @staticmethod
+    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> ShortHand:
         return ShortHand(chain(hole_cards, board_cards))
 
@@ -64,5 +63,6 @@ class RankEvaluator(Evaluator):
     """RankEvaluator is the class for rank evaluators."""
 
     @staticmethod
+    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
         return Hand(-max(card.rank.index for card in chain(hole_cards, board_cards)))

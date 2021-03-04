@@ -23,7 +23,7 @@ class Deck(Collection[Card], ABC):
     def remove(self, cards: Iterable[Card]) -> None:
         """Removes the cards from this deck.
 
-        :param cards: the cards to be removed
+        :param cards: The cards to be removed.
         :return: None
         """
         self.__cards -= set(cards)
@@ -39,7 +39,7 @@ class StandardDeck(Deck):
 class ShortDeck(Deck):
     """ShortDeck is the class for short decks.
 
-    The minimum rank of cards in short decks is 6.
+       The minimum rank of cards in short decks is 6.
     """
 
     def __init__(self) -> None:
