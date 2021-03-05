@@ -21,7 +21,7 @@ class Evaluator(ABC):
         :return: The hand of the combinations.
         :raise ValueError: If the number of cards are insufficient.
         """
-        ...
+        pass
 
 
 class StandardEvaluator(Evaluator):

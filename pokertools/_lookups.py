@@ -45,9 +45,10 @@ def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> Iterable[int]:
 
 
 class Lookup(ABC):
-    suited_indices: dict[int, int]
-    unsuited_indices: dict[int, int]
-    index_count: int
+    def __init__(self) -> None:
+        self.suited_indices: dict[int, int] = {}
+        self.unsuited_indices: dict[int, int] = {}
+        self.index_count: int = 0
 
     def index(self, cards: Iterable[Card]) -> int:
         ranks, suits = zip(*((card.rank, card.suit) for card in cards))
@@ -69,9 +70,7 @@ class Lookup(ABC):
 
 class StandardLookup(Lookup):
     def __init__(self) -> None:
-        self.suited_indices = {}
-        self.unsuited_indices = {}
-        self.index_count = 0
+        super().__init__()
 
         ranks = set(Rank)
 
@@ -94,9 +93,7 @@ class StandardLookup(Lookup):
 
 class ShortLookup(Lookup):
     def __init__(self) -> None:
-        self.suited_indices = {}
-        self.unsuited_indices = {}
-        self.index_count = 0
+        super().__init__()
 
         ranks = set(rank for rank in Rank if Rank.FIVE < rank)
 
