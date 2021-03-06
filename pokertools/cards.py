@@ -1,7 +1,7 @@
 from collections import Iterable, Iterator
 from enum import unique
 from functools import total_ordering
-from typing import Any
+from typing import Any, Final
 
 from auxiliary import OrderedEnum, chunk, const
 
@@ -38,8 +38,8 @@ class Card:
     """Card is the base class for all cards."""
 
     def __init__(self, rank: Rank, suit: Suit):
-        self.__rank = rank
-        self.__suit = suit
+        self.rank: Final = rank
+        self.suit: Final = suit
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Card):
@@ -59,20 +59,6 @@ class Card:
         else:
             return NotImplemented
 
-    @property
-    def rank(self) -> Rank:
-        """
-        :return: The rank of this card.
-        """
-        return self.__rank
-
-    @property
-    def suit(self) -> Suit:
-        """
-        :return: The suit of this card.
-        """
-        return self.__suit
-
 
 class HoleCard(Card):
     """HoleCard is the class for hole cards."""
@@ -80,17 +66,10 @@ class HoleCard(Card):
     def __init__(self, card: Card, status: bool):
         super().__init__(card.rank, card.suit)
 
-        self.__status = status
+        self.status: Final = status
 
     def __repr__(self) -> str:
         return super().__repr__() if self.status else '??'
-
-    @property
-    def status(self) -> bool:
-        """
-        :return: The status of this hole card.
-        """
-        return self.__status
 
 
 def parse_card(card: str) -> Card:
