@@ -1,5 +1,5 @@
 from abc import ABC
-from collections import Iterable, MutableMapping, Set
+from collections import Iterable, Iterator, MutableMapping
 from itertools import chain, combinations, islice
 
 from auxiliary import const, rotate, window
@@ -14,7 +14,7 @@ def mask(ranks: Iterable[Rank]) -> int:
     return product((PRIMES[rank.index] for rank in ranks), 1)
 
 
-def straights(count: int, ranks: Set[Rank]) -> Iterable[int]:
+def straights(ranks: Iterable[Rank], count: int) -> Iterator[int]:
     keys = [mask(islice(rotate(sorted(ranks), -1), 0, count))]
 
     for sub_ranks in window(sorted(ranks), count):
@@ -23,8 +23,9 @@ def straights(count: int, ranks: Set[Rank]) -> Iterable[int]:
     return reversed(keys)
 
 
-def multiples(frequencies: MutableMapping[int, int], ranks: Set[Rank]) -> Iterable[int]:
+def multiples(ranks: Iterable[Rank], frequencies: MutableMapping[int, int]) -> Iterator[int]:
     if frequencies:
+        ranks = frozenset(ranks)
         keys = []
         count = max(frequencies)
         frequency = frequencies.pop(count)
@@ -33,15 +34,15 @@ def multiples(frequencies: MutableMapping[int, int], ranks: Set[Rank]) -> Iterab
             key = mask(samples * count)
             ranks -= frozenset(samples)
 
-            for sub_key in multiples(frequencies, ranks):
+            for sub_key in multiples(ranks, frequencies):
                 keys.append(key * sub_key)
 
             ranks |= frozenset(samples)
 
         frequencies[count] = frequency
-        return keys
+        return iter(keys)
     else:
-        return [1]
+        return iter((1,))
 
 
 class Lookup(ABC):
@@ -74,17 +75,17 @@ class StandardLookup(Lookup):
 
         ranks = set(Rank)
 
-        for key in straights(5, ranks):
+        for key in straights(ranks, 5):
             self.register(self.suited_indices, key)
 
-        for key in chain(multiples({4: 1, 1: 1}, ranks), multiples({3: 1, 2: 1}, ranks)):
+        for key in chain(multiples(ranks, {4: 1, 1: 1}), multiples(ranks, {3: 1, 2: 1})):
             self.register(self.unsuited_indices, key)
 
-        for key in multiples({1: 5}, ranks):
+        for key in multiples(ranks, {1: 5}):
             self.register(self.suited_indices, key)
 
-        for key in chain(straights(5, ranks), multiples({3: 1, 1: 2}, ranks), multiples({2: 2, 1: 1}, ranks),
-                         multiples({2: 1, 1: 3}, ranks), multiples({1: 5}, ranks)):
+        for key in chain(straights(ranks, 5), multiples(ranks, {3: 1, 1: 2}), multiples(ranks, {2: 2, 1: 1}),
+                         multiples(ranks, {2: 1, 1: 3}), multiples(ranks, {1: 5})):
             self.register(self.unsuited_indices, key)
 
     def index(self, cards: Iterable[Card]) -> int:
@@ -97,17 +98,17 @@ class ShortLookup(Lookup):
 
         ranks = set(rank for rank in Rank if Rank.FIVE < rank)
 
-        for key in straights(5, ranks):
+        for key in straights(ranks, 5):
             self.register(self.suited_indices, key)
 
-        for key in multiples({4: 1, 1: 1}, ranks):
+        for key in multiples(ranks, {4: 1, 1: 1}):
             self.register(self.unsuited_indices, key)
 
-        for key in multiples({1: 5}, ranks):
+        for key in multiples(ranks, {1: 5}):
             self.register(self.suited_indices, key)
 
-        for key in chain(multiples({3: 1, 2: 1}, ranks), straights(5, ranks), multiples({3: 1, 1: 2}, ranks),
-                         multiples({2: 2, 1: 1}, ranks), multiples({2: 1, 1: 3}, ranks), multiples({1: 5}, ranks)):
+        for key in chain(multiples(ranks, {3: 1, 2: 1}), straights(ranks, 5), multiples(ranks, {3: 1, 1: 2}),
+                         multiples(ranks, {2: 2, 1: 1}), multiples(ranks, {2: 1, 1: 3}), multiples(ranks, {1: 5})):
             self.register(self.unsuited_indices, key)
 
     def index(self, cards: Iterable[Card]) -> int:
