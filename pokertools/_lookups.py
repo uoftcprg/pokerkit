@@ -2,7 +2,7 @@ from abc import ABC
 from collections.abc import Iterable, Iterator, MutableMapping
 from itertools import chain, combinations, islice
 
-from auxiliary import const, rotate, window
+from auxiliary import const, rotated, windowed
 from math2.misc import product
 
 from pokertools.cards import Card, Rank
@@ -15,9 +15,9 @@ def mask(ranks: Iterable[Rank]) -> int:
 
 
 def straights(ranks: Iterable[Rank], count: int) -> Iterator[int]:
-    keys = [mask(islice(rotate(sorted(ranks), -1), 0, count))]
+    keys = [mask(islice(rotated(sorted(ranks), -1), 0, count))]
 
-    for sub_ranks in window(sorted(ranks), count):
+    for sub_ranks in windowed(sorted(ranks), count):
         keys.append(mask(sub_ranks))
 
     return reversed(keys)

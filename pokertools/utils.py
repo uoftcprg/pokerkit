@@ -2,7 +2,7 @@ import re
 from collections.abc import Iterable, Iterator, Set
 from itertools import islice
 
-from auxiliary import chunk, const
+from auxiliary import chunked, const
 
 from pokertools.cards import Card, Rank, Suit
 
@@ -37,7 +37,7 @@ def parse_cards(cards: str) -> Iterator[Card]:
     :return: The parsed cards.
     """
     if isinstance(cards, str):
-        return map(parse_card, (''.join(card) for card in chunk(cards, 2)))
+        return map(parse_card, (''.join(card) for card in chunked(cards, 2)))
     else:
         raise TypeError('Invalid cards type')
 
