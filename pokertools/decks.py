@@ -1,12 +1,11 @@
-from abc import ABC
 from collections import Collection, Iterable, Iterator
 from typing import Any
 
 from pokertools.cards import Card, Rank, Suit
 
 
-class Deck(Collection[Card], ABC):
-    """Deck is the abstract base class for all decks."""
+class Deck(Collection[Card]):
+    """Deck is the class for decks."""
 
     def __init__(self, cards: Iterable[Card]) -> None:
         self.__cards = set(cards)
@@ -20,7 +19,7 @@ class Deck(Collection[Card], ABC):
     def __len__(self) -> int:
         return len(self.__cards)
 
-    def remove(self, cards: Iterable[Card]) -> None:
+    def remove_all(self, cards: Iterable[Card]) -> None:
         """Removes the cards from this deck.
 
         :param cards: The cards to be removed.

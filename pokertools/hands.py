@@ -8,8 +8,8 @@ from pokertools.cards import Card
 
 
 @total_ordering
-class Hand(Hashable, ABC):
-    """Hand is the abstract base class for all hands."""
+class Hand(Hashable):
+    """Hand is the class for hands."""
 
     def __init__(self, index: int):
         self.__index = index

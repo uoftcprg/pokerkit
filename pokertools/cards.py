@@ -1,9 +1,8 @@
-from collections import Iterable, Iterator
 from enum import unique
 from functools import total_ordering
 from typing import Any, Final
 
-from auxiliary import OrderedEnum, chunk, const
+from auxiliary import OrderedEnum
 
 
 @unique
@@ -70,38 +69,3 @@ class HoleCard(Card):
 
     def __repr__(self) -> str:
         return super().__repr__() if self.status else '??'
-
-
-def parse_card(card: str) -> Card:
-    """Parses the string of the card representation.
-
-    :param card: The string of the card representation.
-    :return: The parsed card.
-    """
-    if isinstance(card, str) and len(card) == 2:
-        return Card(Rank(card[0]), Suit(card[1]))
-    elif isinstance(card, str):
-        raise ValueError('Invalid card representation')
-    else:
-        raise TypeError('Invalid card type')
-
-
-def parse_cards(cards: str) -> Iterator[Card]:
-    """Parses the string of card representations.
-
-    :param cards: The string of card representations.
-    :return: The parsed cards.
-    """
-    if isinstance(cards, str):
-        return map(parse_card, (''.join(card) for card in chunk(cards, 2)))
-    else:
-        raise TypeError('Invalid cards type')
-
-
-def suited(cards: Iterable[Card]) -> bool:
-    """Checks if all cards are of the same suit.
-
-    :param cards: The cards to check.
-    :return: True if the cards are suited, else False.
-    """
-    return const(card.suit for card in cards)

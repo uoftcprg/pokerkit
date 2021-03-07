@@ -1,5 +1,5 @@
 from abc import ABC
-from collections import Iterable
+from collections import Iterable, MutableMapping, Set
 from itertools import chain, combinations, islice
 
 from auxiliary import const, rotate, window
@@ -10,33 +10,33 @@ from pokertools.cards import Card, Rank
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
-def ranks_key(ranks: Iterable[Rank]) -> int:
+def mask(ranks: Iterable[Rank]) -> int:
     return product((PRIMES[rank.index] for rank in ranks), 1)
 
 
-def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
-    keys = [ranks_key(islice(rotate(sorted(ranks), -1), 0, count))]
+def straights(count: int, ranks: Set[Rank]) -> Iterable[int]:
+    keys = [mask(islice(rotate(sorted(ranks), -1), 0, count))]
 
     for sub_ranks in window(sorted(ranks), count):
-        keys.append(ranks_key(sub_ranks))
+        keys.append(mask(sub_ranks))
 
     return reversed(keys)
 
 
-def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> Iterable[int]:
+def multiples(frequencies: MutableMapping[int, int], ranks: Set[Rank]) -> Iterable[int]:
     if frequencies:
         keys = []
         count = max(frequencies)
         frequency = frequencies.pop(count)
 
         for samples in combinations(sorted(ranks, reverse=True), frequency):
-            key_base = ranks_key(samples * count)
-            ranks -= set(samples)
+            key = mask(samples * count)
+            ranks -= frozenset(samples)
 
             for sub_key in multiples(frequencies, ranks):
-                keys.append(key_base * sub_key)
+                keys.append(key * sub_key)
 
-            ranks |= set(samples)
+            ranks |= frozenset(samples)
 
         frequencies[count] = frequency
         return keys
@@ -46,13 +46,13 @@ def multiples(frequencies: dict[int, int], ranks: set[Rank]) -> Iterable[int]:
 
 class Lookup(ABC):
     def __init__(self) -> None:
-        self.suited_indices: dict[int, int] = {}
-        self.unsuited_indices: dict[int, int] = {}
+        self.suited_indices: MutableMapping[int, int] = {}
+        self.unsuited_indices: MutableMapping[int, int] = {}
         self.index_count: int = 0
 
     def index(self, cards: Iterable[Card]) -> int:
         ranks, suits = zip(*((card.rank, card.suit) for card in cards))
-        key = ranks_key(ranks)
+        key = mask(ranks)
 
         try:
             if const(suits):
@@ -62,7 +62,7 @@ class Lookup(ABC):
         except KeyError:
             raise ValueError('Cards do not form a valid hand')
 
-    def register(self, indices: dict[int, int], key: int) -> None:
+    def register(self, indices: MutableMapping[int, int], key: int) -> None:
         if key not in indices:
             indices[key] = self.index_count
             self.index_count += 1
