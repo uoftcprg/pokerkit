@@ -1,5 +1,5 @@
 from abc import ABC
-from collections import Iterable, Iterator, MutableMapping
+from collections.abc import Iterable, Iterator, MutableMapping
 from itertools import chain, combinations, islice
 
 from auxiliary import const, rotate, window

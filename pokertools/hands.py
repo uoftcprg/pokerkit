@@ -1,5 +1,5 @@
 from abc import ABC
-from collections import Hashable, Iterable
+from collections.abc import Hashable, Iterable
 from functools import total_ordering
 from typing import Any
 

@@ -1,4 +1,4 @@
-from collections import Collection, Iterable, Iterator
+from collections.abc import Collection, Iterable, Iterator
 from typing import Any
 
 from pokertools.cards import Card, Rank, Suit
@@ -19,10 +19,10 @@ class Deck(Collection[Card]):
     def __len__(self) -> int:
         return len(self.__cards)
 
-    def remove_all(self, cards: Iterable[Card]) -> None:
-        """Removes the cards from this deck.
+    def draw(self, cards: Iterable[Card]) -> None:
+        """Draws the cards from this deck.
 
-        :param cards: The cards to be removed.
+        :param cards: The cards to be drawn.
         :return: None.
         """
         self.__cards -= set(cards)

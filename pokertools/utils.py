@@ -1,5 +1,5 @@
 import re
-from collections import Iterable, Iterator, Set
+from collections.abc import Iterable, Iterator, Set
 from itertools import islice
 
 from auxiliary import chunk, const

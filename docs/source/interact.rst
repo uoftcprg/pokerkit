@@ -35,7 +35,7 @@ The following code demonstrates interacting with decks.
    >>> deck = StandardDeck()
    >>> parse_card('4h') in deck
    True
-   >>> deck.remove(parse_cards('4h4s4cAs'))
+   >>> deck.draw(parse_cards('4h4s4cAs'))
    >>> parse_card('4h') in deck
    False
 
