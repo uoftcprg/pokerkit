@@ -55,4 +55,4 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
     else:
         card_sets.add(frozenset(parse_cards(pattern)))
 
-    return card_sets
+    return frozenset(card_sets)
