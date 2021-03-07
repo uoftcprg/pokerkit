@@ -21,7 +21,7 @@ PokerTools API
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: pokertools.ranges
+.. automodule:: pokertools.utils
    :members:
    :undoc-members:
    :show-inheritance:
