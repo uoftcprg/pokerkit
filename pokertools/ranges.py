@@ -8,18 +8,19 @@ from pokertools.cards import Card, Rank, Suit, parse_cards
 def parse_range(pattern: str) -> Set[Set[Card]]:
     """Parses the supplied pattern.
 
-    >>> parse_range('AKo')
-    frozenset({frozenset({Kc, Ah}), frozenset({Kc, As}), frozenset({Kh, Ac}), ..., frozenset({Ks, Ac})})
-    >>> parse_range('AKs')
-    frozenset({frozenset({Ks, As}), frozenset({Kc, Ac}), frozenset({Ad, Kd}), frozenset({Kh, Ah})})
-    >>> parse_range('AK')
-    frozenset({frozenset({Ad, Kd}), frozenset({Kh, Ah}), frozenset({Kc, Ad}), ..., frozenset({Kh, Ac})})
-    >>> parse_range('AA')
-    frozenset({frozenset({Ah, Ac}), frozenset({Ad, Ah}), frozenset({Ad, As}), ..., frozenset({As, Ac})})
-    >>> parse_range('QQ+')
-    frozenset({frozenset({Qc, Qh}), frozenset({Kc, Kd}), frozenset({Ad, As}), ..., frozenset({Qd, Qc})})
-    >>> parse_range('QT+')
-    frozenset({frozenset({Qd, Ts}), frozenset({Qd, Th}), frozenset({Jd, Qc}), ..., frozenset({Jh, Qc})})
+       >>> from pokertools import parse_range
+       >>> parse_range('AKo')
+       {frozenset({Kc, Ah}), frozenset({Kc, As}), frozenset({Kh, Ac}), ..., frozenset({Ks, Ac})}
+       >>> parse_range('AKs')
+       {frozenset({Ks, As}), frozenset({Kc, Ac}), frozenset({Ad, Kd}), frozenset({Kh, Ah})}
+       >>> parse_range('AK')
+       {frozenset({Ad, Kd}), frozenset({Kh, Ah}), frozenset({Kc, Ad}), ..., frozenset({Kh, Ac})}
+       >>> parse_range('AA')
+       {frozenset({Ah, Ac}), frozenset({Ad, Ah}), frozenset({Ad, As}), ..., frozenset({As, Ac})}
+       >>> parse_range('QQ+')
+       {frozenset({Qc, Qh}), frozenset({Kc, Kd}), frozenset({Ad, As}), ..., frozenset({Qd, Qc})}
+       >>> parse_range('QT+')
+       {frozenset({Qd, Ts}), frozenset({Qd, Th}), frozenset({Jd, Qc}), ..., frozenset({Jh, Qc})}
 
     :param pattern: The supplied pattern to be parsed.
     :return: The parsed card sets.
