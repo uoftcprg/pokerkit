@@ -11,7 +11,7 @@ PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
 def ranks_key(ranks: Iterable[Rank]) -> int:
-    return product(PRIMES[rank.index] for rank in ranks) if ranks else 1
+    return product((PRIMES[rank.index] for rank in ranks), 1)
 
 
 def straights(count: int, ranks: set[Rank]) -> Iterable[int]:
