@@ -3,7 +3,7 @@ from collections.abc import Iterable, Iterator, MutableMapping
 from itertools import chain, combinations, islice
 
 from auxiliary import const, rotated, windowed
-from math2.misc import product
+from math2.misc import prod
 
 from pokertools.cards import Card, Rank
 
@@ -11,7 +11,7 @@ PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
 def mask(ranks: Iterable[Rank]) -> int:
-    return product((PRIMES[rank.index] for rank in ranks), 1)
+    return prod((PRIMES[rank.index] for rank in ranks), 1)
 
 
 def straights(ranks: Iterable[Rank], count: int) -> Iterator[int]:
