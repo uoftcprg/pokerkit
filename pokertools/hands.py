@@ -3,7 +3,7 @@ from collections.abc import Hashable, Iterable
 from functools import total_ordering
 from typing import Any
 
-from pokertools._lookups import Lookup, ShortLookup, StandardLookup
+from pokertools._lookups import Lookup, ShortLookup, StdLookup
 from pokertools.cards import Card
 
 
@@ -38,9 +38,9 @@ class _LookupHand(Hand, ABC):
         super().__init__(self._lookup.index(cards))
 
 
-class StandardHand(_LookupHand):
-    """StandardHand is the class for standard hands."""
-    _lookup = StandardLookup()
+class StdHand(_LookupHand):
+    """StdHand is the class for standard hands."""
+    _lookup = StdLookup()
 
 
 class ShortHand(_LookupHand):

@@ -1,9 +1,9 @@
 from pokertools.cards import Card, HoleCard, Rank, Suit
-from pokertools.decks import Deck, ShortDeck, StandardDeck
-from pokertools.evaluators import Evaluator, GreekEvaluator, OmahaEvaluator, ShortEvaluator, StandardEvaluator
-from pokertools.hands import Hand, ShortHand, StandardHand
+from pokertools.decks import Deck, ShortDeck, StdDeck
+from pokertools.evaluators import Evaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator, StdEvaluator
+from pokertools.hands import Hand, ShortHand, StdHand
 from pokertools.utils import parse_card, parse_cards, parse_range, suited
 
-__all__ = ('Card', 'HoleCard', 'Rank', 'Suit', 'Deck', 'ShortDeck', 'StandardDeck', 'Evaluator', 'GreekEvaluator',
-           'OmahaEvaluator', 'ShortEvaluator', 'StandardEvaluator', 'Hand', 'ShortHand', 'StandardHand', 'parse_card',
-           'parse_cards', 'parse_range', 'suited')
+__all__ = ('Card', 'HoleCard', 'Rank', 'Suit', 'Deck', 'ShortDeck', 'StdDeck', 'Evaluator', 'GreekEvaluator',
+           'OmahaEvaluator', 'RankEvaluator', 'ShortEvaluator', 'StdEvaluator', 'Hand', 'ShortHand', 'StdHand',
+           'parse_card', 'parse_cards', 'parse_range', 'suited')

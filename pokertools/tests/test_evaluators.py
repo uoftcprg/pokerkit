@@ -1,12 +1,11 @@
 from unittest import TestCase, main
 
-from pokertools import GreekEvaluator, OmahaEvaluator, ShortEvaluator, StandardEvaluator, parse_cards
-from pokertools.evaluators import RankEvaluator
+from pokertools import GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator, StdEvaluator, parse_cards
 
 
 class EvaluatorTestCase(TestCase):
-    def test_standard(self) -> None:
-        hand = StandardEvaluator.hand
+    def test_std(self) -> None:
+        hand = StdEvaluator.hand
 
         self.assertRaises(ValueError, hand, (), ())
         self.assertLess(hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')),

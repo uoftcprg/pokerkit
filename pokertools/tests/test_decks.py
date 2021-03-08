@@ -1,11 +1,11 @@
 from unittest import TestCase, main
 
-from pokertools import ShortDeck, StandardDeck
+from pokertools import ShortDeck, StdDeck
 
 
 class DeckTestCase(TestCase):
     def test_deck(self) -> None:
-        self.assertEqual(len(StandardDeck()), 52)
+        self.assertEqual(len(StdDeck()), 52)
 
     def test_short_deck(self) -> None:
         self.assertEqual(len(ShortDeck()), 36)

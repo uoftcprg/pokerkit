@@ -47,8 +47,8 @@ def multiples(ranks: Iterable[Rank], frequencies: MutableMapping[int, int]) -> I
 
 class Lookup(ABC):
     def __init__(self) -> None:
-        self.suited_indices: MutableMapping[int, int] = {}
-        self.unsuited_indices: MutableMapping[int, int] = {}
+        self.suited: MutableMapping[int, int] = {}
+        self.unsuited: MutableMapping[int, int] = {}
         self.index_count: int = 0
 
     def index(self, cards: Iterable[Card]) -> int:
@@ -57,9 +57,9 @@ class Lookup(ABC):
 
         try:
             if const(suits):
-                return min(self.suited_indices[key], self.unsuited_indices[key])
+                return min(self.suited[key], self.unsuited[key])
             else:
-                return self.unsuited_indices[key]
+                return self.unsuited[key]
         except KeyError:
             raise ValueError('Cards do not form a valid hand')
 
@@ -69,27 +69,27 @@ class Lookup(ABC):
             self.index_count += 1
 
 
-class StandardLookup(Lookup):
+class StdLookup(Lookup):
     def __init__(self) -> None:
         super().__init__()
 
         ranks = set(Rank)
 
         for key in straights(ranks, 5):
-            self.register(self.suited_indices, key)
+            self.register(self.suited, key)
 
         for key in chain(multiples(ranks, {4: 1, 1: 1}), multiples(ranks, {3: 1, 2: 1})):
-            self.register(self.unsuited_indices, key)
+            self.register(self.unsuited, key)
 
         for key in multiples(ranks, {1: 5}):
-            self.register(self.suited_indices, key)
+            self.register(self.suited, key)
 
         for key in chain(straights(ranks, 5), multiples(ranks, {3: 1, 1: 2}), multiples(ranks, {2: 2, 1: 1}),
                          multiples(ranks, {2: 1, 1: 3}), multiples(ranks, {1: 5})):
-            self.register(self.unsuited_indices, key)
+            self.register(self.unsuited, key)
 
     def index(self, cards: Iterable[Card]) -> int:
-        return min(super(StandardLookup, self).index(combination) for combination in combinations(cards, 5))
+        return min(super(StdLookup, self).index(combination) for combination in combinations(cards, 5))
 
 
 class ShortLookup(Lookup):
@@ -99,17 +99,17 @@ class ShortLookup(Lookup):
         ranks = set(rank for rank in Rank if Rank.FIVE < rank)
 
         for key in straights(ranks, 5):
-            self.register(self.suited_indices, key)
+            self.register(self.suited, key)
 
         for key in multiples(ranks, {4: 1, 1: 1}):
-            self.register(self.unsuited_indices, key)
+            self.register(self.unsuited, key)
 
         for key in multiples(ranks, {1: 5}):
-            self.register(self.suited_indices, key)
+            self.register(self.suited, key)
 
         for key in chain(multiples(ranks, {3: 1, 2: 1}), straights(ranks, 5), multiples(ranks, {3: 1, 1: 2}),
                          multiples(ranks, {2: 2, 1: 1}), multiples(ranks, {2: 1, 1: 3}), multiples(ranks, {1: 5})):
-            self.register(self.unsuited_indices, key)
+            self.register(self.unsuited, key)
 
     def index(self, cards: Iterable[Card]) -> int:
         return min(super(ShortLookup, self).index(combination) for combination in combinations(cards, 5))

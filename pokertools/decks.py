@@ -28,8 +28,8 @@ class Deck(Collection[Card]):
         self.__cards -= set(cards)
 
 
-class StandardDeck(Deck):
-    """StandardDeck is the class for standard decks."""
+class StdDeck(Deck):
+    """StdDeck is the class for standard decks."""
 
     def __init__(self) -> None:
         super().__init__(Card(rank, suit) for rank in Rank for suit in Suit)
