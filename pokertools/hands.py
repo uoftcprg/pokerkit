@@ -30,19 +30,19 @@ class Hand(Hashable):
             return NotImplemented
 
 
-class LookupHand(Hand, ABC):
-    """LookupHand is the abstract base class for all lookup hands."""
+class _LookupHand(Hand, ABC):
+    """_LookupHand is the abstract base class for all lookup hands."""
     _lookup: Lookup
 
     def __init__(self, cards: Iterable[Card]):
         super().__init__(self._lookup.index(cards))
 
 
-class StandardHand(LookupHand):
+class StandardHand(_LookupHand):
     """StandardHand is the class for standard hands."""
     _lookup = StandardLookup()
 
 
-class ShortHand(LookupHand):
+class ShortHand(_LookupHand):
     """ShortHand is the class for short hands."""
     _lookup = ShortLookup()
