@@ -11,7 +11,7 @@ class CardTestCase(ExtTestCase):
         self.assertEqual(str(parse_card('4h')), '4h')
         self.assertIterableEqual(map(str, parse_cards('4h4s4cAs')), ('4h', '4s', '4c', 'As'))
 
-        self.assertTrue(suited([]))
+        self.assertTrue(suited(()))
         self.assertFalse(suited(parse_cards('4h4s4cAs')))
         self.assertTrue(suited(parse_cards('4sAs')))
 
