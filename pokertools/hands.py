@@ -3,12 +3,14 @@ from collections.abc import Hashable, Iterable
 from functools import total_ordering
 from typing import Any
 
+from auxiliary import SupportsLessThan
+
 from pokertools._lookups import Lookup, ShortLookup, StdLookup
 from pokertools.cards import Card
 
 
 @total_ordering
-class Hand(Hashable):
+class Hand(Hashable, SupportsLessThan):
     """Hand is the class for hands."""
 
     def __init__(self, index: int):

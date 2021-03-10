@@ -2,7 +2,7 @@ from enum import unique
 from functools import total_ordering
 from typing import Any, Final
 
-from auxiliary import OrderedEnum
+from auxiliary import OrderedEnum, SupportsLessThan
 
 
 @unique
@@ -33,7 +33,7 @@ class Suit(OrderedEnum):
 
 
 @total_ordering
-class Card:
+class Card(SupportsLessThan):
     """Card is the base class for all cards."""
 
     def __init__(self, rank: Rank, suit: Suit):
