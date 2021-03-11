@@ -5,7 +5,7 @@ from itertools import chain, combinations
 from auxiliary import retain_iter
 
 from pokertools.cards import Card
-from pokertools.hands import Hand, ShortHand, StdHand
+from pokertools.hands import BadugiHand, Hand, ShortHand, StdHand
 
 
 class Evaluator(ABC):
@@ -56,6 +56,14 @@ class ShortEvaluator(Evaluator):
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> ShortHand:
         return ShortHand(chain(hole_cards, board_cards))
+
+
+class BadugiEvaluator(Evaluator):
+    """BadugiEvaluator is the class for Badugi evaluators."""
+
+    @staticmethod
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> Hand:
+        return BadugiHand(chain(hole_cards, board_cards))
 
 
 class RankEvaluator(Evaluator):

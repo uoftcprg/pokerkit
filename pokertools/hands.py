@@ -5,7 +5,6 @@ from typing import Any
 
 from auxiliary import SupportsLessThan
 
-from pokertools._lookups import Lookup, ShortLookup, StdLookup
 from pokertools.cards import Card
 
 
@@ -34,6 +33,8 @@ class Hand(Hashable, SupportsLessThan):
 
 class _LookupHand(Hand, ABC):
     """_LookupHand is the abstract base class for all lookup hands."""
+    from pokertools._lookups import Lookup
+
     _lookup: Lookup
 
     def __init__(self, cards: Iterable[Card]):
@@ -42,9 +43,20 @@ class _LookupHand(Hand, ABC):
 
 class StdHand(_LookupHand):
     """StdHand is the class for standard hands."""
+    from pokertools._lookups import StdLookup
+
     _lookup = StdLookup()
 
 
 class ShortHand(_LookupHand):
     """ShortHand is the class for short hands."""
+    from pokertools._lookups import ShortLookup
+
     _lookup = ShortLookup()
+
+
+class BadugiHand(_LookupHand):
+    """BadugiHand is the class for Badugi hands."""
+    from pokertools._lookups import BadugiLookup
+
+    _lookup = BadugiLookup()

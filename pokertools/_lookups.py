@@ -1,11 +1,12 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, MutableMapping
 from itertools import chain, combinations, islice
 
-from auxiliary import const, rotated, windowed
+from auxiliary import retain_iter, rotated, unique, windowed
 from math2.misc import prod
 
 from pokertools.cards import Card, Rank
+from pokertools.utils import suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
@@ -14,6 +15,7 @@ def mask(ranks: Iterable[Rank]) -> int:
     return prod((PRIMES[rank.index] for rank in ranks), 1)
 
 
+@retain_iter
 def straights(ranks: Iterable[Rank], count: int) -> Iterator[int]:
     keys = [mask(islice(rotated(sorted(ranks), -1), 0, count))]
 
@@ -46,70 +48,129 @@ def multiples(ranks: Iterable[Rank], frequencies: MutableMapping[int, int]) -> I
 
 
 class Lookup(ABC):
+    @property
+    @abstractmethod
+    def index_count(self) -> int:
+        pass
+
+    @abstractmethod
+    def index(self, cards: Iterable[Card]) -> int:
+        pass
+
+
+class UnsuitedLookup(Lookup):
     def __init__(self) -> None:
-        self.suited: MutableMapping[int, int] = {}
-        self.unsuited: MutableMapping[int, int] = {}
-        self.index_count: int = 0
+        self.unsuited = dict[int, int]()
+
+        self.populate()
+
+    @property
+    def index_count(self) -> int:
+        return len(self.unsuited)
 
     def index(self, cards: Iterable[Card]) -> int:
-        ranks, suits = zip(*((card.rank, card.suit) for card in cards))
-        key = mask(ranks)
+        return self.unsuited[mask(card.rank for card in cards)]
 
-        try:
-            if const(suits):
-                return min(self.suited[key], self.unsuited[key])
-            else:
-                return self.unsuited[key]
-        except KeyError:
-            raise ValueError('Cards do not form a valid hand')
-
-    def register(self, indices: MutableMapping[int, int], key: int) -> None:
-        if key not in indices:
-            indices[key] = self.index_count
-            self.index_count += 1
+    @abstractmethod
+    def populate(self) -> None:
+        pass
 
 
-class StdLookup(Lookup):
+class SuitedLookup(UnsuitedLookup, ABC):
     def __init__(self) -> None:
+        self.suited = dict[int, int]()
+
         super().__init__()
 
-        ranks = set(Rank)
+    @property
+    def index_count(self) -> int:
+        return super().index_count + len(self.suited)
 
-        for key in straights(ranks, 5):
-            self.register(self.suited, key)
+    @retain_iter
+    def index(self, cards: Iterable[Card]) -> int:
+        key = mask(card.rank for card in cards)
 
-        for key in chain(multiples(ranks, {4: 1, 1: 1}), multiples(ranks, {3: 1, 2: 1})):
-            self.register(self.unsuited, key)
+        if suited(cards):
+            return min(self.suited[key], self.unsuited[key])
+        else:
+            return self.unsuited[key]
 
-        for key in multiples(ranks, {1: 5}):
-            self.register(self.suited, key)
 
-        for key in chain(straights(ranks, 5), multiples(ranks, {3: 1, 1: 2}), multiples(ranks, {2: 2, 1: 1}),
-                         multiples(ranks, {2: 1, 1: 3}), multiples(ranks, {1: 5})):
-            self.register(self.unsuited, key)
-
+class StdLookup(SuitedLookup):
     def index(self, cards: Iterable[Card]) -> int:
         return min(super(StdLookup, self).index(combination) for combination in combinations(cards, 5))
 
+    def populate(self) -> None:
+        for key in straights(Rank, 5):
+            if key not in self.suited:
+                self.suited[key] = self.index_count
 
-class ShortLookup(Lookup):
-    def __init__(self) -> None:
-        super().__init__()
+        for key in chain(multiples(Rank, {4: 1, 1: 1}), multiples(Rank, {3: 1, 2: 1})):
+            if key not in self.unsuited:
+                self.unsuited[key] = self.index_count
 
-        ranks = set(rank for rank in Rank if Rank.FIVE < rank)
+        for key in multiples(Rank, {1: 5}):
+            if key not in self.suited:
+                self.suited[key] = self.index_count
+
+        for key in chain(straights(Rank, 5), multiples(Rank, {3: 1, 1: 2}), multiples(Rank, {2: 2, 1: 1}),
+                         multiples(Rank, {2: 1, 1: 3}), multiples(Rank, {1: 5})):
+            if key not in self.unsuited:
+                self.unsuited[key] = self.index_count
+
+
+class ShortLookup(SuitedLookup):
+    def index(self, cards: Iterable[Card]) -> int:
+        return min(super(ShortLookup, self).index(combination) for combination in combinations(cards, 5))
+
+    def populate(self) -> None:
+        ranks = tuple(rank for rank in Rank if Rank.FIVE < rank)
 
         for key in straights(ranks, 5):
-            self.register(self.suited, key)
+            if key not in self.suited:
+                self.suited[key] = self.index_count
 
         for key in multiples(ranks, {4: 1, 1: 1}):
-            self.register(self.unsuited, key)
+            if key not in self.unsuited:
+                self.unsuited[key] = self.index_count
 
         for key in multiples(ranks, {1: 5}):
-            self.register(self.suited, key)
+            if key not in self.suited:
+                self.suited[key] = self.index_count
 
         for key in chain(multiples(ranks, {3: 1, 2: 1}), straights(ranks, 5), multiples(ranks, {3: 1, 1: 2}),
                          multiples(ranks, {2: 2, 1: 1}), multiples(ranks, {2: 1, 1: 3}), multiples(ranks, {1: 5})):
-            self.register(self.unsuited, key)
+            if key not in self.unsuited:
+                self.unsuited[key] = self.index_count
 
+
+class BadugiLookup(UnsuitedLookup):
+    @retain_iter
     def index(self, cards: Iterable[Card]) -> int:
-        return min(super(ShortLookup, self).index(combination) for combination in combinations(cards, 5))
+        for n in range(4, -1, -1):
+            try:
+                return min(super(BadugiLookup, self).index(sub_cards) for sub_cards in combinations(cards, n)
+                           if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards))
+            except ValueError:
+                pass
+
+        return self.index_count
+
+    def populate(self) -> None:
+        ranks = (Rank.ACE,) + tuple(Rank)[:-1]
+
+        for a in ranks:
+            for b in ranks[:ranks.index(a)]:
+                for c in ranks[:ranks.index(b)]:
+                    for d in ranks[:ranks.index(c)]:
+                        self.unsuited[mask((a, b, c, d))] = self.index_count
+        for a in ranks:
+            for b in ranks[:ranks.index(a)]:
+                for c in ranks[:ranks.index(b)]:
+                    self.unsuited[mask((a, b, c))] = self.index_count
+        for a in ranks:
+            for b in ranks[:ranks.index(a)]:
+                self.unsuited[mask((a, b))] = self.index_count
+        for a in ranks:
+            self.unsuited[mask((a,))] = self.index_count
+        self.unsuited[1] = self.index_count
