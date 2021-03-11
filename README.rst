@@ -20,7 +20,7 @@ The following features are present in PokerTools...
       - Deuce-to-Seven
 - Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
 
-The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/en/latest/>`_.
+The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/>`_.
 
 
 License
