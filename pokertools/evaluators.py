@@ -5,7 +5,7 @@ from itertools import chain, combinations
 from auxiliary import retain_iter
 
 from pokertools.cards import Card
-from pokertools.hands import BadugiHand, Hand, ShortHand, StdHand
+from pokertools.hands import BadugiHand, Hand, LB27Hand, LBA5Hand, ShortHand, StdHand
 
 
 class Evaluator(ABC):
@@ -28,7 +28,7 @@ class StdEvaluator(Evaluator):
     """StdEvaluator is the class for standard evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StdHand:
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> StdHand:
         return StdHand(chain(hole_cards, board_cards))
 
 
@@ -54,7 +54,7 @@ class ShortEvaluator(Evaluator):
     """ShortEvaluator is the class for short evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> ShortHand:
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> ShortHand:
         return ShortHand(chain(hole_cards, board_cards))
 
 
@@ -62,13 +62,29 @@ class BadugiEvaluator(Evaluator):
     """BadugiEvaluator is the class for Badugi evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> Hand:
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> BadugiHand:
         return BadugiHand(chain(hole_cards, board_cards))
+
+
+class LBA5Evaluator(Evaluator):
+    """LBA5Evaluator is the class for Ace-to-five Lowball evaluators."""
+
+    @staticmethod
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> LBA5Hand:
+        return LBA5Hand(chain(hole_cards, board_cards))
+
+
+class LB27Evaluator(Evaluator):
+    """LB27Evaluator is the class for Deuce-to-seven Lowball evaluators."""
+
+    @staticmethod
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> LB27Hand:
+        return LB27Hand(chain(hole_cards, board_cards))
 
 
 class RankEvaluator(Evaluator):
     """RankEvaluator is the class for rank evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
+    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> Hand:
         return Hand(-max(card.rank.index for card in chain(hole_cards, board_cards)))

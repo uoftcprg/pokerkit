@@ -60,3 +60,17 @@ class BadugiHand(_LookupHand):
     from pokertools._lookups import BadugiLookup
 
     _lookup = BadugiLookup()
+
+
+class LBA5Hand(_LookupHand):
+    """LBA5Hand is the class for Ace-to-five Lowball hands."""
+    from pokertools._lookups import LBA5Lookup
+
+    _lookup = LBA5Lookup()
+
+
+class LB27Hand(_LookupHand):
+    """LB27Hand is the class for Deuce-to-seven Lowball hands."""
+    from pokertools._lookups import LB27Lookup
+
+    _lookup = LB27Lookup()

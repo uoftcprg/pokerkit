@@ -23,6 +23,11 @@ class Rank(OrderedEnum):
     ACE = 'A'
 
 
+STD_RANKS = tuple(Rank)
+SHORT_RANKS = tuple(Rank)[Rank.SIX.index:]
+AL_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
+
+
 @unique
 class Suit(OrderedEnum):
     """Suit is the enum for suits."""
