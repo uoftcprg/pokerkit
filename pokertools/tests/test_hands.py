@@ -1,12 +1,11 @@
-from unittest import TestCase, main, skip
+from unittest import TestCase, main
 
 from auxiliary import windowed
 
-from pokertools import LBA5Evaluator, StdEvaluator, LB27Evaluator, parse_cards
+from pokertools import LB27Evaluator, LBA5Evaluator, StdEvaluator, parse_cards
 
 
 class HandTestCase(TestCase):
-    @skip('')
     def test_std_data(self) -> None:
         with open('std-hands.txt') as hands_file:
             hands = (StdEvaluator.hand(parse_cards(line.rstrip()), ()) for line in hands_file.readlines())

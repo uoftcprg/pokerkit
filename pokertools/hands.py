@@ -1,9 +1,9 @@
 from abc import ABC
 from collections.abc import Hashable, Iterable
 from functools import total_ordering
-from typing import Any
+from typing import Any, Final
 
-from auxiliary import SupportsLessThan
+from auxiliary import SupportsLessThan, retain_iter
 
 from pokertools.cards import Card
 
@@ -37,8 +37,14 @@ class _LookupHand(Hand, ABC):
 
     _lookup: Lookup
 
+    @retain_iter
     def __init__(self, cards: Iterable[Card]):
         super().__init__(self._lookup.index(cards))
+
+        self.cards: Final = tuple(cards)
+
+    def __repr__(self) -> str:
+        return ''.join(map(str, self.cards))
 
 
 class StdHand(_LookupHand):

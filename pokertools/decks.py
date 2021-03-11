@@ -1,7 +1,7 @@
 from collections.abc import Collection, Iterable, Iterator
 from typing import Any
 
-from pokertools.cards import Card, Rank, Suit
+from pokertools.cards import Card, SHORT_RANKS, STD_RANKS, Suit
 
 
 class Deck(Collection[Card]):
@@ -32,7 +32,7 @@ class StdDeck(Deck):
     """StdDeck is the class for standard decks."""
 
     def __init__(self) -> None:
-        super().__init__(Card(rank, suit) for rank in Rank for suit in Suit)
+        super().__init__(Card(rank, suit) for rank in STD_RANKS for suit in Suit)
 
 
 class ShortDeck(Deck):
@@ -42,4 +42,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self) -> None:
-        super().__init__(Card(rank, suit) for rank in Rank if Rank.FIVE < rank for suit in Suit)
+        super().__init__(Card(rank, suit) for rank in SHORT_RANKS for suit in Suit)

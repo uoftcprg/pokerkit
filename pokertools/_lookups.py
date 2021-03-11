@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sequence, Iterable, Iterator, MutableMapping
+from collections.abc import Iterable, Iterator, MutableMapping
 from itertools import chain, combinations, islice
 
 from auxiliary import retain_iter, rotated, unique, windowed
 from math2.misc import prod
 
-from pokertools.cards import Card, AL_RANKS, Rank, SHORT_RANKS, STD_RANKS
+from pokertools.cards import AL_RANKS, Card, Rank, SHORT_RANKS, STD_RANKS
 from pokertools.utils import suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
@@ -16,7 +16,7 @@ def mask(ranks: Iterable[Rank]) -> int:
 
 
 @retain_iter
-def straights(ranks: Sequence[Rank], count: int) -> Iterator[int]:
+def straights(ranks: Iterable[Rank], count: int) -> Iterator[int]:
     keys = [mask(islice(rotated(ranks, -1), 0, count))]
 
     for sub_ranks in windowed(ranks, count):
@@ -25,21 +25,18 @@ def straights(ranks: Sequence[Rank], count: int) -> Iterator[int]:
     return reversed(keys)
 
 
-def multiples(ranks: Sequence[Rank], freqs: MutableMapping[int, int]) -> Iterator[int]:
+@retain_iter
+def multiples(ranks: Iterable[Rank], freqs: MutableMapping[int, int]) -> Iterator[int]:
     if sum(freqs.values()):
-        rank_set = frozenset(ranks)
         keys = []
         count = max(freqs)
         freq = freqs.pop(count)
 
-        for samples in combinations(reversed(ranks), freq):
+        for samples in combinations(tuple(ranks)[::-1], freq):
             key = mask(samples * count)
-            rank_set -= frozenset(samples)
 
-            for sub_key in multiples(tuple(rank_set), freqs):
+            for sub_key in multiples((rank for rank in ranks if rank not in samples), freqs):
                 keys.append(key * sub_key)
-
-            rank_set |= frozenset(samples)
 
         freqs[count] = freq
         return iter(keys)
