@@ -12,9 +12,18 @@ The following features are present in PokerTools...
 
 - Basic rank, suit, card, and hole card data types
 - String interpretation of cards
-- Various types of poker decks (standard and short)
-- Various types of poker evaluators (standard, Greek, Omaha, short-deck)
-- Range parsing (AKo, T6s, 66, KQ, ...)
+- Various types of poker decks
+   - Standard
+   - Short
+- Various types of poker evaluators
+   - Standard
+   - Greek
+   - Omaha
+   - Short-Deck
+   - Lowball
+      - Ace-to-Five
+      - Deuce-to-Seven
+- Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
 
 
 Speed
@@ -26,14 +35,14 @@ of PokerTools and treys (other popular framework) when evaluating all possible 5
 ============  ================  ===================
   Framework    Total Time (s)    Speed (# hands/s)
 ------------  ----------------  -------------------
- PokerTools         ~60               ~43000
+ PokerTools         ~100              ~26000
    treys            ~30               ~87000
 ============  ================  ===================
 
-As seen, treys is about 2 times faster than PokerTools. However, PokerTools offer a number of advantages over treys.
+As seen, treys is multiple times faster than PokerTools. However, PokerTools offer a number of advantages over treys.
 
 - Treys represent card as ints, but PokerTools represent them as an instance of Card type (more intuitive)
-- PokerTools have more types of evaluators (incl. short-deck)
+- PokerTools have more types of evaluators (incl. Omaha, Short-Deck, etc.)
 - PokerTools offer range interpretation
 - PokerTools is completely typed
 

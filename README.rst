@@ -7,9 +7,18 @@ The following features are present in PokerTools...
 
 - Basic rank, suit, card, and hole card data types
 - String interpretation of cards
-- Various types of poker decks (standard and short)
-- Various types of poker evaluators (standard, Greek, Omaha, short-deck)
-- Range parsing (AKo, T6s, 66, KQ, ...)
+- Various types of poker decks
+   - Standard
+   - Short
+- Various types of poker evaluators
+   - Standard
+   - Greek
+   - Omaha
+   - Short-Deck
+   - Lowball
+      - Ace-to-Five
+      - Deuce-to-Seven
+- Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
 
 The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/en/latest/>`_.
 
