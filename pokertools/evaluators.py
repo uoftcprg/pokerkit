@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable, Iterator
 from itertools import chain, combinations
 
 from pokertools.cards import Card
@@ -35,10 +35,10 @@ class GreekEvaluator(Evaluator):
 
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        if isinstance(hole_cards, Collection):
-            return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
-        else:
+        if isinstance(hole_cards, Iterator):
             return GreekEvaluator.hand(tuple(hole_cards), board_cards)
+        else:
+            return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
 
 
 class OmahaEvaluator(Evaluator):
@@ -46,10 +46,10 @@ class OmahaEvaluator(Evaluator):
 
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        if isinstance(board_cards, Collection):
-            return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
-        else:
+        if isinstance(board_cards, Iterator):
             return OmahaEvaluator.hand(hole_cards, tuple(board_cards))
+        else:
+            return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
 
 
 class ShortEvaluator(Evaluator):

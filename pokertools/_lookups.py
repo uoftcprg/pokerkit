@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections import Collection
 from collections.abc import Iterable, Iterator, MutableMapping, Sequence
 from itertools import chain, combinations, islice
 
@@ -85,15 +84,15 @@ class SuitedLookup(UnsuitedLookup, ABC):
         return super().index_count + len(self.suited)
 
     def index(self, cards: Iterable[Card]) -> int:
-        if isinstance(cards, Collection):
+        if isinstance(cards, Iterator):
+            return self.index(tuple(cards))
+        else:
             try:
                 key = mask(card.rank for card in cards)
 
                 return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
             except KeyError:
                 raise ValueError('Invalid card combination')
-        else:
-            return self.index(tuple(cards))
 
 
 class StandardLookup(SuitedLookup):
@@ -146,11 +145,11 @@ class ShortLookup(SuitedLookup):
 
 class BadugiLookup(UnsuitedLookup):
     def index(self, cards: Iterable[Card]) -> int:
-        if isinstance(cards, Collection):
+        if isinstance(cards, Iterator):
+            return self.index(tuple(cards))
+        else:
             return -max(super(BadugiLookup, self).index(sub_cards) for n in range(5) for sub_cards in combinations(
                 cards, n) if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards))
-        else:
-            return self.index(tuple(cards))
 
     def populate(self) -> None:
         for n in range(5):
