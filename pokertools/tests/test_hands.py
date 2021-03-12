@@ -15,7 +15,7 @@ class HandTestCase(TestCase):
 
     def test_lowballA5_data(self) -> None:
         with open('lowballA5-hands.txt') as hands_file:
-            hands = tuple(LowballA5Evaluator.hand(parse_cards(line.rstrip())) for line in hands_file.readlines())
+            hands = (LowballA5Evaluator.hand(parse_cards(line.rstrip())) for line in hands_file.readlines())
 
             for h1, h2 in windowed(hands, 2):
                 self.assertGreater(h1, h2)
