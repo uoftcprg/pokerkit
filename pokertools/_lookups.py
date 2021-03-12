@@ -172,4 +172,4 @@ class LBA5Lookup(UnsuitedLookup):
 
 class LB27Lookup(StdLookup):
     def index(self, cards: Iterable[Card]) -> int:
-        return -max(super(LB27Lookup, self).index(combination) for combination in combinations(cards, 5))
+        return -max(super(StdLookup, self).index(combination) for combination in combinations(cards, 5))
