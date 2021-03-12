@@ -31,8 +31,8 @@ The following code demonstrates interacting with decks.
 
 .. code-block:: python
 
-   >>> from pokertools import StdDeck, parse_card, parse_cards
-   >>> deck = StdDeck()
+   >>> from pokertools import StandardDeck, parse_card, parse_cards
+   >>> deck = StandardDeck()
    >>> parse_card('4h') in deck
    True
    >>> deck.draw(parse_cards('4h4s4cAs'))
@@ -44,12 +44,12 @@ The following code demonstrates interacting with evaluators.
 
 .. code-block:: python
 
-   >>> from pokertools import StdEvaluator, parse_cards
-   >>> StdEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')) \
-   ...     < StdEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs'))
+   >>> from pokertools import StandardEvaluator, parse_cards
+   >>> StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')) \
+   ...     < StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs'))
    True
-   >>> StdEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')) \
-   ...     < StdEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJs'))
+   >>> StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')) \
+   ...     < StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJs'))
    False
 
 
