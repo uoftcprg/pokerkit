@@ -91,10 +91,7 @@ class SuitedLookup(UnsuitedLookup, ABC):
         try:
             key = mask(card.rank for card in cards)
 
-            if suited(cards):
-                return min(self.suited[key], self.unsuited[key])
-            else:
-                return self.unsuited[key]
+            return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
         except KeyError:
             raise ValueError('Invalid card combination')
 
