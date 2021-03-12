@@ -1,11 +1,11 @@
 from unittest import main
 
-from auxiliary.tests import ExtTestCase
+from auxiliary import ExtendedTestCase
 
 from pokertools import HoleCard, parse_card, parse_cards, suited
 
 
-class CardTestCase(ExtTestCase):
+class CardTestCase(ExtendedTestCase):
     def test_cards(self) -> None:
         self.assertEqual(repr(parse_card('4h')), '4h')
         self.assertEqual(str(parse_card('4h')), '4h')

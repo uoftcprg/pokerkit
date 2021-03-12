@@ -23,9 +23,9 @@ class Rank(OrderedEnum):
     ACE = 'A'
 
 
-STD_RANKS = tuple(Rank)
+STANDARD_RANKS = tuple(Rank)
 SHORT_RANKS = tuple(Rank)[Rank.SIX.index:]
-AL_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
+ACE_LOW_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
 
 
 @unique

@@ -1,20 +1,20 @@
 from unittest import TestCase, main
 
-from pokertools import (BadugiEvaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator, StdEvaluator,
-                        parse_cards)
+from pokertools import (BadugiEvaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator,
+                        StandardEvaluator, parse_cards)
 
 
 class EvaluatorTestCase(TestCase):
-    def test_std(self) -> None:
+    def test_standard(self) -> None:
         self.assertRaises(ValueError, ShortEvaluator.hand, (), ())
-        self.assertLess(StdEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')),
-                        StdEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')))
-        self.assertGreater(StdEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')),
-                           StdEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJs')))
-        self.assertGreater(StdEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKc')),
-                           StdEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQs')))
-        self.assertEqual(StdEvaluator.hand(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
-                         StdEvaluator.hand(parse_cards('AsKs'), parse_cards('QdJdTh2s2s')))
+        self.assertLess(StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')),
+                        StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')))
+        self.assertGreater(StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')),
+                           StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJs')))
+        self.assertGreater(StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKc')),
+                           StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQs')))
+        self.assertEqual(StandardEvaluator.hand(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
+                         StandardEvaluator.hand(parse_cards('AsKs'), parse_cards('QdJdTh2s2s')))
 
     def test_greek(self) -> None:
         self.assertLess(GreekEvaluator.hand(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),

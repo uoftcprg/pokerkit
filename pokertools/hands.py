@@ -41,11 +41,11 @@ class _LookupHand(Hand, ABC):
         super().__init__(self._lookup.index(cards))
 
 
-class StdHand(_LookupHand):
-    """StdHand is the class for standard hands."""
-    from pokertools._lookups import StdLookup
+class StandardHand(_LookupHand):
+    """StandardHand is the class for standard hands."""
+    from pokertools._lookups import StandardLookup
 
-    _lookup = StdLookup()
+    _lookup = StandardLookup()
 
 
 class ShortHand(_LookupHand):
@@ -62,15 +62,15 @@ class BadugiHand(_LookupHand):
     _lookup = BadugiLookup()
 
 
-class LBA5Hand(_LookupHand):
-    """LBA5Hand is the class for Ace-to-five Lowball hands."""
-    from pokertools._lookups import LBA5Lookup
+class LowballA5Hand(_LookupHand):
+    """LowballA5Hand is the class for Ace-to-Five Lowball hands."""
+    from pokertools._lookups import LowballA5Lookup
 
-    _lookup = LBA5Lookup()
+    _lookup = LowballA5Lookup()
 
 
-class LB27Hand(_LookupHand):
-    """LB27Hand is the class for Deuce-to-seven Lowball hands."""
-    from pokertools._lookups import LB27Lookup
+class Lowball27Hand(_LookupHand):
+    """Lowball27Hand is the class for Deuce-to-Seven Lowball hands."""
+    from pokertools._lookups import Lowball27Lookup
 
-    _lookup = LB27Lookup()
+    _lookup = Lowball27Lookup()

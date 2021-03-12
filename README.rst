@@ -15,9 +15,8 @@ The following features are present in PokerTools...
    - Greek
    - Omaha
    - Short-Deck
-   - Lowball
-      - Ace-to-Five
-      - Deuce-to-Seven
+   - Ace-to-Five Lowball
+   - Deuce-to-Seven Lowball
 - Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
 
 The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/>`_.
