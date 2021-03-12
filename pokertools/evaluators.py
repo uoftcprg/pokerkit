@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from itertools import chain, combinations
-
-from auxiliary import retain_iter
 
 from pokertools.cards import Card
 from pokertools.hands import BadugiHand, Hand, Lowball27Hand, LowballA5Hand, ShortHand, StandardHand
@@ -36,18 +34,22 @@ class GreekEvaluator(Evaluator):
     """GreekEvaluator is the class for Greek evaluators."""
 
     @staticmethod
-    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
+        if isinstance(hole_cards, Collection):
+            return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
+        else:
+            return GreekEvaluator.hand(tuple(hole_cards), board_cards)
 
 
 class OmahaEvaluator(Evaluator):
     """OmahaEvaluator is the class for Omaha evaluators."""
 
     @staticmethod
-    @retain_iter
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
-        return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
+        if isinstance(board_cards, Collection):
+            return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
+        else:
+            return OmahaEvaluator.hand(hole_cards, tuple(board_cards))
 
 
 class ShortEvaluator(Evaluator):
