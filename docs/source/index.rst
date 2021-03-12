@@ -36,11 +36,11 @@ hands.
 ============  ================  ===================
   Framework    Total Time (s)    Speed (# hands/s)
 ------------  ----------------  -------------------
- PokerTools         ~70               ~37000
+ PokerTools         ~45               ~58000
    treys            ~30               ~87000
 ============  ================  ===================
 
-As seen, treys is more than 2 times faster than PokerTools. However, PokerTools offer a number of advantages over treys.
+As seen, treys is about 1.5 times faster than PokerTools. However, PokerTools offer a number of advantages over treys.
 
 - Treys represent card as ints, but PokerTools represent them as an instance of Card type (more intuitive)
 - PokerTools have more types of evaluators (incl. Omaha, Short-Deck, etc.)
