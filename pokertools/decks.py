@@ -10,6 +10,14 @@ class Deck(Collection[Card]):
     def __init__(self, cards: Iterable[Card]) -> None:
         self.__cards = set(cards)
 
+    def draw(self, cards: Iterable[Card]) -> None:
+        """Draws the cards from this deck.
+
+        :param cards: The cards to be drawn.
+        :return: None.
+        """
+        self.__cards -= set(cards)
+
     def __iter__(self) -> Iterator[Card]:
         return iter(self.__cards)
 
@@ -18,14 +26,6 @@ class Deck(Collection[Card]):
 
     def __len__(self) -> int:
         return len(self.__cards)
-
-    def draw(self, cards: Iterable[Card]) -> None:
-        """Draws the cards from this deck.
-
-        :param cards: The cards to be drawn.
-        :return: None.
-        """
-        self.__cards -= set(cards)
 
 
 class StandardDeck(Deck):
