@@ -2,7 +2,8 @@ from enum import unique
 from functools import total_ordering
 from typing import Any, Final
 
-from auxiliary import OrderedEnum, SupportsLessThan
+from math2.enums import OrderedEnum
+from math2.typing import SupportsLessThan
 
 
 @unique
