@@ -3,7 +3,7 @@ from collections.abc import Hashable, Iterable
 from functools import total_ordering
 from typing import Any
 
-from math2.typing import SupportsLessThan
+from auxiliary import SupportsLessThan
 
 from pokertools.cards import Card
 

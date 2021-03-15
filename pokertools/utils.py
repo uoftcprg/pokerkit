@@ -2,7 +2,7 @@ import re
 from collections.abc import Iterable, Iterator, Set
 from itertools import islice
 
-from math2.utils import chunked, const
+from auxiliary import chunked, const
 
 from pokertools.cards import Card, Rank, Suit
 

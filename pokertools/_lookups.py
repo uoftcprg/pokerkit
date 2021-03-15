@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, MutableMapping, Sequence
 from itertools import chain, combinations, islice
 
-from math2.utils import product, rotated, unique, windowed
+from auxiliary import product, rotated, unique, windowed
 
 from pokertools.cards import ACE_LOW_RANKS, Card, Rank, SHORT_RANKS, STANDARD_RANKS
 from pokertools.utils import suited

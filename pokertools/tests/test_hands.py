@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from math2.utils import windowed
+from auxiliary import windowed
 
 from pokertools import Lowball27Evaluator, LowballA5Evaluator, StandardEvaluator, parse_cards
 
