@@ -22,12 +22,10 @@ def parse_card(card: str) -> Card:
     :param card: The string of the card representation.
     :return: The parsed card.
     """
-    if isinstance(card, str) and len(card) == 2:
+    if len(card) == 2:
         return Card(Rank(card[0]), Suit(card[1]))
-    elif isinstance(card, str):
-        raise ValueError('Invalid card representation')
     else:
-        raise TypeError('Invalid card type')
+        raise ValueError('Invalid card representation')
 
 
 def parse_cards(cards: str) -> Iterator[Card]:
@@ -36,10 +34,7 @@ def parse_cards(cards: str) -> Iterator[Card]:
     :param cards: The string of card representations.
     :return: The parsed cards.
     """
-    if isinstance(cards, str):
-        return map(parse_card, (''.join(card) for card in chunked(cards, 2)))
-    else:
-        raise TypeError('Invalid cards type')
+    return map(parse_card, (''.join(card) for card in chunked(cards, 2)))
 
 
 def parse_range(pattern: str) -> Set[Set[Card]]:
@@ -47,17 +42,19 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
 
        >>> from pokertools import parse_range
        >>> parse_range('AKo')
-       {frozenset({Kc, Ah}), frozenset({Kc, As}), frozenset({Kh, Ac}), ..., frozenset({Ks, Ac})}
+       frozenset({frozenset({Kc, Ah}), frozenset({Kc, As}), frozenset({Kh, Ac}), ..., frozenset({Ks, Ac})})
        >>> parse_range('AKs')
-       {frozenset({Ks, As}), frozenset({Kc, Ac}), frozenset({Ad, Kd}), frozenset({Kh, Ah})}
+       frozenset({frozenset({Ks, As}), frozenset({Kc, Ac}), frozenset({Ad, Kd}), frozenset({Kh, Ah})})
        >>> parse_range('AK')
-       {frozenset({Ad, Kd}), frozenset({Kh, Ah}), frozenset({Kc, Ad}), ..., frozenset({Kh, Ac})}
+       frozenset({frozenset({Ad, Kd}), frozenset({Kh, Ah}), frozenset({Kc, Ad}), ..., frozenset({Kh, Ac})})
        >>> parse_range('AA')
-       {frozenset({Ah, Ac}), frozenset({Ad, Ah}), frozenset({Ad, As}), ..., frozenset({As, Ac})}
+       frozenset({frozenset({Ah, Ac}), frozenset({Ad, Ah}), frozenset({Ad, As}), ..., frozenset({As, Ac})})
        >>> parse_range('QQ+')
-       {frozenset({Qc, Qh}), frozenset({Kc, Kd}), frozenset({Ad, As}), ..., frozenset({Qd, Qc})}
+       frozenset({frozenset({Qc, Qh}), frozenset({Kc, Kd}), frozenset({Ad, As}), ..., frozenset({Qd, Qc})})
        >>> parse_range('QT+')
-       {frozenset({Qd, Ts}), frozenset({Qd, Th}), frozenset({Jd, Qc}), ..., frozenset({Jh, Qc})}
+       frozenset({frozenset({Qd, Ts}), frozenset({Qd, Th}), frozenset({Jd, Qc}), ..., frozenset({Jh, Qc})})
+       >>> parse_range('QsTs')
+       frozenset({frozenset({Qs, Ts})})
 
     :param pattern: The supplied pattern to be parsed.
     :return: The parsed card sets.

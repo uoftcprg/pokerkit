@@ -7,7 +7,7 @@ from pokertools.cards import Card, SHORT_RANKS, STANDARD_RANKS, Suit
 class Deck(Collection[Card]):
     """Deck is the class for decks."""
 
-    def __init__(self, cards: Iterable[Card]) -> None:
+    def __init__(self, cards: Iterable[Card]):
         self.__cards = set(cards)
 
     def draw(self, cards: Iterable[Card]) -> None:
