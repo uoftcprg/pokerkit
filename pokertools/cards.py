@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import unique
 from functools import total_ordering
 from typing import Any, Final
@@ -57,7 +59,7 @@ class Card(SupportsLessThan):
     def __repr__(self) -> str:
         return self.rank.value + self.suit.value
 
-    def __lt__(self, other: Any) -> bool:
+    def __lt__(self, other: Card) -> bool:
         if isinstance(other, Card):
             return self.suit < other.suit if self.rank == other.rank else self.rank < other.rank
         else:
