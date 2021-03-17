@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, MutableMapping, Sequence
-from itertools import chain, combinations, islice
+from itertools import chain, combinations
 
-from auxiliary import product, rotated, unique, windowed
+from auxiliary import product, unique, windowed
 
 from pokertools.cards import ACE_LOW_RANKS, Card, Rank, SHORT_RANKS, STANDARD_RANKS
 from pokertools.utils import suited
@@ -15,7 +15,7 @@ def mask(ranks: Iterable[Rank]) -> int:
 
 
 def straights(ranks: Sequence[Rank], count: int) -> Iterator[int]:
-    keys = [mask(islice(rotated(ranks, -1), 0, count))]
+    keys = [PRIMES[ranks[-1].index] * mask(ranks[:count - 1])]
 
     for sub_ranks in windowed(ranks, count):
         keys.append(mask(sub_ranks))
