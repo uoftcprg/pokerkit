@@ -59,7 +59,7 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
     :param pattern: The supplied pattern to be parsed.
     :return: The parsed card sets.
     """
-    card_sets: set[Set[Card]] = set()
+    card_sets = set[Set[Card]]()
 
     if match := re.fullmatch(r'(\w)(\w)(\w?)', pattern):
         ranks = tuple(map(Rank, match.groups()[:2]))
