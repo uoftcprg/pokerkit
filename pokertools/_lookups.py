@@ -24,13 +24,13 @@ def straights(ranks: Sequence[Rank], count: int) -> Iterator[int]:
 
 
 def multiples(ranks: Sequence[Rank], freqs: MutableMapping[int, int]) -> Iterator[int]:
-    if sum(freqs.values()):
+    if freqs:
         keys = []
         count = max(freqs)
         freq = freqs.pop(count)
 
         for samples in combinations(reversed(ranks), freq):
-            key = mask(samples * count)
+            key = mask(samples) ** count
 
             for sub_key in multiples(tuple(rank for rank in ranks if rank not in samples), freqs):
                 keys.append(key * sub_key)
@@ -42,9 +42,16 @@ def multiples(ranks: Sequence[Rank], freqs: MutableMapping[int, int]) -> Iterato
 
 
 class Lookup(ABC):
+    def __init__(self) -> None:
+        self.populate()
+
     @property
     @abstractmethod
     def index_count(self) -> int:
+        pass
+
+    @abstractmethod
+    def populate(self) -> None:
         pass
 
     @abstractmethod
@@ -52,11 +59,11 @@ class Lookup(ABC):
         pass
 
 
-class UnsuitedLookup(Lookup):
+class UnsuitedLookup(Lookup, ABC):
     def __init__(self) -> None:
         self.unsuited = dict[int, int]()
 
-        self.populate()
+        super().__init__()
 
     @property
     def index_count(self) -> int:
@@ -67,10 +74,6 @@ class UnsuitedLookup(Lookup):
             return self.unsuited[mask(card.rank for card in cards)]
         except KeyError:
             raise ValueError('Invalid card combination')
-
-    @abstractmethod
-    def populate(self) -> None:
-        pass
 
 
 class SuitedLookup(UnsuitedLookup, ABC):
@@ -96,9 +99,6 @@ class SuitedLookup(UnsuitedLookup, ABC):
 
 
 class StandardLookup(SuitedLookup):
-    def index(self, cards: Iterable[Card]) -> int:
-        return min(super(StandardLookup, self).index(combination) for combination in combinations(cards, 5))
-
     def populate(self) -> None:
         for key in straights(STANDARD_RANKS, 5):
             if key not in self.suited:
@@ -118,11 +118,11 @@ class StandardLookup(SuitedLookup):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
+    def index(self, cards: Iterable[Card]) -> int:
+        return min(super(StandardLookup, self).index(combination) for combination in combinations(cards, 5))
+
 
 class ShortLookup(SuitedLookup):
-    def index(self, cards: Iterable[Card]) -> int:
-        return min(super(ShortLookup, self).index(combination) for combination in combinations(cards, 5))
-
     def populate(self) -> None:
         for key in straights(SHORT_RANKS, 5):
             if key not in self.suited:
@@ -142,8 +142,16 @@ class ShortLookup(SuitedLookup):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
+    def index(self, cards: Iterable[Card]) -> int:
+        return min(super(ShortLookup, self).index(combination) for combination in combinations(cards, 5))
+
 
 class BadugiLookup(UnsuitedLookup):
+    def populate(self) -> None:
+        for n in range(5):
+            for key in multiples(ACE_LOW_RANKS, {1: n}):
+                self.unsuited[key] = self.index_count
+
     def index(self, cards: Iterable[Card]) -> int:
         if isinstance(cards, Iterator):
             return self.index(tuple(cards))
@@ -151,21 +159,16 @@ class BadugiLookup(UnsuitedLookup):
             return -max(super(BadugiLookup, self).index(sub_cards) for n in range(5) for sub_cards in combinations(
                 cards, n) if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards))
 
-    def populate(self) -> None:
-        for n in range(5):
-            for key in multiples(ACE_LOW_RANKS, {1: n}):
-                self.unsuited[key] = self.index_count
-
 
 class LowballA5Lookup(UnsuitedLookup):
-    def index(self, cards: Iterable[Card]) -> int:
-        return -max(super(LowballA5Lookup, self).index(combination) for combination in combinations(cards, 5))
-
     def populate(self) -> None:
         for key in chain(multiples(ACE_LOW_RANKS, {4: 1, 1: 1}), multiples(ACE_LOW_RANKS, {3: 1, 2: 1}),
                          multiples(ACE_LOW_RANKS, {3: 1, 1: 2}), multiples(ACE_LOW_RANKS, {2: 2, 1: 1}),
                          multiples(ACE_LOW_RANKS, {2: 1, 1: 3}), multiples(ACE_LOW_RANKS, {1: 5})):
             self.unsuited[key] = self.index_count
+
+    def index(self, cards: Iterable[Card]) -> int:
+        return -max(super(LowballA5Lookup, self).index(combination) for combination in combinations(cards, 5))
 
 
 class Lowball27Lookup(StandardLookup):
