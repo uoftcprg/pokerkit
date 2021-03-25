@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from collections.abc import Hashable, Iterable
 from functools import total_ordering
@@ -24,7 +26,7 @@ class Hand(Hashable, SupportsLessThan):
     def __hash__(self) -> int:
         return hash(self.__index)
 
-    def __lt__(self, other: Any) -> bool:
+    def __lt__(self, other: Hand) -> bool:
         if isinstance(other, Hand):
             return self.__index > other.__index
         else:

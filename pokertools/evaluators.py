@@ -36,9 +36,9 @@ class GreekEvaluator(Evaluator):
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
         if isinstance(hole_cards, Iterator):
-            return GreekEvaluator.hand(tuple(hole_cards), board_cards)
-        else:
-            return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
+            hole_cards = tuple(hole_cards)
+
+        return max(StandardEvaluator.hand(hole_cards, combination) for combination in combinations(board_cards, 3))
 
 
 class OmahaEvaluator(Evaluator):
@@ -47,9 +47,9 @@ class OmahaEvaluator(Evaluator):
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
         if isinstance(board_cards, Iterator):
-            return OmahaEvaluator.hand(hole_cards, tuple(board_cards))
-        else:
-            return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
+            board_cards = tuple(board_cards)
+
+        return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
 
 
 class ShortEvaluator(Evaluator):

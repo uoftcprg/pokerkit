@@ -88,14 +88,14 @@ class SuitedLookup(UnsuitedLookup, ABC):
 
     def index(self, cards: Iterable[Card]) -> int:
         if isinstance(cards, Iterator):
-            return self.index(tuple(cards))
-        else:
-            try:
-                key = mask(card.rank for card in cards)
+            cards = tuple(cards)
 
-                return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
-            except KeyError:
-                raise ValueError('Invalid card combination')
+        try:
+            key = mask(card.rank for card in cards)
+
+            return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
+        except KeyError:
+            raise ValueError('Invalid card combination')
 
 
 class StandardLookup(SuitedLookup):
@@ -154,10 +154,10 @@ class BadugiLookup(UnsuitedLookup):
 
     def index(self, cards: Iterable[Card]) -> int:
         if isinstance(cards, Iterator):
-            return self.index(tuple(cards))
-        else:
-            return -max(super(BadugiLookup, self).index(sub_cards) for n in range(5) for sub_cards in combinations(
-                cards, n) if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards))
+            cards = tuple(cards)
+
+        return -max(super(BadugiLookup, self).index(sub_cards) for n in range(5) for sub_cards in combinations(
+            cards, n) if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards))
 
 
 class LowballA5Lookup(UnsuitedLookup):
