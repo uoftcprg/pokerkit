@@ -47,16 +47,13 @@ class Lookup(ABC):
 
     @property
     @abstractmethod
-    def index_count(self) -> int:
-        pass
+    def index_count(self) -> int: ...
 
     @abstractmethod
-    def populate(self) -> None:
-        pass
+    def populate(self) -> None: ...
 
     @abstractmethod
-    def index(self, cards: Iterable[Card]) -> int:
-        pass
+    def index(self, cards: Iterable[Card]) -> int: ...
 
 
 class UnsuitedLookup(Lookup, ABC):
