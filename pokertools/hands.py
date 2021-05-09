@@ -40,7 +40,7 @@ class _LookupHand(Hand, ABC):
     _lookup: _Lookup
 
     def __init__(self, cards: Iterable[Card]):
-        super().__init__(self._lookup.index(cards))
+        super().__init__(self._lookup.get_index(cards))
 
 
 class StandardHand(_LookupHand):

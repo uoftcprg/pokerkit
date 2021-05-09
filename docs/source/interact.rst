@@ -45,11 +45,11 @@ The following code demonstrates interacting with evaluators.
 .. code-block:: python
 
    >>> from pokertools import StandardEvaluator, parse_cards
-   >>> StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')) \
-   ...     < StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs'))
+   >>> StandardEvaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')) \
+   ...     < StandardEvaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs'))
    True
-   >>> StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')) \
-   ...     < StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJs'))
+   >>> StandardEvaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKd')) \
+   ...     < StandardEvaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJs'))
    False
 
 
