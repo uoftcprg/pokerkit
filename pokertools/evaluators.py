@@ -17,7 +17,7 @@ class Evaluator(ABC):
         :param hole_cards: The hole cards.
         :param board_cards: The board cards.
         :return: The hand of the combinations.
-        :raise ValueError: If the number of cards are insufficient.
+        :raises ValueError: If the number of cards are insufficient.
         """
         ...
 

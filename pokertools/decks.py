@@ -25,7 +25,7 @@ class StandardDeck(Deck):
 class ShortDeck(Deck):
     """ShortDeck is the class for short decks.
 
-       The minimum rank of cards in short decks is 6.
+    The minimum rank of cards in short decks is 6.
     """
 
     def __init__(self) -> None:

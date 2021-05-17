@@ -5,7 +5,7 @@ with open('README.rst', 'r') as long_description_file:
 
 setup(
     name='pokertools',
-    version='0.0.3.dev17',
+    version='0.0.3.dev18',
     author='Juho Kim',
     author_email='juho-kim@outlook.com',
     description='A Python package for various poker tools',
@@ -15,7 +15,7 @@ setup(
     packages=find_packages(),
     package_data={'pokertools': ('py.typed',)},
     classifiers=(
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
