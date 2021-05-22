@@ -21,6 +21,7 @@ def parse_card(card: str) -> Card:
 
     :param card: The string of the card representation.
     :return: The parsed card.
+    :raises ValueError: If the card-representation is invalid.
     """
     if len(card) == 2:
         return Card(Rank(card[0]), Suit(card[1]))
@@ -33,6 +34,7 @@ def parse_cards(cards: str) -> Iterator[Card]:
 
     :param cards: The string of card representations.
     :return: The parsed cards.
+    :raises ValueError: If any card-representation is invalid.
     """
     return map(parse_card, (''.join(card) for card in chunked(cards, 2)))
 
@@ -58,6 +60,7 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
 
     :param pattern: The supplied pattern to be parsed.
     :return: The parsed card sets.
+    :raises ValueError: If the pattern cannot be parsed.
     """
     card_sets = set[Set[Card]]()
 

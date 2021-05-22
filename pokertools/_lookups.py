@@ -23,19 +23,19 @@ def straights(ranks: Sequence[Rank], count: int) -> Iterator[int]:
     return reversed(keys)
 
 
-def multiples(ranks: Sequence[Rank], freqs: MutableMapping[int, int]) -> Iterator[int]:
-    if freqs:
+def multiples(ranks: Sequence[Rank], frequencies: MutableMapping[int, int]) -> Iterator[int]:
+    if frequencies:
         keys = []
-        count = max(freqs)
-        freq = freqs.pop(count)
+        count = max(frequencies)
+        freq = frequencies.pop(count)
 
         for samples in combinations(reversed(ranks), freq):
             key = mask(samples) ** count
 
-            for sub_key in multiples(tuple(rank for rank in ranks if rank not in samples), freqs):
+            for sub_key in multiples(tuple(rank for rank in ranks if rank not in samples), frequencies):
                 keys.append(key * sub_key)
 
-        freqs[count] = freq
+        frequencies[count] = freq
         return iter(keys)
     else:
         return iter((1,))
