@@ -5,4 +5,4 @@ PokerTools can be installed by typing the following in terminal:
 
 .. code-block:: console
 
-   pip install pokertools
+    pip install pokertools
