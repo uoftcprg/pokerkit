@@ -60,12 +60,12 @@ You can contribute on `Github <https://github.com/AussieSeaweed/pokertools>`_.
 
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Contents:
+   :maxdepth: 1
+   :caption: Contents:
 
-    install
-    interact
-    pokertools
+   install
+   interact
+   pokertools
 
 
 License
