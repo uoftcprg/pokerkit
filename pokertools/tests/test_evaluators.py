@@ -1,7 +1,8 @@
 from unittest import TestCase, main
 
-from pokertools import (BadugiEvaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator,
-                        StandardEvaluator, parse_cards)
+from pokertools import (
+    BadugiEvaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator, StandardEvaluator, parse_cards,
+)
 
 
 class EvaluatorTestCase(TestCase):
