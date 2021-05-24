@@ -41,7 +41,7 @@ class Suit(OrderedEnum):
 
 @total_ordering
 class Card(SupportsLessThan):
-    """Card is the base class for all cards."""
+    """Card is the class for cards."""
 
     def __init__(self, rank: Rank, suit: Suit):
         self.rank: Final = rank

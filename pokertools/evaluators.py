@@ -7,7 +7,7 @@ from pokertools.hands import BadugiHand, Hand, Lowball27Hand, LowballA5Hand, Sho
 
 
 class Evaluator(ABC):
-    """Evaluator is the abstract base class for all evaluators."""
+    """Evaluator is the abstract class for all evaluators."""
 
     @staticmethod
     @abstractmethod
