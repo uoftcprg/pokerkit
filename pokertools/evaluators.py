@@ -52,8 +52,8 @@ class OmahaEvaluator(Evaluator):
         return max(GreekEvaluator.hand(combination, board_cards) for combination in combinations(hole_cards, 2))
 
 
-class ShortEvaluator(Evaluator):
-    """ShortEvaluator is the class for short evaluators."""
+class ShortDeckEvaluator(Evaluator):
+    """ShortDeckEvaluator is the class for Short-deck evaluators."""
 
     @staticmethod
     def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> ShortHand:

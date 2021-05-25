@@ -1,13 +1,13 @@
 from unittest import TestCase, main
 
 from pokertools import (
-    BadugiEvaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortEvaluator, StandardEvaluator, parse_cards,
+    BadugiEvaluator, GreekEvaluator, OmahaEvaluator, RankEvaluator, ShortDeckEvaluator, StandardEvaluator, parse_cards,
 )
 
 
 class EvaluatorTestCase(TestCase):
     def test_standard(self) -> None:
-        self.assertRaises(ValueError, ShortEvaluator.hand, (), ())
+        self.assertRaises(ValueError, StandardEvaluator.hand, (), ())
         self.assertLess(StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')),
                         StandardEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')))
         self.assertGreater(StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKd')),
@@ -28,11 +28,11 @@ class EvaluatorTestCase(TestCase):
                         OmahaEvaluator.hand(parse_cards('6c7c8s9s'), parse_cards('8c9cTc2sKs')))
 
     def test_short(self) -> None:
-        self.assertRaises(ValueError, ShortEvaluator.hand, parse_cards('AcKs'), parse_cards('4hAsKcJsTs'))
-        self.assertLess(ShortEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
-                        ShortEvaluator.hand(parse_cards('Ac6c'), parse_cards('AhAsKcJcTc')))
-        self.assertLess(ShortEvaluator.hand(parse_cards('AcAd'), parse_cards('6s6cKcKd')),
-                        ShortEvaluator.hand(parse_cards('Ac9d'), parse_cards('6s7s8c')))
+        self.assertRaises(ValueError, ShortDeckEvaluator.hand, parse_cards('AcKs'), parse_cards('4hAsKcJsTs'))
+        self.assertLess(ShortDeckEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
+                        ShortDeckEvaluator.hand(parse_cards('Ac6c'), parse_cards('AhAsKcJcTc')))
+        self.assertLess(ShortDeckEvaluator.hand(parse_cards('AcAd'), parse_cards('6s6cKcKd')),
+                        ShortDeckEvaluator.hand(parse_cards('Ac9d'), parse_cards('6s7s8c')))
 
     def test_badugi(self) -> None:
         self.assertGreater(BadugiEvaluator.hand(parse_cards('2s4c5d6h')), BadugiEvaluator.hand(parse_cards('As2c3d7h')))

@@ -15,7 +15,7 @@ class DeckTestCase(TestCase):
         self.assertEqual(len(deck), 49)
         self.assertNotIn(parse_card('4h'), deck)
 
-    def test_short(self) -> None:
+    def test_short_deck(self) -> None:
         self.assertEqual(len(ShortDeck()), 36)
 
 

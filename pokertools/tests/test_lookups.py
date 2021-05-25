@@ -7,7 +7,7 @@ class LookupTestCase(TestCase):
     def test_standard(self) -> None:
         self.assertEqual(StandardHand._lookup.index_count, 7462)
 
-    def test_short(self) -> None:
+    def test_short_deck(self) -> None:
         self.assertEqual(ShortHand._lookup.index_count, 1404)
 
     def test_badugi(self) -> None:

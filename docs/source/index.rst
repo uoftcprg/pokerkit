@@ -14,7 +14,7 @@ The following features are present in PokerTools...
 - String interpretation of cards
 - Various types of poker decks
    - Standard
-   - Short
+   - Short-Deck
 - Various types of poker evaluators
    - Standard
    - Greek
