@@ -4,7 +4,7 @@ from itertools import chain, combinations
 
 from auxiliary import product, unique, windowed
 
-from pokertools.cards import ACE_LOW_RANKS, Card, Rank, SHORT_RANKS, STANDARD_RANKS
+from pokertools.cards import ACE_LOW_RANKS, Card, Rank, SHORT_DECK_RANKS, STANDARD_RANKS
 from pokertools.utils import suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
@@ -121,21 +121,21 @@ class StandardLookup(SuitedLookup):
 
 class ShortLookup(SuitedLookup):
     def populate(self) -> None:
-        for key in straights(SHORT_RANKS, 5):
+        for key in straights(SHORT_DECK_RANKS, 5):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
-        for key in multiples(SHORT_RANKS, {4: 1, 1: 1}):
+        for key in multiples(SHORT_DECK_RANKS, {4: 1, 1: 1}):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
-        for key in multiples(SHORT_RANKS, {1: 5}):
+        for key in multiples(SHORT_DECK_RANKS, {1: 5}):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
-        for key in chain(multiples(SHORT_RANKS, {3: 1, 2: 1}), straights(SHORT_RANKS, 5),
-                         multiples(SHORT_RANKS, {3: 1, 1: 2}), multiples(SHORT_RANKS, {2: 2, 1: 1}),
-                         multiples(SHORT_RANKS, {2: 1, 1: 3}), multiples(SHORT_RANKS, {1: 5})):
+        for key in chain(multiples(SHORT_DECK_RANKS, {3: 1, 2: 1}), straights(SHORT_DECK_RANKS, 5),
+                         multiples(SHORT_DECK_RANKS, {3: 1, 1: 2}), multiples(SHORT_DECK_RANKS, {2: 2, 1: 1}),
+                         multiples(SHORT_DECK_RANKS, {2: 1, 1: 3}), multiples(SHORT_DECK_RANKS, {1: 5})):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 

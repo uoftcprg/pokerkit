@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from pokertools.cards import Card, SHORT_RANKS, STANDARD_RANKS, Suit
+from pokertools.cards import Card, SHORT_DECK_RANKS, STANDARD_RANKS, Suit
 
 
 class Deck(set[Card]):
@@ -29,4 +29,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self) -> None:
-        super().__init__(Card(rank, suit) for rank in SHORT_RANKS for suit in Suit)
+        super().__init__(Card(rank, suit) for rank in SHORT_DECK_RANKS for suit in Suit)
