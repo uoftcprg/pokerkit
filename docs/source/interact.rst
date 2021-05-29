@@ -21,9 +21,9 @@ The following code demonstrates interacting with cards.
    (4h, 4s, 4c, As)
    >>> suited(parse_cards('4h4s4cAs'))
    False
-   >>> HoleCard(parse_card('As'), True)
+   >>> HoleCard(True, parse_card('As'))
    As
-   >>> HoleCard(parse_card('As'), False)
+   >>> HoleCard(False, parse_card('As'))
    ??
 
 
