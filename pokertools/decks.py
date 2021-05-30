@@ -1,10 +1,19 @@
 from collections.abc import Iterable
+from random import shuffle
 
 from pokertools.cards import Card, SHORT_DECK_RANKS, STANDARD_RANKS, Suit
 
 
-class Deck(set[Card]):
-    """Deck is the class for decks."""
+class Deck(list[Card]):
+    """Deck is the class for decks.
+
+    :param cards: The cards in this deck.
+    """
+
+    def __init__(self, cards: Iterable[Card]):
+        super().__init__(cards)
+
+        shuffle(self)
 
     def draw(self, cards: Iterable[Card]) -> None:
         """Draws the cards from this deck.
@@ -12,7 +21,8 @@ class Deck(set[Card]):
         :param cards: The cards to be drawn.
         :return: None.
         """
-        self.__isub__(set(cards))
+        for card in cards:
+            self.remove(card)
 
 
 class StandardDeck(Deck):
