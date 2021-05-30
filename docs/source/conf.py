@@ -22,7 +22,7 @@ copyright = '2021, Juho Kim'
 author = 'Juho Kim'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.3.dev25'
+release = '0.0.3.dev26'
 
 # -- General configuration ---------------------------------------------------
 
@@ -31,6 +31,7 @@ release = '0.0.3.dev25'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

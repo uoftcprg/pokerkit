@@ -1,6 +1,7 @@
 auxiliary
 mypy
 sphinx
+sphinx-autodoc-typehints
 sphinx-rtd-theme
 twine
 wheel

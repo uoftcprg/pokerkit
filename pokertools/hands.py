@@ -12,7 +12,10 @@ from pokertools.cards import Card
 
 @total_ordering
 class Hand(Hashable, SupportsLessThan):
-    """Hand is the class for hands."""
+    """Hand is the class for hands.
+
+    :param index: The index of this hand.
+    """
 
     def __init__(self, index: int):
         self.__index = index
@@ -34,7 +37,10 @@ class Hand(Hashable, SupportsLessThan):
 
 
 class _LookupHand(Hand, ABC):
-    """_LookupHand is the abstract base class for all lookup hands."""
+    """_LookupHand is the abstract base class for all lookup hands.
+
+    :param cards: The cards in this hand.
+    """
     from pokertools._lookups import Lookup as _Lookup
 
     _lookup: _Lookup

@@ -61,7 +61,11 @@ class Suit(OrderedEnum):
 
 @total_ordering
 class Card(SupportsLessThan):
-    """Card is the class for cards."""
+    """Card is the class for cards.
+
+    :param rank: The rank of this card.
+    :param suit: The suit of this card.
+    """
 
     def __init__(self, rank: Rank, suit: Suit):
         self.rank: Final = rank
@@ -89,7 +93,11 @@ class Card(SupportsLessThan):
 
 
 class HoleCard(Card):
-    """HoleCard is the class for hole cards."""
+    """HoleCard is the class for hole cards.
+
+    :param status: The status of this card. True if exposed, False otherwise.
+    :param card: The hole card value.
+    """
 
     def __init__(self, status: bool, card: Card):
         super().__init__(card.rank, card.suit)
