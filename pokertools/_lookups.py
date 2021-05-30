@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, MutableMapping, Sequence
 from itertools import chain, combinations
+from math import prod
 
-from auxiliary import product, unique, windowed
+from auxiliary import unique, windowed
 
 from pokertools.cards import ACE_LOW_RANKS, Card, Rank, SHORT_DECK_RANKS, STANDARD_RANKS
 from pokertools.utils import suited
@@ -11,7 +12,7 @@ PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
 def mask(ranks: Iterable[Rank]) -> int:
-    return product((PRIMES[rank.index] for rank in ranks), 1)
+    return prod(PRIMES[rank.index] for rank in ranks)
 
 
 def straights(ranks: Sequence[Rank], count: int) -> Iterator[int]:
