@@ -110,9 +110,13 @@ class StandardLookup(SuitedLookup):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
-        for key in chain(straights(STANDARD_RANKS, 5), multiples(STANDARD_RANKS, {3: 1, 1: 2}),
-                         multiples(STANDARD_RANKS, {2: 2, 1: 1}), multiples(STANDARD_RANKS, {2: 1, 1: 3}),
-                         multiples(STANDARD_RANKS, {1: 5})):
+        for key in chain(
+                straights(STANDARD_RANKS, 5),
+                multiples(STANDARD_RANKS, {3: 1, 1: 2}),
+                multiples(STANDARD_RANKS, {2: 2, 1: 1}),
+                multiples(STANDARD_RANKS, {2: 1, 1: 3}),
+                multiples(STANDARD_RANKS, {1: 5}),
+        ):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
@@ -134,9 +138,14 @@ class ShortLookup(SuitedLookup):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
-        for key in chain(multiples(SHORT_DECK_RANKS, {3: 1, 2: 1}), straights(SHORT_DECK_RANKS, 5),
-                         multiples(SHORT_DECK_RANKS, {3: 1, 1: 2}), multiples(SHORT_DECK_RANKS, {2: 2, 1: 1}),
-                         multiples(SHORT_DECK_RANKS, {2: 1, 1: 3}), multiples(SHORT_DECK_RANKS, {1: 5})):
+        for key in chain(
+                multiples(SHORT_DECK_RANKS, {3: 1, 2: 1}),
+                straights(SHORT_DECK_RANKS, 5),
+                multiples(SHORT_DECK_RANKS, {3: 1, 1: 2}),
+                multiples(SHORT_DECK_RANKS, {2: 2, 1: 1}),
+                multiples(SHORT_DECK_RANKS, {2: 1, 1: 3}),
+                multiples(SHORT_DECK_RANKS, {1: 5}),
+        ):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
@@ -154,15 +163,22 @@ class BadugiLookup(UnsuitedLookup):
         if isinstance(cards, Iterator):
             cards = tuple(cards)
 
-        return -max(super(BadugiLookup, self).index(sub_cards) for n in range(5) for sub_cards in combinations(
-            cards, n) if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards))
+        return -max(
+            super(BadugiLookup, self).index(sub_cards) for n in range(5) for sub_cards in combinations(cards, n)
+            if unique(card.rank for card in sub_cards) and unique(card.suit for card in sub_cards)
+        )
 
 
 class LowballA5Lookup(UnsuitedLookup):
     def populate(self) -> None:
-        for key in chain(multiples(ACE_LOW_RANKS, {4: 1, 1: 1}), multiples(ACE_LOW_RANKS, {3: 1, 2: 1}),
-                         multiples(ACE_LOW_RANKS, {3: 1, 1: 2}), multiples(ACE_LOW_RANKS, {2: 2, 1: 1}),
-                         multiples(ACE_LOW_RANKS, {2: 1, 1: 3}), multiples(ACE_LOW_RANKS, {1: 5})):
+        for key in chain(
+                multiples(ACE_LOW_RANKS, {4: 1, 1: 1}),
+                multiples(ACE_LOW_RANKS, {3: 1, 2: 1}),
+                multiples(ACE_LOW_RANKS, {3: 1, 1: 2}),
+                multiples(ACE_LOW_RANKS, {2: 2, 1: 1}),
+                multiples(ACE_LOW_RANKS, {2: 1, 1: 3}),
+                multiples(ACE_LOW_RANKS, {1: 5}),
+        ):
             self.unsuited[key] = self.index_count
 
     def index(self, cards: Iterable[Card]) -> int:
