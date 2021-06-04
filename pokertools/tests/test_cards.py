@@ -17,7 +17,8 @@ class CardTestCase(ExtendedTestCase):
 
     def test_hole_cards(self) -> None:
         self.assertEqual(repr(HoleCard(True, parse_card('As'))), 'As')
-        self.assertEqual(repr(HoleCard(False, parse_card('As'))), '??')
+        self.assertEqual(repr(HoleCard(False, parse_card('As'))), 'As')
+        self.assertEqual(str(HoleCard(False, parse_card('As'))), '??')
 
 
 if __name__ == '__main__':

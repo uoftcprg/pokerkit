@@ -105,5 +105,5 @@ class HoleCard(Card):
         self.status: Final = status
         '''The status of this hole card. True if exposed, False otherwise.'''
 
-    def __repr__(self) -> str:
-        return super().__repr__() if self.status else '??'
+    def __str__(self) -> str:
+        return repr(self) if self.status else '??'

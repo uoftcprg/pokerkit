@@ -24,6 +24,8 @@ The following code demonstrates interacting with cards.
    >>> HoleCard(True, parse_card('As'))
    As
    >>> HoleCard(False, parse_card('As'))
+   As
+   >>> str(HoleCard(False, parse_card('As')))
    ??
 
 
