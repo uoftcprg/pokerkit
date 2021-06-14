@@ -6,7 +6,7 @@ from pokertools import (
 
 
 class EvaluatorTestCase(TestCase):
-    def test_standard(self) -> None:
+    def test_standard(self):
         self.assertRaises(ValueError, StandardEvaluator.hand, (), ())
         self.assertLess(
             StandardEvaluator.hand(parse_cards('AcAd'), parse_cards('AhAsKcKdKh')),
@@ -25,13 +25,13 @@ class EvaluatorTestCase(TestCase):
             StandardEvaluator.hand(parse_cards('AsKs'), parse_cards('QdJdTh2s2s')),
         )
 
-    def test_greek(self) -> None:
+    def test_greek(self):
         self.assertLess(
             GreekEvaluator.hand(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
             GreekEvaluator.hand(parse_cards('AsKs'), parse_cards('QdJdTh2s2d')),
         )
 
-    def test_omaha(self) -> None:
+    def test_omaha(self):
         self.assertLess(
             OmahaEvaluator.hand(parse_cards('6c7c8c9c'), parse_cards('8s9sTc')),
             OmahaEvaluator.hand(parse_cards('6c7c8s9s'), parse_cards('8c9cTc')),
@@ -41,7 +41,7 @@ class EvaluatorTestCase(TestCase):
             OmahaEvaluator.hand(parse_cards('6c7c8s9s'), parse_cards('8c9cTc2sKs')),
         )
 
-    def test_short(self) -> None:
+    def test_short(self):
         self.assertRaises(ValueError, ShortDeckEvaluator.hand, parse_cards('AcKs'), parse_cards('4hAsKcJsTs'))
         self.assertLess(
             ShortDeckEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
@@ -52,7 +52,7 @@ class EvaluatorTestCase(TestCase):
             ShortDeckEvaluator.hand(parse_cards('Ac9d'), parse_cards('6s7s8c')),
         )
 
-    def test_badugi(self) -> None:
+    def test_badugi(self):
         self.assertGreater(BadugiEvaluator.hand(parse_cards('2s4c5d6h')), BadugiEvaluator.hand(parse_cards('As2c3d7h')))
         self.assertGreater(BadugiEvaluator.hand(parse_cards('4s5c6dKh')), BadugiEvaluator.hand(parse_cards('2s3s4d7h')))
         self.assertGreater(BadugiEvaluator.hand(parse_cards('As5d9d9h')), BadugiEvaluator.hand(parse_cards('Ac2s2cJd')))
@@ -60,7 +60,7 @@ class EvaluatorTestCase(TestCase):
         self.assertEqual(BadugiEvaluator.hand(parse_cards('As2c3d3s')), BadugiEvaluator.hand(parse_cards('Ad2hKc3c')))
         self.assertGreater(BadugiEvaluator.hand(parse_cards('5d7cKcKh')), BadugiEvaluator.hand(parse_cards('2s3dKsKd')))
 
-    def test_rank(self) -> None:
+    def test_rank(self):
         self.assertGreater(
             RankEvaluator.hand(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
             RankEvaluator.hand(parse_cards('9c6c'), parse_cards('9h9sKcJcTc')),

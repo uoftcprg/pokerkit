@@ -4,7 +4,7 @@ from pokertools import ShortDeck, StandardDeck, parse_card, parse_cards
 
 
 class DeckTestCase(TestCase):
-    def test_standard(self) -> None:
+    def test_standard(self):
         deck = StandardDeck()
 
         self.assertEqual(len(deck), 52)
@@ -15,7 +15,7 @@ class DeckTestCase(TestCase):
         self.assertEqual(len(deck), 49)
         self.assertNotIn(parse_card('4h'), deck)
 
-    def test_short_deck(self) -> None:
+    def test_short_deck(self):
         self.assertEqual(len(ShortDeck()), 36)
 
 

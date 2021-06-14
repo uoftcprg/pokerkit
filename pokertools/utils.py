@@ -1,22 +1,34 @@
 import re
-from collections.abc import Iterable, Iterator, Set
+from collections.abc import Iterator
 from itertools import islice
-
-from auxiliary import chunked, const
 
 from pokertools.cards import Card, Rank, Suit
 
 
-def suited(cards: Iterable[Card]) -> bool:
+def rainbow(enums):
+    """Checks if all ranks or suits have a rainbow texture.
+
+    Ranks or Suits have a rainbow texture when they are all unique to each other.
+
+    :param enums: The ranks/suits to check.
+    :return: True if the ranks/suits have a rainbow texture, else False.
+    """
+    if isinstance(enums, Iterator):
+        enums = tuple(enums)
+
+    return len(enums) == len(set(enums))
+
+
+def suited(cards):
     """Checks if all cards are of the same suit.
 
     :param cards: The cards to check.
     :return: True if the cards are suited, else False.
     """
-    return const(card.suit for card in cards)
+    return len(set(card.suit for card in cards)) <= 1
 
 
-def parse_card(card: str) -> Card:
+def parse_card(card):
     """Parses the string of the card representation.
 
     :param card: The string of the card representation.
@@ -29,17 +41,17 @@ def parse_card(card: str) -> Card:
         raise ValueError('Invalid card representation')
 
 
-def parse_cards(cards: str) -> Iterator[Card]:
+def parse_cards(cards):
     """Parses the string of card representations.
 
     :param cards: The string of card representations.
     :return: The parsed cards.
     :raises ValueError: If any card-representation is invalid.
     """
-    return map(parse_card, (''.join(card) for card in chunked(cards, 2)))
+    return map(parse_card, (cards[i:i + 2] for i in range(0, len(cards), 2)))
 
 
-def parse_range(pattern: str) -> Set[Set[Card]]:
+def parse_range(pattern):
     """Parses the supplied pattern.
 
     >>> from pokertools import parse_range
@@ -62,7 +74,7 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
     :return: The parsed card sets.
     :raises ValueError: If the pattern cannot be parsed.
     """
-    card_sets = set[Set[Card]]()
+    card_sets = set()
 
     if match := re.fullmatch(r'(\w)(\w)(\w?)', pattern):
         ranks = tuple(map(Rank, match.groups()[:2]))
@@ -84,10 +96,10 @@ def parse_range(pattern: str) -> Set[Set[Card]]:
         flag = match.groups()[2]
 
         if ranks[0] == ranks[1]:
-            for rank in islice(Rank, ranks[0].index, None):
+            for rank in islice(Rank, ranks[0]._index, None):
                 card_sets |= parse_range(rank.value + rank.value + flag)
         else:
-            for rank in islice(Rank, ranks[1].index, ranks[0].index):
+            for rank in islice(Rank, ranks[1]._index, ranks[0]._index):
                 card_sets |= parse_range(ranks[0].value + rank.value + flag)
     else:
         card_sets.add(frozenset(parse_cards(pattern)))

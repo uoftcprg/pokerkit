@@ -1,35 +1,28 @@
-from __future__ import annotations
-
 from abc import ABC
-from collections.abc import Hashable, Iterable
+from collections.abc import Hashable
 from functools import total_ordering
-from typing import Any
-
-from auxiliary import SupportsLessThan
-
-from pokertools.cards import Card
 
 
 @total_ordering
-class Hand(Hashable, SupportsLessThan):
+class Hand(Hashable):
     """Hand is the class for hands.
 
     :param index: The index of this hand.
     """
 
-    def __init__(self, index: int):
+    def __init__(self, index):
         self.__index = index
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other):
         if isinstance(other, Hand):
             return self.__index == other.__index
         else:
             return NotImplemented
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         return hash(self.__index)
 
-    def __lt__(self, other: Hand) -> bool:
+    def __lt__(self, other):
         if isinstance(other, Hand):
             return self.__index > other.__index
         else:
@@ -37,16 +30,10 @@ class Hand(Hashable, SupportsLessThan):
 
 
 class _LookupHand(Hand, ABC):
-    """_LookupHand is the abstract base class for all lookup hands.
+    _lookup = None
 
-    :param cards: The cards in this hand.
-    """
-    from pokertools._lookups import Lookup as _Lookup
-
-    _lookup: _Lookup
-
-    def __init__(self, cards: Iterable[Card]):
-        super().__init__(self._lookup.index(cards))
+    def __init__(self, cards):
+        super().__init__(self._lookup.get_index(cards))
 
 
 class StandardHand(_LookupHand):

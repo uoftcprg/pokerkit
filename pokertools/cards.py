@@ -1,14 +1,9 @@
-from __future__ import annotations
-
-from enum import unique
-from functools import total_ordering
-from typing import Any, Final
-
-from auxiliary import OrderedEnum, SupportsLessThan
+from enum import Enum, unique
+from functools import cached_property
 
 
 @unique
-class Rank(OrderedEnum):
+class Rank(Enum):
     """Rank is the enum class for ranks."""
     TWO = '2'
     '''The rank of 2.'''
@@ -37,17 +32,28 @@ class Rank(OrderedEnum):
     ACE = 'A'
     '''The rank of Aces.'''
 
+    @cached_property
+    def _index(self):
+        """Returns the ordinal of this rank.
 
-STANDARD_RANKS = tuple(Rank)
-'''The standard ranks (from deuce to ace).'''
-SHORT_DECK_RANKS = tuple(Rank)[Rank.SIX.index:]
-'''The short-deck ranks (from six to ace).'''
-ACE_LOW_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
-'''The ace-low ranks (from ace to king).'''
+        :return: The ordinal of this rank.
+        """
+        return tuple(Rank).index(self)
 
 
 @unique
-class Suit(OrderedEnum):
+class Ranks(Enum):
+    """Suit is the enum class for tuples of ranks."""
+    STANDARD_RANKS = tuple(Rank)
+    '''The standard ranks (from deuce to ace).'''
+    SHORT_DECK_RANKS = tuple(Rank)[Rank.SIX._index:]
+    '''The short-deck ranks (from six to ace).'''
+    ACE_LOW_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE._index]
+    '''The ace-low ranks (from ace to king).'''
+
+
+@unique
+class Suit(Enum):
     """Suit is the enum class for suits."""
     CLUB = 'c'
     '''The suit of clubs.'''
@@ -59,37 +65,44 @@ class Suit(OrderedEnum):
     '''The suit of spades.'''
 
 
-@total_ordering
-class Card(SupportsLessThan):
+class Card:
     """Card is the class for cards.
 
     :param rank: The rank of this card.
     :param suit: The suit of this card.
     """
 
-    def __init__(self, rank: Rank, suit: Suit):
-        self.rank: Final = rank
-        '''The rank of this card.'''
-        self.suit: Final = suit
-        '''The suit of this card.'''
+    def __init__(self, rank, suit):
+        self.__rank = rank
+        self.__suit = suit
 
-    def __eq__(self, other: Any) -> bool:
+    @property
+    def rank(self):
+        """Returns the rank of this card.
+
+        :return: The rank of this card.
+        """
+        return self.__rank
+
+    @property
+    def suit(self):
+        """Returns the suit of this card.
+
+        :return: The suit of this card.
+        """
+        return self.__suit
+
+    def __eq__(self, other):
         if isinstance(other, Card):
             return self.rank == other.rank and self.suit == other.suit
         else:
             return NotImplemented
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         return hash(self.rank) ^ hash(self.suit)
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return self.rank.value + self.suit.value
-
-    def __lt__(self, other: Card) -> bool:
-        if isinstance(other, Card):
-            return self.suit < other.suit if self.rank == other.rank else self.rank < other.rank
-        else:
-            return NotImplemented
 
 
 class HoleCard(Card):
@@ -99,11 +112,18 @@ class HoleCard(Card):
     :param card: The hole card value.
     """
 
-    def __init__(self, status: bool, card: Card):
+    def __init__(self, status, card):
         super().__init__(card.rank, card.suit)
 
-        self.status: Final = status
-        '''The status of this hole card. True if exposed, False otherwise.'''
+        self.__status = status
 
-    def __str__(self) -> str:
+    @property
+    def status(self):
+        """Returns the status of this hole card.
+
+        :return: True if this hole card is exposed, False otherwise.
+        """
+        return self.__status
+
+    def __str__(self):
         return repr(self) if self.status else '??'

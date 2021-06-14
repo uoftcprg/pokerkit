@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterator
 from itertools import chain, combinations
 
-from pokertools.cards import Card
 from pokertools.hands import BadugiHand, Hand, Lowball27Hand, LowballA5Hand, ShortHand, StandardHand
 
 
@@ -11,7 +10,7 @@ class Evaluator(ABC):
 
     @staticmethod
     @abstractmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> Hand:
+    def hand(hole_cards, board_cards):
         """Evaluates the hand of the combinations of the hole cards and the board cards.
 
         :param hole_cards: The hole cards.
@@ -26,7 +25,7 @@ class StandardEvaluator(Evaluator):
     """StandardEvaluator is the class for standard evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> StandardHand:
+    def hand(hole_cards, board_cards=()):
         return StandardHand(chain(hole_cards, board_cards))
 
 
@@ -34,7 +33,7 @@ class GreekEvaluator(Evaluator):
     """GreekEvaluator is the class for Greek evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
+    def hand(hole_cards, board_cards):
         if isinstance(hole_cards, Iterator):
             hole_cards = tuple(hole_cards)
 
@@ -45,7 +44,7 @@ class OmahaEvaluator(Evaluator):
     """OmahaEvaluator is the class for Omaha evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card]) -> StandardHand:
+    def hand(hole_cards, board_cards):
         if isinstance(board_cards, Iterator):
             board_cards = tuple(board_cards)
 
@@ -56,7 +55,7 @@ class ShortDeckEvaluator(Evaluator):
     """ShortDeckEvaluator is the class for Short-deck evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> ShortHand:
+    def hand(hole_cards, board_cards=()):
         return ShortHand(chain(hole_cards, board_cards))
 
 
@@ -64,7 +63,7 @@ class BadugiEvaluator(Evaluator):
     """BadugiEvaluator is the class for Badugi evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> BadugiHand:
+    def hand(hole_cards, board_cards=()):
         return BadugiHand(chain(hole_cards, board_cards))
 
 
@@ -72,7 +71,7 @@ class LowballA5Evaluator(Evaluator):
     """LowballA5Evaluator is the class for Ace-to-five Lowball evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> LowballA5Hand:
+    def hand(hole_cards, board_cards=()):
         return LowballA5Hand(chain(hole_cards, board_cards))
 
 
@@ -80,7 +79,7 @@ class Lowball27Evaluator(Evaluator):
     """Lowball27Evaluator is the class for Deuce-to-seven Lowball evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> Lowball27Hand:
+    def hand(hole_cards, board_cards=()):
         return Lowball27Hand(chain(hole_cards, board_cards))
 
 
@@ -88,5 +87,5 @@ class RankEvaluator(Evaluator):
     """RankEvaluator is the class for rank evaluators."""
 
     @staticmethod
-    def hand(hole_cards: Iterable[Card], board_cards: Iterable[Card] = ()) -> Hand:
-        return Hand(-max(card.rank.index for card in chain(hole_cards, board_cards)))
+    def hand(hole_cards, board_cards=()):
+        return Hand(-max(card.rank._index for card in chain(hole_cards, board_cards)))
