@@ -36,7 +36,9 @@ def parse_card(card):
     :raises ValueError: If the card-representation is invalid.
     """
     if len(card) == 2:
-        return Card(Rank(card[0]), Suit(card[1]))
+        rank, suit = card
+
+        return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
     else:
         raise ValueError('Invalid card representation')
 

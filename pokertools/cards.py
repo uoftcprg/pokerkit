@@ -68,8 +68,8 @@ class Suit(Enum):
 class Card:
     """Card is the class for cards.
 
-    :param rank: The rank of this card.
-    :param suit: The suit of this card.
+    :param rank: The optional rank of this card.
+    :param suit: The optional suit of this card.
     """
 
     def __init__(self, rank, suit):
@@ -102,14 +102,14 @@ class Card:
         return hash(self.rank) ^ hash(self.suit)
 
     def __repr__(self):
-        return self.rank.value + self.suit.value
+        return ('?' if self.rank is None else self.rank.value) + ('?' if self.suit is None else self.suit.value)
 
 
 class HoleCard(Card):
     """HoleCard is the class for hole cards.
 
     :param status: The status of this card. True if exposed, False otherwise.
-    :param card: The hole card value.
+    :param card: The card value.
     """
 
     def __init__(self, status, card):

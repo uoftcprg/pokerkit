@@ -7,6 +7,8 @@ class CardTestCase(TestCase):
     def test_cards(self):
         self.assertEqual(repr(parse_card('4h')), '4h')
         self.assertEqual(str(parse_card('4h')), '4h')
+        self.assertEqual(repr(parse_card('??')), '??')
+        self.assertEqual(str(parse_card('??')), '??')
         self.assertEqual(tuple(map(str, parse_cards('4h4s4cAs'))), ('4h', '4s', '4c', 'As'))
 
         self.assertTrue(suited(()))

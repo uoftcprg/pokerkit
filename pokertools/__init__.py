@@ -5,7 +5,7 @@ from pokertools.evaluators import (
     ShortDeckEvaluator, StandardEvaluator,
 )
 from pokertools.hands import BadugiHand, Hand, Lowball27Hand, LowballA5Hand, ShortHand, StandardHand
-from pokertools.utils import parse_card, parse_cards, parse_range, rainbow, suited
+from pokertools.utilities import parse_card, parse_cards, parse_range, rainbow, suited
 
 __all__ = (
     'Card', 'HoleCard', 'Rank', 'Ranks', 'Suit', 'Deck', 'ShortDeck', 'StandardDeck', 'BadugiEvaluator', 'Evaluator',

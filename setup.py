@@ -5,7 +5,7 @@ with open('README.rst', 'r') as long_description_file:
 
 setup(
     name='pokertools',
-    version='0.0.3.dev30',
+    version='0.0.3.dev31',
     author='Juho Kim',
     author_email='juho-kim@outlook.com',
     description='A Python package for various poker tools',
@@ -13,15 +13,16 @@ setup(
     long_description_content_type='text/x-rst',
     url='https://github.com/AussieSeaweed/pokertools',
     packages=find_packages(),
-    package_data={'pokertools': ('py.typed',)},
     classifiers=(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
     ),
-    python_requires='>=3.9',
-    install_requires='auxiliary',
+    python_requires='>=3.8',
+    install_requires='gameframe',
 )

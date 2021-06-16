@@ -3,8 +3,8 @@ from unittest import TestCase, main
 from pokertools import parse_range
 
 
-class RangeTestCase(TestCase):
-    def test_range(self):
+class UtilitiesTestCase(TestCase):
+    def test_parse_range(self):
         self.assertSetEqual(frozenset(map(lambda cards: frozenset(map(str, cards)), parse_range('QTs'))), {
             frozenset({'Qc', 'Tc'}), frozenset({'Qd', 'Td'}), frozenset({'Qh', 'Th'}), frozenset({'Qs', 'Ts'}),
         })

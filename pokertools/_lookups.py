@@ -4,7 +4,7 @@ from itertools import chain, combinations
 from math import prod
 
 from pokertools.cards import Rank, Ranks
-from pokertools.utils import rainbow, suited
+from pokertools.utilities import rainbow, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
