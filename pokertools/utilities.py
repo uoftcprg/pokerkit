@@ -1,20 +1,19 @@
 import re
-from collections.abc import Iterator
 from itertools import islice
 
 from pokertools.cards import Card, Rank, Suit
+from pokertools.game import PokerPlayer
 
 
 def rainbow(enums):
-    """Checks if all ranks or suits have a rainbow texture.
+    """Checks if all ranks, suits, or other objects have a rainbow texture.
 
-    Ranks or Suits have a rainbow texture when they are all unique to each other.
+    Objects have a rainbow texture when they are all unique to each other.
 
-    :param enums: The ranks/suits to check.
-    :return: True if the ranks/suits have a rainbow texture, else False.
+    :param enums: The ranks, suits, or objects to check.
+    :return: True if the ranks, suits, or objects have a rainbow texture, else False.
     """
-    if isinstance(enums, Iterator):
-        enums = tuple(enums)
+    enums = tuple(enums)
 
     return len(enums) == len(set(enums))
 
@@ -107,3 +106,94 @@ def parse_range(pattern):
         card_sets.add(frozenset(parse_cards(pattern)))
 
     return frozenset(card_sets)
+
+
+def parse_poker(game, tokens):
+    """Parses the tokens as actions and applies them the supplied poker game.
+
+    :param game: The poker game to be applied on.
+    :param tokens: The tokens to parse as actions.
+    :return: None.
+    """
+    for token in tokens:
+        if isinstance(game.actor, PokerPlayer):
+            if match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
+                game.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
+            elif token == 'cc':
+                game.actor.check_call()
+            elif token == 'f':
+                game.actor.fold()
+            elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
+                game.actor.discard_draw(
+                    () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
+                    None if (cards := match.group('drawn_cards')) is None else parse_cards(cards),
+                )
+            elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
+                game.actor.showdown(
+                    None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
+                )
+            else:
+                raise ValueError('Invalid command')
+        else:
+            if match := re.fullmatch(r'dh (?P<index>\d+)( (?P<cards>\w+))?', token):
+                game.nature.deal_hole(
+                    game.players[int(match.group('index'))],
+                    None if (cards := match.group('cards')) is None else parse_cards(cards),
+                )
+            elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
+                game.nature.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
+            else:
+                raise ValueError('Invalid command')
+
+    return game
+
+
+def _collect(game):
+    effective_bet = sorted(player.bet for player in game.players)[-2]
+
+    for player in game.players:
+        bet = min(effective_bet, player.bet)
+        game._pot += bet
+        player._stack += player.bet - bet
+        player._bet = 0
+
+
+def _update(game):
+    if game.stage._done(game):
+        game.stage._close(game)
+
+        try:
+            game._stage_index += 1
+
+            while game.stage._done(game):
+                game._stage_index += 1
+
+            game.stage._open(game)
+        except IndexError:
+            _distribute(game)
+            game._actor = None
+    else:
+        game._actor = game._queue.pop(0) if game._queue else game.nature
+
+
+def _distribute(game):
+    _collect(game)
+
+    for side_pot in game._side_pots:
+        amounts = [side_pot.amount // len(game.evaluators)] * len(game.evaluators)
+        amounts[0] += side_pot.amount % len(game.evaluators)
+
+        for amount, evaluator in zip(amounts, game.evaluators):
+            if len(side_pot.players) == 1:
+                players = side_pot.players
+            else:
+                hand = max(player._hand(evaluator) for player in side_pot.players)
+                players = tuple(player for player in side_pot.players if player._hand(evaluator) == hand)
+
+            rewards = [amount // len(players)] * len(players)
+            rewards[0] += amount % len(players)
+
+            for player, reward in zip(players, rewards):
+                player._stack += reward
+
+    game._pot = 0

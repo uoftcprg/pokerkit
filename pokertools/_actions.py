@@ -1,36 +1,32 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Sequence
 from random import sample
-from typing import Optional, TypeVar, cast
 
-from auxiliary import rotated, unique
-from pokertools import Card, HoleCard
+from gameframe import GameFrameError, _SequentialAction
 
-from gameframe.exceptions import GameFrameError
-from gameframe.poker.bases import Poker, PokerNature, PokerPlayer
-from poker.stages import (
-    BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,
-)
-from gameframe.poker.utilities import _update
-from gameframe.sequential import _SequentialAction
-
-A = TypeVar('A', PokerNature, PokerPlayer)
+from pokertools import HoleCard
+from pokertools.stages import BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, \
+    ShowdownStage
+from pokertools.utilities import _update, rainbow
 
 
-class PokerAction(_SequentialAction[Poker, A], ABC):
-    def act(self) -> None:
+class PokerAction(_SequentialAction, ABC):
+    def act(self):
         super().act()
 
         _update(self.game)
 
 
-class DealingAction(PokerAction[PokerNature], ABC):
-    def __init__(self, cards: Optional[Iterable[Card]], actor: PokerNature):
+class DealingAction(PokerAction, ABC):
+    def __init__(self, cards, actor):
         super().__init__(actor)
 
-        self.cards: Optional[Sequence[Card]] = None if cards is None else tuple(cards)
+        self.cards = None if cards is None else tuple(cards)
 
-    def verify(self) -> None:
+    @property
+    def deal_count(self):
+        return self.game.stage._deal_count
+
+    def verify(self):
         super().verify()
 
         if not isinstance(self.game.stage, DealingStage):
@@ -39,16 +35,14 @@ class DealingAction(PokerAction[PokerNature], ABC):
         if self.cards is not None:
             if any(card not in self.game.deck for card in self.cards):
                 raise GameFrameError('All cards dealt must be in deck')
-            elif not unique(self.cards):
+            elif not rainbow(self.cards):
                 raise GameFrameError('Card must not have any duplicates')
-            elif len(self.cards) != self.game.stage._deal_count:
-                raise GameFrameError(f'The number of dealt cards must be {self.game.stage._deal_count}.')
+            elif len(self.cards) != self.deal_count:
+                raise GameFrameError(f'The number of dealt cards must be {self.deal_count}.')
 
-    def apply(self) -> None:
-        super().apply()
-
+    def apply(self):
         if self.cards is None:
-            self.cards = sample(self.game.deck, self.game.stage._deal_count)
+            self.cards = sample(self.game.deck, self.deal_count)
         else:
             self.cards = self.cards
 
@@ -56,22 +50,20 @@ class DealingAction(PokerAction[PokerNature], ABC):
         self.deal(self.cards)
 
     @abstractmethod
-    def deal(self, cards: Sequence[Card]) -> None:
-        ...
+    def deal(self, cards): ...
 
 
 class HoleDealingAction(DealingAction):
-    def __init__(
-            self,
-            player: Optional[PokerPlayer],
-            cards: Optional[Iterable[Card]],
-            actor: PokerNature,
-    ):
+    def __init__(self, player, cards, actor):
         super().__init__(cards, actor)
 
         self.player = player
 
-    def verify(self) -> None:
+    @property
+    def dealable_players(self):
+        return filter(self.actor.can_deal_hole, self.game.players)
+
+    def verify(self):
         super().verify()
 
         if not isinstance(self.game.stage, HoleDealingStage):
@@ -80,18 +72,20 @@ class HoleDealingAction(DealingAction):
         if self.player is not None:
             if self.player.mucked:
                 raise GameFrameError('Cannot deal to a mucked player')
-            elif len(self.player.hole) >= self.game.stage._deal_target(self.game):
+            elif len(self.player.hole) >= self.game.stage._get_deal_target(self.game):
                 raise GameFrameError('The player must not have been dealt already')
+        elif self.cards is None:
+            raise GameFrameError('The player to deal to must be specified if cards are supplied')
 
-    def deal(self, cards: Sequence[Card]) -> None:
+    def deal(self, cards):
         if self.player is None:
             self.player = next(self.actor.dealable_players)
 
-        self.player._hole.extend(HoleCard(cast(HoleDealingStage, self.game.stage)._status, card) for card in cards)
+        self.player._hole.extend(HoleCard(self.game.stage._status, card) for card in cards)
 
 
 class BoardDealingAction(DealingAction):
-    def verify(self) -> None:
+    def verify(self):
         super().verify()
 
         if not isinstance(self.game.stage, BoardDealingStage):
@@ -99,12 +93,12 @@ class BoardDealingAction(DealingAction):
         elif len(self.game.board) >= self.game.stage._deal_target(self.game):
             raise GameFrameError('The board must not have been dealt already')
 
-    def deal(self, cards: Sequence[Card]) -> None:
+    def deal(self, cards):
         self.game._board.extend(cards)
 
 
-class BettingAction(PokerAction[PokerPlayer], ABC):
-    def verify(self) -> None:
+class BettingAction(PokerAction, ABC):
+    def verify(self):
         super().verify()
 
         if not isinstance(self.actor.game.stage, BettingStage):
@@ -112,35 +106,47 @@ class BettingAction(PokerAction[PokerPlayer], ABC):
 
 
 class FoldAction(BettingAction):
-    def verify(self) -> None:
+    def verify(self):
         super().verify()
 
         if self.actor.bet >= max(player.bet for player in self.game.players):
             raise GameFrameError('Folding action must not be redundant')
 
-    def apply(self) -> None:
+    def apply(self):
         super().apply()
 
         self.actor._status = False
 
 
 class CheckCallAction(BettingAction):
-    def apply(self) -> None:
+    @property
+    def amount(self):
+        return min(self.actor.stack, max(player.bet for player in self.game.players) - self.actor.bet)
+
+    def apply(self):
         super().apply()
 
-        amount = self.actor.check_call_amount
+        amount = self.amount
 
         self.actor._stack -= amount
         self.actor._bet += amount
 
 
 class BetRaiseAction(BettingAction):
-    def __init__(self, amount: Optional[int], actor: PokerPlayer):
+    def __init__(self, amount, actor):
         super().__init__(actor)
 
         self.amount = amount
 
-    def verify(self) -> None:
+    @property
+    def min_amount(self):
+        return self.game.limit._min_amount(self.game)
+
+    @property
+    def max_amount(self):
+        return self.game.limit._max_amount(self.game)
+
+    def verify(self):
         super().verify()
 
         if max(player.bet for player in self.game.players) >= self.actor.total:
@@ -151,14 +157,14 @@ class BetRaiseAction(BettingAction):
             raise GameFrameError('Too many number of bets/raises')
 
         if self.amount is not None:
-            if not self.actor.min_bet_raise_amount <= self.amount <= self.actor.max_bet_raise_amount:
+            if not self.min_amount <= self.amount <= self.max_amount:
                 raise GameFrameError('The bet/raise amount must be within allowed bounds')
 
-    def apply(self) -> None:
+    def apply(self):
         super().apply()
 
         if self.amount is None:
-            self.amount = self.actor.min_bet_raise_amount
+            self.amount = self.min_amount
 
         self.game._aggressor = self.actor
         self.game._max_delta = max(self.game._max_delta, self.amount - max(player.bet for player in self.game.players))
@@ -168,24 +174,19 @@ class BetRaiseAction(BettingAction):
         self.actor._bet = self.amount
 
         players = [
-            player for player in rotated(self.game.players, self.game.players.index(self.actor)) if player._relevant
+            player for player in self.game.players[self.actor:] + self.game.players[self.actor:] if player._relevant
         ]
         self.game._queue = players[1:] if players and players[0] is self.actor else players
 
 
-class DiscardDrawAction(PokerAction[PokerPlayer]):
-    def __init__(
-            self,
-            discarded_cards: Iterable[Card],
-            drawn_cards: Optional[Iterable[Card]],
-            actor: PokerPlayer,
-    ) -> None:
+class DiscardDrawAction(BettingAction):
+    def __init__(self, discarded_cards, drawn_cards, actor):
         super().__init__(actor)
 
         self.discarded_cards = tuple(discarded_cards)
         self.drawn_cards = None if drawn_cards is None else tuple(drawn_cards)
 
-    def verify(self) -> None:
+    def verify(self):
         super().verify()
 
         if not isinstance(self.game.stage, DiscardDrawStage):
@@ -194,17 +195,17 @@ class DiscardDrawAction(PokerAction[PokerPlayer]):
             raise GameFrameError('All hole cards must belong to the actor.')
 
         if self.drawn_cards is None:
-            if not unique(self.discarded_cards):
+            if not rainbow(self.discarded_cards):
                 raise GameFrameError('Duplicates in cards')
         else:
             if any(card not in self.game.deck for card in self.drawn_cards):
                 raise GameFrameError('Card not in deck')
-            elif not unique(self.discarded_cards + self.drawn_cards):
+            elif not rainbow(self.discarded_cards + self.drawn_cards):
                 raise GameFrameError('Duplicates in cards')
             elif len(self.discarded_cards) != len(self.drawn_cards):
                 raise GameFrameError('The from cards must be of same length as to cards.')
 
-    def apply(self) -> None:
+    def apply(self):
         super().apply()
 
         if self.drawn_cards is None:
@@ -217,22 +218,33 @@ class DiscardDrawAction(PokerAction[PokerPlayer]):
             self.actor._hole[index] = HoleCard(self.actor.hole[index].status, drawn_card)
 
 
-class ShowdownAction(PokerAction[PokerPlayer]):
-    def __init__(self, forced_status: Optional[bool], actor: PokerPlayer) -> None:
+class ShowdownAction(BettingAction):
+    def __init__(self, forced, actor):
         super().__init__(actor)
 
-        self.forced_status = forced_status
+        self.forced = forced
 
-    def verify(self) -> None:
+    def is_necessary(self):
+        staked = [True] * len(self.game.evaluators)
+
+        for player in self.game.players:
+            if player.shown:
+                for i, (actor_hand, player_hand) in enumerate(zip(self.actor.hands, player.hands)):
+                    if player_hand > actor_hand and player.put >= self.actor.put:
+                        staked[i] = False
+
+        return any(staked)
+
+    def verify(self):
         super().verify()
 
         if not isinstance(self.game.stage, ShowdownStage):
             raise GameFrameError('Game not in showdown')
 
-    def apply(self) -> None:
+    def apply(self):
         super().apply()
 
-        if self.forced_status is None:
-            self.forced_status = self.actor.showdown_necessary
+        if self.forced is None:
+            self.forced = self.is_necessary()
 
-        self.actor._status = self.forced_status
+        self.actor._status = self.forced
