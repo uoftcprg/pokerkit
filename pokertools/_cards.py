@@ -1,5 +1,4 @@
 from enum import Enum, unique
-from functools import cached_property
 
 
 @unique
@@ -32,12 +31,8 @@ class Rank(Enum):
     ACE = 'A'
     '''The rank of Aces.'''
 
-    @cached_property
+    @property
     def _index(self):
-        """Returns the ordinal of this rank.
-
-        :return: The ordinal of this rank.
-        """
         return tuple(Rank).index(self)
 
 
@@ -76,6 +71,18 @@ class Card:
         self.__rank = rank
         self.__suit = suit
 
+    def __eq__(self, other):
+        if isinstance(other, Card):
+            return self.rank == other.rank and self.suit == other.suit
+        else:
+            return NotImplemented
+
+    def __hash__(self):
+        return hash(self.rank) ^ hash(self.suit)
+
+    def __repr__(self):
+        return ('?' if self.rank is None else self.rank.value) + ('?' if self.suit is None else self.suit.value)
+
     @property
     def rank(self):
         """Returns the rank of this card.
@@ -92,18 +99,6 @@ class Card:
         """
         return self.__suit
 
-    def __eq__(self, other):
-        if isinstance(other, Card):
-            return self.rank == other.rank and self.suit == other.suit
-        else:
-            return NotImplemented
-
-    def __hash__(self):
-        return hash(self.rank) ^ hash(self.suit)
-
-    def __repr__(self):
-        return ('?' if self.rank is None else self.rank.value) + ('?' if self.suit is None else self.suit.value)
-
 
 class HoleCard(Card):
     """HoleCard is the class for hole cards.
@@ -117,6 +112,9 @@ class HoleCard(Card):
 
         self.__status = status
 
+    def __str__(self):
+        return repr(self) if self.status else '??'
+
     @property
     def status(self):
         """Returns the status of this hole card.
@@ -124,6 +122,3 @@ class HoleCard(Card):
         :return: True if this hole card is exposed, False otherwise.
         """
         return self.__status
-
-    def __str__(self):
-        return repr(self) if self.status else '??'
