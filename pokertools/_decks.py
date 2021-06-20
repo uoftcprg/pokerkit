@@ -1,16 +1,16 @@
 from collections.abc import Iterator
 from random import shuffle
 
-from pokertools.cards import Card, Ranks, Suit
+from pokertools._cards import Card, Ranks, Suit
 
 
 class Deck(list):
     """Deck is the class for decks.
 
-    :param cards: The cards in this deck.
+    :param cards: The cards in this deck, defaults to an empty tuple.
     """
 
-    def __init__(self, cards):
+    def __init__(self, cards=()):
         super().__init__(cards)
 
         shuffle(self)
