@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from functools import partial
-from itertools import chain, combinations, filterfalse, product
+from itertools import chain, combinations, filterfalse
 from math import prod
 
 from pokertools._cards import Card, Rank, Ranks
