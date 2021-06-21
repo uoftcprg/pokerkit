@@ -23,6 +23,9 @@ class Deck(list):
         :return: None.
         """
         if isinstance(cards, int):
+            if len(self) < cards:
+                raise ValueError('Number of dealt cards must be less than or equal to the length of this deck')
+
             cards = self[:cards]
         elif isinstance(cards, Iterator):
             cards = tuple(cards)
