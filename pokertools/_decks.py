@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from itertools import product, starmap
 from random import shuffle
 
 from pokertools._cards import Card, Ranks, Suit
@@ -36,7 +37,7 @@ class StandardDeck(Deck):
     """StandardDeck is the class for standard decks."""
 
     def __init__(self):
-        super().__init__(Card(rank, suit) for rank in Ranks.STANDARD_RANKS.value for suit in Suit)
+        super().__init__(starmap(Card, product(Ranks.STANDARD_RANKS.value, Suit)))
 
 
 class ShortDeck(Deck):
@@ -46,4 +47,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self):
-        super().__init__(Card(rank, suit) for rank in Ranks.SHORT_DECK_RANKS.value for suit in Suit)
+        super().__init__(starmap(Card, product(Ranks.SHORT_DECK_RANKS.value, Suit)))

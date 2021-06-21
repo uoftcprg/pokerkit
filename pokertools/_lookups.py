@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
-from itertools import chain, combinations
+from functools import partial
+from itertools import chain, combinations, filterfalse, product
 from math import prod
 
-from pokertools.cards import Rank, Ranks
-from pokertools.utilities import rainbow, suited
+from pokertools._cards import Card, Rank, Ranks
+from pokertools._utilities import rainbow, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
@@ -16,8 +17,8 @@ def mask_of(ranks):
 def straights_of(ranks, count):
     keys = [PRIMES[ranks[-1]._index] * mask_of(ranks[:count - 1])]
 
-    for sub_ranks in (ranks[i:i + count] for i in range(len(ranks) - count + 1)):
-        keys.append(mask_of(sub_ranks))
+    for i in range(len(ranks) - count + 1):
+        keys.append(mask_of(ranks[i:i + count]))
 
     return reversed(keys)
 
@@ -31,7 +32,7 @@ def multiples_of(ranks, frequencies):
         for samples in combinations(reversed(ranks), freq):
             key = mask_of(samples) ** count
 
-            for sub_key in multiples_of(tuple(rank for rank in ranks if rank not in samples), frequencies):
+            for sub_key in multiples_of(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
                 keys.append(key * sub_key)
 
         frequencies[count] = freq
@@ -67,7 +68,7 @@ class UnsuitedLookup(Lookup, ABC):
 
     def get_index(self, cards):
         try:
-            return self.unsuited[mask_of(card.rank for card in cards)]
+            return self.unsuited[mask_of(map(Card.rank.fget, cards))]
         except KeyError:
             raise ValueError('Invalid card combination')
 
@@ -87,7 +88,7 @@ class SuitedLookup(UnsuitedLookup, ABC):
             cards = tuple(cards)
 
         try:
-            key = mask_of(card.rank for card in cards)
+            key = mask_of(map(Card.rank.fget, cards))
 
             return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
         except KeyError:
@@ -122,10 +123,10 @@ class StandardLookup(SuitedLookup):
                 self.unsuited[key] = self.index_count
 
     def get_index(self, cards):
-        return min(super(StandardLookup, self).get_index(combination) for combination in combinations(cards, 5))
+        return min(map(super().get_index, combinations(cards, 5)))
 
 
-class ShortLookup(SuitedLookup):
+class ShortDeckLookup(SuitedLookup):
     def populate(self):
         for key in straights_of(Ranks.SHORT_DECK_RANKS.value, 5):
             if key not in self.suited:
@@ -151,12 +152,12 @@ class ShortLookup(SuitedLookup):
                 self.unsuited[key] = self.index_count
 
     def get_index(self, cards):
-        return min(super(ShortLookup, self).get_index(combination) for combination in combinations(cards, 5))
+        return min(map(super().get_index, combinations(cards, 5)))
 
 
 class BadugiLookup(UnsuitedLookup):
     def populate(self):
-        for n in range(5):
+        for n in range(1, 5):
             for key in multiples_of(Ranks.ACE_LOW_RANKS.value, {1: n}):
                 self.unsuited[key] = self.index_count
 
@@ -164,10 +165,13 @@ class BadugiLookup(UnsuitedLookup):
         if isinstance(cards, Iterator):
             cards = tuple(cards)
 
-        return -max(
-            super(BadugiLookup, self).get_index(sub_cards) for n in range(5) for sub_cards in combinations(cards, n)
-            if rainbow(card.rank for card in sub_cards) and rainbow(card.suit for card in sub_cards)
-        )
+        return -max(map(
+            super().get_index,
+            filter(
+                lambda sub_cards: rainbow(map(Card.rank.fget, sub_cards)) and rainbow(map(Card.suit.fget, sub_cards)),
+                chain(*map(partial(combinations, cards), range(1, 5))),
+            ),
+        ))
 
 
 class LowballA5Lookup(UnsuitedLookup):
@@ -183,9 +187,9 @@ class LowballA5Lookup(UnsuitedLookup):
             self.unsuited[key] = self.index_count
 
     def get_index(self, cards):
-        return -max(super(LowballA5Lookup, self).get_index(combination) for combination in combinations(cards, 5))
+        return -max(map(super().get_index, combinations(cards, 5)))
 
 
 class Lowball27Lookup(StandardLookup):
     def get_index(self, cards):
-        return -max(super(StandardLookup, self).get_index(combination) for combination in combinations(cards, 5))
+        return -max(map(super().get_index, combinations(cards, 5)))
