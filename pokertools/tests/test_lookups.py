@@ -1,7 +1,7 @@
 from os.path import exists
 from unittest import TestCase, main, skipUnless
 
-from pokertools import BadugiHand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand, parse_cards
+from pokertools import BadugiHand, LowballA5Hand, ShortDeckHand, StandardHand, parse_cards
 
 
 class LookupTestCase(TestCase):
@@ -44,11 +44,11 @@ class LookupTestCase(TestCase):
         indices = tuple(map(BadugiHand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertLessEqual(i, j)
+            self.assertGreaterEqual(i, j)
 
         self.assertEqual(BadugiHand._lookup.index_count, 1092)
-        self.assertEqual(max(indices), 0)
-        self.assertEqual(-min(indices), BadugiHand._lookup.index_count - 1)
+        self.assertEqual(min(indices), 0)
+        self.assertEqual(max(indices), BadugiHand._lookup.index_count - 1)
 
     @skipUnless(exists('lookups/lowballA5-lookup.txt'), 'The lowballA5 hand file does not exist')
     def test_lowballA5_lookup(self):
@@ -59,26 +59,11 @@ class LookupTestCase(TestCase):
         indices = tuple(map(LowballA5Hand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertLessEqual(i, j)
-
-        self.assertEqual(LowballA5Hand._lookup.index_count, 6175)
-        self.assertEqual(max(indices), 0)
-        self.assertEqual(-min(indices), LowballA5Hand._lookup.index_count - 1)
-
-    @skipUnless(exists('lookups/standard-lookup.txt'), 'The standard hand file does not exist')
-    def test_lowball27_lookup(self):
-        # Generated with Python treys package: https://pypi.org/project/treys/
-        with open('lookups/standard-lookup.txt') as file:
-            lines = map(str.strip, file.readlines())
-
-        indices = tuple(map(Lowball27Hand._lookup.get_index, map(parse_cards, lines)))
-
-        for i, j in zip(indices, indices[1:]):
             self.assertGreaterEqual(i, j)
 
-        self.assertEqual(Lowball27Hand._lookup.index_count, 7462)
-        self.assertEqual(max(indices), 0)
-        self.assertEqual(-min(indices), Lowball27Hand._lookup.index_count - 1)
+        self.assertEqual(LowballA5Hand._lookup.index_count, 6175)
+        self.assertEqual(min(indices), 0)
+        self.assertEqual(max(indices), LowballA5Hand._lookup.index_count - 1)
 
 
 if __name__ == '__main__':

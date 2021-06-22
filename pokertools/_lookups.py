@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
-from functools import partial
 from itertools import chain, combinations, filterfalse
 from math import prod
 
 from pokertools.cards import Card, Rank, Ranks
-from pokertools.utilities import rainbow, suited
+from pokertools.utilities import suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
@@ -122,9 +121,6 @@ class StandardLookup(SuitedLookup):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
-    def get_index(self, cards):
-        return min(map(super().get_index, combinations(cards, 5)))
-
 
 class ShortDeckLookup(SuitedLookup):
     def populate(self):
@@ -151,27 +147,12 @@ class ShortDeckLookup(SuitedLookup):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
-    def get_index(self, cards):
-        return min(map(super().get_index, combinations(cards, 5)))
-
 
 class BadugiLookup(UnsuitedLookup):
     def populate(self):
         for n in range(1, 5):
             for key in multiples_of(Ranks.ACE_LOW_RANKS.value, {1: n}):
                 self.unsuited[key] = self.index_count
-
-    def get_index(self, cards):
-        if isinstance(cards, Iterator):
-            cards = tuple(cards)
-
-        return -max(map(
-            super().get_index,
-            filter(
-                lambda sub_cards: rainbow(map(Card.rank.fget, sub_cards)) and rainbow(map(Card.suit.fget, sub_cards)),
-                chain(*map(partial(combinations, cards), range(1, 5))),
-            ),
-        ))
 
 
 class LowballA5Lookup(UnsuitedLookup):
@@ -185,11 +166,3 @@ class LowballA5Lookup(UnsuitedLookup):
                 multiples_of(Ranks.ACE_LOW_RANKS.value, {1: 5}),
         ):
             self.unsuited[key] = self.index_count
-
-    def get_index(self, cards):
-        return -max(map(super().get_index, combinations(cards, 5)))
-
-
-class Lowball27Lookup(StandardLookup):
-    def get_index(self, cards):
-        return -max(map(super().get_index, combinations(cards, 5)))
