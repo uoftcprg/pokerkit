@@ -14,7 +14,7 @@ class LookupTestCase(TestCase):
         indices = tuple(map(StandardHand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertGreaterEqual(i, j)
+            self.assertLessEqual(i, j)
 
         self.assertEqual(StandardHand._lookup.index_count, 7462)
         self.assertEqual(min(indices), 0)
@@ -29,7 +29,7 @@ class LookupTestCase(TestCase):
         indices = tuple(map(ShortDeckHand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertGreaterEqual(i, j)
+            self.assertLessEqual(i, j)
 
         self.assertEqual(ShortDeckHand._lookup.index_count, 1404)
         self.assertEqual(min(indices), 0)
@@ -44,7 +44,7 @@ class LookupTestCase(TestCase):
         indices = tuple(map(BadugiHand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertGreaterEqual(i, j)
+            self.assertLessEqual(i, j)
 
         self.assertEqual(BadugiHand._lookup.index_count, 1092)
         self.assertEqual(max(indices), 0)
@@ -59,7 +59,7 @@ class LookupTestCase(TestCase):
         indices = tuple(map(LowballA5Hand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertGreaterEqual(i, j)
+            self.assertLessEqual(i, j)
 
         self.assertEqual(LowballA5Hand._lookup.index_count, 6175)
         self.assertEqual(max(indices), 0)
@@ -74,7 +74,7 @@ class LookupTestCase(TestCase):
         indices = tuple(map(Lowball27Hand._lookup.get_index, map(parse_cards, lines)))
 
         for i, j in zip(indices, indices[1:]):
-            self.assertLessEqual(i, j)
+            self.assertGreaterEqual(i, j)
 
         self.assertEqual(Lowball27Hand._lookup.index_count, 7462)
         self.assertEqual(max(indices), 0)
