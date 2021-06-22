@@ -4,8 +4,8 @@ from functools import partial
 from itertools import chain, combinations, filterfalse
 from math import prod
 
-from pokertools._cards import Card, Rank, Ranks
-from pokertools._utilities import rainbow, suited
+from pokertools.cards import Card, Rank, Ranks
+from pokertools.utilities import rainbow, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 

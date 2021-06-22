@@ -2,7 +2,7 @@ from collections.abc import Iterator
 from itertools import product, starmap
 from random import shuffle
 
-from pokertools._cards import Card, Ranks, Suit
+from pokertools.cards import Card, Ranks, Suit
 
 
 class Deck(list):
