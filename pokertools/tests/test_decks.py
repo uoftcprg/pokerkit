@@ -8,26 +8,20 @@ class DeckTestCase(TestCase):
         self.assertEqual(len(Deck()), 0)
 
     def test_standard_deck(self):
-        self.assertCountEqual(
-            StandardDeck(),
-            parse_cards(
-                '2c3c4c5c6c7c8c9cTcJcQcKcAc'
-                '2d3d4d5d6d7d8d9dTdJdQdKdAd'
-                '2h3h4h5h6h7h8h9hThJhQhKhAh'
-                '2s3s4s5s6s7s8s9sTsJsQsKsAs'
-            ),
-        )
+        self.assertCountEqual(StandardDeck(), parse_cards(
+            '2c3c4c5c6c7c8c9cTcJcQcKcAc'
+            '2d3d4d5d6d7d8d9dTdJdQdKdAd'
+            '2h3h4h5h6h7h8h9hThJhQhKhAh'
+            '2s3s4s5s6s7s8s9sTsJsQsKsAs'
+        ))
 
     def test_short_deck(self):
-        self.assertCountEqual(
-            ShortDeck(),
-            parse_cards(
-                '6c7c8c9cTcJcQcKcAc'
-                '6d7d8d9dTdJdQdKdAd'
-                '6h7h8h9hThJhQhKhAh'
-                '6s7s8s9sTsJsQsKsAs'
-            ),
-        )
+        self.assertCountEqual(ShortDeck(), parse_cards(
+            '6c7c8c9cTcJcQcKcAc'
+            '6d7d8d9dTdJdQdKdAd'
+            '6h7h8h9hThJhQhKhAh'
+            '6s7s8s9sTsJsQsKsAs'
+        ))
 
     def test_draw(self):
         deck = StandardDeck()

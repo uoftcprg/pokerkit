@@ -1,8 +1,9 @@
 from operator import le
 from unittest import TestCase, main
 
-from pokertools import (BadugiHand, HighIndexedHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand,
-                        StandardHand, parse_cards)
+from pokertools import (
+    BadugiHand, HighIndexedHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand, parse_cards,
+)
 
 
 class HandTestCase(TestCase):
