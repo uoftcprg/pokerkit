@@ -11,7 +11,10 @@ from pokertools.evaluators import (
     ShortDeckEvaluator, StandardEvaluator,
 )
 from pokertools.game import PokerGame, PokerNature, PokerPlayer
-from pokertools.hands import BadugiHand, Hand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand
+from pokertools.hands import (
+    BadugiHand, Hand, HighIndexedHand, IndexedHand, LookupHandMixin, LowIndexedHand, Lowball27Hand, LowballA5Hand,
+    ShortDeckHand, StandardHand,
+)
 from pokertools.limits import FixedLimit, Limit, NoLimit, PotLimit
 from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, QueuedStage, ShowdownStage,
@@ -25,8 +28,9 @@ __all__ = (
     'ShortDeckHoldEm', 'SingleDraw', 'SingleDrawLowball27', 'SixCardOmahaHoldEm', 'StaticHoleMixin', 'TexasHoldEm',
     'TripleDraw', 'TripleDrawLowball27', 'BadugiEvaluator', 'Evaluator', 'GreekEvaluator', 'Lowball27Evaluator',
     'LowballA5Evaluator', 'OmahaEvaluator', 'RankEvaluator', 'ShortDeckEvaluator', 'StandardEvaluator', 'PokerGame',
-    'PokerNature', 'PokerPlayer', 'BadugiHand', 'Hand', 'Lowball27Hand', 'LowballA5Hand', 'ShortDeckHand',
-    'StandardHand', 'FixedLimit', 'Limit', 'NoLimit', 'PotLimit', 'BettingStage', 'BoardDealingStage', 'DealingStage',
-    'DiscardDrawStage', 'HoleDealingStage', 'QueuedStage', 'ShowdownStage', 'Stage', 'parse_card', 'parse_cards',
-    'parse_poker', 'parse_range', 'rainbow', 'suited',
+    'PokerNature', 'PokerPlayer', 'BadugiHand', 'Hand', 'HighIndexedHand', 'IndexedHand', 'LookupHandMixin',
+    'LowIndexedHand', 'Lowball27Hand', 'LowballA5Hand', 'ShortDeckHand', 'StandardHand', 'FixedLimit', 'Limit',
+    'NoLimit', 'PotLimit', 'BettingStage', 'BoardDealingStage', 'DealingStage', 'DiscardDrawStage', 'HoleDealingStage',
+    'QueuedStage', 'ShowdownStage', 'Stage', 'parse_card', 'parse_cards', 'parse_poker', 'parse_range', 'rainbow',
+    'suited',
 )
