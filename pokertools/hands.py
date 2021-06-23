@@ -48,7 +48,11 @@ class LowIndexedHand(IndexedHand, ABC):
 
 
 class LookupHandMixin(IndexedHand, ABC):
-    """LookupHandMixin is the abstract base class for all lookup hands."""
+    """LookupHandMixin is the abstract base class for all lookup hands.
+
+    :param cards: The cards in this hand.
+    :raises ValueError: If the cards do not form a valid hand.
+    """
     _lookup = None
 
     def __init__(self, cards):
