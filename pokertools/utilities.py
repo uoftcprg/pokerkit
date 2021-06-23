@@ -4,17 +4,15 @@ from itertools import islice
 from pokertools.cards import Card, Rank, Suit
 
 
-def rainbow(values):
-    """Checks if all values (ranks, suits, etc.) have a rainbow texture.
+def rainbow(cards):
+    """Checks if all cards have a rainbow texture.
 
-    Values have a rainbow texture when they are all unique to each other.
+    Cards have a rainbow texture when their suits are all unique to each other.
 
-    :param values: The ranks, suits, etc. to check.
-    :return: True if the values have a rainbow texture, else False.
+    :param cards: The cards to check.
+    :return: True if the cards have a rainbow texture, else False.
     """
-    values = tuple(values)
-
-    return len(values) == len(set(values))
+    return _unique(map(Card.suit.fget, cards))
 
 
 def suited(cards):
@@ -144,6 +142,12 @@ def parse_poker(game, tokens):
             raise ValueError('Invalid command')
 
     return game
+
+
+def _unique(values):
+    values = tuple(values)
+
+    return len(values) == len(set(values))
 
 
 def _collect(game):

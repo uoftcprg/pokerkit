@@ -2,17 +2,17 @@ from functools import partial
 from unittest import TestCase, main
 
 from pokertools import Card, Rank, Suit, parse_card, parse_cards, parse_range, rainbow, suited
+from pokertools.utilities import _unique
 
 
 class UtilitiesTestCase(TestCase):
     def test_rainbow(self):
         self.assertTrue(rainbow(()))
-        self.assertTrue(rainbow(parse_cards('AhAsJsQh')))
+        self.assertTrue(rainbow(parse_cards('Ac')))
+        self.assertTrue(rainbow(parse_cards('AhJsQc')))
+        self.assertTrue(rainbow(parse_cards('AhAsJdQc')))
         self.assertFalse(rainbow(parse_cards('AhAsJsQhAh')))
-        self.assertTrue(rainbow(map(Card.rank.fget, parse_cards('AhJsQh'))))
-        self.assertFalse(rainbow(map(Card.rank.fget, parse_cards('AhAsJsQh'))))
-        self.assertTrue(rainbow(map(Card.suit.fget, parse_cards('AcAdJhQs'))))
-        self.assertFalse(rainbow(map(Card.suit.fget, parse_cards('AcAdJhQh'))))
+        self.assertFalse(rainbow(parse_cards('AhAsJsQh')))
 
     def test_suited(self):
         self.assertTrue(suited(()))
@@ -89,6 +89,15 @@ class UtilitiesTestCase(TestCase):
             frozenset({'Qc', 'Jc'}), frozenset({'Qd', 'Jd'}), frozenset({'Qh', 'Jh'}), frozenset({'Qs', 'Js'}),
         })
         self.assertSetEqual(frozenset(map(lambda cards: frozenset(map(str, cards)), parse_range('9T+'))), set())
+
+    def test_unique(self):
+        self.assertTrue(_unique(()))
+        self.assertTrue(_unique(parse_cards('AhAsJsQh')))
+        self.assertFalse(_unique(parse_cards('AhAsJsQhAh')))
+        self.assertTrue(_unique(map(Card.rank.fget, parse_cards('AhJsQh'))))
+        self.assertFalse(_unique(map(Card.rank.fget, parse_cards('AhAsJsQh'))))
+        self.assertTrue(_unique(map(Card.suit.fget, parse_cards('AcAdJhQs'))))
+        self.assertFalse(_unique(map(Card.suit.fget, parse_cards('AcAdJhQh'))))
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ from itertools import chain, combinations, filterfalse
 from math import prod
 
 from pokertools.cards import Card, Rank, Ranks
-from pokertools.utilities import rainbow, suited
+from pokertools.utilities import _unique, rainbow, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
@@ -45,7 +45,7 @@ class Lookup(ABC):
         self.populate()
 
     def verify(self, cards):
-        if not rainbow(cards):
+        if not _unique(cards):
             raise ValueError('All cards must be unique')
 
     @property
@@ -163,8 +163,8 @@ class BadugiLookup(UnsuitedLookup):
     def verify(self, cards):
         super().verify(cards)
 
-        if not rainbow(map(Card.suit.fget, cards)):
-            raise ValueError('A badugi hand must consist of rainbow suits')
+        if not rainbow(cards):
+            raise ValueError('Cards in a badugi hand must have a rainbow texture')
 
     def populate(self):
         for n in range(1, 5):
