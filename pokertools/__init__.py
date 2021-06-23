@@ -1,4 +1,4 @@
-"""pokertools is the top-level module for the PokerTools package. All poker game utilities are imported here."""
+"""pokertools is the top-level module for the PokerTools package. All poker game tools are imported here."""
 from pokertools.cards import Card, HoleCard, Rank, Ranks, Suit
 from pokertools.decks import Deck, ShortDeck, StandardDeck
 from pokertools.definitions import (
