@@ -4,7 +4,7 @@ from itertools import chain, combinations, filterfalse
 from math import prod
 
 from pokertools.cards import Card, Rank, Ranks
-from pokertools.utilities import suited
+from pokertools.utilities import rainbow, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
@@ -44,6 +44,10 @@ class Lookup(ABC):
     def __init__(self):
         self.populate()
 
+    def verify(self, cards):
+        if not rainbow(cards):
+            raise ValueError('All cards must be unique')
+
     @property
     @abstractmethod
     def index_count(self): ...
@@ -66,6 +70,11 @@ class UnsuitedLookup(Lookup, ABC):
         return len(self.unsuited)
 
     def get_index(self, cards):
+        if isinstance(cards, Iterator):
+            cards = tuple(cards)
+
+        self.verify(cards)
+
         try:
             return self.unsuited[mask_of(map(Card.rank.fget, cards))]
         except KeyError:
@@ -85,6 +94,8 @@ class SuitedLookup(UnsuitedLookup, ABC):
     def get_index(self, cards):
         if isinstance(cards, Iterator):
             cards = tuple(cards)
+
+        self.verify(cards)
 
         try:
             key = mask_of(map(Card.rank.fget, cards))
@@ -149,6 +160,12 @@ class ShortDeckLookup(SuitedLookup):
 
 
 class BadugiLookup(UnsuitedLookup):
+    def verify(self, cards):
+        super().verify(cards)
+
+        if not rainbow(map(Card.suit.fget, cards)):
+            raise ValueError('A badugi hand must consist of rainbow suits')
+
     def populate(self):
         for n in range(1, 5):
             for key in multiples_of(Ranks.ACE_LOW_RANKS.value, {1: n}):
