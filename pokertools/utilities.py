@@ -2,20 +2,19 @@ import re
 from itertools import islice
 
 from pokertools.cards import Card, Rank, Suit
-from pokertools.game import PokerPlayer
 
 
-def rainbow(enums):
-    """Checks if all ranks, suits, or other objects have a rainbow texture.
+def rainbow(values):
+    """Checks if all values (ranks, suits, etc.) have a rainbow texture.
 
-    Objects have a rainbow texture when they are all unique to each other.
+    Values have a rainbow texture when they are all unique to each other.
 
-    :param enums: The ranks, suits, or objects to check.
-    :return: True if the ranks, suits, or objects have a rainbow texture, else False.
+    :param values: The ranks, suits, etc. to check.
+    :return: True if the values have a rainbow texture, else False.
     """
-    enums = tuple(enums)
+    values = tuple(values)
 
-    return len(enums) == len(set(enums))
+    return len(values) == len(set(values))
 
 
 def suited(cards):
@@ -108,6 +107,9 @@ def parse_range(pattern):
     return frozenset(card_sets)
 
 
+# TODO: IMPLEMENT TESTS FOR BELOW
+
+
 def parse_poker(game, tokens):
     """Parses the tokens as actions and applies them the supplied poker game.
 
@@ -116,34 +118,30 @@ def parse_poker(game, tokens):
     :return: None.
     """
     for token in tokens:
-        if isinstance(game.actor, PokerPlayer):
-            if match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
-                game.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
-            elif token == 'cc':
-                game.actor.check_call()
-            elif token == 'f':
-                game.actor.fold()
-            elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
-                game.actor.discard_draw(
-                    () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
-                    None if (cards := match.group('drawn_cards')) is None else parse_cards(cards),
-                )
-            elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
-                game.actor.showdown(
-                    None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
-                )
-            else:
-                raise ValueError('Invalid command')
+        if match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
+            game.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
+        elif token == 'cc':
+            game.actor.check_call()
+        elif token == 'f':
+            game.actor.fold()
+        elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
+            game.actor.discard_draw(
+                () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
+                None if (cards := match.group('drawn_cards')) is None else parse_cards(cards),
+            )
+        elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
+            game.actor.showdown(
+                None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
+            )
+        elif match := re.fullmatch(r'dh (?P<index>\d+)( (?P<cards>\w+))?', token):
+            game.actor.deal_hole(
+                game.players[int(match.group('index'))],
+                None if (cards := match.group('cards')) is None else parse_cards(cards),
+            )
+        elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
+            game.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
         else:
-            if match := re.fullmatch(r'dh (?P<index>\d+)( (?P<cards>\w+))?', token):
-                game.nature.deal_hole(
-                    game.players[int(match.group('index'))],
-                    None if (cards := match.group('cards')) is None else parse_cards(cards),
-                )
-            elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
-                game.nature.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
-            else:
-                raise ValueError('Invalid command')
+            raise ValueError('Invalid command')
 
     return game
 

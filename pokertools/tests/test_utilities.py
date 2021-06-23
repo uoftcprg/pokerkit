@@ -1,9 +1,41 @@
+from functools import partial
 from unittest import TestCase, main
 
-from pokertools import parse_range
+from pokertools import Card, Rank, Suit, parse_card, parse_cards, parse_range, rainbow, suited
 
 
 class UtilitiesTestCase(TestCase):
+    def test_rainbow(self):
+        self.assertTrue(rainbow(()))
+        self.assertTrue(rainbow(parse_cards('AhAsJsQh')))
+        self.assertFalse(rainbow(parse_cards('AhAsJsQhAh')))
+        self.assertTrue(rainbow(map(Card.rank.fget, parse_cards('AhJsQh'))))
+        self.assertFalse(rainbow(map(Card.rank.fget, parse_cards('AhAsJsQh'))))
+        self.assertTrue(rainbow(map(Card.suit.fget, parse_cards('AcAdJhQs'))))
+        self.assertFalse(rainbow(map(Card.suit.fget, parse_cards('AcAdJhQh'))))
+
+    def test_suited(self):
+        self.assertTrue(suited(()))
+        self.assertTrue(suited((parse_card('Ah'),)))
+        self.assertTrue(suited(parse_cards('AhKhQhJhTh')))
+        self.assertFalse(suited(parse_cards('AhKhQhJhTs')))
+        self.assertFalse(suited(parse_cards('AsKc')))
+        self.assertFalse(suited(parse_cards('AsKcQdJhTs')))
+
+    def test_parse_card(self):
+        self.assertEqual(parse_card('Ah'), Card(Rank.ACE, Suit.HEART))
+        self.assertEqual(parse_card('Kd'), Card(Rank.KING, Suit.DIAMOND))
+        self.assertEqual(parse_card('?h'), Card(None, Suit.HEART))
+        self.assertEqual(parse_card('A?'), Card(Rank.ACE, None))
+        self.assertEqual(parse_card('??'), Card(None, None))
+
+    def test_parse_cards(self):
+        self.assertCountEqual(parse_cards('AcAdAhAs'), map(partial(Card, Rank.ACE), Suit))
+        self.assertCountEqual(parse_cards('Kh???sJhA?????2c'), (
+            Card(Rank.KING, Suit.HEART), Card(None, None), Card(None, Suit.SPADE), Card(Rank.JACK, Suit.HEART),
+            Card(Rank.ACE, None), Card(None, None), Card(None, None), Card(Rank.TWO, Suit.CLUB),
+        ))
+
     def test_parse_range(self):
         self.assertSetEqual(frozenset(map(lambda cards: frozenset(map(str, cards)), parse_range('QTs'))), {
             frozenset({'Qc', 'Tc'}), frozenset({'Qd', 'Td'}), frozenset({'Qh', 'Th'}), frozenset({'Qs', 'Ts'}),
