@@ -1,7 +1,7 @@
 from abc import ABC
 
+from pokertools._actions import PokerAction
 from pokertools.limits import FixedLimit
-from pokertools.utilities import _collect
 
 
 class Stage(ABC):
@@ -114,7 +114,7 @@ class BettingStage(QueuedStage):
     def _close(self, game):
         super()._close(game)
 
-        _collect(game)
+        PokerAction.collect(game)
 
 
 class DiscardDrawStage(QueuedStage):

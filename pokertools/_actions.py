@@ -6,16 +6,67 @@ from gameframe.sequential import _SequentialAction
 
 from pokertools.cards import HoleCard
 from pokertools.stages import (
-    BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage
+    BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,
 )
-from pokertools.utilities import _update, rainbow
+from pokertools.utilities import rainbow
 
 
 class PokerAction(_SequentialAction, ABC):
     def act(self):
         super().act()
 
-        _update(self.game)
+        self.update(self.game)
+
+    @classmethod
+    def collect(cls, game):
+        effective_bet = sorted(player.bet for player in game.players)[-2]
+
+        for player in game.players:
+            bet = min(effective_bet, player.bet)
+            game._pot += bet
+            player._stack += player.bet - bet
+            player._bet = 0
+
+    @classmethod
+    def update(cls, game):
+        if game.stage._done(game):
+            game.stage._close(game)
+
+            try:
+                game._stage_index += 1
+
+                while game.stage._done(game):
+                    game._stage_index += 1
+
+                game.stage._open(game)
+            except IndexError:
+                cls.distribute(game)
+                game._actor = None
+        else:
+            game._actor = game._queue.pop(0) if game._queue else game.nature
+
+    @classmethod
+    def distribute(cls, game):
+        cls.collect(game)
+
+        for side_pot in game._side_pots:
+            amounts = [side_pot.amount // len(game.evaluators)] * len(game.evaluators)
+            amounts[0] += side_pot.amount % len(game.evaluators)
+
+            for amount, evaluator in zip(amounts, game.evaluators):
+                if len(side_pot.players) == 1:
+                    players = side_pot.players
+                else:
+                    hand = max(player._hand(evaluator) for player in side_pot.players)
+                    players = tuple(player for player in side_pot.players if player._hand(evaluator) == hand)
+
+                rewards = [amount // len(players)] * len(players)
+                rewards[0] += amount % len(players)
+
+                for player, reward in zip(players, rewards):
+                    player._stack += reward
+
+        game._pot = 0
 
 
 class DealingAction(PokerAction, ABC):
