@@ -105,45 +105,6 @@ def parse_range(pattern):
     return frozenset(card_sets)
 
 
-# TODO: IMPLEMENT TESTS FOR BELOW
-
-
-def parse_poker(game, tokens):
-    """Parses the tokens as actions and applies them the supplied poker game.
-
-    :param game: The poker game to be applied on.
-    :param tokens: The tokens to parse as actions.
-    :return: None.
-    """
-    for token in tokens:
-        if match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
-            game.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
-        elif token == 'cc':
-            game.actor.check_call()
-        elif token == 'f':
-            game.actor.fold()
-        elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
-            game.actor.discard_draw(
-                () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
-                None if (cards := match.group('drawn_cards')) is None else parse_cards(cards),
-            )
-        elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
-            game.actor.showdown(
-                None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
-            )
-        elif match := re.fullmatch(r'dh (?P<index>\d+)( (?P<cards>\w+))?', token):
-            game.actor.deal_hole(
-                game.players[int(match.group('index'))],
-                None if (cards := match.group('cards')) is None else parse_cards(cards),
-            )
-        elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
-            game.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
-        else:
-            raise ValueError('Invalid command')
-
-    return game
-
-
 def _unique(values):
     values = tuple(values)
 
