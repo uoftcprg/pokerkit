@@ -1,6 +1,5 @@
 from abc import ABC
 
-from pokertools._actions import PokerAction
 from pokertools.limits import FixedLimit
 
 
@@ -112,6 +111,7 @@ class BettingStage(QueuedStage):
             game._bet_raise_count = 0
 
     def _close(self, game):
+        from pokertools._actions import PokerAction
         super()._close(game)
 
         PokerAction.collect(game)
