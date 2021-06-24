@@ -18,7 +18,9 @@ class Limit(ABC):
 class FixedLimit(Limit):
     """FixedLimit is the class for fixed-limits."""
 
-    _max_count = 4
+    @property
+    def _max_count(self):
+        return 4
 
     def _get_max_amount(self, game):
         return self._get_min_amount(game)
@@ -27,7 +29,9 @@ class FixedLimit(Limit):
 class PotLimit(Limit):
     """PotLimit is the class for pot-limits."""
 
-    _max_count = None
+    @property
+    def _max_count(self):
+        return None
 
     def _get_max_amount(self, game):
         bets = tuple(player.bet for player in game.players)
@@ -46,7 +50,9 @@ class PotLimit(Limit):
 class NoLimit(Limit):
     """NoLimit is the class for no-limits."""
 
-    _max_count = None
+    @property
+    def _max_count(self):
+        return None
 
     def _get_max_amount(self, game):
         return game.actor.total

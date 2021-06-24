@@ -20,7 +20,7 @@ from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, QueuedStage, ShowdownStage,
     Stage,
 )
-from pokertools.utilities import parse_card, parse_cards, parse_poker, parse_range, rainbow, suited
+from pokertools.utilities import parse_card, parse_cards, parse_range, rainbow, suited
 
 __all__ = (
     'Card', 'HoleCard', 'Rank', 'Ranks', 'Suit', 'Deck', 'ShortDeck', 'StandardDeck', 'Badugi', 'Courchevel',
@@ -31,6 +31,5 @@ __all__ = (
     'PokerNature', 'PokerPlayer', 'BadugiHand', 'Hand', 'HighIndexedHand', 'IndexedHand', 'LookupHandMixin',
     'LowIndexedHand', 'Lowball27Hand', 'LowballA5Hand', 'ShortDeckHand', 'StandardHand', 'FixedLimit', 'Limit',
     'NoLimit', 'PotLimit', 'BettingStage', 'BoardDealingStage', 'DealingStage', 'DiscardDrawStage', 'HoleDealingStage',
-    'QueuedStage', 'ShowdownStage', 'Stage', 'parse_card', 'parse_cards', 'parse_poker', 'parse_range', 'rainbow',
-    'suited',
+    'QueuedStage', 'ShowdownStage', 'Stage', 'parse_card', 'parse_cards', 'parse_range', 'rainbow', 'suited',
 )

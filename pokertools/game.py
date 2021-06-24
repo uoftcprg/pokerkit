@@ -1,8 +1,11 @@
+import re
 from itertools import zip_longest
 
-from gameframe import Actor, GameFrameError, SequentialGame
+from gameframe.exceptions import GameFrameError
+from gameframe.sequential import SequentialActor, SequentialGame
 
 from pokertools.cards import HoleCard
+from pokertools.utilities import parse_cards
 
 
 class PokerGame(SequentialGame):
@@ -160,6 +163,40 @@ class PokerGame(SequentialGame):
 
         return side_pots
 
+    def parse(self, *tokens):
+        """Parses the tokens as actions and applies them this poker game.
+
+        :param tokens: The tokens to parse as actions.
+        :return: This game.
+        """
+        for token in tokens:
+            if match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
+                self.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
+            elif token == 'cc':
+                self.actor.check_call()
+            elif token == 'f':
+                self.actor.fold()
+            elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
+                self.actor.discard_draw(
+                    () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
+                    None if (cards := match.group('drawn_cards')) is None else parse_cards(cards),
+                )
+            elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
+                self.actor.showdown(
+                    None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
+                )
+            elif match := re.fullmatch(r'dh( ?P<index>\d+)?( (?P<cards>\w+))?', token):
+                self.actor.deal_hole(
+                    None if (index := match.group('index')) is None else self.players[int(index)],
+                    None if (cards := match.group('cards')) is None else parse_cards(cards),
+                )
+            elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
+                self.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
+            else:
+                raise ValueError('Invalid command')
+
+        return self
+
     def _verify(self):
         if len(self.starting_stacks) < 2:
             raise GameFrameError('Poker needs at least 2 players')
@@ -198,7 +235,7 @@ class PokerGame(SequentialGame):
             self.amount = amount
 
 
-class PokerNature(Actor):
+class PokerNature(SequentialActor):
     """PokerNature is the class for poker natures."""
 
     def __repr__(self):
@@ -296,7 +333,7 @@ class PokerNature(Actor):
         return BoardDealingAction(cards, self)
 
 
-class PokerPlayer(Actor):
+class PokerPlayer(SequentialActor):
     """PokerPlayer is the class for poker players.
 
     :param game: The game of this poker player.
@@ -575,7 +612,7 @@ class PokerPlayer(Actor):
         return self.is_active() and self._lost < self.effective_stack
 
     def _get_hand(self, evaluator):
-        return evaluator.hand(self.hole, self.game.board)
+        return evaluator.evaluate(self.hole, self.game.board)
 
     def _get_fold_action(self):
         from pokertools._actions import FoldAction
