@@ -22,7 +22,7 @@ class LookupTestCase(TestCase):
 
     @skipUnless(exists('lookups/short-hand-lookup.txt'), 'The short hand file does not exist')
     def test_short_deck_lookup(self):
-        # Generated with shortdeck package: https://github.com/amason13/shortdeck
+        # Generated with short-deck package: https://github.com/amason13/shortdeck
         with open('lookups/short-hand-lookup.txt') as file:
             lines = map(str.strip, file.readlines())
 

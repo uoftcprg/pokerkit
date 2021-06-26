@@ -1,3 +1,3 @@
-from pokertools.tests.test_game.utilities import PokerTestCaseMixin
+from pokertools.tests.test_games.utilities import PokerTestCaseMixin
 
 __all__ = 'PokerTestCaseMixin',

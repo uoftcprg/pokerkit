@@ -39,8 +39,8 @@ class Definition(ABC):
         ...
 
 
-class StaticHoleMixin(Definition, ABC):
-    """StaticHoleMixin is the mixin for all games with a static number of hole cards."""
+class StaticHoleDefinitionMixin(Definition, ABC):
+    """StaticHoleDefinitionMixin is the mixin for all game definitions with a static number of hole cards."""
 
     @property
     @abstractmethod
@@ -52,8 +52,8 @@ class StaticHoleMixin(Definition, ABC):
         ...
 
 
-class HoldEm(StaticHoleMixin, Definition, ABC):
-    """HoldEm is the abstract base class for all Hold'em games."""
+class HoldEmDefinition(StaticHoleDefinitionMixin, Definition, ABC):
+    """HoldEmDefinition is the abstract base class for all Hold'em game definitions."""
 
     @property
     def stages(self):
@@ -66,8 +66,8 @@ class HoldEm(StaticHoleMixin, Definition, ABC):
         )
 
 
-class TexasHoldEm(HoldEm):
-    """TexasHoldEm is the class for Texas Hold'em games."""
+class TexasHoldEmDefinition(HoldEmDefinition):
+    """TexasHoldEmDefinition is the class for Texas Hold'em game definitions."""
 
     @property
     def hole_card_count(self):
@@ -81,8 +81,8 @@ class TexasHoldEm(HoldEm):
         return StandardDeck()
 
 
-class OmahaHoldEm(HoldEm):
-    """OmahaHoldEm is the class for Omaha Hold'em games."""
+class OmahaHoldEmDefinition(HoldEmDefinition):
+    """OmahaHoldEmDefinition is the class for Omaha Hold'em game definitions."""
 
     @property
     def hole_card_count(self):
@@ -96,24 +96,24 @@ class OmahaHoldEm(HoldEm):
         return StandardDeck()
 
 
-class FiveCardOmahaHoldEm(OmahaHoldEm):
-    """FiveCardOmahaHoldEm is the class for 5-Card Omaha Hold'em games."""
+class FiveCardOmahaHoldEmDefinition(OmahaHoldEmDefinition):
+    """FiveCardOmahaHoldEmDefinition is the class for 5-Card Omaha Hold'em game definitions."""
 
     @property
     def hole_card_count(self):
         return 5
 
 
-class SixCardOmahaHoldEm(OmahaHoldEm):
-    """SixCardOmahaHoldEm is the class for 6-Card Omaha Hold'em games."""
+class SixCardOmahaHoldEmDefinition(OmahaHoldEmDefinition):
+    """SixCardOmahaHoldEmDefinition is the class for 6-Card Omaha Hold'em game definitions."""
 
     @property
     def hole_card_count(self):
         return 6
 
 
-class GreekHoldEm(HoldEm):
-    """GreekHoldEm is the class for Greek Hold'em games."""
+class GreekHoldEmDefinition(HoldEmDefinition):
+    """GreekHoldEmDefinition is the class for Greek Hold'em game definitions."""
 
     @property
     def hole_card_count(self):
@@ -127,8 +127,8 @@ class GreekHoldEm(HoldEm):
         return StandardDeck()
 
 
-class ShortDeckHoldEm(HoldEm):
-    """ShortDeckHoldEm is the class for Short-deck Hold'em games."""
+class ShortDeckHoldEmDefinition(HoldEmDefinition):
+    """ShortDeckHoldEmDefinition is the class for Short-deck Hold'em game definitions."""
 
     @property
     def hole_card_count(self):
@@ -142,13 +142,13 @@ class ShortDeckHoldEm(HoldEm):
         return ShortDeck()
 
 
-class Draw(StaticHoleMixin, Definition, ABC):
-    """Draw is the abstract base class for all draw games."""
+class DrawDefinition(StaticHoleDefinitionMixin, Definition, ABC):
+    """DrawDefinition is the abstract base class for all draw game definitions."""
     ...
 
 
-class SingleDraw(Draw, ABC):
-    """SingleDraw is the abstract base class for all single draw games."""
+class SingleDrawDefinition(DrawDefinition, ABC):
+    """SingleDrawDefinition is the abstract base class for all single draw game definitions."""
 
     @property
     def stages(self):
@@ -159,8 +159,8 @@ class SingleDraw(Draw, ABC):
         )
 
 
-class TripleDraw(Draw, ABC):
-    """TripleDraw is the abstract base class for all triple draw games."""
+class TripleDrawDefinition(DrawDefinition, ABC):
+    """TripleDrawDefinition is the abstract base class for all triple draw game definitions."""
 
     @property
     def stages(self):
@@ -173,8 +173,8 @@ class TripleDraw(Draw, ABC):
         )
 
 
-class FiveCardDraw(SingleDraw):
-    """FiveCardDraw is the class for Five-Card Draw games."""
+class FiveCardDrawDefinition(SingleDrawDefinition):
+    """FiveCardDrawDefinition is the class for Five-Card Draw game definitions."""
 
     @property
     def hole_card_count(self):
@@ -188,8 +188,8 @@ class FiveCardDraw(SingleDraw):
         return StandardDeck()
 
 
-class Badugi(TripleDraw):
-    """Badugi is the class for Badugi games."""
+class BadugiDefinition(TripleDrawDefinition):
+    """BadugiDefinition is the class for Badugi game definitions."""
 
     @property
     def hole_card_count(self):
@@ -203,8 +203,8 @@ class Badugi(TripleDraw):
         return StandardDeck()
 
 
-class SingleDrawLowball27(SingleDraw):
-    """SingleDrawLowball27 is the class for 2-7 Single Draw Lowball games."""
+class SingleDrawLowball27Definition(SingleDrawDefinition):
+    """SingleDrawLowball27Definition is the class for 2-7 Single Draw Lowball game definitions."""
 
     @property
     def hole_card_count(self):
@@ -218,8 +218,8 @@ class SingleDrawLowball27(SingleDraw):
         return StandardDeck()
 
 
-class TripleDrawLowball27(TripleDraw):
-    """TripleDrawLowball27 is the class for 2-7 Triple Draw Lowball games."""
+class TripleDrawLowball27Definition(TripleDrawDefinition):
+    """TripleDrawLowball27Definition is the class for 2-7 Triple Draw Lowball game definitions."""
 
     @property
     def hole_card_count(self):
@@ -233,8 +233,8 @@ class TripleDrawLowball27(TripleDraw):
         return StandardDeck()
 
 
-class Courchevel(Definition):
-    """Courchevel is the class for Courchevel games."""
+class CourchevelDefinition(Definition):
+    """CourchevelDefinition is the class for Courchevel game definitions."""
 
     @property
     def stages(self):
@@ -254,8 +254,8 @@ class Courchevel(Definition):
         return StandardDeck()
 
 
-class KuhnPoker(Definition):
-    """KuhnPoker is the class for Kuhn Poker games."""
+class KuhnPokerDefinition(Definition):
+    """KuhnPokerDefinition is the class for Kuhn Poker game definitions."""
 
     @property
     def stages(self):
