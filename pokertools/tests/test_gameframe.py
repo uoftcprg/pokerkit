@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 
 
-class DeckTestCase(TestCase):
+class GameFrameTestCase(TestCase):
     ...  # TODO
 
 
