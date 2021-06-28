@@ -43,6 +43,13 @@ class NoLimitFiveCardDrawTestCase(PotLimitFiveCardDrawTestCase, TestCase):
             'br 100', 'cc', 'cc',
             's', 's', 's',
         ), (False, True, False, False), (995, 1225, 890, 890))
+        self.assert_terminal_poker_game(self.GAME_TYPE(1, (), (100, 100, 100, 100)).parse(
+            'dh 0 8cKdJd2h5d', 'dh 1 JsAd3d4d7c', 'dh 2 2c5sTsQsAs', 'dh 3 AcAh8s9c3s',
+            'br 5', 'f', 'cc', 'cc',
+            'dd Jd2h5d Jc6s7d', 'dd 2c Ks', 'dd 8s9c3s KhKcTh',
+            'cc', 'cc', 'br 10', 'f', 'br 20', 'cc',
+            's', 's',
+        ), (False, False, True, False), (94, 99, 133, 74))
 
 
 if __name__ == '__main__':
