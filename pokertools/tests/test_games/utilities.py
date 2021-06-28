@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from itertools import zip_longest
 
 from gameframe.tests import GameFrameTestCaseMixin
 
@@ -10,7 +11,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
     def assert_terminal_poker_game(cls, game, statuses, stacks):
         assert game.is_terminal()
 
-        for player, status, stack in zip(game.players, statuses, stacks):
+        for player, status, stack in zip_longest(game.players, statuses, stacks):
             assert player._status == status
             assert player.stack == stack
 

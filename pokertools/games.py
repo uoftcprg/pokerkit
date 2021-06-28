@@ -38,8 +38,6 @@ NoLimitFiveCardDraw = partial(PokerGame, NoLimit(), FiveCardDrawDefinition())
 
 FixedLimitBadugi = partial(PokerGame, FixedLimit(), BadugiDefinition())
 
-FixedLimitSingleDrawLowball27 = partial(PokerGame, FixedLimit(), SingleDrawLowball27Definition())
-PotLimitSingleDrawLowball27 = partial(PokerGame, PotLimit(), SingleDrawLowball27Definition())
 NoLimitSingleDrawLowball27 = partial(PokerGame, NoLimit(), SingleDrawLowball27Definition())
 
 FixedLimitTripleDrawLowball27 = partial(PokerGame, FixedLimit(), TripleDrawLowball27Definition())
