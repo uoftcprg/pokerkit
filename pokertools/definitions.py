@@ -12,18 +12,16 @@ from pokertools.stages import BettingStage, BoardDealingStage, DiscardDrawStage,
 class Definition(ABC):
     """Definition is the abstract base class for all poker definitions."""
 
-    @property
     @abstractmethod
-    def stages(self):
+    def create_stages(self):
         """Returns the stages of the poker game defined by this poker definition.
 
         :return: The stages of this poker definition.
         """
         ...
 
-    @property
     @abstractmethod
-    def evaluators(self):
+    def create_evaluators(self):
         """Returns the evaluators of the poker game defined by this poker definition.
 
         :return: The evaluators of this poker definition.
@@ -55,8 +53,7 @@ class StaticHoleDefinitionMixin(Definition, ABC):
 class HoldEmDefinition(StaticHoleDefinitionMixin, Definition, ABC):
     """HoldEmDefinition is the abstract base class for all Hold'em game definitions."""
 
-    @property
-    def stages(self):
+    def create_stages(self):
         return (
             HoleDealingStage(False, self.hole_card_count), BettingStage(False),
             BoardDealingStage(3), BettingStage(False),
@@ -73,9 +70,8 @@ class TexasHoldEmDefinition(HoldEmDefinition):
     def hole_card_count(self):
         return 2
 
-    @property
-    def evaluators(self):
-        return StandardEvaluator()
+    def create_evaluators(self):
+        return StandardEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -88,9 +84,8 @@ class OmahaHoldEmDefinition(HoldEmDefinition):
     def hole_card_count(self):
         return 4
 
-    @property
-    def evaluators(self):
-        return OmahaEvaluator()
+    def create_evaluators(self):
+        return OmahaEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -119,9 +114,8 @@ class GreekHoldEmDefinition(HoldEmDefinition):
     def hole_card_count(self):
         return 2
 
-    @property
-    def evaluators(self):
-        return GreekEvaluator()
+    def create_evaluators(self):
+        return GreekEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -134,9 +128,8 @@ class ShortDeckHoldEmDefinition(HoldEmDefinition):
     def hole_card_count(self):
         return 2
 
-    @property
-    def evaluators(self):
-        return ShortDeckEvaluator()
+    def create_evaluators(self):
+        return ShortDeckEvaluator(),
 
     def create_deck(self):
         return ShortDeck()
@@ -150,8 +143,7 @@ class DrawDefinition(StaticHoleDefinitionMixin, Definition, ABC):
 class SingleDrawDefinition(DrawDefinition, ABC):
     """SingleDrawDefinition is the abstract base class for all single draw game definitions."""
 
-    @property
-    def stages(self):
+    def create_stages(self):
         return (
             HoleDealingStage(False, self.hole_card_count), BettingStage(False),
             DiscardDrawStage(), BettingStage(False),
@@ -162,8 +154,7 @@ class SingleDrawDefinition(DrawDefinition, ABC):
 class TripleDrawDefinition(DrawDefinition, ABC):
     """TripleDrawDefinition is the abstract base class for all triple draw game definitions."""
 
-    @property
-    def stages(self):
+    def create_stages(self):
         return (
             HoleDealingStage(False, self.hole_card_count), BettingStage(False),
             DiscardDrawStage(), BettingStage(False),
@@ -180,9 +171,8 @@ class FiveCardDrawDefinition(SingleDrawDefinition):
     def hole_card_count(self):
         return 5
 
-    @property
-    def evaluators(self):
-        return StandardEvaluator()
+    def create_evaluators(self):
+        return StandardEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -195,9 +185,8 @@ class BadugiDefinition(TripleDrawDefinition):
     def hole_card_count(self):
         return 4
 
-    @property
-    def evaluators(self):
-        return BadugiEvaluator()
+    def create_evaluators(self):
+        return BadugiEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -210,9 +199,8 @@ class SingleDrawLowball27Definition(SingleDrawDefinition):
     def hole_card_count(self):
         return 5
 
-    @property
-    def evaluators(self):
-        return Lowball27Evaluator()
+    def create_evaluators(self):
+        return Lowball27Evaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -225,9 +213,8 @@ class TripleDrawLowball27Definition(TripleDrawDefinition):
     def hole_card_count(self):
         return 5
 
-    @property
-    def evaluators(self):
-        return Lowball27Evaluator()
+    def create_evaluators(self):
+        return Lowball27Evaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -236,8 +223,7 @@ class TripleDrawLowball27Definition(TripleDrawDefinition):
 class CourchevelDefinition(Definition):
     """CourchevelDefinition is the class for Courchevel game definitions."""
 
-    @property
-    def stages(self):
+    def create_stages(self):
         return (
             HoleDealingStage(False, 5), BoardDealingStage(1), BettingStage(False),
             BoardDealingStage(2), BettingStage(False),
@@ -246,9 +232,8 @@ class CourchevelDefinition(Definition):
             ShowdownStage(),
         )
 
-    @property
-    def evaluators(self):
-        return OmahaEvaluator()
+    def create_evaluators(self):
+        return OmahaEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -257,13 +242,11 @@ class CourchevelDefinition(Definition):
 class KuhnPokerDefinition(Definition):
     """KuhnPokerDefinition is the class for Kuhn Poker game definitions."""
 
-    @property
-    def stages(self):
+    def create_stages(self):
         return HoleDealingStage(False, 1), BettingStage(1), ShowdownStage()
 
-    @property
-    def evaluators(self):
-        return RankEvaluator()
+    def create_evaluators(self):
+        return RankEvaluator(),
 
     def create_deck(self):
         return Deck((Card(Rank.JACK, Suit.SPADE), Card(Rank.QUEEN, Suit.SPADE), Card(Rank.KING, Suit.SPADE)))

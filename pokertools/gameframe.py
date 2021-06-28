@@ -32,9 +32,11 @@ class PokerGame(SequentialGame):
         self.__ante = ante
         self.__blinds = tuple(blinds)
         self.__starting_stacks = tuple(starting_stacks)
+        self.__stages = definition.create_stages()
+        self.__evaluators = definition.create_evaluators()
 
         self._deck = definition.create_deck()
-        self._stage_index = 0
+        self._stage = self.stages[0]
         self._pot = 0
         self._board = []
         self._queue = []
@@ -91,7 +93,7 @@ class PokerGame(SequentialGame):
 
         :return: The stages of this poker game.
         """
-        return self.__definition.stages
+        return self.__stages
 
     @property
     def evaluators(self):
@@ -99,7 +101,7 @@ class PokerGame(SequentialGame):
 
         :return: The evaluators of this poker game.
         """
-        return self.__definition.evaluators
+        return self.__evaluators
 
     @property
     def deck(self):
@@ -115,7 +117,7 @@ class PokerGame(SequentialGame):
 
         :return: The stage of this poker game.
         """
-        return self.stages[self._stage_index]
+        return self._stage
 
     @property
     def pot(self):
@@ -155,7 +157,7 @@ class PokerGame(SequentialGame):
             cur = min(player.put for player in players)
             amount = len(players) * (cur - prev)
 
-            side_pots.append(self._SidePot((player for player in players if player.active), amount))
+            side_pots.append(self._SidePot(filter(PokerPlayer.is_active, players), amount))
 
             players.pop(0)
             pot += amount
@@ -170,7 +172,14 @@ class PokerGame(SequentialGame):
         :return: This game.
         """
         for token in tokens:
-            if match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
+            if match := re.fullmatch(r'dh( (?P<index>\d+))?( (?P<cards>\w+))?', token):
+                self.actor.deal_hole(
+                    None if (index := match.group('index')) is None else self.players[int(index)],
+                    None if (cards := match.group('cards')) is None else parse_cards(cards),
+                )
+            elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
+                self.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
+            elif match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
                 self.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
             elif token == 'cc':
                 self.actor.check_call()
@@ -185,13 +194,6 @@ class PokerGame(SequentialGame):
                 self.actor.showdown(
                     None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
                 )
-            elif match := re.fullmatch(r'dh( ?P<index>\d+)?( (?P<cards>\w+))?', token):
-                self.actor.deal_hole(
-                    None if (index := match.group('index')) is None else self.players[int(index)],
-                    None if (cards := match.group('cards')) is None else parse_cards(cards),
-                )
-            elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
-                self.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
             else:
                 raise ValueError('Invalid command')
 
@@ -200,7 +202,7 @@ class PokerGame(SequentialGame):
     def _verify(self):
         if len(self.starting_stacks) < 2:
             raise GameFrameError('Poker needs at least 2 players')
-        elif self.ante <= 0:
+        elif self.ante < 0:
             raise GameFrameError('The ante must be a positive value')
         elif any(blind <= 0 for blind in self.blinds):
             raise GameFrameError('All blinds must be a positive value')
@@ -404,7 +406,7 @@ class PokerPlayer(SequentialActor):
 
         :return: The effective stack of this poker player.
         """
-        active_players = tuple(player for player in self.game.players if player.active)
+        active_players = tuple(player for player in self.game.players if player.is_active())
 
         if self.is_mucked() or len(active_players) < 2:
             return 0
@@ -430,29 +432,6 @@ class PokerPlayer(SequentialActor):
         :return: The hands of this poker player.
         """
         return (self._get_hand(evaluator) for evaluator in self.game.evaluators)
-
-    def is_mucked(self):
-        """Returns whether or not the player has mucked his/her hand.
-
-        :return: True if this poker player has mucked his/her hand, else False.
-        """
-        return self._status is False
-
-    def is_shown(self):
-        """Returns whether or not the player has shown his/her hand.
-
-        :return: True if this poker player has shown his/her hand, else False.
-        """
-        return self._status is True
-
-    def is_active(self):
-        """Returns whether or not the player is active.
-
-        The player is active if he/she is in a hand.
-
-        :return: True if this poker player is active, else False.
-        """
-        return not self.is_mucked
 
     @property
     def check_call_amount(self):
@@ -496,6 +475,29 @@ class PokerPlayer(SequentialActor):
     @property
     def _lost(self):
         return self.starting_stack - self.stack
+
+    def is_mucked(self):
+        """Returns whether or not the player has mucked his/her hand.
+
+        :return: True if this poker player has mucked his/her hand, else False.
+        """
+        return self._status is False
+
+    def is_shown(self):
+        """Returns whether or not the player has shown his/her hand.
+
+        :return: True if this poker player has shown his/her hand, else False.
+        """
+        return self._status is True
+
+    def is_active(self):
+        """Returns whether or not the player is active.
+
+        The player is active if he/she is in a hand.
+
+        :return: True if this poker player is active, else False.
+        """
+        return not self.is_mucked()
 
     def is_showdown_necessary(self):
         """Returns whether or not showdown is necessary to win the pot.

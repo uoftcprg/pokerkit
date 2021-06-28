@@ -4,7 +4,15 @@ from gameframe.tests import GameFrameTestCaseMixin
 
 
 class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
-    POKER_GAME_TYPE = None
+    GAME_TYPE = None
+
+    @classmethod
+    def assert_terminal_poker_game(cls, game, statuses, stacks):
+        assert game.is_terminal()
+
+        for player, status, stack in zip(game.players, statuses, stacks):
+            assert player._status == status
+            assert player.stack == stack
 
     def test_monte_carlo(self):
         ...
@@ -27,6 +35,10 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
     @abstractmethod
     def test_3_max(self):
+        ...
+
+    @abstractmethod
+    def test_4_max(self):
         ...
 
     @abstractmethod

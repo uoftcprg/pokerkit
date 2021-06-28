@@ -50,8 +50,6 @@ The following features are present in PokerTools...
       - No-Limit 5-Card Draw
    - Badugi
       - Fixed-Limit Badugi
-      - Pot-Limit Badugi
-      - No-Limit Badugi
    - 2-to-7 Single Draw Lowball
       - Fixed-Limit 2-to-7 Single Draw Lowball
       - Pot-Limit 2-to-7 Single Draw Lowball

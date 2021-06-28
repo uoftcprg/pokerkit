@@ -5,12 +5,15 @@ from pokertools.tests import PokerTestCaseMixin
 
 
 class FixedLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = FixedLimitSingleDrawLowball27
+    GAME_TYPE = FixedLimitSingleDrawLowball27
 
     def test_heads_up(self):
         ...
 
     def test_3_max(self):
+        ...
+
+    def test_4_max(self):
         ...
 
     def test_6_max(self):
@@ -21,12 +24,15 @@ class FixedLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
 
 
 class PotLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = PotLimitSingleDrawLowball27
+    GAME_TYPE = PotLimitSingleDrawLowball27
 
     def test_heads_up(self):
         ...
 
     def test_3_max(self):
+        ...
+
+    def test_4_max(self):
         ...
 
     def test_6_max(self):
@@ -37,19 +43,22 @@ class PotLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
 
 
 class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = NoLimitSingleDrawLowball27
+    GAME_TYPE = NoLimitSingleDrawLowball27
 
     def test_heads_up(self):
-        ...
+        super().test_heads_up()
 
     def test_3_max(self):
-        ...
+        super().test_3_max()
+
+    def test_4_max(self):
+        super().test_4_max()
 
     def test_6_max(self):
-        ...
+        super().test_6_max()
 
     def test_9_max(self):
-        ...
+        super().test_9_max()
 
 
 if __name__ == '__main__':

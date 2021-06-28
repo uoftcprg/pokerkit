@@ -37,8 +37,6 @@ PotLimitFiveCardDraw = partial(PokerGame, PotLimit(), FiveCardDrawDefinition())
 NoLimitFiveCardDraw = partial(PokerGame, NoLimit(), FiveCardDrawDefinition())
 
 FixedLimitBadugi = partial(PokerGame, FixedLimit(), BadugiDefinition())
-PotLimitBadugi = partial(PokerGame, PotLimit(), BadugiDefinition())
-NoLimitBadugi = partial(PokerGame, NoLimit(), BadugiDefinition())
 
 FixedLimitSingleDrawLowball27 = partial(PokerGame, FixedLimit(), SingleDrawLowball27Definition())
 PotLimitSingleDrawLowball27 = partial(PokerGame, PotLimit(), SingleDrawLowball27Definition())
@@ -52,4 +50,4 @@ FixedLimitCourchevel = partial(PokerGame, FixedLimit(), CourchevelDefinition())
 PotLimitCourchevel = partial(PokerGame, PotLimit(), CourchevelDefinition())
 NoLimitCourchevel = partial(PokerGame, NoLimit(), CourchevelDefinition())
 
-KuhnPoker = partial(PokerGame, FixedLimit(), KuhnPokerDefinition())
+KuhnPoker = partial(PokerGame, FixedLimit(), KuhnPokerDefinition(), 1, (), (2, 2))

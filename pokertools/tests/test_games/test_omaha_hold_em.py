@@ -5,12 +5,15 @@ from pokertools.tests import PokerTestCaseMixin
 
 
 class FixedLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = FixedLimitOmahaHoldEm
+    GAME_TYPE = FixedLimitOmahaHoldEm
 
     def test_heads_up(self):
         ...
 
     def test_3_max(self):
+        ...
+
+    def test_4_max(self):
         ...
 
     def test_6_max(self):
@@ -21,12 +24,15 @@ class FixedLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
 
 class PotLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = PotLimitOmahaHoldEm
+    GAME_TYPE = PotLimitOmahaHoldEm
 
     def test_heads_up(self):
         ...
 
     def test_3_max(self):
+        ...
+
+    def test_4_max(self):
         ...
 
     def test_6_max(self):
@@ -37,19 +43,22 @@ class PotLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
 
 class NoLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = NoLimitOmahaHoldEm
+    GAME_TYPE = NoLimitOmahaHoldEm
 
     def test_heads_up(self):
-        ...
+        super().test_heads_up()
 
     def test_3_max(self):
-        ...
+        super().test_3_max()
+
+    def test_4_max(self):
+        super().test_4_max()
 
     def test_6_max(self):
-        ...
+        super().test_6_max()
 
     def test_9_max(self):
-        ...
+        super().test_9_max()
 
 
 if __name__ == '__main__':

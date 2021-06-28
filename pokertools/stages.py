@@ -1,5 +1,6 @@
 from abc import ABC
 
+from pokertools.gameframe import PokerPlayer
 from pokertools.limits import FixedLimit
 
 
@@ -7,7 +8,7 @@ class Stage(ABC):
     """Stage is the abstract base class for all stages."""
 
     def _is_done(self, game):
-        return sum(player.active for player in game.players) == 1
+        return sum(map(PokerPlayer.is_active, game.players)) == 1
 
     def _open(self, game): ...
 
@@ -52,7 +53,7 @@ class HoleDealingStage(DealingStage):
 
     def _is_done(self, game):
         return super()._is_done(game) \
-               or all(len(player.hole) == self._get_deal_target(game) for player in game.players if player.active)
+               or all(len(player.hole) == self._get_deal_target(game) for player in game.players if player.is_active())
 
 
 class BoardDealingStage(DealingStage):
@@ -86,18 +87,18 @@ class BettingStage(QueuedStage):
         self._big = big
 
     def _is_done(self, game):
-        return super()._is_done(game) or all(not player._relevant for player in game.players)
+        return super()._is_done(game) or all(not player._is_relevant() for player in game.players)
 
     def _open(self, game):
         super()._open(game)
 
-        players = tuple(player for player in game.players if player._relevant)
+        players = tuple(player for player in game.players if player._is_relevant())
         max_blinded_player = max(players, key=lambda player: (player.bet, player.index))
 
-        opener_index = (max_blinded_player.index + 1) % len(players)
+        opener_index = (players.index(max_blinded_player) + 1) % len(players)
 
         game._actor = players[opener_index]
-        game._queue = players[opener_index + 1:] + players[:opener_index]
+        game._queue = list(players[opener_index + 1:] + players[:opener_index])
         game._max_delta = max(game.ante, max(game.blinds, default=0))
 
         if self._big and isinstance(game.limit, FixedLimit):
@@ -123,11 +124,11 @@ class DiscardDrawStage(QueuedStage):
     def _open(self, game):
         super()._open(game)
 
-        players = tuple(player for player in game.players if player.active)
-        opener = next(player for player in game.players if player.active)
+        players = tuple(player for player in game.players if player.is_active())
+        opener = next(player for player in game.players if player.is_active())
 
         game._actor = opener
-        game._queue = players[opener.index + 1:] + players[:opener.index]
+        game._queue = list(players[players.index(opener) + 1:] + players[:players.index(opener)])
 
 
 class ShowdownStage(QueuedStage):
@@ -136,12 +137,12 @@ class ShowdownStage(QueuedStage):
     def _open(self, game):
         super()._open(game)
 
-        players = tuple(player for player in game.players if player.active)
+        players = tuple(player for player in game.players if player.is_active())
 
-        if game._aggressor is None or all(player.mucked or player.stack == 0 for player in game.players):
-            opener = next(player for player in game.players if player.active)
+        if game._aggressor is None:
+            opener = next(player for player in game.players if player.is_active())
         else:
             opener = game._aggressor
 
         game._actor = opener
-        game._queue = players[opener.index + 1:] + players[:opener.index]
+        game._queue = list(players[players.index(opener) + 1:] + players[:players.index(opener)])

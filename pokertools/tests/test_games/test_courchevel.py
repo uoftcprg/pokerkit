@@ -5,12 +5,15 @@ from pokertools.tests import PokerTestCaseMixin
 
 
 class FixedLimitCourchevelTestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = FixedLimitCourchevel
+    GAME_TYPE = FixedLimitCourchevel
 
     def test_heads_up(self):
         ...
 
     def test_3_max(self):
+        ...
+
+    def test_4_max(self):
         ...
 
     def test_6_max(self):
@@ -21,12 +24,15 @@ class FixedLimitCourchevelTestCase(PokerTestCaseMixin, TestCase):
 
 
 class PotLimitCourchevelTestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = PotLimitCourchevel
+    GAME_TYPE = PotLimitCourchevel
 
     def test_heads_up(self):
         ...
 
     def test_3_max(self):
+        ...
+
+    def test_4_max(self):
         ...
 
     def test_6_max(self):
@@ -37,19 +43,22 @@ class PotLimitCourchevelTestCase(PokerTestCaseMixin, TestCase):
 
 
 class NoLimitCourchevelTestCase(PokerTestCaseMixin, TestCase):
-    POKER_GAME_TYPE = NoLimitCourchevel
+    GAME_TYPE = NoLimitCourchevel
 
     def test_heads_up(self):
-        ...
+        super().test_heads_up()
 
     def test_3_max(self):
-        ...
+        super().test_3_max()
+
+    def test_4_max(self):
+        super().test_4_max()
 
     def test_6_max(self):
-        ...
+        super().test_6_max()
 
     def test_9_max(self):
-        ...
+        super().test_9_max()
 
 
 if __name__ == '__main__':
