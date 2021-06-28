@@ -18,7 +18,7 @@ class PotLimitFiveCardDrawTestCase(PokerTestCaseMixin, TestCase):
         ...
 
 
-class NoLimitFiveCardDrawTestCase(PokerTestCaseMixin, TestCase):
+class NoLimitFiveCardDrawTestCase(PotLimitFiveCardDrawTestCase, TestCase):
     GAME_TYPE = NoLimitFiveCardDraw
 
     def test_hands(self):

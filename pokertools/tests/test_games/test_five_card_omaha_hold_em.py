@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from pokertools import FixedLimitFiveCardOmahaHoldEm, NoLimitFiveCardOmahaHoldEm, PotLimitFiveCardOmahaHoldEm
+from pokertools import FixedLimitFiveCardOmahaHoldEm, PotLimitFiveCardOmahaHoldEm
 from pokertools.tests import PokerTestCaseMixin
 
 
@@ -16,13 +16,6 @@ class PotLimitFiveCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
     def test_hands(self):
         ...
-
-
-class NoLimitFiveCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
-    GAME_TYPE = NoLimitFiveCardOmahaHoldEm
-
-    def test_hands(self):
-        super().test_hands()
 
 
 if __name__ == '__main__':

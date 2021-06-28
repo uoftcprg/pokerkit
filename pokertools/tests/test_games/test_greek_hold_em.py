@@ -18,7 +18,7 @@ class PotLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ...
 
 
-class NoLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
+class NoLimitGreekHoldEmTestCase(PotLimitGreekHoldEmTestCase, TestCase):
     GAME_TYPE = NoLimitGreekHoldEm
 
     def test_hands(self):

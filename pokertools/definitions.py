@@ -220,25 +220,6 @@ class TripleDrawLowball27Definition(TripleDrawDefinition):
         return StandardDeck()
 
 
-class CourchevelDefinition(Definition):
-    """CourchevelDefinition is the class for Courchevel game definitions."""
-
-    def create_stages(self):
-        return (
-            HoleDealingStage(False, 5), BoardDealingStage(1), BettingStage(False),
-            BoardDealingStage(2), BettingStage(False),
-            BoardDealingStage(1), BettingStage(True),
-            BoardDealingStage(1), BettingStage(True),
-            ShowdownStage(),
-        )
-
-    def create_evaluators(self):
-        return OmahaEvaluator(),
-
-    def create_deck(self):
-        return StandardDeck()
-
-
 class KuhnPokerDefinition(Definition):
     """KuhnPokerDefinition is the class for Kuhn Poker game definitions."""
 
