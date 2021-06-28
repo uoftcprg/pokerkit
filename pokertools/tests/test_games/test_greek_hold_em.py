@@ -7,58 +7,22 @@ from pokertools.tests import PokerTestCaseMixin
 class FixedLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = FixedLimitGreekHoldEm
 
-    def test_heads_up(self):
-        ...
-
-    def test_3_max(self):
-        ...
-
-    def test_4_max(self):
-        ...
-
-    def test_6_max(self):
-        ...
-
-    def test_9_max(self):
+    def test_hands(self):
         ...
 
 
 class PotLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = PotLimitGreekHoldEm
 
-    def test_heads_up(self):
-        ...
-
-    def test_3_max(self):
-        ...
-
-    def test_4_max(self):
-        ...
-
-    def test_6_max(self):
-        ...
-
-    def test_9_max(self):
+    def test_hands(self):
         ...
 
 
 class NoLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = NoLimitGreekHoldEm
 
-    def test_heads_up(self):
-        super().test_heads_up()
-
-    def test_3_max(self):
-        super().test_3_max()
-
-    def test_4_max(self):
-        super().test_4_max()
-
-    def test_6_max(self):
-        super().test_6_max()
-
-    def test_9_max(self):
-        super().test_9_max()
+    def test_hands(self):
+        super().test_hands()
 
 
 if __name__ == '__main__':

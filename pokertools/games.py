@@ -42,7 +42,6 @@ NoLimitSingleDrawLowball27 = partial(PokerGame, NoLimit(), SingleDrawLowball27De
 
 FixedLimitTripleDrawLowball27 = partial(PokerGame, FixedLimit(), TripleDrawLowball27Definition())
 PotLimitTripleDrawLowball27 = partial(PokerGame, PotLimit(), TripleDrawLowball27Definition())
-NoLimitTripleDrawLowball27 = partial(PokerGame, NoLimit(), TripleDrawLowball27Definition())
 
 FixedLimitCourchevel = partial(PokerGame, FixedLimit(), CourchevelDefinition())
 PotLimitCourchevel = partial(PokerGame, PotLimit(), CourchevelDefinition())

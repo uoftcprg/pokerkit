@@ -7,7 +7,7 @@ from pokertools.tests import PokerTestCaseMixin
 class FixedLimitBadugiTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = FixedLimitBadugi
 
-    def test_heads_up(self):
+    def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (100, 100)).parse(
             'dh 0 KhQs9cTs', 'dh 1 4s5d8d9d',
             'br', 'f',
@@ -48,7 +48,6 @@ class FixedLimitBadugiTestCase(PokerTestCaseMixin, TestCase):
             's', 's',
         ), (True, True), (82, 118))
 
-    def test_3_max(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2, 4), (100, 100, 100)).parse(
             'dh 0 KhQs9cTs', 'dh 1 4s5d8d9d', 'dh 2 KcTc8s3h',
             'f', 'f',
@@ -89,7 +88,6 @@ class FixedLimitBadugiTestCase(PokerTestCaseMixin, TestCase):
             's', 's',
         ), (False, True, True), (47, 50, 103))
 
-    def test_4_max(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2, 4), (100, 100, 100, 100)).parse(
             'dh 0 KhQs9cTs', 'dh 1 4s5d8d9d', 'dh 2 KcTc8s3h', 'dh 3 2s4c6dJc',
             'f', 'f', 'f',
@@ -130,7 +128,6 @@ class FixedLimitBadugiTestCase(PokerTestCaseMixin, TestCase):
             's', 's',
         ), (False, True, False, True), (96, 120, 100, 84))
 
-    def test_6_max(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2, 4, 8, 16), (100, 50, 100, 50, 100, 50)).parse(
             'dh 0', 'dh 1', 'dh 2', 'dh 3', 'dh 4', 'dh 5',
             'f', 'f', 'cc', 'cc', 'cc', 'cc',
@@ -140,7 +137,6 @@ class FixedLimitBadugiTestCase(PokerTestCaseMixin, TestCase):
             'br', 'f',
         ), (False, False, None, False, False, False), (98, 33, 170, 17, 83, 49))
 
-    def test_9_max(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (50, 50, 50, 50, 50, 50, 50, 50, 50)).parse(
             'dh 0', 'dh 1', 'dh 2', 'dh 3', 'dh 4', 'dh 5', 'dh 6', 'dh 7', 'dh 8',
             'f', 'f', 'f', 'br', 'cc', 'f', 'f', 'f', 'cc',

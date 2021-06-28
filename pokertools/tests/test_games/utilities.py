@@ -9,11 +9,11 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
     @classmethod
     def assert_terminal_poker_game(cls, game, statuses, stacks):
-        assert game.is_terminal()
+        assert game.is_terminal(), 'Game is not terminal'
 
         for player, status, stack in zip_longest(game.players, statuses, stacks):
-            assert player._status == status
-            assert player.stack == stack
+            assert player._status == status, f'Status of player {player.index}: {player._status} does not equal {status}'
+            assert player.stack == stack, f'Stack of player {player.index}: {player.stack} does not equal {stack}'
 
     def test_monte_carlo(self):
         ...
@@ -31,21 +31,5 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
         ...
 
     @abstractmethod
-    def test_heads_up(self):
-        ...
-
-    @abstractmethod
-    def test_3_max(self):
-        ...
-
-    @abstractmethod
-    def test_4_max(self):
-        ...
-
-    @abstractmethod
-    def test_6_max(self):
-        ...
-
-    @abstractmethod
-    def test_9_max(self):
+    def test_hands(self):
         ...
