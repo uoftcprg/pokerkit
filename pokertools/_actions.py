@@ -1,74 +1,83 @@
 from abc import ABC, abstractmethod
 from functools import partial
+from itertools import filterfalse
+from numbers import Integral
+from operator import is_
 from random import sample
 
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
 from pokertools.cards import HoleCard
+from pokertools.gameframe import PokerPlayer
 from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,
 )
-from pokertools.utilities import _unique
+from pokertools.utilities import _rotate, _unique
+
+
+def collect(game):
+    effective_bet = sorted(map(PokerPlayer.bet.fget, game.players))[-2]
+
+    for player in game.players:
+        bet = min(effective_bet, player.bet)
+        game._pot += bet
+        player._stack += player.bet - bet
+        player._bet = 0
+
+
+def update(game):
+    if game.stage._is_done(game):
+        game.stage._close(game)
+
+        try:
+            index = game.stages.index(game.stage) + 1
+
+            while game.stages[index]._is_done(game):
+                index += 1
+
+            game._stage = game.stages[index]
+            game.stage._open(game)
+        except IndexError:
+            distribute(game)
+            game._actor = None
+    else:
+        game._actor = game._queue.pop(0) if game._queue else game.nature
+
+
+def distribute(game):
+    collect(game)
+
+    for side_pot in game._side_pots:
+        for amount, evaluator in zip(allocate(side_pot.amount, len(game.evaluators)), game.evaluators):
+            if len(side_pot.players) == 1:
+                players = side_pot.players
+            else:
+                hand = max(player._get_hand(evaluator) for player in side_pot.players)
+                players = tuple(player for player in side_pot.players if player._get_hand(evaluator) == hand)
+
+            for player, share in zip(players, allocate(amount, len(players))):
+                player._stack += share
+
+    game._pot = 0
+
+
+def allocate(amount, count):
+    if isinstance(amount, Integral):
+        amounts = [amount // count] * count
+        amounts[0] += amount % count
+    else:
+        amounts = [amount / count] * count
+        amounts[0] += amount - sum(amounts)
+
+    return amounts
 
 
 class PokerAction(_SequentialAction, ABC):
     def act(self):
         super().act()
 
-        self.update(self.game)
-
-    @classmethod
-    def collect(cls, game):
-        effective_bet = sorted(player.bet for player in game.players)[-2]
-
-        for player in game.players:
-            bet = min(effective_bet, player.bet)
-            game._pot += bet
-            player._stack += player.bet - bet
-            player._bet = 0
-
-    @classmethod
-    def update(cls, game):
-        if game.stage._is_done(game):
-            game.stage._close(game)
-
-            try:
-                index = game.stages.index(game.stage) + 1
-
-                while game.stages[index]._is_done(game):
-                    index += 1
-
-                game._stage = game.stages[index]
-                game.stage._open(game)
-            except IndexError:
-                cls.distribute(game)
-                game._actor = None
-        else:
-            game._actor = game._queue.pop(0) if game._queue else game.nature
-
-    @classmethod
-    def distribute(cls, game):
-        cls.collect(game)
-
-        for side_pot in game._side_pots:
-            amounts = [side_pot.amount // len(game.evaluators)] * len(game.evaluators)
-            amounts[0] += side_pot.amount % len(game.evaluators)
-
-            for amount, evaluator in zip(amounts, game.evaluators):
-                if len(side_pot.players) == 1:
-                    players = side_pot.players
-                else:
-                    hand = max(player._get_hand(evaluator) for player in side_pot.players)
-                    players = tuple(player for player in side_pot.players if player._get_hand(evaluator) == hand)
-
-                rewards = [amount // len(players)] * len(players)
-                rewards[0] += amount % len(players)
-
-                for player, reward in zip(players, rewards):
-                    player._stack += reward
-
-        game._pot = 0
+        update(self.game)
 
 
 class DealingAction(PokerAction, ABC):
@@ -88,7 +97,7 @@ class DealingAction(PokerAction, ABC):
             raise GameFrameError('Dealing is only allowed in dealing stages')
 
         if self.cards is not None:
-            if any(card not in self.game.deck for card in self.cards):
+            if not all(map(self.game.deck.__contains__, self.cards)):
                 raise GameFrameError('All cards dealt must be in deck')
             elif not _unique(self.cards):
                 raise GameFrameError('Card must not have any duplicates')
@@ -165,7 +174,7 @@ class FoldAction(BettingAction):
     def verify(self):
         super().verify()
 
-        if self.actor.bet >= max(player.bet for player in self.game.players):
+        if self.actor.bet >= max(map(PokerPlayer.bet.fget, self.game.players)):
             raise GameFrameError('Folding action must not be redundant')
 
     def apply(self):
@@ -177,7 +186,7 @@ class FoldAction(BettingAction):
 class CheckCallAction(BettingAction):
     @property
     def amount(self):
-        return min(self.actor.stack, max(player.bet for player in self.game.players) - self.actor.bet)
+        return min(self.actor.stack, max(map(PokerPlayer.bet.fget, self.game.players)) - self.actor.bet)
 
     def apply(self):
         super().apply()
@@ -205,9 +214,9 @@ class BetRaiseAction(BettingAction):
     def verify(self):
         super().verify()
 
-        if max(player.bet for player in self.game.players) >= self.actor.total:
+        if max(map(PokerPlayer.bet.fget, self.game.players)) >= self.actor.total:
             raise GameFrameError('Cannot call when the stack of the player is covered')
-        elif all(not player._is_relevant() for player in self.game.players if player is not self.actor):
+        elif not any(map(PokerPlayer._is_relevant, filterfalse(partial(is_, self.actor), self.game.players))):
             raise GameFrameError('Cannot bet/raise when redundant')
         elif self.game._bet_raise_count == self.game.limit._max_count:
             raise GameFrameError('Too many number of bets/raises')
@@ -223,16 +232,16 @@ class BetRaiseAction(BettingAction):
             self.amount = self.min_amount
 
         self.game._aggressor = self.actor
-        self.game._max_delta = max(self.game._max_delta, self.amount - max(player.bet for player in self.game.players))
+        self.game._max_delta = max(
+            self.game._max_delta,
+            self.amount - max(map(PokerPlayer.bet.fget, self.game.players)),
+        )
         self.game._bet_raise_count += 1
 
         self.actor._stack -= self.amount - self.actor.bet
         self.actor._bet = self.amount
 
-        players = [
-            player for player in self.game.players[self.actor.index:] + self.game.players[:self.actor.index]
-            if player._is_relevant()
-        ]
+        players = list(filter(PokerPlayer._is_relevant, _rotate(self.game.players, self.actor.index)))
         self.game._queue = players[1:] if players and players[0] is self.actor else players
 
 
@@ -248,14 +257,14 @@ class DiscardDrawAction(PokerAction):
 
         if not isinstance(self.game.stage, DiscardDrawStage):
             raise GameFrameError('Not a draw round')
-        elif any(card not in self.actor.hole for card in self.discarded_cards):
+        elif not all(map(self.actor.hole.__contains__, self.discarded_cards)):
             raise GameFrameError('All hole cards must belong to the actor.')
 
         if self.drawn_cards is None:
             if not _unique(self.discarded_cards):
                 raise GameFrameError('Duplicates in cards')
         else:
-            if any(card not in self.game.deck for card in self.drawn_cards):
+            if not all(map(self.game.deck.__contains__, self.drawn_cards)):
                 raise GameFrameError('Card not in deck')
             elif not _unique(self.discarded_cards + self.drawn_cards):
                 raise GameFrameError('Duplicates in cards')
@@ -266,7 +275,7 @@ class DiscardDrawAction(PokerAction):
         super().apply()
 
         if self.drawn_cards is None:
-            self.drawn_cards = tuple(sample(self.game.deck, len(self.discarded_cards)))
+            self.drawn_cards = sample(self.game.deck, len(self.discarded_cards))
 
         self.game._deck.draw(self.drawn_cards)
 

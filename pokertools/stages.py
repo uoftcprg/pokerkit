@@ -112,10 +112,10 @@ class BettingStage(QueuedStage):
             game._bet_raise_count = 0
 
     def _close(self, game):
-        from pokertools._actions import PokerAction
+        from pokertools._actions import collect
         super()._close(game)
 
-        PokerAction.collect(game)
+        collect(game)
 
 
 class DiscardDrawStage(QueuedStage):

@@ -109,3 +109,7 @@ def _unique(values):
     values = tuple(values)
 
     return len(values) == len(set(values))
+
+
+def _rotate(values, index):
+    return values[index:] + values[:index]
