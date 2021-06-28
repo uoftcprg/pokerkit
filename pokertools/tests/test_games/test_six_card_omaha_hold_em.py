@@ -8,7 +8,7 @@ class PotLimitSixCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = PotLimitSixCardOmahaHoldEm
 
     def test_hands(self):
-        ...
+        ...  # TODO
 
 
 if __name__ == '__main__':
