@@ -1,4 +1,5 @@
 import re
+from collections.abc import Mapping
 from itertools import zip_longest
 
 from gameframe.exceptions import GameFrameError
@@ -30,7 +31,12 @@ class PokerGame(SequentialGame):
         self.__limit = limit
         self.__definition = definition
         self.__ante = ante
-        self.__blinds = tuple(blinds)
+
+        if isinstance(blinds, Mapping):
+            self.__blinds = tuple(blinds[i] if i in blinds else 0 for i in range(len(self.players)))
+        else:
+            self.__blinds = tuple(blinds)
+
         self.__starting_stacks = tuple(starting_stacks)
         self.__stages = definition.create_stages()
         self.__evaluators = definition.create_evaluators()
@@ -204,7 +210,7 @@ class PokerGame(SequentialGame):
             raise GameFrameError('Poker needs at least 2 players')
         elif self.ante < 0:
             raise GameFrameError('The ante must be a positive value')
-        elif any(blind <= 0 for blind in self.blinds):
+        elif any(blind < 0 for blind in self.blinds):
             raise GameFrameError('All blinds must be a positive value')
         elif not self.blinds == tuple(sorted(self.blinds)):
             raise GameFrameError('Blinds must be sorted')
