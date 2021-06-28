@@ -146,7 +146,7 @@ class SingleDrawDefinition(DrawDefinition, ABC):
     def create_stages(self):
         return (
             HoleDealingStage(False, self.hole_card_count), BettingStage(False),
-            DiscardDrawStage(), BettingStage(False),
+            DiscardDrawStage(), BettingStage(True),
             ShowdownStage(),
         )
 
