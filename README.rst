@@ -64,8 +64,6 @@ The following features are present in PokerTools...
       - No-Limit Courchevel
    - Kuhn Poker
       - Fixed-Limit Kuhn Poker
-      - Pot-Limit Kuhn Poker
-      - No-Limit Kuhn Poker
 
 The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/>`_.
 
