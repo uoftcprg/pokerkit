@@ -19,8 +19,8 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
         assert game.is_terminal(), 'Game is not terminal'
 
         for player, status, stack in zip_longest(game.players, statuses, stacks):
-            assert player._status == status, f'Status of player {player.index}: {player._status} does not equal {status}'
-            assert player.stack == stack, f'Stack of player {player.index}: {player.stack} does not equal {stack}'
+            assert player._status == status, f'Status of player {player.index}: {player._status} is not {status}'
+            assert player.stack == stack, f'Stack of player {player.index}: {player.stack} is not {stack}'
 
     def create_game(self):
         return self.GAME_TYPE(1, (1, 2), tuple(randint(0, 50) for _ in range(randint(2, 4))))
