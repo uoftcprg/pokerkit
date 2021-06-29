@@ -94,23 +94,22 @@ class BettingStage(QueuedStage):
         super()._open(game)
 
         players = list(filter(PokerPlayer._is_relevant, game.players))
-        max_blinded_player = max(players, key=lambda player: (player.bet, player.index))
 
-        opener_index = (players.index(max_blinded_player) + 1) % len(players)
+        game._aggressor = max(players, key=PokerPlayer.bet.fget)
 
-        game._actor = players[opener_index]
-        game._queue = _rotate(players, opener_index)[1:]
+        if any(map(PokerPlayer.bet.fget, players)):
+            opener = players[(players.index(game._aggressor) + 1) % len(players)]
+            game._bet_raise_count = 1
+        else:
+            opener = game._aggressor
+            game._bet_raise_count = 0
+
+        game._actor = opener
+        game._queue = _rotate(players, players.index(opener))[1:]
         game._max_delta = max(game.ante, max(game.blinds, default=0))
 
         if self._big and isinstance(game.limit, FixedLimit):
             game._max_delta *= 2
-
-        if any(map(PokerPlayer.bet.fget, game.players)):
-            game._aggressor = max_blinded_player
-            game._bet_raise_count = 1
-        else:
-            game._aggressor = game._actor
-            game._bet_raise_count = 0
 
     def _close(self, game):
         from pokertools._actions import collect
@@ -140,8 +139,8 @@ class ShowdownStage(QueuedStage):
 
         players = list(filter(PokerPlayer.is_active, game.players))
 
-        if game._aggressor is None:
-            opener = next(filter(PokerPlayer.is_active, game.players))
+        if game._aggressor is None or game._aggressor not in players:
+            opener = players[0]
         else:
             opener = game._aggressor
 
