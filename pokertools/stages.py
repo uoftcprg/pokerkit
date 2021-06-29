@@ -2,6 +2,7 @@ from abc import ABC
 
 from pokertools.gameframe import PokerPlayer
 from pokertools.limits import FixedLimit
+from pokertools.utilities import _rotate
 
 
 class Stage(ABC):
@@ -87,24 +88,24 @@ class BettingStage(QueuedStage):
         self._big = big
 
     def _is_done(self, game):
-        return super()._is_done(game) or all(not player._is_relevant() for player in game.players)
+        return super()._is_done(game) or not any(map(PokerPlayer._is_relevant, game.players))
 
     def _open(self, game):
         super()._open(game)
 
-        players = tuple(player for player in game.players if player._is_relevant())
+        players = list(filter(PokerPlayer._is_relevant, game.players))
         max_blinded_player = max(players, key=lambda player: (player.bet, player.index))
 
         opener_index = (players.index(max_blinded_player) + 1) % len(players)
 
         game._actor = players[opener_index]
-        game._queue = list(players[opener_index + 1:] + players[:opener_index])
+        game._queue = _rotate(players, opener_index)[1:]
         game._max_delta = max(game.ante, max(game.blinds, default=0))
 
         if self._big and isinstance(game.limit, FixedLimit):
             game._max_delta *= 2
 
-        if any(player._bet for player in game.players):
+        if any(map(PokerPlayer.bet.fget, game.players)):
             game._aggressor = max_blinded_player
             game._bet_raise_count = 1
         else:
@@ -124,11 +125,11 @@ class DiscardDrawStage(QueuedStage):
     def _open(self, game):
         super()._open(game)
 
-        players = tuple(player for player in game.players if player.is_active())
-        opener = next(player for player in game.players if player.is_active())
+        players = list(filter(PokerPlayer.is_active, game.players))
+        opener = next(filter(PokerPlayer.is_active, game.players))
 
         game._actor = opener
-        game._queue = list(players[players.index(opener) + 1:] + players[:players.index(opener)])
+        game._queue = _rotate(players, players.index(opener))[1:]
 
 
 class ShowdownStage(QueuedStage):
@@ -137,12 +138,12 @@ class ShowdownStage(QueuedStage):
     def _open(self, game):
         super()._open(game)
 
-        players = tuple(player for player in game.players if player.is_active())
+        players = list(filter(PokerPlayer.is_active, game.players))
 
         if game._aggressor is None:
-            opener = next(player for player in game.players if player.is_active())
+            opener = next(filter(PokerPlayer.is_active, game.players))
         else:
             opener = game._aggressor
 
         game._actor = opener
-        game._queue = list(players[players.index(opener) + 1:] + players[:players.index(opener)])
+        game._queue = _rotate(players, players.index(opener))[1:]

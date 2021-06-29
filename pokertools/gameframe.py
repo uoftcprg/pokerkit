@@ -1,5 +1,6 @@
 import re
 from collections.abc import Mapping
+from functools import partial
 from itertools import zip_longest
 
 from gameframe.exceptions import GameFrameError
@@ -150,17 +151,17 @@ class PokerGame(SequentialGame):
 
         :return: The side pots of this poker game.
         """
-        return (side_pot.amount for side_pot in self._side_pots)
+        return map(self._SidePot.amount.fget, self._side_pots)
 
     @property
     def _side_pots(self):
-        players = sorted(self.players, key=lambda player: player.put)
+        players = sorted(self.players, key=PokerPlayer.put.fget)
         side_pots = []
         pot = 0
         prev = 0
 
         while pot < self.pot:
-            cur = min(player.put for player in players)
+            cur = min(map(PokerPlayer.put.fget, players))
             amount = len(players) * (cur - prev)
 
             side_pots.append(self._SidePot(filter(PokerPlayer.is_active, players), amount))
@@ -239,8 +240,16 @@ class PokerGame(SequentialGame):
 
     class _SidePot:
         def __init__(self, players, amount):
-            self.players = tuple(players)
-            self.amount = amount
+            self.__players = tuple(players)
+            self.__amount = amount
+
+        @property
+        def players(self):
+            return self.__players
+
+        @property
+        def amount(self):
+            return self.__amount
 
 
 class PokerNature(SequentialActor):
@@ -386,7 +395,7 @@ class PokerPlayer(SequentialActor):
         if self._status is None:
             return self._hole
         else:
-            return tuple(HoleCard(self._status, card) for card in self._hole)
+            return tuple(map(partial(HoleCard, self._status), self._hole))
 
     @property
     def starting_stack(self):
@@ -412,12 +421,12 @@ class PokerPlayer(SequentialActor):
 
         :return: The effective stack of this poker player.
         """
-        active_players = tuple(player for player in self.game.players if player.is_active())
+        active_players = tuple(filter(PokerPlayer.is_active, self.game.players))
 
         if self.is_mucked() or len(active_players) < 2:
             return 0
         else:
-            return min(self.starting_stack, sorted(player.starting_stack for player in active_players)[-2])
+            return min(self.starting_stack, sorted(map(PokerPlayer.starting_stack.fget, active_players))[-2])
 
     @property
     def put(self):
@@ -437,7 +446,7 @@ class PokerPlayer(SequentialActor):
 
         :return: The hands of this poker player.
         """
-        return (self._get_hand(evaluator) for evaluator in self.game.evaluators)
+        return map(self._get_hand, self.game.evaluators)
 
     @property
     def check_call_amount(self):

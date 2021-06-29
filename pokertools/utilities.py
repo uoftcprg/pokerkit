@@ -21,7 +21,7 @@ def suited(cards):
     :param cards: The cards to check.
     :return: True if the cards are suited, else False.
     """
-    return len(set(card.suit for card in cards)) <= 1
+    return len(set(map(Card.suit.fget, cards))) <= 1
 
 
 def parse_card(card):

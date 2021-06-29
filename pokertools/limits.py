@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from pokertools.gameframe import PokerPlayer
+
 
 class Limit(ABC):
     """Limit is the abstract base class for all limits."""
@@ -8,8 +10,9 @@ class Limit(ABC):
     @abstractmethod
     def _max_count(self): ...
 
-    def _get_min_amount(self, game):
-        return min(max(player.bet for player in game.players) + game._max_delta, game.actor.total)
+    @classmethod
+    def _get_min_amount(cls, game):
+        return min(max(map(PokerPlayer.bet.fget, game.players)) + game._max_delta, game.actor.total)
 
     @abstractmethod
     def _get_max_amount(self, game): ...
@@ -34,7 +37,7 @@ class PotLimit(Limit):
         return None
 
     def _get_max_amount(self, game):
-        bets = tuple(player.bet for player in game.players)
+        bets = tuple(map(PokerPlayer.bet.fget, game.players))
         amount = max(bets) + game.pot + sum(bets) + max(bets) - game.actor.bet
         min_amount = self._get_min_amount(game)
         max_amount = game.actor.total
