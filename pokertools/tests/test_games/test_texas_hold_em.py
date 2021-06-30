@@ -223,20 +223,20 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db Ts',
             's', 's',
         ), (True, True, False, False), (9, 0, 8, 6))
-        self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (1, 17, 0, 1)).parse(
+        self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (1, 17, 0, 1)).parse(  # TODO
             'dh 0 3d6c', 'dh 1 8sAh', 'dh 2 Ad8c', 'dh 3 KcQs',
             'db 4c7h5s',
             'db Ts',
             'db 3c',
             's', 's', 's', 's',
-        ), (True, True, True, False), (3, 16, 0, 0))
-        self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (2, 16, 0, 1)).parse(
+        ), (True, False, False, False), (3, 16, 0, 0))
+        self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (2, 16, 0, 1)).parse(  # TODO
             'dh 0 AcKs', 'dh 1 8h2c', 'dh 2 6h6c', 'dh 3 2dTd',
             'db 8d5c4d',
             'db Qh',
             'db 5d',
             's', 's', 's', 's',
-        ), (False, True, False, True), (0, 16, 0, 3))
+        ), (True, True, False, True), (0, 16, 0, 3))
 
 
 if __name__ == '__main__':
