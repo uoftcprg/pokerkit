@@ -2,6 +2,7 @@ import re
 from collections.abc import Mapping
 from functools import partial
 from itertools import zip_longest
+from operator import gt
 
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import SequentialActor, SequentialGame
@@ -216,11 +217,9 @@ class PokerGame(SequentialGame):
             raise GameFrameError('Poker needs at least 2 players')
         elif self.ante < 0:
             raise GameFrameError('The ante must be a positive value')
-        elif any(blind < 0 for blind in self.forced_bets):
-            raise GameFrameError('All blinds must be a positive value')
         elif len(self.forced_bets) > len(self.starting_stacks):
             raise GameFrameError('Number of blinds must be less than or equal to the number of players')
-        elif any(value < 0 for value in (self.ante,) + self.forced_bets + self.starting_stacks):
+        elif any(map(partial(gt, 0), (self.ante,) + self.forced_bets + self.starting_stacks)):
             raise GameFrameError('All numerical values must be positive')
 
     def _setup(self):
