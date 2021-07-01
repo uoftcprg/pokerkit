@@ -106,7 +106,7 @@ class BettingStage(QueuedStage):
 
         game._actor = opener
         game._queue = _rotate(players, players.index(opener))[1:]
-        game._max_delta = max(game.ante, max(game.blinds, default=0))
+        game._max_delta = max(game.ante, max(game.forced_bets, default=0))
 
         if self._big and isinstance(game.limit, FixedLimit):
             game._max_delta *= 2

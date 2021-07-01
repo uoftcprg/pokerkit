@@ -36,9 +36,10 @@ class PotLimit(Limit):
     def _max_count(self):
         return None
 
-    def _get_max_amount(self, game):
+    def _get_max_amount(self, game):  # TODO: Simplify formula
         bets = tuple(map(PokerPlayer.bet.fget, game.players))
         amount = max(bets) + game.pot + sum(bets) + max(bets) - game.actor.bet
+
         min_amount = self._get_min_amount(game)
         max_amount = game.actor.total
 

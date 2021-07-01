@@ -22,22 +22,20 @@ class PokerGame(SequentialGame):
     :param limit: The limit of this poker game.
     :param definition: The definition this poker game.
     :param ante: The ante of this poker game.
-    :param blinds: The blinds of this poker game.
+    :param forced_bets: The forced bets of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
 
-    def __init__(self, limit, definition, ante, blinds, starting_stacks):
+    def __init__(self, limit, definition, ante, forced_bets, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
+
+        if isinstance(forced_bets, Mapping):
+            forced_bets = tuple(forced_bets[i] if i in forced_bets else 0 for i in range(len(self.players)))
 
         self.__limit = limit
         self.__definition = definition
         self.__ante = ante
-
-        if isinstance(blinds, Mapping):
-            self.__blinds = tuple(blinds[i] if i in blinds else 0 for i in range(len(self.players)))
-        else:
-            self.__blinds = tuple(blinds)
-
+        self.__forced_bets = tuple(forced_bets)
         self.__starting_stacks = tuple(starting_stacks)
         self.__stages = definition.create_stages()
         self.__evaluators = definition.create_evaluators()
@@ -79,12 +77,14 @@ class PokerGame(SequentialGame):
         return self.__ante
 
     @property
-    def blinds(self):
-        """Returns the blinds of this poker game.
+    def forced_bets(self):
+        """Returns the forced bets of this poker game.
 
-        :return: The blinds of this poker game.
+        The forced bets include the blinds and straddles.
+
+        :return: The forced bets of this poker game.
         """
-        return self.__blinds
+        return self.__forced_bets
 
     @property
     def starting_stacks(self):
@@ -207,22 +207,24 @@ class PokerGame(SequentialGame):
         return self
 
     def _verify(self):
-        if len(self.starting_stacks) < 2:
+        filtered_bets = list(filter(bool, self.forced_bets))
+
+        if filtered_bets != sorted(filtered_bets):
+            raise GameFrameError('Forced bets must be sorted (except zero values)')
+        elif len(self.starting_stacks) < 2:
             raise GameFrameError('Poker needs at least 2 players')
         elif self.ante < 0:
             raise GameFrameError('The ante must be a positive value')
-        elif any(blind < 0 for blind in self.blinds):
+        elif any(blind < 0 for blind in self.forced_bets):
             raise GameFrameError('All blinds must be a positive value')
-        elif not self.blinds == tuple(sorted(self.blinds)):
-            raise GameFrameError('Blinds must be sorted')
-        elif len(self.blinds) > len(self.starting_stacks):
+        elif len(self.forced_bets) > len(self.starting_stacks):
             raise GameFrameError('Number of blinds must be less than or equal to the number of players')
-        elif any(value < 0 for value in (self.ante,) + self.blinds + self.starting_stacks):
+        elif any(value < 0 for value in (self.ante,) + self.forced_bets + self.starting_stacks):
             raise GameFrameError('All numerical values must be positive')
 
     def _setup(self):
         for i, (blind, stack, player) in enumerate(zip_longest(
-                reversed(self.blinds) if len(self.players) == 2 else self.blinds,
+                reversed(self.forced_bets) if len(self.players) == 2 else self.forced_bets,
                 self.starting_stacks,
                 self.players,
                 fillvalue=0,
