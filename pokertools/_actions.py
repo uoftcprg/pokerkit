@@ -155,7 +155,7 @@ class BoardDealingAction(DealingAction):
 
         if not isinstance(self.game.stage, BoardDealingStage):
             raise GameFrameError('Board card dealing is not allowed')
-        elif len(self.game.board) >= self.game.stage._get_deal_target(self.game):
+        elif len(self.game.board) >= self.game.stage._deal_target:
             raise GameFrameError('The board must not have been dealt already')
 
     def deal(self, cards):
