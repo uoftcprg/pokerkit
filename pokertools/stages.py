@@ -11,9 +11,11 @@ class Stage(ABC):
     def _is_done(self, game):
         return sum(map(PokerPlayer.is_active, game.players)) == 1
 
-    def _open(self, game): ...
+    def _open(self, game):
+        game._stage = self
 
-    def _close(self, game): ...
+    def _close(self, game):
+        game._stage = None
 
 
 class DealingStage(Stage, ABC):

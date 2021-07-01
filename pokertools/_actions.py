@@ -28,16 +28,16 @@ def collect(game):
 
 def update(game):
     if game.stage._is_done(game):
-        game.stage._close(game)
+        index = game.stages.index(game.stage)
+        game.stages[index]._close(game)
 
         try:
-            index = game.stages.index(game.stage) + 1
+            index += 1
 
             while game.stages[index]._is_done(game):
                 index += 1
 
-            game._stage = game.stages[index]
-            game.stage._open(game)
+            game.stages[index]._open(game)
         except IndexError:
             distribute(game)
             game._actor = None

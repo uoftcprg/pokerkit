@@ -41,9 +41,10 @@ class PokerGame(SequentialGame):
         self.__evaluators = definition.create_evaluators()
 
         self._deck = definition.create_deck()
-        self._stage = self.stages[0]
         self._pot = 0
         self._board = []
+
+        self._stage = None
         self._queue = []
         self._aggressor = None
         self._bet_raise_count = 0
@@ -119,14 +120,6 @@ class PokerGame(SequentialGame):
         return tuple(self._deck)
 
     @property
-    def stage(self):
-        """Returns the stage of this poker game.
-
-        :return: The stage of this poker game.
-        """
-        return self._stage
-
-    @property
     def pot(self):
         """Returns the pot of this poker game.
 
@@ -144,6 +137,14 @@ class PokerGame(SequentialGame):
         :return: The board of this poker game.
         """
         return tuple(self._board)
+
+    @property
+    def stage(self):
+        """Returns the stage of this poker game.
+
+        :return: The stage of this poker game.
+        """
+        return self._stage
 
     @property
     def side_pots(self):
@@ -236,6 +237,7 @@ class PokerGame(SequentialGame):
             player._bet = blind
             player._stack = stack - ante - blind
 
+        self._stage = self.stages[0]
         self.stage._open(self)
 
     class _SidePot:
