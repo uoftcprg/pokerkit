@@ -178,11 +178,6 @@ class PokerGame(SequentialGame):
         :param tokens: The tokens to parse as actions.
         :return: This game.
         """
-        if not hasattr(self, 'tokens'):
-            self.tokens = []
-
-        self.tokens.extend(tokens)
-
         for token in tokens:
             if match := re.fullmatch(r'dh( (?P<index>\d+))?( (?P<cards>\w+))?', token):
                 self.actor.deal_hole(
