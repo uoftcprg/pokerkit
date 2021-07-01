@@ -20,7 +20,7 @@ class Deck(list):
         """Draws the number of cards or the specified cards from this deck.
 
         :param cards: The number of cards or the specified cards to be drawn.
-        :return: None.
+        :return: The removed cards.
         """
         if isinstance(cards, int):
             if len(self) < cards:

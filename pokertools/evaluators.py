@@ -5,7 +5,6 @@ from itertools import chain, combinations
 
 from pokertools.cards import Card, Rank
 from pokertools.hands import BadugiHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand
-from pokertools.utilities import _unique, rainbow
 
 
 class Evaluator(ABC):
@@ -67,11 +66,9 @@ class BadugiEvaluator(Evaluator):
 
     @staticmethod
     def evaluate(hole_cards, board_cards=()):
-        cards = tuple(chain(hole_cards, board_cards))
-
         return max(map(BadugiHand, filter(
-            lambda sub_cards: _unique(map(Card.rank.fget, sub_cards)) and rainbow(sub_cards),
-            chain(*map(partial(combinations, cards), range(1, 5))),
+            BadugiHand._is_valid,
+            chain(*map(partial(combinations, tuple(chain(hole_cards, board_cards))), range(1, 5))),
         )))
 
 

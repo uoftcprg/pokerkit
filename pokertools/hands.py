@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
-from collections.abc import Hashable
+from collections.abc import Hashable, Iterator
 from functools import total_ordering
+
+from pokertools.cards import Card
+from pokertools.utilities import _unique, rainbow
 
 
 @total_ordering
@@ -78,6 +81,19 @@ class BadugiHand(LookupHandMixin, LowIndexedHand):
     from pokertools._lookups import BadugiLookup as _BadugiLookup
 
     _lookup = _BadugiLookup()
+
+    @classmethod
+    def _is_valid(cls, cards):
+        return _unique(map(Card.rank.fget, cards)) and rainbow(cards)
+
+    def __init__(self, cards):
+        if isinstance(cards, Iterator):
+            cards = tuple(cards)
+
+        if not self._is_valid(cards):
+            raise ValueError('Not a valid Badugi hand')
+
+        super().__init__(cards)
 
 
 class LowballA5Hand(LookupHandMixin, LowIndexedHand):
