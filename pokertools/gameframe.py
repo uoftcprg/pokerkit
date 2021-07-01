@@ -201,7 +201,7 @@ class PokerGame(SequentialGame):
                 )
             elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
                 self.actor.showdown(
-                    None if (forced_status := match.group('forced_status')) is None else bool(forced_status),
+                    None if (forced_status := match.group('forced_status')) is None else bool(int(forced_status)),
                 )
             else:
                 raise ValueError('Invalid command')
