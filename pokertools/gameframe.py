@@ -37,7 +37,7 @@ class PokerGame(SequentialGame):
         self.__ante = ante
         self.__forced_bets = tuple(forced_bets)
         self.__starting_stacks = tuple(starting_stacks)
-        self.__stages = definition.create_stages()
+        self.__stages = definition.create_stages(self)
         self.__evaluators = definition.create_evaluators()
 
         self._deck = definition.create_deck()
@@ -238,7 +238,7 @@ class PokerGame(SequentialGame):
             player._stack = stack - ante - blind
 
         self._stage = self.stages[0]
-        self.stage._open(self)
+        self.stage._open()
 
     class _SidePot:
         def __init__(self, players, amount):

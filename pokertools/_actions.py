@@ -27,17 +27,17 @@ def collect(game):
 
 
 def update(game):
-    if game.stage._is_done(game):
+    if game.stage._is_done():
         index = game.stages.index(game.stage)
-        game.stages[index]._close(game)
+        game.stages[index]._close()
 
         try:
             index += 1
 
-            while game.stages[index]._is_done(game):
+            while game.stages[index]._is_done():
                 index += 1
 
-            game.stages[index]._open(game)
+            game.stages[index]._open()
         except IndexError:
             distribute(game)
             game._actor = None
@@ -137,7 +137,7 @@ class HoleDealingAction(DealingAction):
         if self.player is not None:
             if self.player.is_mucked():
                 raise GameFrameError('Cannot deal to a mucked player')
-            elif len(self.player.hole) >= self.game.stage._get_deal_target(self.game):
+            elif len(self.player.hole) >= self.game.stage._deal_target:
                 raise GameFrameError('The player must not have been dealt already')
         elif self.cards is not None:
             raise GameFrameError('The player to deal to must be specified if cards are supplied')
