@@ -10,8 +10,7 @@ class Limit(ABC):
     @abstractmethod
     def _max_count(self): ...
 
-    @classmethod
-    def _get_min_amount(cls, game):
+    def _get_min_amount(self, game):
         return min(max(map(PokerPlayer.bet.fget, game.players)) + game._max_delta, game.actor.total)
 
     @abstractmethod

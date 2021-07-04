@@ -14,8 +14,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
     def game_name(self):
         return type(self.create_game().definition).__name__.replace('Definition', '')
 
-    @classmethod
-    def assert_terminal_poker_game(cls, game, statuses, stacks):
+    def assert_terminal_poker_game(self, game, statuses, stacks):
         assert game.is_terminal(), 'Game is not terminal'
 
         for player, status, stack in zip_longest(game.players, statuses, stacks):
