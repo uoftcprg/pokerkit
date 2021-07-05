@@ -225,9 +225,9 @@ class PokerGame(SequentialGame):
 
     def _setup(self):
         for player in self.players:
-            stack = player.starting_stack
-            ante = min(self.ante, stack)
+            ante = min(self.ante, player.starting_stack)
             forced_bet = max(min(player.forced_bet, player.starting_stack - ante), 0)
+            stack = player.starting_stack
 
             self._pot += ante
             player._bet = forced_bet
