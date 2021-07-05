@@ -50,8 +50,8 @@ class PokerGame(SequentialGame):
         self._stage = None
         self._queue = []
         self._aggressor = None
-        self._bet_raise_count = 0
-        self._max_delta = 0
+        self._bet_raise_count = None
+        self._max_delta = None
 
         self._verify()
         self._setup()

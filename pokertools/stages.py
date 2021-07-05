@@ -169,6 +169,9 @@ class BettingStage(QueuedStage):
 
         collect(self.game)
 
+        self._bet_raise_count = None
+        self._max_delta = None
+
 
 class DiscardDrawStage(QueuedStage):
     """DiscardDrawStage is the class for discard and draw stages."""
