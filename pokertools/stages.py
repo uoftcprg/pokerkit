@@ -173,7 +173,7 @@ class BettingStage(QueuedStage):
         self.game._bet_raise_count = int(blinded)
         self.game._max_delta = self.initial_bet_amount
 
-    def _close(self):  # TODO: Reveal cards if all in
+    def _close(self):
         from pokertools._actions import collect
         super()._close()
 
@@ -181,6 +181,10 @@ class BettingStage(QueuedStage):
 
         self._bet_raise_count = None
         self._max_delta = None
+
+        if self.game.is_all_in():
+            for player in filter(PokerPlayer.is_active, self.game.players):
+                player._status = True
 
 
 class DiscardDrawStage(QueuedStage):
@@ -198,17 +202,14 @@ class DiscardDrawStage(QueuedStage):
 class ShowdownStage(QueuedStage):
     """ShowdownStage is the class for showdown stages."""
 
-    # TODO: for is_done, if all in, skip
+    def _is_done(self):
+        return super()._is_done() or self.game.is_all_in()
 
-    def _open(self):  # TODO: aggressor is probably always not none when changes made, also remove opener (messy)
+    def _open(self):
         super()._open()
 
-        players = list(filter(PokerPlayer.is_active, self.game.players))
-
-        if self.game._aggressor is None or self.game._aggressor not in players:
-            opener = players[0]
-        else:
-            opener = self.game._aggressor
-
-        self.game._actor = opener
-        self.game._queue = _rotate(players, players.index(opener))[1:]
+        self.game._actor = self.game._aggressor
+        self.game._queue = list(filter(
+            PokerPlayer.is_active,
+            _rotate(self.game.players, self.game._aggressor.index),
+        ))[1:]
