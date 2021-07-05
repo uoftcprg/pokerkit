@@ -88,7 +88,7 @@ class DealingAction(PokerAction, ABC):
 
     @property
     def deal_count(self):
-        return self.game.stage._deal_count
+        return self.game.stage.deal_count
 
     def verify(self):
         super().verify()
@@ -137,7 +137,7 @@ class HoleDealingAction(DealingAction):
         if self.player is not None:
             if self.player.is_mucked():
                 raise GameFrameError('Cannot deal to a mucked player')
-            elif len(self.player.hole) >= self.game.stage._deal_target:
+            elif len(self.player.hole) >= self.game.stage.deal_target:
                 raise GameFrameError('The player must not have been dealt already')
         elif self.cards is not None:
             raise GameFrameError('The player to deal to must be specified if cards are supplied')
@@ -155,7 +155,7 @@ class BoardDealingAction(DealingAction):
 
         if not isinstance(self.game.stage, BoardDealingStage):
             raise GameFrameError('Board card dealing is not allowed')
-        elif len(self.game.board) >= self.game.stage._deal_target:
+        elif len(self.game.board) >= self.game.stage.deal_target:
             raise GameFrameError('The board must not have been dealt already')
 
     def deal(self, cards):

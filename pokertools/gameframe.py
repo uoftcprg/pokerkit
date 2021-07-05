@@ -22,23 +22,23 @@ class PokerGame(SequentialGame):
     :param limit: The limit of this poker game.
     :param definition: The definition this poker game.
     :param ante: The ante of this poker game.
-    :param forced_bets: The forced bets of this poker game.
+    :param blinds: The blinds of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
 
-    def __init__(self, limit, definition, ante, forced_bets, starting_stacks):
+    def __init__(self, limit, definition, ante, blinds, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
 
         self.__limit = limit
         self.__definition = definition
         self.__ante = ante
 
-        if isinstance(forced_bets, Mapping):
-            forced_bets = tuple(forced_bets[i] if i in forced_bets else 0 for i in range(len(self.players)))
-        elif not isinstance(forced_bets, Sized):
-            forced_bets = tuple(forced_bets)
+        if isinstance(blinds, Mapping):
+            blinds = tuple(blinds[i] if i in blinds else 0 for i in range(len(self.players)))
+        elif not isinstance(blinds, Sized):
+            blinds = tuple(blinds)
 
-        self.__forced_bets = tuple(forced_bets) + (0,) * (len(self.players) - len(forced_bets))
+        self.__blinds = tuple(blinds) + (0,) * (len(self.players) - len(blinds))
         self.__starting_stacks = tuple(starting_stacks)
         self.__stages = definition.create_stages(self)
         self.__evaluators = definition.create_evaluators()
@@ -81,14 +81,14 @@ class PokerGame(SequentialGame):
         return self.__ante
 
     @property
-    def forced_bets(self):
-        """Returns the forced bets of this poker game.
+    def blinds(self):
+        """Returns the blinds of this poker game.
 
-        The forced bets include the blinds and straddles.
+        This tuple includes straddles and forced bets.
 
-        :return: The forced bets of this poker game.
+        :return: The blinds of this poker game.
         """
-        return self.__forced_bets
+        return self.__blinds
 
     @property
     def starting_stacks(self):
@@ -175,6 +175,8 @@ class PokerGame(SequentialGame):
 
         return side_pots
 
+    # TODO: implement is_all_in
+
     def parse(self, *tokens):
         """Parses the tokens as actions and applies them this poker game.
 
@@ -210,7 +212,7 @@ class PokerGame(SequentialGame):
         return self
 
     def _verify(self):
-        filtered_bets = list(filter(bool, self.forced_bets))
+        filtered_bets = list(filter(bool, self.blinds))
 
         if filtered_bets != sorted(filtered_bets):
             raise GameFrameError('Forced bets must be sorted (except zero values)')
@@ -218,20 +220,20 @@ class PokerGame(SequentialGame):
             raise GameFrameError('Poker needs at least 2 players')
         elif self.ante < 0:
             raise GameFrameError('The ante must be a positive value')
-        elif len(self.forced_bets) > len(self.starting_stacks):
+        elif len(self.blinds) > len(self.starting_stacks):
             raise GameFrameError('Number of blinds must be less than or equal to the number of players')
-        elif any(map(partial(gt, 0), (self.ante,) + self.forced_bets + self.starting_stacks)):
+        elif any(map(partial(gt, 0), (self.ante,) + self.blinds + self.starting_stacks)):
             raise GameFrameError('All numerical values must be positive')
 
     def _setup(self):
         for player in self.players:
             ante = min(self.ante, player.starting_stack)
-            forced_bet = max(min(player.forced_bet, player.starting_stack - ante), 0)
+            blind = max(min(player.blind, player.starting_stack - ante), 0)
             stack = player.starting_stack
 
             self._pot += ante
-            player._bet = forced_bet
-            player._stack = stack - ante - forced_bet
+            player._bet = blind
+            player._stack = stack - ante - blind
 
         self.stages[0]._open()
 
@@ -403,15 +405,15 @@ class PokerPlayer(SequentialActor):
         return self.game.starting_stacks[self.index]
 
     @property
-    def forced_bet(self):
-        """Returns the forced-bet of this poker player.
+    def blind(self):
+        """Returns the blind of this poker player.
 
-        :return: The forced-bet of this poker player.
+        :return: The blind of this poker player.
         """
         if len(self.game.players) == 2:
-            return self.game.forced_bets[not self.index]
+            return self.game.blinds[not self.index]
         else:
-            return self.game.forced_bets[self.index]
+            return self.game.blinds[self.index]
 
     @property
     def total(self):
