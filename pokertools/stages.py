@@ -182,10 +182,6 @@ class BettingStage(QueuedStage):
         self._bet_raise_count = None
         self._max_delta = None
 
-        if self.game.is_all_in():
-            for player in filter(PokerPlayer.is_active, self.game.players):
-                player._status = True
-
 
 class DiscardDrawStage(QueuedStage):
     """DiscardDrawStage is the class for discard and draw stages."""
@@ -202,14 +198,15 @@ class DiscardDrawStage(QueuedStage):
 class ShowdownStage(QueuedStage):
     """ShowdownStage is the class for showdown stages."""
 
-    def _is_done(self):
-        return super()._is_done() or self.game.is_all_in()
-
     def _open(self):
         super()._open()
 
-        self.game._actor = self.game._aggressor
-        self.game._queue = list(filter(
-            PokerPlayer.is_active,
-            _rotate(self.game.players, self.game._aggressor.index),
-        ))[1:]
+        players = list(filter(PokerPlayer.is_active, self.game.players))
+
+        if self.game._aggressor is None or self.game._aggressor not in players:
+            opener = players[0]
+        else:
+            opener = self.game._aggressor
+
+        self.game._actor = opener
+        self.game._queue = _rotate(players, players.index(opener))[1:]
