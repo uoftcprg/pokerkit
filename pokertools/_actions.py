@@ -28,11 +28,11 @@ def collect(game):
 
 def update(game):
     if game.stage._is_done():
-        index = game.stages.index(game.stage)
-        game.stages[index]._close()
+        stage = game.stage
+        stage._close()
 
         try:
-            index += 1
+            index = game.stages.index(stage) + 1
 
             while game.stages[index]._is_done():
                 index += 1

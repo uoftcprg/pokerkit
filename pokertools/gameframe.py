@@ -1,7 +1,6 @@
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sized
 from functools import partial
-from itertools import zip_longest
 from operator import gt
 
 from gameframe.exceptions import GameFrameError
@@ -30,13 +29,16 @@ class PokerGame(SequentialGame):
     def __init__(self, limit, definition, ante, forced_bets, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
 
-        if isinstance(forced_bets, Mapping):
-            forced_bets = tuple(forced_bets[i] if i in forced_bets else 0 for i in range(len(self.players)))
-
         self.__limit = limit
         self.__definition = definition
         self.__ante = ante
-        self.__forced_bets = tuple(forced_bets)
+
+        if isinstance(forced_bets, Mapping):
+            forced_bets = tuple(forced_bets[i] if i in forced_bets else 0 for i in range(len(self.players)))
+        elif not isinstance(forced_bets, Sized):
+            forced_bets = tuple(forced_bets)
+
+        self.__forced_bets = tuple(forced_bets) + (0,) * (len(self.players) - len(forced_bets))
         self.__starting_stacks = tuple(starting_stacks)
         self.__stages = definition.create_stages(self)
         self.__evaluators = definition.create_evaluators()
@@ -163,14 +165,13 @@ class PokerGame(SequentialGame):
         prev = 0
 
         while pot < self.pot:
-            cur = min(map(PokerPlayer.put.fget, players))
+            cur = players[0].put
             amount = len(players) * (cur - prev)
 
             side_pots.append(self._SidePot(filter(PokerPlayer.is_active, players), amount))
 
-            players.pop(0)
             pot += amount
-            prev = cur
+            prev = players.pop(0).put
 
         return side_pots
 
@@ -223,21 +224,16 @@ class PokerGame(SequentialGame):
             raise GameFrameError('All numerical values must be positive')
 
     def _setup(self):
-        for i, (blind, stack, player) in enumerate(zip_longest(
-                reversed(self.forced_bets) if len(self.players) == 2 else self.forced_bets,
-                self.starting_stacks,
-                self.players,
-                fillvalue=0,
-        )):
+        for player in self.players:
+            stack = player.starting_stack
             ante = min(self.ante, stack)
-            blind = max(min(blind, stack - ante), 0)
+            forced_bet = max(min(player.forced_bet, player.starting_stack - ante), 0)
 
             self._pot += ante
-            player._bet = blind
-            player._stack = stack - ante - blind
+            player._bet = forced_bet
+            player._stack = stack - ante - forced_bet
 
-        self._stage = self.stages[0]
-        self.stage._open()
+        self.stages[0]._open()
 
     class _SidePot:
         def __init__(self, players, amount):
@@ -405,6 +401,17 @@ class PokerPlayer(SequentialActor):
         :return: The starting stack of this poker player.
         """
         return self.game.starting_stacks[self.index]
+
+    @property
+    def forced_bet(self):
+        """Returns the forced-bet of this poker player.
+
+        :return: The forced-bet of this poker player.
+        """
+        if len(self.game.players) == 2:
+            return self.game.forced_bets[not self.index]
+        else:
+            return self.game.forced_bets[self.index]
 
     @property
     def total(self):
