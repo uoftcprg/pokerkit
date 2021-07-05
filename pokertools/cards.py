@@ -81,7 +81,7 @@ class Card:
         return hash(self.rank) ^ hash(self.suit)
 
     def __repr__(self):
-        return ('?' if self.rank is None else self.rank.value) + ('?' if self.suit is None else self.suit.value)
+        return self.rank.value + self.suit.value
 
     @property
     def rank(self):
