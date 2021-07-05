@@ -18,16 +18,24 @@ class IndexedHand(Hand, ABC):
     """IndexedHand is the abstract base class for all indexed hands."""
 
     def __init__(self, index):
-        self._index = index
+        self.__index = index
 
     def __eq__(self, other):
         if type(self) == type(other):
-            return self._index == other._index
+            return self.__index == other.__index
         else:
             return NotImplemented
 
     def __hash__(self):
-        return hash(self._index)
+        return hash(self.__index)
+
+    @property
+    def index(self):
+        """Returns the index of this indexed hand.
+
+        :return: The index of this indexed hand.
+        """
+        return self.__index
 
 
 class HighIndexedHand(IndexedHand, ABC):
@@ -35,7 +43,7 @@ class HighIndexedHand(IndexedHand, ABC):
 
     def __lt__(self, other):
         if type(self) == type(other):
-            return self._index > other._index
+            return self.index > other.index
         else:
             return NotImplemented
 
@@ -45,7 +53,7 @@ class LowIndexedHand(IndexedHand, ABC):
 
     def __lt__(self, other):
         if type(self) == type(other):
-            return self._index < other._index
+            return self.index < other.index
         else:
             return NotImplemented
 
