@@ -19,17 +19,17 @@ class PokerGame(SequentialGame):
 
     The number of players, denoted by the length of the starting_stacks property, must be greater than or equal to 2.
 
-    :param limit: The limit of this poker game.
+    :param limit_type: The limit type of this poker game.
     :param definition: The definition this poker game.
     :param ante: The ante of this poker game.
     :param blinds: The blinds of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
 
-    def __init__(self, limit, definition, ante, blinds, starting_stacks):
+    def __init__(self, limit_type, definition, ante, blinds, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
 
-        self.__limit = limit
+        self.__limit = limit_type(self)
         self.__definition = definition
         self.__ante = ante
 

@@ -205,11 +205,11 @@ class BetRaiseAction(BettingAction):
 
     @property
     def min_amount(self):
-        return self.game.limit._get_min_amount(self.game)
+        return self.game.limit._min_amount
 
     @property
     def max_amount(self):
-        return self.game.limit._get_max_amount(self.game)
+        return self.game.limit._max_amount
 
     def verify(self):
         super().verify()
