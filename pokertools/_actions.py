@@ -146,7 +146,7 @@ class HoleDealingAction(DealingAction):
         if self.player is None:
             self.player = next(self.actor.dealable_players)
 
-        self.player._hole.extend(map(partial(HoleCard, self.game.stage._status), cards))
+        self.player._hole.extend(map(partial(HoleCard, self.game.stage.status), cards))
 
 
 class BoardDealingAction(DealingAction):

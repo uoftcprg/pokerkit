@@ -103,7 +103,7 @@ class Card:
 class HoleCard(Card):
     """HoleCard is the class for hole cards.
 
-    :param status: True if exposed, False otherwise.
+    :param status: The status of this hole card. True if exposed, False otherwise.
     :param card: The card value.
     """
 

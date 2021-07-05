@@ -175,7 +175,15 @@ class PokerGame(SequentialGame):
 
         return side_pots
 
-    # TODO: implement is_all_in
+    def is_all_in(self):
+        """Returns whether or not all players are all-in or not.
+
+        Since player stacks are different most of the time, there might be one player who is in the hand that does not
+        have all his/her chips at stake. Even so, that player will be treated as if he/she is all-in.
+
+        :return: True if all players are all-in, else False.
+        """
+        return not any(map(PokerPlayer._is_relevant, self.players))
 
     def parse(self, *tokens):
         """Parses the tokens as actions and applies them this poker game.
@@ -391,10 +399,12 @@ class PokerPlayer(SequentialActor):
 
         :return: The hole cards of this poker player.
         """
-        if self._status is None:
-            return self._hole
+        if self.is_mucked():
+            return ()
+        elif self.is_shown() or (self.is_active() and self.game.is_all_in()):
+            return tuple(map(partial(HoleCard, True), self._hole))
         else:
-            return tuple(map(partial(HoleCard, self._status), self._hole))
+            return self._hole
 
     @property
     def starting_stack(self):

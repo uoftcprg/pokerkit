@@ -74,14 +74,24 @@ class DealingStage(Stage, ABC):
 class HoleDealingStage(DealingStage):
     """HoleDealingStage is the class for hole card dealing stages.
 
-    :param status: True if the dealing is made face-up, False otherwise.
+    :param status: The status of the hole card being dealt. True if the dealing is made face-up, False otherwise.
     :param deal_count: The number of hole cards to deal.
     """
 
     def __init__(self, status, deal_count, game):
         super().__init__(deal_count, game)
 
-        self._status = status
+        self.__status = status
+
+    @property
+    def status(self):
+        """Returns the status of the hole card being dealt in this hole dealing stage.
+
+        True is returned if the dealing is made face-up. Otherwise, False is returned.
+
+        :return: The status of the hole card being dealt.
+        """
+        return self.__status
 
     def _is_done(self):
         return super()._is_done() or all(
@@ -142,8 +152,8 @@ class BettingStage(QueuedStage):
         """
         return self.__big
 
-    def _is_done(self):  # TODO: use is_all_in method
-        return super()._is_done() or not any(map(PokerPlayer._is_relevant, self.game.players))
+    def _is_done(self):
+        return super()._is_done() or self.game.is_all_in()
 
     def _open(self):
         super()._open()
