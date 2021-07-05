@@ -46,7 +46,7 @@ class PotLimit(Limit):
     """PotLimit is the class for pot-limits."""
 
     @property
-    def _max_amount(self):  # TODO: Simplify formula
+    def _max_amount(self):
         bets = tuple(map(PokerPlayer.bet.fget, self.game.players))
         amount = max(bets) + self.game.pot + sum(bets) + max(bets) - self.game.actor.bet
 
