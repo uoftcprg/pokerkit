@@ -183,7 +183,14 @@ class PokerGame(SequentialGame):
 
         :return: True if all players are all-in, else False.
         """
-        return not any(map(PokerPlayer._is_relevant, self.players))
+        return not self.is_folded() and not any(map(PokerPlayer._is_relevant, self.players))
+
+    def is_folded(self):
+        """Returns whether or not all but one player have folded.
+
+        :return: True if all but one player have folded, else False.
+        """
+        return sum(map(PokerPlayer.is_active, self.players)) == 1
 
     def parse(self, *tokens):
         """Parses the tokens as actions and applies them this poker game.
