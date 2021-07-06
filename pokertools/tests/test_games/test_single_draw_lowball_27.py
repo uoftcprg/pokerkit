@@ -13,15 +13,13 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
             'br 6', 'br 12', 'br 18', 'br 36', 'br 72', 'cc',
             'dd', 'dd 8d 5c',
             'br 128', 'cc',
-            's', 's',
         ), (True, True), (0, 400))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (200, 200, 100)).parse(
             'dh 0 2s3h4s6d7d', 'dh 1 2h3c4d7c8d', 'dh 2 2d3d4c5d7h',
             'br 6', 'br 18', 'br 54', 'br 99', 'br 199', 'cc',
             'dd', 'dd', 'dd',
-            's', 's', 's',
-        ), (True, False, True), (200, 0, 300))
+        ), (True, True, True), (200, 0, 300))
         self.assert_terminal_poker_game(self.GAME_TYPE(15, (15, 30), (1015, 2530, 1955)).parse(
             'dh 0 AsTc9c6h3s', 'dh 1 9dThJsQsKs', 'dh 2 4s4d4c3h3c',
             'br 100', 'br 300', 'f', 'cc',
@@ -49,16 +47,14 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
             'dh 5 7s8c9cTcJs',
             'f', 'f', 'f', 'f',
             'dd 8d 6s', 'dd',
-            's', 's',
-        ), (False, False, True, False, False, False), (49, 0, 103, 150, 100, 100))
+        ), (False, True, True, False, False, False), (49, 0, 103, 150, 100, 100))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(0, (1, 2, 4), (50, 2, 100, 150, 100, 100, 1, 1, 1)).parse(
             'dh 0 AcAdAhAsJc', 'dh 1 2h3c4d7c8d', 'dh 2 2d3d4c5d7h', 'dh 3 KcKdKhKsJd', 'dh 4 QcQdQhQsJh',
             'dh 5 7s8c9cTcJs', 'dh 6', 'dh 7', 'dh 8',
             'f', 'f', 'f', 'f', 'f', 'f', 'f',
             'dd', 'dd',
-            's', 's',
-        ), (False, False, True, False, False, False, False, False, False), (49, 0, 103, 150, 100, 100, 1, 1, 1))
+        ), (False, True, True, False, False, False, False, False, False), (49, 0, 103, 150, 100, 100, 1, 1, 1))
 
 
 if __name__ == '__main__':

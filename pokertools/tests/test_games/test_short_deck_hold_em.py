@@ -14,7 +14,6 @@ class NoLimitShortDeckHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db 9h6cKc',
             'db Jh',
             'db Ts',
-            's', 's',
         ), (False, False, True, False, True, False), (489, 226, 684, 400, 0, 198))
 
 

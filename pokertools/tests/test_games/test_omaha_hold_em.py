@@ -15,8 +15,7 @@ class PotLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'br 9100000', 'br 43500000', 'br 77900000', 'cc',
             'db 5h',
             'db 9c',
-            's', 's',
-        ), (True, False), (193792375, 0))
+        ), (True, True), (193792375, 0))
 
 
 if __name__ == '__main__':

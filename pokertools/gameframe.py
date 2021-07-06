@@ -175,23 +175,6 @@ class PokerGame(SequentialGame):
 
         return side_pots
 
-    def is_all_in(self):
-        """Returns whether or not all players are all-in or not.
-
-        Since player stacks are different most of the time, there might be one player who is in the hand that does not
-        have all his/her chips at stake. Even so, that player will be treated as if he/she is all-in.
-
-        :return: True if all players are all-in, else False.
-        """
-        return not self.is_folded() and not any(map(PokerPlayer._is_relevant, self.players))
-
-    def is_folded(self):
-        """Returns whether or not all but one player have folded.
-
-        :return: True if all but one player have folded, else False.
-        """
-        return sum(map(PokerPlayer.is_active, self.players)) == 1
-
     def parse(self, *tokens):
         """Parses the tokens as actions and applies them this poker game.
 
@@ -226,6 +209,12 @@ class PokerGame(SequentialGame):
 
         return self
 
+    def _is_all_in(self):
+        return not self._is_folded() and not any(map(PokerPlayer._is_relevant, self.players))
+
+    def _is_folded(self):
+        return sum(map(PokerPlayer.is_active, self.players)) == 1
+
     def _verify(self):
         filtered_bets = list(filter(bool, self.blinds))
 
@@ -249,6 +238,10 @@ class PokerGame(SequentialGame):
             self._pot += ante
             player._bet = blind
             player._stack = stack - ante - blind
+
+        if self._is_all_in():
+            for player in self.players:
+                player._status = True
 
         self.stages[0]._open()
 
@@ -408,7 +401,7 @@ class PokerPlayer(SequentialActor):
         """
         if self.is_mucked():
             return ()
-        elif self.is_shown() or (self.is_active() and self.game.is_all_in()):
+        elif self.is_shown():
             return tuple(map(partial(HoleCard, True), self._hole))
         else:
             return self._hole

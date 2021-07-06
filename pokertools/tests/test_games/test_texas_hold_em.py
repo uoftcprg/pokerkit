@@ -21,7 +21,6 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's',
         ), (True, True), (100, 200))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (200, 100)).parse(
             'dh 0 QdQh', 'dh 1 AhAd',
@@ -29,8 +28,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's',
-        ), (False, True), (100, 200))
+        ), (True, True), (100, 200))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (200, 100)).parse(
             'dh 0 QdQh', 'dh 1 AhAd',
             'br 6', 'cc',
@@ -64,22 +62,18 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's',
         ), (True, True), (0, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (1, 0)).parse(
             'dh 0 QdQh', 'dh 1 AhAd',
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's',
         ), (True, True), (1, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (0, 1)).parse(
             'dh 0 QdQh', 'dh 1 AhAd',
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's',
-            's',
         ), (True, True), (0, 1))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (2, 1)).parse(
             'dh 0 QdQh',
@@ -87,14 +81,12 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's',
         ), (True, True), (1, 2))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (50, 1)).parse(
             'dh 0 QdQh', 'dh 1 AhAd',
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's',
         ), (True, True), (49, 2))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(500, (1000, 2000), (1125600, 2000000, 553500)).parse(
@@ -105,7 +97,6 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db 4h',
             'br 90000', 'br 232600', 'br 1067100', 'cc',
             'db Jh',
-            's', 's',
         ), (True, False, True), (572100, 1997500, 1109500))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (200, 100, 300, 200)).parse(
@@ -114,8 +105,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's', 's', 's',
-        ), (True, True, True, False), (300, 400, 100, 0))
+        ), (True, True, True, True), (300, 400, 100, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (200, 100, 300, 200)).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd',
             'f', 'br 6', 'cc', 'cc',
@@ -166,7 +156,6 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's', 's',
         ), (True, True, False, True), (200, 301, 299, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (100,) * 4).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd',
@@ -174,8 +163,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's', 's', 's',
-        ), (True, True, True, False), (0, 400, 0, 0))
+        ), (True, True, True, True), (0, 400, 0, 0))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (200, 100, 300, 200, 200, 150)).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 JcJh', 'dh 5 TsTh',
@@ -198,45 +186,39 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's', 's', 's', 's',
-        ), (True, False, False, True, True, True), (150, 0, 249, 0, 0, 751))
+        ), (True, True, False, True, True, True), (150, 0, 249, 0, 0, 751))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (0, 0, 0, 0)).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd',
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's', 's', 's',
-        ), (True, True, False, False), (0, 0, 0, 0))
+        ), (True, True, True, True), (0, 0, 0, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (1, 1, 5, 5)).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd',
             'br 4', 'cc',
             'db AcAsKc',
             'db Qs',
             'db Qc',
-            's', 's', 's', 's',
-        ), (True, True, True, False), (0, 4, 8, 0))
+        ), (True, True, True, True), (0, 4, 8, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (7, 0, 9, 7)).parse(
             'dh 0 4h8s', 'dh 1 AsQs', 'dh 2 Ac8d', 'dh 3 AhQh',
             'f', 'f',
             'db Ad3s2h',
             'db 8h',
             'db Ts',
-            's', 's',
         ), (True, True, False, False), (9, 0, 8, 6))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (1, 17, 0, 1)).parse(  # TODO
             'dh 0 3d6c', 'dh 1 8sAh', 'dh 2 Ad8c', 'dh 3 KcQs',
             'db 4c7h5s',
             'db Ts',
             'db 3c',
-            's', 's', 's', 's',
-        ), (True, False, False, False), (3, 16, 0, 0))
+        ), (True, True, True, True), (3, 16, 0, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(1, (1, 2), (2, 16, 0, 1)).parse(  # TODO
             'dh 0 AcKs', 'dh 1 8h2c', 'dh 2 6h6c', 'dh 3 2dTd',
             'db 8d5c4d',
             'db Qh',
             'db 5d',
-            's', 's', 's', 's',
-        ), (True, True, False, True), (0, 16, 0, 3))
+        ), (True, True, True, True), (0, 16, 0, 3))
 
 
 if __name__ == '__main__':
