@@ -38,7 +38,7 @@ class IndexedHand(Hand, ABC):
         return self.__index
 
 
-class HighIndexedHand(IndexedHand, ABC):
+class HighIndexedHand(IndexedHand):
     """HighIndexedHand is the abstract base class for all high indexed hands."""
 
     def __lt__(self, other):
@@ -48,7 +48,7 @@ class HighIndexedHand(IndexedHand, ABC):
             return NotImplemented
 
 
-class LowIndexedHand(IndexedHand, ABC):
+class LowIndexedHand(IndexedHand):
     """LowIndexedHand is the abstract base class for all low indexed hands."""
 
     def __lt__(self, other):
