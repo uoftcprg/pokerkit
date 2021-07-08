@@ -174,10 +174,9 @@ class BettingStage(QueuedStage):
         self.game._max_delta = self.initial_bet_amount
 
     def _close(self):
-        from pokertools._actions import collect
         super()._close()
 
-        collect(self.game)
+        self.game._collect()
 
         self._bet_raise_count = None
         self._max_delta = None

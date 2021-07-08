@@ -1,6 +1,7 @@
 import re
 from collections.abc import Mapping, Sized
 from functools import partial
+from numbers import Integral
 from operator import gt
 
 from gameframe.exceptions import GameFrameError
@@ -25,6 +26,30 @@ class PokerGame(SequentialGame):
     :param blinds: The blinds of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
+
+    class _SidePot:
+        def __init__(self, players, amount):
+            self.__players = tuple(players)
+            self.__amount = amount
+
+        @property
+        def players(self):
+            return self.__players
+
+        @property
+        def amount(self):
+            return self.__amount
+
+    @classmethod
+    def _allocate(cls, amount, count):
+        if isinstance(amount, Integral):
+            amounts = [amount // count] * count
+            amounts[0] += amount % count
+        else:
+            amounts = [amount / count] * count
+            amounts[0] += amount - sum(amounts)
+
+        return amounts
 
     def __init__(self, limit_type, definition, ante, blinds, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
@@ -243,20 +268,50 @@ class PokerGame(SequentialGame):
             for player in self.players:
                 player._status = True
 
-        self.stages[0]._open()
+        self.stages[0]._open()  # TODO
 
-    class _SidePot:
-        def __init__(self, players, amount):
-            self.__players = tuple(players)
-            self.__amount = amount
+    def _collect(self):
+        effective_bet = sorted(map(PokerPlayer.bet.fget, self.players))[-2]
 
-        @property
-        def players(self):
-            return self.__players
+        for player in self.players:
+            bet = min(effective_bet, player.bet)
+            self._pot += bet
+            player._stack += player.bet - bet
+            player._bet = 0
 
-        @property
-        def amount(self):
-            return self.__amount
+    def _update(self):
+        if self.stage._is_done():
+            stage = self.stage
+            stage._close()
+
+            try:
+                index = self.stages.index(stage) + 1
+
+                while self.stages[index]._is_done():
+                    index += 1
+
+                self.stages[index]._open()
+            except IndexError:
+                self._distribute()
+                self._actor = None
+        else:
+            self._actor = self._queue.pop(0) if self._queue else self.nature
+
+    def _distribute(self):
+        self._collect()
+
+        for side_pot in self._side_pots:
+            for amount, evaluator in zip(self._allocate(side_pot.amount, len(self.evaluators)), self.evaluators):
+                if len(side_pot.players) == 1:
+                    players = side_pot.players
+                else:
+                    hand = max(player._get_hand(evaluator) for player in side_pot.players)
+                    players = tuple(player for player in side_pot.players if player._get_hand(evaluator) == hand)
+
+                for player, share in zip(players, self._allocate(amount, len(players))):
+                    player._stack += share
+
+        self._pot = 0
 
 
 class PokerNature(SequentialActor):

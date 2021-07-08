@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import partial
 from itertools import filterfalse
-from numbers import Integral
 from operator import is_
 from random import sample
 
@@ -16,68 +15,11 @@ from pokertools.stages import (
 from pokertools.utilities import _rotate, _unique
 
 
-def collect(game):
-    effective_bet = sorted(map(PokerPlayer.bet.fget, game.players))[-2]
-
-    for player in game.players:
-        bet = min(effective_bet, player.bet)
-        game._pot += bet
-        player._stack += player.bet - bet
-        player._bet = 0
-
-
-def update(game):
-    if game.stage._is_done():
-        stage = game.stage
-        stage._close()
-
-        try:
-            index = game.stages.index(stage) + 1
-
-            while game.stages[index]._is_done():
-                index += 1
-
-            game.stages[index]._open()
-        except IndexError:
-            distribute(game)
-            game._actor = None
-    else:
-        game._actor = game._queue.pop(0) if game._queue else game.nature
-
-
-def distribute(game):
-    collect(game)
-
-    for side_pot in game._side_pots:
-        for amount, evaluator in zip(allocate(side_pot.amount, len(game.evaluators)), game.evaluators):
-            if len(side_pot.players) == 1:
-                players = side_pot.players
-            else:
-                hand = max(player._get_hand(evaluator) for player in side_pot.players)
-                players = tuple(player for player in side_pot.players if player._get_hand(evaluator) == hand)
-
-            for player, share in zip(players, allocate(amount, len(players))):
-                player._stack += share
-
-    game._pot = 0
-
-
-def allocate(amount, count):
-    if isinstance(amount, Integral):
-        amounts = [amount // count] * count
-        amounts[0] += amount % count
-    else:
-        amounts = [amount / count] * count
-        amounts[0] += amount - sum(amounts)
-
-    return amounts
-
-
 class PokerAction(_SequentialAction, ABC):
     def act(self):
         super().act()
 
-        update(self.game)
+        self.game._update()
 
 
 class DealingAction(PokerAction, ABC):
