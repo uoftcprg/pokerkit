@@ -268,7 +268,7 @@ class PokerGame(SequentialGame):
             for player in self.players:
                 player._status = True
 
-        self.stages[0]._open()  # TODO
+        self._update()
 
     def _collect(self):
         effective_bet = sorted(map(PokerPlayer.bet.fget, self.players))[-2]
@@ -280,13 +280,14 @@ class PokerGame(SequentialGame):
             player._bet = 0
 
     def _update(self):
-        if self.stage._is_done():
-            stage = self.stage
-            stage._close()
+        if self.stage is None or self.stage._is_done():
+            if self.stage is None:
+                index = 0
+            else:
+                index = self.stages.index(self.stage) + 1
+                self.stage._close()
 
             try:
-                index = self.stages.index(stage) + 1
-
                 while self.stages[index]._is_done():
                     index += 1
 
