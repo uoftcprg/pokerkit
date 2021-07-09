@@ -138,12 +138,10 @@ class BettingStage(QueuedStage):
 
         :return: The initial bet amount of this betting stage.
         """
-        max_value = max(self.game.ante, max(self.game.blinds, default=0))
-
         if self.is_big() and isinstance(self.game.limit, FixedLimit):
-            return max_value * 2
+            return self.game.big_bet
         else:
-            return max_value
+            return self.game.small_bet
 
     def is_big(self):
         """Returns whether or not this betting stage is a big betting stage.

@@ -4,7 +4,7 @@ from random import choice, randint, sample
 
 from gameframe.tests import GameFrameTestCaseMixin
 
-from pokertools import PokerNature, PokerPlayer
+from pokertools import PokerNature, PokerPlayer, Stakes
 
 
 class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
@@ -22,7 +22,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
             assert player.stack == stack, f'Stack of player {player.index}: {player.stack} is not {stack}'
 
     def create_game(self):
-        return self.GAME_TYPE(1, (1, 2), tuple(randint(0, 50) for _ in range(randint(2, 4))))
+        return self.GAME_TYPE(Stakes(1, (1, 2)), tuple(randint(0, 50) for _ in range(randint(2, 6))))
 
     def act(self, game):
         actions = []

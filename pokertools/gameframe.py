@@ -1,5 +1,4 @@
 import re
-from collections.abc import Mapping, Sized
 from functools import partial
 from numbers import Integral
 from operator import gt
@@ -22,8 +21,7 @@ class PokerGame(SequentialGame):
 
     :param limit_type: The limit type of this poker game.
     :param definition: The definition this poker game.
-    :param ante: The ante of this poker game.
-    :param blinds: The blinds of this poker game.
+    :param stakes: The stakes of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
 
@@ -51,19 +49,12 @@ class PokerGame(SequentialGame):
 
         return amounts
 
-    def __init__(self, limit_type, definition, ante, blinds, starting_stacks):
+    def __init__(self, limit_type, definition, stakes, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
 
         self.__limit = limit_type(self)
         self.__definition = definition
-        self.__ante = ante
-
-        if isinstance(blinds, Mapping):
-            blinds = tuple(blinds[i] if i in blinds else 0 for i in range(len(self.players)))
-        elif not isinstance(blinds, Sized):
-            blinds = tuple(blinds)
-
-        self.__blinds = tuple(blinds) + (0,) * (len(self.players) - len(blinds))
+        self.__stakes = stakes
         self.__starting_stacks = tuple(starting_stacks)
         self.__stages = definition.create_stages(self)
         self.__evaluators = definition.create_evaluators()
@@ -98,22 +89,12 @@ class PokerGame(SequentialGame):
         return self.__definition
 
     @property
-    def ante(self):
-        """Returns the ante of this poker game.
+    def stakes(self):
+        """Returns the stakes of this poker game.
 
-        :return: The ante of this poker game.
+        :return: The stakes of this poker game.
         """
-        return self.__ante
-
-    @property
-    def blinds(self):
-        """Returns the blinds of this poker game.
-
-        This tuple includes straddles and forced bets.
-
-        :return: The blinds of this poker game.
-        """
-        return self.__blinds
+        return self.__stakes
 
     @property
     def starting_stacks(self):
@@ -173,6 +154,40 @@ class PokerGame(SequentialGame):
         :return: The stage of this poker game.
         """
         return self._stage
+
+    @property
+    def ante(self):
+        """Returns the ante of this poker game.
+
+        :return: The ante of this poker game.
+        """
+        return self.stakes.ante
+
+    @property
+    def blinds(self):
+        """Returns the blinds of this poker game.
+
+        This tuple includes straddles and forced bets.
+
+        :return: The blinds of this poker game.
+        """
+        return self.stakes.blinds
+
+    @property
+    def small_bet(self):
+        """Returns the small bet of this poker game.
+
+        :return: The small bet of this poker game.
+        """
+        return self.stakes.small_bet
+
+    @property
+    def big_bet(self):
+        """Returns the big bet of this poker game.
+
+        :return: The big bet of this poker game.
+        """
+        return self.stakes.big_bet
 
     @property
     def side_pots(self):
@@ -476,10 +491,9 @@ class PokerPlayer(SequentialActor):
 
         :return: The blind of this poker player.
         """
-        if len(self.game.players) == 2:
-            return self.game.blinds[not self.index]
-        else:
-            return self.game.blinds[self.index]
+        index = not self.index if len(self.game.players) == 2 else self.index
+
+        return self.game.blinds[index] if index < len(self.game.blinds) else 0
 
     @property
     def total(self):

@@ -28,6 +28,7 @@ from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, QueuedStage, ShowdownStage,
     Stage,
 )
+from pokertools.stakes import Stakes
 from pokertools.utilities import parse_card, parse_cards, parse_range, rainbow, suited
 
 __all__ = (
@@ -45,6 +46,6 @@ __all__ = (
     'PotLimitSixCardOmahaHoldEm', 'PotLimitTripleDrawLowball27', 'BadugiHand', 'Hand', 'HighIndexedHand',
     'IndexedHand', 'LookupHandMixin', 'LowIndexedHand', 'Lowball27Hand', 'LowballA5Hand', 'ShortDeckHand',
     'StandardHand', 'FixedLimit', 'Limit', 'NoLimit', 'PotLimit', 'BettingStage', 'BoardDealingStage', 'DealingStage',
-    'DiscardDrawStage', 'HoleDealingStage', 'QueuedStage', 'ShowdownStage', 'Stage', 'parse_card', 'parse_cards',
-    'parse_range', 'rainbow', 'suited',
+    'DiscardDrawStage', 'HoleDealingStage', 'QueuedStage', 'ShowdownStage', 'Stage', 'Stakes', 'parse_card',
+    'parse_cards', 'parse_range', 'rainbow', 'suited',
 )

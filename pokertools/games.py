@@ -7,6 +7,7 @@ from pokertools.definitions import (
 )
 from pokertools.gameframe import PokerGame
 from pokertools.limits import FixedLimit, NoLimit, PotLimit
+from pokertools.stakes import Stakes
 
 FixedLimitTexasHoldEm = partial(PokerGame, FixedLimit, TexasHoldEmDefinition())
 NoLimitTexasHoldEm = partial(PokerGame, NoLimit, TexasHoldEmDefinition())
@@ -35,4 +36,4 @@ NoLimitSingleDrawLowball27 = partial(PokerGame, NoLimit, SingleDrawLowball27Defi
 FixedLimitTripleDrawLowball27 = partial(PokerGame, FixedLimit, TripleDrawLowball27Definition())
 PotLimitTripleDrawLowball27 = partial(PokerGame, PotLimit, TripleDrawLowball27Definition())
 
-KuhnPoker = partial(PokerGame, FixedLimit, KuhnPokerDefinition(), 1, (), (2, 2))
+KuhnPoker = partial(PokerGame, FixedLimit, KuhnPokerDefinition(), Stakes(1, ()), (2, 2))
