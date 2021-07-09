@@ -8,7 +8,50 @@ class FixedLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = FixedLimitTexasHoldEm
 
     def test_hands(self):
-        ...
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 4), 5, 10), (100, 100)).parse(
+            'dh 0 QdQh', 'dh 1 AhAd',
+            'br', 'cc',
+            'db AcAsKc',
+            'cc', 'cc',
+            'db Qs',
+            'br', 'cc',
+            'db Qc',
+            'cc', 'cc',
+            's', 's',
+        ), (True, True), (80, 120))
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 4), 5, 10), (100, 100)).parse(
+            'dh 0 AhAd', 'dh 1 QdQh',
+            'br', 'cc',
+            'db AcAsKc',
+            'cc', 'cc',
+            'db Qs',
+            'cc', 'cc',
+            'db Qc',
+            'cc', 'cc',
+            's', 's',
+        ), (True, False), (110, 90))
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 4), 5, 10), (100, 100)).parse(
+            'dh 0 AhAd', 'dh 1 QdQh',
+            'cc', 'cc',
+            'db AcAsKc',
+            'cc', 'cc',
+            'db Qs',
+            'br', 'cc',
+            'db Qc',
+            'cc', 'cc',
+            's', 's 1',
+        ), (True, True), (115, 85))
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 4), 5, 10), (100, 100)).parse(
+            'dh 0 AhAd', 'dh 1 QdQh',
+            'br', 'cc',
+            'db AcAsKc',
+            'cc', 'cc',
+            'db Qs',
+            'cc', 'cc',
+            'db Qc',
+            'cc', 'cc',
+            's 0',
+        ), (False, None), (90, 110))
 
 
 class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
