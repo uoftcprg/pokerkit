@@ -601,7 +601,7 @@ class PokerPlayer(SequentialActor):
     def fold(self):
         """Folds the poker player's hand.
 
-        :return: None
+        :return: None.
         """
         self._get_fold_action().act()
 
@@ -615,7 +615,7 @@ class PokerPlayer(SequentialActor):
     def check_call(self):
         """Checks or calls the opponent's bet.
 
-        :return: None
+        :return: None.
         """
         self._get_check_call_action().act()
 
@@ -632,7 +632,7 @@ class PokerPlayer(SequentialActor):
         If no amount is specified, this poker player will min-raise.
 
         :param amount: The optional amount to bet/raise.
-        :return: None
+        :return: None.
         """
         self._get_bet_raise_action(amount).act()
 
@@ -657,7 +657,7 @@ class PokerPlayer(SequentialActor):
 
         :param discarded_cards: The optional cards to discard. Defaults to empty tuple (stand pat).
         :param drawn_cards: The optional cards to draw.
-        :return: None
+        :return: None.
         """
         self._get_discard_draw_action(discarded_cards, drawn_cards).act()
 
@@ -682,7 +682,7 @@ class PokerPlayer(SequentialActor):
         face-up hand on the board that beats your hand.
 
         :param forced: True to force showdown, False to force muck. Defaults to None.
-        :return: None
+        :return: None.
         """
         self._get_showdown_action(forced).act()
 
