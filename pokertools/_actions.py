@@ -236,7 +236,7 @@ class ShowdownAction(PokerAction):
         for player in self.game.players:
             if player.is_shown():
                 for i, (actor_hand, player_hand) in enumerate(zip(self.actor.hands, player.hands)):
-                    if player_hand > actor_hand and player.put >= self.actor.put:
+                    if player_hand > actor_hand and player._put >= self.actor._put:
                         staked[i] = False
 
         return any(staked)

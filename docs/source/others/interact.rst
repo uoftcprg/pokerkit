@@ -163,8 +163,6 @@ Whether each action can be applied can also be queried through the corresponding
    player.total
    # The effective stack of the player.
    player.effective_stack
-   # The amount put into the pot by the player.
-   player.put
    # An iterator of the hands of the player.
    player.hands
    # Most poker games only have one evaluator. Get the first hand.

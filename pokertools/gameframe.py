@@ -184,19 +184,19 @@ class PokerGame(SequentialGame):
 
     @property
     def _side_pots(self):
-        players = sorted(self.players, key=PokerPlayer.put.fget)
+        players = sorted(self.players, key=PokerPlayer._put.fget)
         side_pots = []
         pot = 0
         prev = 0
 
         while pot < self.pot:
-            cur = players[0].put
+            cur = players[0]._put
             amount = len(players) * (cur - prev)
 
             side_pots.append(self._SidePot(filter(PokerPlayer.is_active, players), amount))
 
             pot += amount
-            prev = players.pop(0).put
+            prev = players.pop(0)._put
 
         return side_pots
 
@@ -214,12 +214,12 @@ class PokerGame(SequentialGame):
                 )
             elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
                 self.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
-            elif match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
-                self.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
-            elif token == 'cc':
-                self.actor.check_call()
             elif token == 'f':
                 self.actor.fold()
+            elif token == 'cc':
+                self.actor.check_call()
+            elif match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
+                self.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
             elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
                 self.actor.discard_draw(
                     () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
@@ -505,14 +505,6 @@ class PokerPlayer(SequentialActor):
             return min(self.starting_stack, sorted(map(PokerPlayer.starting_stack.fget, active_players))[-2])
 
     @property
-    def put(self):
-        """Returns the amount put into the pot by this poker player.
-
-        :return: The amount put by this poker player.
-        """
-        return max(self.starting_stack - self.total, 0)
-
-    @property
     def hands(self):
         """Returns the hands of this poker player.
 
@@ -562,6 +554,10 @@ class PokerPlayer(SequentialActor):
             return self._get_bet_raise_action().max_amount
         else:
             raise GameFrameError('The player cannot bet/raise')
+
+    @property
+    def _put(self):
+        return self.starting_stack - self.total
 
     @property
     def _lost(self):
@@ -679,7 +675,7 @@ class PokerPlayer(SequentialActor):
         """
         return self._get_discard_draw_action(discarded_cards, drawn_cards).can_act()
 
-    def showdown(self, forced):
+    def showdown(self, forced=None):
         """Showdowns this poker player's hand if necessary to win the pot or forced.
 
         if forced is not supplied, the showdown is forced if necessary to win the pot. This is the case when there is no
