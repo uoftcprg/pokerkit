@@ -608,7 +608,7 @@ class PokerPlayer(SequentialActor):
     def can_fold(self):
         """Returns whether or not the player can fold his/her hand.
 
-        :return: True if this poker player can fold, else False
+        :return: True if this poker player can fold, else False.
         """
         return self._get_fold_action().can_act()
 
@@ -622,7 +622,7 @@ class PokerPlayer(SequentialActor):
     def can_check_call(self):
         """Returns whether or not the player can check/call.
 
-        :return: True if this poker player can check/call, else False
+        :return: True if this poker player can check/call, else False.
         """
         return self._get_check_call_action().can_act()
 
@@ -642,7 +642,7 @@ class PokerPlayer(SequentialActor):
         If no amount is specified, this poker player is assumed to min-raise.
 
         :param amount: The optional amount to bet/raise.
-        :return: True if this poker player can bet/raise, else False
+        :return: True if this poker player can bet/raise, else False.
         """
         return self._get_bet_raise_action(amount).can_act()
 
