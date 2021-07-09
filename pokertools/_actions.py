@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 from functools import partial
-from itertools import filterfalse
-from operator import is_
 from random import sample
 
 from gameframe.exceptions import GameFrameError
@@ -158,7 +156,7 @@ class BetRaiseAction(BettingAction):
 
         if max(map(PokerPlayer.bet.fget, self.game.players)) >= self.actor.total:
             raise GameFrameError('Cannot call when the stack of the player is covered')
-        elif not any(map(PokerPlayer._is_relevant, filterfalse(partial(is_, self.actor), self.game.players))):
+        elif not any(map(PokerPlayer._is_relevant, self.game.players)):
             raise GameFrameError('Cannot bet/raise when redundant')
         elif self.game._bet_raise_count == self.game.limit._max_count:
             raise GameFrameError('Too many number of bets/raises')
