@@ -2,7 +2,7 @@ from functools import partial
 from unittest import TestCase, main
 
 from pokertools import Card, Rank, Suit, parse_card, parse_cards, parse_range, rainbow, suited
-from pokertools.utilities import _unique
+from pokertools.utilities import _rotate, _unique
 
 
 class UtilitiesTestCase(TestCase):
@@ -98,6 +98,12 @@ class UtilitiesTestCase(TestCase):
         self.assertFalse(_unique(map(Card.rank.fget, parse_cards('AhAsJsQh'))))
         self.assertTrue(_unique(map(Card.suit.fget, parse_cards('AcAdJhQs'))))
         self.assertFalse(_unique(map(Card.suit.fget, parse_cards('AcAdJhQh'))))
+
+    def test_rotate(self):
+        self.assertEqual(_rotate(list(range(10)), 5), list(range(5, 10)) + list(range(5)))
+        self.assertEqual(_rotate([1, 3, 5, 7], 0), [1, 3, 5, 7])
+        self.assertEqual(_rotate((1, 3, 5, 7), 1), (3, 5, 7, 1))
+        self.assertEqual(_rotate((1, 3, 5, 7), -2), (5, 7, 1, 3))
 
 
 if __name__ == '__main__':
