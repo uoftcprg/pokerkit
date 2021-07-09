@@ -168,8 +168,7 @@ class BettingStage(QueuedStage):
         else:
             opener = self.game._aggressor
 
-        self.game._actor = opener
-        self.game._queue = _rotate(players, players.index(opener))[1:]
+        self.game._actor, *self.game._queue = _rotate(players, players.index(opener))
         self.game._bet_raise_count = int(blinded)
         self.game._max_delta = self.initial_bet_amount
 
@@ -192,10 +191,7 @@ class DiscardDrawStage(QueuedStage):
     def _open(self):
         super()._open()
 
-        players = list(filter(PokerPlayer.is_active, self.game.players))
-
-        self.game._actor = players[0]
-        self.game._queue = players[1:]
+        self.game._actor, *self.game._queue = list(filter(PokerPlayer.is_active, self.game.players))
 
 
 class ShowdownStage(QueuedStage):
@@ -207,8 +203,7 @@ class ShowdownStage(QueuedStage):
     def _open(self):
         super()._open()
 
-        self.game._actor = self.game._aggressor
-        self.game._queue = list(filter(
+        self.game._actor, *self.game._queue = list(filter(
             PokerPlayer.is_active,
             _rotate(self.game.players, self.game._aggressor.index),
-        ))[1:]
+        ))
