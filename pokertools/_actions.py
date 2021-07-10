@@ -164,7 +164,8 @@ class BetRaiseAction(BettingAction):
 
         if self.amount is not None:
             if not self.min_amount <= self.amount <= self.max_amount:
-                raise GameFrameError('The bet/raise amount must be within allowed bounds')
+                raise GameFrameError('The bet/raise amount must be within allowed bounds '
+                                     f'({self.amount} not in {self.min_amount}..{self.max_amount})')
 
     def apply(self):
         super().apply()

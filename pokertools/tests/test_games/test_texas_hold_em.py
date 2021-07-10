@@ -141,6 +141,12 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'br 90000', 'br 232600', 'br 1067100', 'cc',
             'db Jh',
         ), (True, False, True), (572100, 1997500, 1109500))
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (100, 100, 100)).parse(
+            'dh 0 AhTh', 'dh 1 AsTs', 'dh 2 AcTc', 'br 6', 'f', 'cc',
+            'db 2h3h4h', 'cc', 'cc',
+            'db 4s', 'br 93', 'cc',
+            'db 5s',
+        ), (False, True, True), (98, 101, 101))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200)).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd',

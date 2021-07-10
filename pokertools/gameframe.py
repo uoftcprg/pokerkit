@@ -3,7 +3,6 @@ from functools import partial
 from numbers import Integral
 from operator import gt
 
-from gameframe.exceptions import GameFrameError
 from gameframe.sequential import SequentialActor, SequentialGame
 
 from pokertools.cards import HoleCard
@@ -256,18 +255,12 @@ class PokerGame(SequentialGame):
         return sum(map(PokerPlayer.is_active, self.players)) == 1
 
     def _verify(self):
-        filtered_bets = list(filter(bool, self.blinds))
-
-        if filtered_bets != sorted(filtered_bets):
-            raise GameFrameError('Forced bets must be sorted (except zero values)')
-        elif len(self.starting_stacks) < 2:
-            raise GameFrameError('Poker needs at least 2 players')
-        elif self.ante < 0:
-            raise GameFrameError('The ante must be a positive value')
+        if len(self.starting_stacks) < 2:
+            raise ValueError('Poker needs at least 2 players')
         elif len(self.blinds) > len(self.starting_stacks):
-            raise GameFrameError('Number of blinds must be less than or equal to the number of players')
-        elif any(map(partial(gt, 0), (self.ante,) + self.blinds + self.starting_stacks)):
-            raise GameFrameError('All numerical values must be positive')
+            raise ValueError('Number of blinds must be less than or equal to the number of players')
+        elif any(map(partial(gt, 0), self.starting_stacks)):
+            raise ValueError('All starting stack values must be positive')
 
     def _setup(self):
         for player in self.players:
@@ -345,7 +338,7 @@ class PokerNature(SequentialActor):
         if self.can_deal_hole():
             return self._get_hole_deal_action().dealable_players
         else:
-            raise GameFrameError('The nature cannot deal hole cards')
+            raise ValueError('The nature cannot deal hole cards')
 
     @property
     def hole_deal_count(self):
@@ -356,7 +349,7 @@ class PokerNature(SequentialActor):
         if self.can_deal_hole():
             return self._get_hole_deal_action().deal_count
         else:
-            raise GameFrameError('The nature cannot deal hole cards')
+            raise ValueError('The nature cannot deal hole cards')
 
     @property
     def board_deal_count(self):
@@ -367,7 +360,7 @@ class PokerNature(SequentialActor):
         if self.can_deal_board():
             return self._get_board_deal_action().deal_count
         else:
-            raise GameFrameError('The nature cannot deal board cards')
+            raise ValueError('The nature cannot deal board cards')
 
     def deal_hole(self, player=None, cards=None):
         """Deals the optionally supplied hole cards to the optionally specified player.
@@ -541,7 +534,7 @@ class PokerPlayer(SequentialActor):
         if self.can_check_call():
             return self._get_check_call_action().amount
         else:
-            raise GameFrameError('The player cannot check/call')
+            raise ValueError('The player cannot check/call')
 
     @property
     def min_bet_raise_amount(self):
@@ -554,7 +547,7 @@ class PokerPlayer(SequentialActor):
         if self.can_bet_raise():
             return self._get_bet_raise_action().min_amount
         else:
-            raise GameFrameError('The player cannot bet/raise')
+            raise ValueError('The player cannot bet/raise')
 
     @property
     def max_bet_raise_amount(self):
@@ -567,7 +560,7 @@ class PokerPlayer(SequentialActor):
         if self.can_bet_raise():
             return self._get_bet_raise_action().max_amount
         else:
-            raise GameFrameError('The player cannot bet/raise')
+            raise ValueError('The player cannot bet/raise')
 
     @property
     def _put(self):
@@ -610,7 +603,7 @@ class PokerPlayer(SequentialActor):
         if self.can_showdown():
             return self._get_showdown_action().is_necessary()
         else:
-            raise GameFrameError('The player cannot showdown')
+            raise ValueError('The player cannot showdown')
 
     def fold(self):
         """Folds the poker player's hand.

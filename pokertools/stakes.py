@@ -1,4 +1,6 @@
 from collections.abc import Mapping
+from functools import partial
+from operator import gt
 
 
 class Stakes:
@@ -24,7 +26,9 @@ class Stakes:
         max_value = max(self.ante, max(self.blinds, default=0))
 
         self.__small_bet = max_value if small_bet is None else small_bet
-        self.__big_bet = 2 * max_value if big_bet is None else big_bet
+        self.__big_bet = 2 * self.small_bet if big_bet is None else big_bet
+
+        self._verify(max_value)
 
     @property
     def ante(self):
@@ -41,3 +45,18 @@ class Stakes:
     @property
     def big_bet(self):
         return self.__big_bet
+
+    def _verify(self, max_value):
+        filtered_bets = list(filter(bool, self.blinds))
+
+        if filtered_bets != sorted(filtered_bets):
+            raise ValueError('Forced bets must be sorted (except zero values)')
+        elif self.ante < 0:
+            raise ValueError('The ante must be a positive value')
+        elif any(map(partial(gt, 0), self.blinds)):
+            raise ValueError('The blinds must be positive values')
+        elif not max_value:
+            raise ValueError('At least one positive value must be supplied as the ante or the blinds')
+        elif not max_value <= self.small_bet <= self.big_bet:
+            raise ValueError('The maximum forced bets must be less than or equal to the small bet which, in turn, '
+                             'should be less than or equal to the big bet')

@@ -2,7 +2,7 @@ from unittest import TestCase, main
 
 from gameframe.exceptions import GameFrameError
 
-from pokertools import NoLimitTexasHoldEm, Stakes
+from pokertools import FixedLimitTexasHoldEm, NoLimitTexasHoldEm, PotLimitOmahaHoldEm, Stakes
 
 
 class GameFrameTestCase(TestCase):
@@ -367,6 +367,97 @@ class GameFrameTestCase(TestCase):
             'db Qc',
             'br 6', 'br 12', 'br 150', 'cc', 'cc', 'cc',
         ).actor.index, 2)
+
+    def test_bet_raise_when_max_count(self):
+        game = NoLimitTexasHoldEm(Stakes(1, ()), (101, 101)).parse('dh 0', 'dh 1')
+
+        for _ in range(100):
+            game.actor.bet_raise()
+
+        self.assertRaises(GameFrameError, game.actor.bet_raise)
+
+        game = PotLimitOmahaHoldEm(Stakes(1, ()), (101, 101)).parse('dh 0', 'dh 1')
+
+        for _ in range(100):
+            game.actor.bet_raise()
+
+        self.assertRaises(GameFrameError, game.actor.bet_raise)
+
+        game = FixedLimitTexasHoldEm(Stakes(1, (1, 2)), (101, 101)).parse('dh 0', 'dh 1')
+
+        for _ in range(3):
+            game.actor.bet_raise()
+
+        self.assertRaises(GameFrameError, game.actor.bet_raise)
+        game.actor.check_call()
+
+        for _ in range(3):
+            game.actor.deal_board()
+
+            for _ in range(4):
+                game.actor.bet_raise()
+
+            self.assertRaises(GameFrameError, game.actor.bet_raise)
+            game.actor.check_call()
+
+    def test_bet_raise_amounts(self):
+        game = NoLimitTexasHoldEm(Stakes(0, (5, 10)), (1000, 1000)).parse('dh 0', 'dh 1')
+
+        self.assertEqual(game.actor.min_bet_raise_amount, 20)
+        self.assertEqual(game.actor.max_bet_raise_amount, 1000)
+        game.parse('cc', 'cc')
+
+        for _ in range(3):
+            game.parse('db')
+            self.assertEqual(game.actor.min_bet_raise_amount, 10)
+            self.assertEqual(game.actor.max_bet_raise_amount, 990)
+            game.parse('cc', 'cc')
+
+        game = PotLimitOmahaHoldEm(Stakes(0, (5, 10)), (1000, 1000)).parse('dh 0', 'dh 1')
+
+        self.assertEqual(game.actor.min_bet_raise_amount, 20)
+        self.assertEqual(game.actor.max_bet_raise_amount, 30)
+        game.parse('br 25')
+        self.assertEqual(game.actor.min_bet_raise_amount, 40)
+        self.assertEqual(game.actor.max_bet_raise_amount, 75)
+        game.parse('cc')
+
+        for _ in range(3):
+            game.parse('db')
+            self.assertEqual(game.actor.min_bet_raise_amount, 10)
+            self.assertEqual(game.actor.max_bet_raise_amount, 50)
+            game.parse('cc', 'cc')
+
+        game = FixedLimitTexasHoldEm(Stakes(0, (5, 10)), (1000, 1000)).parse('dh 0', 'dh 1')
+
+        self.assertEqual(game.actor.min_bet_raise_amount, 20)
+        self.assertEqual(game.actor.max_bet_raise_amount, 20)
+        game.parse('cc', 'cc', 'db')
+
+        self.assertEqual(game.actor.min_bet_raise_amount, 10)
+        self.assertEqual(game.actor.max_bet_raise_amount, 10)
+        game.parse('br')
+        self.assertEqual(game.actor.min_bet_raise_amount, 20)
+        self.assertEqual(game.actor.max_bet_raise_amount, 20)
+        game.parse('cc')
+
+        for _ in range(2):
+            game.parse('db')
+            self.assertEqual(game.actor.min_bet_raise_amount, 20)
+            self.assertEqual(game.actor.max_bet_raise_amount, 20)
+            game.parse('br')
+            self.assertEqual(game.actor.min_bet_raise_amount, 40)
+            self.assertEqual(game.actor.max_bet_raise_amount, 40)
+            game.parse('br')
+            self.assertEqual(game.actor.min_bet_raise_amount, 60)
+            self.assertEqual(game.actor.max_bet_raise_amount, 60)
+            game.parse('cc')
+
+    def test_verify(self):
+        self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2)), ())
+        self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2)), (1,))
+        self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2, 4, 8)), (100, 100, 100))
+        self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2)), (100, -100, -100))
 
 
 if __name__ == '__main__':
