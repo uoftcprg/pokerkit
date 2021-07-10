@@ -6,7 +6,6 @@ PokerTools is a Python package for various poker tools.
 The following features are present in PokerTools...
 
 - Basic rank, suit, card, and hole card data types
-- String interpretation of cards
 - Various types of poker decks
    - Standard
    - Short-Deck
@@ -19,7 +18,7 @@ The following features are present in PokerTools...
    - Ace-to-Five Lowball
    - Deuce-to-Seven Lowball
 - Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
-- Various variants of poker games
+- Various poker game variants
    - Texas Hold'em
       - Fixed-Limit Texas Hold'em
       - No-Limit Texas Hold'em
