@@ -12,7 +12,9 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
     @property
     def game_name(self):
-        return type(self.create_game().definition).__name__.replace('Definition', '')
+        game = self.create_game()
+
+        return type(game.limit).__name__ + type(game.definition).__name__.replace('Definition', '')
 
     def assert_terminal_poker_game(self, game, statuses, stacks):
         assert game.is_terminal(), 'Game is not terminal'
@@ -63,7 +65,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
         for player in game.players:
             if player.can_fold():
-                assert player.bet < max(player.bet for player in game.players)
+                assert player.bet < max(map(PokerPlayer.bet.fget, game.players))
 
             if player.can_bet_raise():
                 assert player.can_bet_raise(player.min_bet_raise_amount)

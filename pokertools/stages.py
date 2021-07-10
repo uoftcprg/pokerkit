@@ -1,4 +1,6 @@
 from abc import ABC
+from functools import partial
+from operator import eq
 
 from pokertools.gameframe import PokerPlayer
 from pokertools.limits import FixedLimit
@@ -94,9 +96,10 @@ class HoleDealingStage(DealingStage):
         return self.__status
 
     def _is_done(self):
-        return super()._is_done() or all(
-            len(player.hole) == self.deal_target for player in filter(PokerPlayer.is_active, self.game.players)
-        )
+        return super()._is_done() or all(map(
+            partial(eq, self.deal_target),
+            map(len, map(PokerPlayer.hole.fget, filter(PokerPlayer.is_active, self.game.players))),
+        ))
 
 
 class BoardDealingStage(DealingStage):

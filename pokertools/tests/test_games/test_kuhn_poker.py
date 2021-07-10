@@ -7,6 +7,10 @@ from pokertools.tests import PokerTestCaseMixin
 class KuhnPokerTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = KuhnPoker
 
+    @property
+    def game_name(self):
+        return 'KuhnPoker'
+
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE().parse(
             'dh 0 Qs', 'dh 1 Ks', 'cc', 'cc', 's', 's',
