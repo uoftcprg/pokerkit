@@ -208,28 +208,6 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db Qc',
         ), (True, True, True, True), (0, 400, 0, 0))
 
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150)).parse(
-            'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 JcJh', 'dh 5 TsTh',
-            'cc', 'cc', 'cc', 'br 149', 'cc', 'cc', 'cc', 'cc', 'cc',
-            'db AcAsKc',
-            'cc', 'cc', 'cc', 'cc',
-            'db Qs',
-            'cc', 'cc', 'cc', 'cc',
-            'db Qc',
-            'cc', 'cc', 'cc', 'cc',
-            's', 's', 's', 's', 's', 's',
-        ), (True, True, False, False, False, False), (300, 600, 150, 50, 50, 0))
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150)).parse(
-            'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 JcJh', 'dh 5 TsTh',
-            'br 50', 'f', 'f', 'f', 'f', 'f',
-        ), (False, False, None, False, False, False), (198, 97, 308, 199, 199, 149))
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150)).parse(
-            'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 TsTh', 'dh 5 JcTc',
-            'br 50', 'br 199', 'cc', 'cc', 'cc', 'cc', 'f',
-            'db AcAsKc',
-            'db Qs',
-            'db Qc',
-        ), (True, True, False, True, True, True), (150, 0, 249, 0, 0, 751))
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (0, 0, 0, 0)).parse(
             'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd',
             'db AcAsKc',
@@ -262,6 +240,29 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
             'db Qh',
             'db 5d',
         ), (True, True, True, True), (0, 16, 0, 3))
+
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150)).parse(
+            'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 JcJh', 'dh 5 TsTh',
+            'cc', 'cc', 'cc', 'br 149', 'cc', 'cc', 'cc', 'cc', 'cc',
+            'db AcAsKc',
+            'cc', 'cc', 'cc', 'cc',
+            'db Qs',
+            'cc', 'cc', 'cc', 'cc',
+            'db Qc',
+            'cc', 'cc', 'cc', 'cc',
+            's', 's', 's', 's', 's', 's',
+        ), (True, True, False, False, False, False), (300, 600, 150, 50, 50, 0))
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150)).parse(
+            'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 JcJh', 'dh 5 TsTh',
+            'br 50', 'f', 'f', 'f', 'f', 'f',
+        ), (False, False, None, False, False, False), (198, 97, 308, 199, 199, 149))
+        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150)).parse(
+            'dh 0 QdQh', 'dh 1 AhAd', 'dh 2 KsKh', 'dh 3 JsJd', 'dh 4 TsTh', 'dh 5 JcTc',
+            'br 50', 'br 199', 'cc', 'cc', 'cc', 'cc', 'f',
+            'db AcAsKc',
+            'db Qs',
+            'db Qc',
+        ), (True, True, False, True, True, True), (150, 0, 249, 0, 0, 751))
 
 
 if __name__ == '__main__':
