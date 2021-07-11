@@ -1,5 +1,6 @@
 import re
 from functools import partial
+from itertools import starmap
 from numbers import Integral
 from operator import gt
 
@@ -213,6 +214,18 @@ class PokerGame(SequentialGame):
             prev = players.pop(0)._put
 
         return side_pots
+
+    @property
+    def _hole_card_statuses(self):
+        from pokertools.stages import HoleDealingStage
+
+        statuses = []
+
+        for stage in self.stages:
+            if isinstance(stage, HoleDealingStage):
+                statuses.extend((stage.status,) * stage.deal_count)
+
+        return statuses
 
     def parse(self, *tokens):
         """Parses the tokens as actions and applies them this poker game.
@@ -448,7 +461,7 @@ class PokerPlayer(SequentialActor):
         elif self.is_shown():
             return tuple(map(partial(HoleCard, True), self._hole))
         else:
-            return self._hole
+            return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
 
     @property
     def starting_stack(self):

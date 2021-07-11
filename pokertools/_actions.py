@@ -87,7 +87,7 @@ class HoleDealingAction(DealingAction):
         self.verify_player(self.deal_player)
 
     def deal(self):
-        self.deal_player._hole.extend(map(partial(HoleCard, self.game.stage.status), self.cards))
+        self.deal_player._hole.extend(self.cards)
 
 
 class BoardDealingAction(DealingAction):
@@ -222,8 +222,7 @@ class DiscardDrawAction(PokerAction):
         self.game._deck.draw(self.drawn_cards)
 
         for discarded_card, drawn_card in zip(self.discarded_cards, self.drawn_cards):
-            index = self.actor.hole.index(discarded_card)
-            self.actor._hole[index] = HoleCard(self.actor.hole[index].status, drawn_card)
+            self.actor._hole[self.actor.hole.index(discarded_card)] = drawn_card
 
 
 class ShowdownAction(PokerAction):
