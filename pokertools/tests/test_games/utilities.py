@@ -79,10 +79,10 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                 if len(game.deck) < len(player.hole):
                     population = set(game.deck + game.muck) - set(player.seen)
 
-                    if game.muck:
+                    if cards := set(player.seen) & set(game.muck):
                         assert not player.can_discard_draw(
                             player.hole,
-                            player.seen + (game.deck + game.muck)[:max(len(player.hole) - len(player.seen), 0)],
+                            tuple(cards) + (game.deck + game.muck)[:max(len(player.hole) - len(cards), 0)],
                         )
                 else:
                     population = game.deck
