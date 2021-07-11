@@ -10,7 +10,7 @@ class FixedLimitFiveCardDrawTestCase(PokerTestCaseMixin, TestCase):
 
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(0, (5, 10)), (1000, 1000, 1000, 1000)).parse(
-            'dh 0 AsAdAcAhKd', 'dh 1 4s4d4c5h5d', 'dh 2 2s2d2c3h3d', 'dh 3 Th8h9cJsQd',
+            'dh AsAdAcAhKd', 'dh 4s4d4c5h5d', 'dh 2s2d2c3h3d', 'dh Th8h9cJsQd',
             'cc', 'cc', 'f', 'cc',
             'dd 4c4d4s 5c5sKc', 'dd 3h3d 2hQs', 'dd',
             'br', 'cc', 'cc',
@@ -23,7 +23,7 @@ class PotLimitFiveCardDrawTestCase(PokerTestCaseMixin, TestCase):
 
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(0, (5, 10)), (1000, 1000, 1000, 1000)).parse(
-            'dh 0 AsAdAcAhKd', 'dh 1 4s4d4c5h5d', 'dh 2 2s2d2c3h3d', 'dh 3 Th8h9cJsQd',
+            'dh AsAdAcAhKd', 'dh 4s4d4c5h5d', 'dh 2s2d2c3h3d', 'dh Th8h9cJsQd',
             'cc', 'cc', 'f', 'cc',
             'dd 4c4d4s 5c5sKc', 'dd 3h3d 2hQs', 'dd',
             'br 35', 'cc', 'cc',
@@ -38,14 +38,14 @@ class NoLimitFiveCardDrawTestCase(PotLimitFiveCardDrawTestCase, TestCase):
         super().test_hands()
 
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(0, (5, 10)), (1000, 1000, 1000, 1000)).parse(
-            'dh 0 AsAdAcAhKd', 'dh 1 4s4d4c5h5d', 'dh 2 2s2d2c3h3d', 'dh 3 Th8h9cJsQd',
+            'dh AsAdAcAhKd', 'dh 4s4d4c5h5d', 'dh 2s2d2c3h3d', 'dh Th8h9cJsQd',
             'cc', 'cc', 'f', 'cc',
             'dd 4c4d4s 5c5sKc', 'dd 3h3d 2hQs', 'dd',
             'br 100', 'cc', 'cc',
             's', 's', 's',
         ), (False, True, False, False), (995, 1225, 890, 890))
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, ()), (100, 100, 100, 100)).parse(
-            'dh 0 8cKdJd2h5d', 'dh 1 JsAd3d4d7c', 'dh 2 2c5sTsQsAs', 'dh 3 AcAh8s9c3s',
+            'dh 8cKdJd2h5d', 'dh JsAd3d4d7c', 'dh 2c5sTsQsAs', 'dh AcAh8s9c3s',
             'br 5', 'f', 'cc', 'cc',
             'dd Jd2h5d Jc6s7d', 'dd 2c Ks', 'dd 8s9c3s KhKcTh',
             'cc', 'cc', 'br 10', 'f', 'br 20', 'cc',

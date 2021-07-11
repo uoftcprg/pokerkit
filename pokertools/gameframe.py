@@ -221,11 +221,8 @@ class PokerGame(SequentialGame):
         :return: This game.
         """
         for token in tokens:
-            if match := re.fullmatch(r'dh( (?P<index>\d+))?( (?P<cards>\w+))?', token):
-                self.actor.deal_hole(
-                    None if (index := match.group('index')) is None else self.players[int(index)],
-                    None if (cards := match.group('cards')) is None else parse_cards(cards),
-                )
+            if match := re.fullmatch(r'dh( (?P<cards>\w+))?', token):
+                self.actor.deal_hole(None if (cards := match.group('cards')) is None else parse_cards(cards))
             elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
                 self.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
             elif token == 'f':
@@ -330,65 +327,48 @@ class PokerNature(SequentialActor):
         return 'PokerNature'
 
     @property
-    def dealable_players(self):
-        """Returns an iterator of poker players that can be dealt.
+    def deal_player(self):
+        """Returns the next player that can be dealt hole cards.
 
-        :return: The players that can be dealt.
+        :return: The player that can be dealt hole cards.
         """
         if self.can_deal_hole():
-            return self._get_hole_deal_action().dealable_players
+            return self._get_hole_deal_action().deal_player
         else:
             raise ValueError('The nature cannot deal hole cards')
 
     @property
-    def hole_deal_count(self):
-        """Returns the number of hole cards that can be dealt to each player.
-
-        :return: The number of hole cards to deal.
-        """
-        if self.can_deal_hole():
-            return self._get_hole_deal_action().deal_count
-        else:
-            raise ValueError('The nature cannot deal hole cards')
-
-    @property
-    def board_deal_count(self):
-        """Returns the number of cards that can be dealt to the board.
+    def deal_count(self):
+        """Returns the number of hole cards or board cards that can be dealt.
 
         :return: The number of cards to deal.
         """
-        if self.can_deal_board():
+        if self.can_deal_hole():
+            return self._get_hole_deal_action().deal_count
+        elif self.can_deal_board():
             return self._get_board_deal_action().deal_count
         else:
-            raise ValueError('The nature cannot deal board cards')
+            raise ValueError('The nature cannot deal cards')
 
-    def deal_hole(self, player=None, cards=None):
-        """Deals the optionally supplied hole cards to the optionally specified player.
+    def deal_hole(self, cards=None):
+        """Deals the optionally supplied hole cards to the next player to be dealt hole cards.
 
-        If the cards are not supplied, they are randomly drawn from the deck. If the player is not known, the next
-        player in order who is dealable will be dealt.
+        If the cards are not supplied, they are randomly drawn from the deck.
 
-        If the cards are specified, the player must be specified as well.
-
-        :param player: The optional player to deal to.
         :param cards: The optional hole cards to be dealt.
         :return: None.
         """
-        self._get_hole_deal_action(player, cards).act()
+        self._get_hole_deal_action(cards).act()
 
-    def can_deal_hole(self, player=None, cards=None):
-        """Determines if the optionally specified hole cards can be dealt to the optionally supplied player.
+    def can_deal_hole(self, cards=None):
+        """Determines if the optionally specified hole cards can be dealt to the next player to be dealt hole cards.
 
-        If the cards are not supplied, they are assumed to be randomly drawn from the deck. If the player is not known,
-        the next player in order who is dealable will be assumed to be dealt.
+        If the cards are not supplied, they are randomly drawn from the deck.
 
-        If the cards are specified, the player must be specified as well.
-
-        :param player: The optional player to deal to.
         :param cards: The optional hole cards to be dealt.
         :return: True if the hole can be dealt, else False.
         """
-        return self._get_hole_deal_action(player, cards).can_act()
+        return self._get_hole_deal_action(cards).can_act()
 
     def deal_board(self, cards=None):
         """Deals the optionally specified cards to the board.
@@ -410,10 +390,10 @@ class PokerNature(SequentialActor):
         """
         return self._get_board_deal_action(cards).can_act()
 
-    def _get_hole_deal_action(self, player=None, cards=None):
+    def _get_hole_deal_action(self, cards=None):
         from pokertools._actions import HoleDealingAction
 
-        return HoleDealingAction(player, cards, self)
+        return HoleDealingAction(cards, self)
 
     def _get_board_deal_action(self, cards=None):
         from pokertools._actions import BoardDealingAction

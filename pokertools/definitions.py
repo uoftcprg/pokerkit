@@ -166,11 +166,11 @@ class TripleDrawDefinition(DrawDefinition, ABC):
 
     def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, self.self.game), BettingStage(False, self.self.game),
-            DiscardDrawStage(self.game), BettingStage(False, self.self.game),
-            DiscardDrawStage(self.game), BettingStage(True, self.self.game),
-            DiscardDrawStage(self.game), BettingStage(True, self.self.game),
-            ShowdownStage(self.self.game),
+            HoleDealingStage(False, self.hole_card_count, self.game), BettingStage(False, self.game),
+            DiscardDrawStage(self.game), BettingStage(False, self.game),
+            DiscardDrawStage(self.game), BettingStage(True, self.game),
+            DiscardDrawStage(self.game), BettingStage(True, self.game),
+            ShowdownStage(self.game),
         )
 
 

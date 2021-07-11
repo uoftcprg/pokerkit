@@ -31,11 +31,10 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
         if isinstance(game.actor, PokerNature):
             if game.actor.can_deal_hole():
-                player = next(game.actor.dealable_players)
-                cards = ''.join(map(repr, sample(game.deck, game.actor.hole_deal_count)))
-                actions.append(f'dh {player.index} {cards}')
+                cards = ''.join(map(repr, sample(game.deck, game.actor.deal_count)))
+                actions.append(f'dh {cards}')
             if game.actor.can_deal_board():
-                cards = ''.join(map(repr, sample(game.deck, game.actor.board_deal_count)))
+                cards = ''.join(map(repr, sample(game.deck, game.actor.deal_count)))
                 actions.append(f'db {cards}')
         elif isinstance(game.actor, PokerPlayer):
             if game.actor.can_fold():
@@ -54,14 +53,12 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
     def verify(self, game):
         if game.nature.can_deal_hole():
-            for player in game.players:
-                if game.nature.can_deal_hole(player):
-                    assert game.nature.can_deal_hole(player, sample(game.deck, game.nature.hole_deal_count))
-                    assert not game.nature.can_deal_hole(player, sample(game.deck, game.nature.hole_deal_count + 1))
+            assert game.nature.can_deal_hole(sample(game.deck, game.nature.deal_count))
+            assert not game.nature.can_deal_hole(sample(game.deck, game.nature.deal_count + 1))
 
         if game.nature.can_deal_board():
-            assert game.nature.can_deal_board(sample(game.deck, game.nature.board_deal_count))
-            assert not game.nature.can_deal_board(sample(game.deck, game.nature.board_deal_count + 1))
+            assert game.nature.can_deal_board(sample(game.deck, game.nature.deal_count))
+            assert not game.nature.can_deal_board(sample(game.deck, game.nature.deal_count + 1))
 
         for player in game.players:
             if player.can_fold():

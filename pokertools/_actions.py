@@ -52,22 +52,31 @@ class DealingAction(PokerAction, ABC):
             self.cards = self.cards
 
         self.game._deck.draw(self.cards)
-        self.deal(self.cards)
+        self.deal()
 
     @abstractmethod
-    def deal(self, cards):
+    def deal(self):
         ...
 
 
 class HoleDealingAction(DealingAction):
-    def __init__(self, player, cards, actor):
-        super().__init__(cards, actor)
-
-        self.player = player
-
     @property
-    def dealable_players(self):
-        return filter(self.actor.can_deal_hole, self.game.players)
+    def deal_player(self):
+        return next(filter(self.can_deal, self.game.players))
+
+    def verify_player(self, player):
+        if player.is_mucked():
+            raise GameFrameError('Cannot deal to a mucked player')
+        elif len(player.hole) >= self.game.stage.deal_target:
+            raise GameFrameError('The player must not have been dealt already')
+
+    def can_deal(self, player):
+        try:
+            self.verify_player(player)
+        except GameFrameError:
+            return False
+        else:
+            return True
 
     def verify(self):
         super().verify()
@@ -75,19 +84,10 @@ class HoleDealingAction(DealingAction):
         if not isinstance(self.game.stage, HoleDealingStage):
             raise GameFrameError('Hole card dealing is not allowed')
 
-        if self.player is not None:
-            if self.player.is_mucked():
-                raise GameFrameError('Cannot deal to a mucked player')
-            elif len(self.player.hole) >= self.game.stage.deal_target:
-                raise GameFrameError('The player must not have been dealt already')
-        elif self.cards is not None:
-            raise GameFrameError('The player to deal to must be specified if cards are supplied')
+        self.verify_player(self.deal_player)
 
-    def deal(self, cards):
-        if self.player is None:
-            self.player = next(self.actor.dealable_players)
-
-        self.player._hole.extend(map(partial(HoleCard, self.game.stage.status), cards))
+    def deal(self):
+        self.deal_player._hole.extend(map(partial(HoleCard, self.game.stage.status), self.cards))
 
 
 class BoardDealingAction(DealingAction):
@@ -99,8 +99,8 @@ class BoardDealingAction(DealingAction):
         elif len(self.game.board) >= self.game.stage.deal_target:
             raise GameFrameError('The board must not have been dealt already')
 
-    def deal(self, cards):
-        self.game._board.extend(cards)
+    def deal(self):
+        self.game._board.extend(self.cards)
 
 
 class BettingAction(PokerAction, ABC):
