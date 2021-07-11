@@ -85,7 +85,6 @@ class FixedLimitBadugiTestCase(PokerTestCaseMixin, TestCase):
             'br', 'br', 'br', 'br', 'cc',
             'dd 8d9d 8h9h', 'dd Kc Ac',
             'br', 'cc',
-            's', 's',
         ), (False, True, True), (47, 50, 103))
 
         self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (1, 2, 4)), (100, 100, 100, 100)).parse(

@@ -7,6 +7,7 @@ from operator import gt
 from gameframe.sequential import SequentialActor, SequentialGame
 
 from pokertools.cards import HoleCard
+from pokertools.decks import Deck
 from pokertools.utilities import parse_cards
 
 
@@ -60,6 +61,7 @@ class PokerGame(SequentialGame):
         self.__evaluators = self.definition.create_evaluators()
 
         self._deck = self.definition.create_deck()
+        self._muck = Deck()
         self._pot = 0
         self._board = []
 
@@ -127,6 +129,14 @@ class PokerGame(SequentialGame):
         :return: The deck of this poker game.
         """
         return tuple(self._deck)
+
+    @property
+    def muck(self):
+        """Returns the muck of this poker game.
+
+        :return: The muck of this poker game.
+        """
+        return tuple(self._muck)
 
     @property
     def pot(self):
@@ -426,6 +436,7 @@ class PokerPlayer(SequentialActor):
         self._bet = 0
         self._stack = 0
         self._hole = []
+        self._seen = []
         self._status = None
 
     def __repr__(self):
@@ -462,6 +473,14 @@ class PokerPlayer(SequentialActor):
             return tuple(map(partial(HoleCard, True), self._hole))
         else:
             return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
+
+    @property
+    def seen(self):
+        """Returns the cards that this poker player have had before in his/her hole.
+
+        :return: The seen cards of this poker player.
+        """
+        return tuple(self._seen)
 
     @property
     def starting_stack(self):

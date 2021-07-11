@@ -11,6 +11,10 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
     GAME_TYPE = None
 
     @property
+    def test_time(self):
+        return 10
+
+    @property
     def game_name(self):
         game = self.create_game()
 
@@ -31,11 +35,9 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
         if isinstance(game.actor, PokerNature):
             if game.actor.can_deal_hole():
-                cards = ''.join(map(repr, sample(game.deck, game.actor.deal_count)))
-                actions.append(f'dh {cards}')
+                actions.append('dh')
             if game.actor.can_deal_board():
-                cards = ''.join(map(repr, sample(game.deck, game.actor.deal_count)))
-                actions.append(f'db {cards}')
+                actions.append('db')
         elif isinstance(game.actor, PokerPlayer):
             if game.actor.can_fold():
                 actions.append('f')
@@ -73,11 +75,34 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
             if player.can_discard_draw():
                 assert player.can_discard_draw(player.hole)
                 assert not game.deck or not player.can_discard_draw(game.deck)
-                assert player.can_discard_draw(player.hole, sample(game.deck, len(player.hole)))
-                assert not player.hole or not player.can_discard_draw(player.hole, player.hole)
+
+                if len(game.deck) < len(player.hole):
+                    population = set(game.deck + game.muck) - set(player.seen)
+
+                    if game.muck:
+                        assert not player.can_discard_draw(
+                            player.hole,
+                            player.seen + (game.deck + game.muck)[:max(len(player.hole) - len(player.seen), 0)],
+                        )
+                else:
+                    population = game.deck
+
+                    if game.muck:
+                        assert not player.can_discard_draw(
+                            player.hole,
+                            game.muck + game.deck[:max(len(player.hole) - len(game.muck), 0)],
+                        )
+
+                assert player.can_discard_draw(player.hole, sample(population, len(player.hole)))
             else:
                 assert not player.can_discard_draw(player.hole)
-                assert not player.can_discard_draw(player.hole, sample(game.deck, len(player.hole)))
+
+                if len(game.deck) < len(player.hole):
+                    population = set(game.deck + game.muck) - set(player.seen)
+                else:
+                    population = game.deck
+
+                assert not player.can_discard_draw(player.hole, sample(population, len(player.hole)))
 
             if player.can_showdown():
                 assert player.can_showdown(False)

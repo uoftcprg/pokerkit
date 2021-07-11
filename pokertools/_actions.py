@@ -6,7 +6,6 @@ from random import sample
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
-from pokertools.cards import HoleCard
 from pokertools.gameframe import PokerPlayer
 from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,
@@ -87,7 +86,9 @@ class HoleDealingAction(DealingAction):
         self.verify_player(self.deal_player)
 
     def deal(self):
-        self.deal_player._hole.extend(self.cards)
+        player = self.deal_player
+        player._hole.extend(self.cards)
+        player._seen.extend(self.cards)
 
 
 class BoardDealingAction(DealingAction):
@@ -194,6 +195,15 @@ class DiscardDrawAction(PokerAction):
         self.discarded_cards = tuple(discarded_cards)
         self.drawn_cards = None if drawn_cards is None else tuple(drawn_cards)
 
+    @property
+    def population(self):
+        population = list(self.game.deck)
+
+        if len(population) < len(self.discarded_cards):
+            population.extend(self.game.muck)
+
+        return population
+
     def verify(self):
         super().verify()
 
@@ -206,8 +216,10 @@ class DiscardDrawAction(PokerAction):
             if not _unique(self.discarded_cards):
                 raise GameFrameError('Duplicates in cards')
         else:
-            if not all(map(self.game.deck.__contains__, self.drawn_cards)):
-                raise GameFrameError('Card not in deck')
+            if not all(map(self.population.__contains__, self.drawn_cards)):
+                raise GameFrameError('Card must be in deck or the muck if insufficient')
+            elif any(map(self.actor.seen.__contains__, self.drawn_cards)):
+                raise GameFrameError('The poker player should not draw any card they had before')
             elif not _unique(self.discarded_cards + self.drawn_cards):
                 raise GameFrameError('Duplicates in cards')
             elif len(self.discarded_cards) != len(self.drawn_cards):
@@ -217,9 +229,13 @@ class DiscardDrawAction(PokerAction):
         super().apply()
 
         if self.drawn_cards is None:
-            self.drawn_cards = sample(self.game.deck, len(self.discarded_cards))
+            self.drawn_cards = sample(set(self.population) - set(self.actor.seen), len(self.discarded_cards))
 
-        self.game._deck.draw(self.drawn_cards)
+        self.game._deck.draw(filter(self.game.deck.__contains__, self.drawn_cards))
+        self.game._muck.draw(filter(self.game.muck.__contains__, self.drawn_cards))
+
+        self.game._muck.extend(self.discarded_cards)
+        self.actor._seen.extend(self.drawn_cards)
 
         for discarded_card, drawn_card in zip(self.discarded_cards, self.drawn_cards):
             self.actor._hole[self.actor.hole.index(discarded_card)] = drawn_card
