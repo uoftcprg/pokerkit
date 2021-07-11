@@ -1,4 +1,3 @@
-""" # Todo
 from unittest import TestCase, main
 
 from pokertools import NoLimitSingleDrawLowball27, Stakes
@@ -57,9 +56,9 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
                 'dh 7s8c9cTcJs', 'dh', 'dh', 'dh',
                 'f', 'f', 'f', 'f', 'f', 'f', 'f',
                 'dd', 'dd',
-            ), (False, True, True, False, False, False, False, False, False), (49, 0, 103, 150, 100, 100, 1, 1, 1))
+            ), (False, True, True, False, False, False, False, False, False), (49, 0, 103, 150, 100, 100, 1, 1, 1),
+        )
 
 
 if __name__ == '__main__':
     main()
-"""

@@ -1,4 +1,3 @@
-"""  # TODO
 from unittest import TestCase, main
 
 from pokertools import FixedLimitFiveCardDraw, NoLimitFiveCardDraw, PotLimitFiveCardDraw, Stakes
@@ -55,4 +54,3 @@ class NoLimitFiveCardDrawTestCase(PotLimitFiveCardDrawTestCase, TestCase):
 
 if __name__ == '__main__':
     main()
-"""
