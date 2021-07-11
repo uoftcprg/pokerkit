@@ -19,7 +19,7 @@ class PokerGame(SequentialGame):
     The number of players, denoted by the length of the starting_stacks property, must be greater than or equal to 2.
 
     :param limit_type: The limit type of this poker game.
-    :param definition: The definition this poker game.
+    :param definition_type: The definition type this poker game.
     :param stakes: The stakes of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
@@ -48,17 +48,17 @@ class PokerGame(SequentialGame):
 
         return amounts
 
-    def __init__(self, limit_type, definition, stakes, starting_stacks):
+    def __init__(self, limit_type, definition_type, stakes, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
 
         self.__limit = limit_type(self)
-        self.__definition = definition
+        self.__definition = definition_type(self)
         self.__stakes = stakes
         self.__starting_stacks = tuple(starting_stacks)
-        self.__stages = definition.create_stages(self)
-        self.__evaluators = definition.create_evaluators()
+        self.__stages = self.definition.create_stages()
+        self.__evaluators = self.definition.create_evaluators()
 
-        self._deck = definition.create_deck()
+        self._deck = self.definition.create_deck()
         self._pot = 0
         self._board = []
 

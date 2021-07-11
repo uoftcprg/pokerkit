@@ -12,7 +12,7 @@ class Stakes:
     :param ante: The ante of this poker game.
     :param blinds: The blinds of this poker game.
     :param small_bet: The optional small bet of the poker stakes, defaults to the maximum numeric value supplied.
-    :param big_bet: The optional big bet of the poker stakes, defaults to twice the maximum numeric value supplied.
+    :param big_bet: The optional big bet of the poker stakes, defaults to twice the small bet.
     """
 
     def __init__(self, ante, blinds, small_bet=None, big_bet=None):

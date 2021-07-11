@@ -10,13 +10,22 @@ from pokertools.stages import BettingStage, BoardDealingStage, DiscardDrawStage,
 
 
 class Definition(ABC):
-    """Definition is the abstract base class for all poker definitions."""
+    """Definition is the abstract base class for all poker definitions.
+
+    :param game: The game of this poker definition.
+    """
+
+    def __init__(self, game):
+        self.__game = game
+
+    @property
+    def game(self):
+        return self.__game
 
     @abstractmethod
-    def create_stages(self, game):
+    def create_stages(self):
         """Returns the stages of the poker game defined by this poker definition.
 
-        :param game: The poker game.
         :return: The stages of this poker definition.
         """
         ...
@@ -54,13 +63,13 @@ class StaticHoleDefinitionMixin(Definition, ABC):
 class HoldEmDefinition(StaticHoleDefinitionMixin, Definition, ABC):
     """HoldEmDefinition is the abstract base class for all Hold'em game definitions."""
 
-    def create_stages(self, game):
+    def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, game), BettingStage(False, game),
-            BoardDealingStage(3, game), BettingStage(False, game),
-            BoardDealingStage(1, game), BettingStage(True, game),
-            BoardDealingStage(1, game), BettingStage(True, game),
-            ShowdownStage(game),
+            HoleDealingStage(False, self.hole_card_count, self.game), BettingStage(False, self.game),
+            BoardDealingStage(3, self.game), BettingStage(False, self.game),
+            BoardDealingStage(1, self.game), BettingStage(True, self.game),
+            BoardDealingStage(1, self.game), BettingStage(True, self.game),
+            ShowdownStage(self.game),
         )
 
 
@@ -144,24 +153,24 @@ class DrawDefinition(StaticHoleDefinitionMixin, Definition, ABC):
 class SingleDrawDefinition(DrawDefinition, ABC):
     """SingleDrawDefinition is the abstract base class for all single draw game definitions."""
 
-    def create_stages(self, game):
+    def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, game), BettingStage(False, game),
-            DiscardDrawStage(game), BettingStage(True, game),
-            ShowdownStage(game),
+            HoleDealingStage(False, self.hole_card_count, self.game), BettingStage(False, self.game),
+            DiscardDrawStage(self.game), BettingStage(True, self.game),
+            ShowdownStage(self.game),
         )
 
 
 class TripleDrawDefinition(DrawDefinition, ABC):
     """TripleDrawDefinition is the abstract base class for all triple draw game definitions."""
 
-    def create_stages(self, game):
+    def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, game), BettingStage(False, game),
-            DiscardDrawStage(game), BettingStage(False, game),
-            DiscardDrawStage(game), BettingStage(True, game),
-            DiscardDrawStage(game), BettingStage(True, game),
-            ShowdownStage(game),
+            HoleDealingStage(False, self.hole_card_count, self.self.game), BettingStage(False, self.self.game),
+            DiscardDrawStage(self.game), BettingStage(False, self.self.game),
+            DiscardDrawStage(self.game), BettingStage(True, self.self.game),
+            DiscardDrawStage(self.game), BettingStage(True, self.self.game),
+            ShowdownStage(self.self.game),
         )
 
 
@@ -224,8 +233,8 @@ class TripleDrawLowball27Definition(TripleDrawDefinition):
 class KuhnPokerDefinition(Definition):
     """KuhnPokerDefinition is the class for Kuhn Poker game definitions."""
 
-    def create_stages(self, game):
-        return HoleDealingStage(False, 1, game), BettingStage(1, game), ShowdownStage(game)
+    def create_stages(self):
+        return HoleDealingStage(False, 1, self.game), BettingStage(1, self.game), ShowdownStage(self.game)
 
     def create_evaluators(self):
         return RankEvaluator(),
