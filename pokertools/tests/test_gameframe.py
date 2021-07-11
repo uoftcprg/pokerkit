@@ -405,54 +405,54 @@ class GameFrameTestCase(TestCase):
     def test_bet_raise_amounts(self):
         game = NoLimitTexasHoldEm(Stakes(0, (5, 10)), (1000, 1000)).parse('dh', 'dh')
 
-        self.assertEqual(game.actor.min_bet_raise_amount, 20)
-        self.assertEqual(game.actor.max_bet_raise_amount, 1000)
+        self.assertEqual(game.actor.bet_raise_min_amount, 20)
+        self.assertEqual(game.actor.bet_raise_max_amount, 1000)
         game.parse('cc', 'cc')
 
         for _ in range(3):
             game.parse('db')
-            self.assertEqual(game.actor.min_bet_raise_amount, 10)
-            self.assertEqual(game.actor.max_bet_raise_amount, 990)
+            self.assertEqual(game.actor.bet_raise_min_amount, 10)
+            self.assertEqual(game.actor.bet_raise_max_amount, 990)
             game.parse('cc', 'cc')
 
         game = PotLimitOmahaHoldEm(Stakes(0, (5, 10)), (1000, 1000)).parse('dh', 'dh')
 
-        self.assertEqual(game.actor.min_bet_raise_amount, 20)
-        self.assertEqual(game.actor.max_bet_raise_amount, 30)
+        self.assertEqual(game.actor.bet_raise_min_amount, 20)
+        self.assertEqual(game.actor.bet_raise_max_amount, 30)
         game.parse('br 25')
-        self.assertEqual(game.actor.min_bet_raise_amount, 40)
-        self.assertEqual(game.actor.max_bet_raise_amount, 75)
+        self.assertEqual(game.actor.bet_raise_min_amount, 40)
+        self.assertEqual(game.actor.bet_raise_max_amount, 75)
         game.parse('cc')
 
         for _ in range(3):
             game.parse('db')
-            self.assertEqual(game.actor.min_bet_raise_amount, 10)
-            self.assertEqual(game.actor.max_bet_raise_amount, 50)
+            self.assertEqual(game.actor.bet_raise_min_amount, 10)
+            self.assertEqual(game.actor.bet_raise_max_amount, 50)
             game.parse('cc', 'cc')
 
         game = FixedLimitTexasHoldEm(Stakes(0, (5, 10)), (1000, 1000)).parse('dh', 'dh')
 
-        self.assertEqual(game.actor.min_bet_raise_amount, 20)
-        self.assertEqual(game.actor.max_bet_raise_amount, 20)
+        self.assertEqual(game.actor.bet_raise_min_amount, 20)
+        self.assertEqual(game.actor.bet_raise_max_amount, 20)
         game.parse('cc', 'cc', 'db')
 
-        self.assertEqual(game.actor.min_bet_raise_amount, 10)
-        self.assertEqual(game.actor.max_bet_raise_amount, 10)
+        self.assertEqual(game.actor.bet_raise_min_amount, 10)
+        self.assertEqual(game.actor.bet_raise_max_amount, 10)
         game.parse('br')
-        self.assertEqual(game.actor.min_bet_raise_amount, 20)
-        self.assertEqual(game.actor.max_bet_raise_amount, 20)
+        self.assertEqual(game.actor.bet_raise_min_amount, 20)
+        self.assertEqual(game.actor.bet_raise_max_amount, 20)
         game.parse('cc')
 
         for _ in range(2):
             game.parse('db')
-            self.assertEqual(game.actor.min_bet_raise_amount, 20)
-            self.assertEqual(game.actor.max_bet_raise_amount, 20)
+            self.assertEqual(game.actor.bet_raise_min_amount, 20)
+            self.assertEqual(game.actor.bet_raise_max_amount, 20)
             game.parse('br')
-            self.assertEqual(game.actor.min_bet_raise_amount, 40)
-            self.assertEqual(game.actor.max_bet_raise_amount, 40)
+            self.assertEqual(game.actor.bet_raise_min_amount, 40)
+            self.assertEqual(game.actor.bet_raise_max_amount, 40)
             game.parse('br')
-            self.assertEqual(game.actor.min_bet_raise_amount, 60)
-            self.assertEqual(game.actor.max_bet_raise_amount, 60)
+            self.assertEqual(game.actor.bet_raise_min_amount, 60)
+            self.assertEqual(game.actor.bet_raise_max_amount, 60)
             game.parse('cc')
 
     def test_verify(self):

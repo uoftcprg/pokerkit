@@ -350,7 +350,7 @@ class PokerNature(SequentialActor):
         return 'PokerNature'
 
     @property
-    def deal_player(self):
+    def deal_hole_player(self):
         """Returns the next player that can be dealt hole cards.
 
         :return: The player that can be dealt hole cards.
@@ -361,17 +361,26 @@ class PokerNature(SequentialActor):
             raise ValueError('The nature cannot deal hole cards')
 
     @property
-    def deal_count(self):
-        """Returns the number of hole cards or board cards that can be dealt.
+    def deal_hole_count(self):
+        """Returns the number of hole cards that can be dealt.
 
-        :return: The number of cards to deal.
+        :return: The number of cards to deal to the player hole.
         """
         if self.can_deal_hole():
             return self._get_hole_deal_action().deal_count
-        elif self.can_deal_board():
+        else:
+            raise ValueError('The nature cannot deal hole cards')
+
+    @property
+    def deal_board_count(self):
+        """Returns the number of board cards that can be dealt.
+
+        :return: The number of cards to deal to the board.
+        """
+        if self.can_deal_board():
             return self._get_board_deal_action().deal_count
         else:
-            raise ValueError('The nature cannot deal cards')
+            raise ValueError('The nature cannot deal board cards')
 
     def deal_hole(self, cards=None):
         """Deals the optionally supplied hole cards to the next player to be dealt hole cards.
@@ -549,7 +558,7 @@ class PokerPlayer(SequentialActor):
             raise ValueError('The player cannot check/call')
 
     @property
-    def min_bet_raise_amount(self):
+    def bet_raise_min_amount(self):
         """Returns the minimum bet/raise amount.
 
         The minimum bet/raise amount is set by the limit of the poker game.
@@ -562,7 +571,7 @@ class PokerPlayer(SequentialActor):
             raise ValueError('The player cannot bet/raise')
 
     @property
-    def max_bet_raise_amount(self):
+    def bet_raise_max_amount(self):
         """Returns the maximum bet/raise amount.
 
         The maximum bet/raise amount is set by the limit of the poker game.

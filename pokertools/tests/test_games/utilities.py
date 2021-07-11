@@ -41,7 +41,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
             if game.actor.can_check_call():
                 actions.append('cc')
             if game.actor.can_bet_raise():
-                actions.extend((f'br {game.actor.min_bet_raise_amount}', f'br {game.actor.max_bet_raise_amount}'))
+                actions.extend((f'br {game.actor.bet_raise_min_amount}', f'br {game.actor.bet_raise_max_amount}'))
             if game.actor.can_discard_draw():
                 cards = ''.join(map(repr, sample(game.actor.hole, randint(0, len(game.actor.hole)))))
                 actions.append(f'dd {cards}')
@@ -52,22 +52,22 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
     def verify(self, game):
         if game.nature.can_deal_hole():
-            assert game.nature.can_deal_hole(sample(game.deck, game.nature.deal_count))
-            assert not game.nature.can_deal_hole(sample(game.deck, game.nature.deal_count + 1))
+            assert game.nature.can_deal_hole(sample(game.deck, game.nature.deal_hole_count))
+            assert not game.nature.can_deal_hole(sample(game.deck, game.nature.deal_hole_count + 1))
 
         if game.nature.can_deal_board():
-            assert game.nature.can_deal_board(sample(game.deck, game.nature.deal_count))
-            assert not game.nature.can_deal_board(sample(game.deck, game.nature.deal_count + 1))
+            assert game.nature.can_deal_board(sample(game.deck, game.nature.deal_board_count))
+            assert not game.nature.can_deal_board(sample(game.deck, game.nature.deal_board_count + 1))
 
         for player in game.players:
             if player.can_fold():
                 assert player.bet < max(map(PokerPlayer.bet.fget, game.players))
 
             if player.can_bet_raise():
-                assert player.can_bet_raise(player.min_bet_raise_amount)
-                assert player.can_bet_raise(player.max_bet_raise_amount)
-                assert not player.can_bet_raise(player.min_bet_raise_amount - 1)
-                assert not player.can_bet_raise(player.max_bet_raise_amount + 1)
+                assert player.can_bet_raise(player.bet_raise_min_amount)
+                assert player.can_bet_raise(player.bet_raise_max_amount)
+                assert not player.can_bet_raise(player.bet_raise_min_amount - 1)
+                assert not player.can_bet_raise(player.bet_raise_max_amount + 1)
 
             if player.can_discard_draw():
                 assert player.can_discard_draw(player.hole)
