@@ -2,7 +2,9 @@ from unittest import TestCase, main
 
 from gameframe.exceptions import GameFrameError
 
-from pokertools import FixedLimitTexasHoldEm, NoLimitTexasHoldEm, PotLimitOmahaHoldEm, Stakes
+from pokertools import (
+    FixedLimitTexasHoldEm, NoLimitTexasHoldEm, PotLimitOmahaHoldEm, PotLimitTripleDrawLowball27, Stakes, parse_cards,
+)
 
 
 class GameFrameTestCase(TestCase):
@@ -458,6 +460,53 @@ class GameFrameTestCase(TestCase):
         self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2)), (1,))
         self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2, 4, 8)), (100, 100, 100))
         self.assertRaises(ValueError, NoLimitTexasHoldEm, Stakes(1, (1, 2)), (100, -100, -100))
+
+    def test_draw_muck(self):
+        game = PotLimitTripleDrawLowball27(Stakes(0, (1, 2)), (100,) * 4).parse(
+            'dh AcKcQcJcTc', 'dh AdKdQdJdTd', 'dh AhKhQhJhTh', 'dh AsKsQsJsTs',
+            'cc', 'cc', 'cc', 'cc',
+            'dd AcKcQcJcTc 9c8c7c6c5c', 'dd AdKdQdJdTd 9d8d7d6d5d',
+            'dd AhKhQhJhTh 9h8h7h6h5h', 'dd AsKsQsJsTs 9s8s7s6s5s',
+            'cc', 'cc', 'cc', 'cc',
+            'dd 9c8c7c6c5c 4c4d4h4s2c',
+        )
+
+        self.assertTrue(game.actor.can_discard_draw())
+        self.assertTrue(game.actor.can_discard_draw(()))
+        self.assertTrue(game.actor.can_discard_draw((), ()))
+
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9d'), parse_cards('3c')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9d8d7d'), parse_cards('3c3d3h')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9d8d7d6d5d'), parse_cards('3c3d3h3s2d')))
+
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9d'), parse_cards('9c')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9d8d7d'), parse_cards('9c8c7c')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9d8d7d6d5d'), parse_cards('9c8c7c6c5c')))
+
+        game.actor.discard_draw(parse_cards('9d8d7d6d5d'), parse_cards('3c3d3h3s2d'))
+
+        self.assertTrue(game.actor.can_discard_draw())
+        self.assertTrue(game.actor.can_discard_draw(()))
+        self.assertTrue(game.actor.can_discard_draw((), ()))
+
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9h'), parse_cards('2s')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9h8h'), parse_cards('2s2h')))
+
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h'), parse_cards('Ac')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h8h'), parse_cards('AcKc')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9h8h7h'), parse_cards('AcKcQc')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9h8h7h6h5h'), parse_cards('AcKcQcJcTc')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9h8h7h'), parse_cards('2s2hQc')))
+        self.assertTrue(game.actor.can_discard_draw(parse_cards('9h8h7h6h5h'), parse_cards('2s2hQcJcTc')))
+
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h'), parse_cards('Ah')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h8h'), parse_cards('AhKh')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h8h7h'), parse_cards('AhKhQh')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h8h7h6h5h'), parse_cards('AhKhQhJhTh')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h8h7h'), parse_cards('2s2hQh')))
+        self.assertFalse(game.actor.can_discard_draw(parse_cards('9h8h7h6h5h'), parse_cards('2s2hQhJhTh')))
+
+        game.actor.discard_draw(parse_cards('9h8h7h6h5h'), parse_cards('AcKcQcJcTc'))
 
 
 if __name__ == '__main__':
