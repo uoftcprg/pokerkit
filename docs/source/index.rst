@@ -91,6 +91,7 @@ You can contribute on `Github <https://github.com/AussieSeaweed/pokertools>`_.
 
    install
    interact
+   hands
    pokertools
 
 License

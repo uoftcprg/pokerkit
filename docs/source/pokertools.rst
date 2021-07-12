@@ -41,11 +41,6 @@ can be supplied as the parameters of poker games to define and create poker game
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: pokertools.utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: pokertools.limits
    :members:
    :undoc-members:
