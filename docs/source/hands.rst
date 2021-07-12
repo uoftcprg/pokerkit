@@ -55,11 +55,12 @@ This is a sample hand that serves as a good introduction to the PokerTools packa
 
 Note that the showdown is started by the aggressor. You must not forget to do showdown after all other stages of the
 game is finished. Only after the showdown can the pot be distributed to the winners. All-in pots are exceptions,
-however. By rule, all players involved in an all-in pot is forced to show (as per WSOP rule) no matter what. The idea is
-to prevent collusion and chip dumping. As a result, in all-in pots, showdowns are unnecessary.
+however. As per the WSOP rule, all players involved in an all-in pot is forced to show no matter what. The idea is
+to prevent collusion and chip dumping. As a result, in all-in pots, showdowns are unnecessary, as cards are exposed
+by default.
 
-All-in pots are shown below. Note that just because they do not showdown, you should not forget to showdown on
-non-all-in pots!
+All hands shown below involve all-in pots. Note that just because they do not showdown, you should not forget to
+showdown on non-all-in pots!
 
 Dwan vs Ivey
 ------------

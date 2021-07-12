@@ -176,7 +176,7 @@ Customizing Poker Games
 -----------------------
 
 Two things are crucial when defining a poker game variant. The first is limit, which dictates the betting amounts
-throughout the game. The second is the definition. These contain various rules throughout the game such as street and
+throughout the game. The second is the definition, which contains various rules throughout the game such as street and
 betting structure.
 
 Poker Limits
@@ -194,7 +194,7 @@ These can be imported as below.
 
 .. code-block:: python
 
-   from pokertools import FixedLimit, NoLimit, PotLimit
+   from pokertools import *
 
    limit = FixedLimit
    limit = PotLimit
@@ -205,7 +205,7 @@ subclass the fixed limit class and override corresponding methods, as shown.
 
 .. code-block:: python
 
-   from pokertools import FixedLimit
+   from pokertools import *
 
    class CustomFixedLimit(FixedLimit):
        @property
@@ -329,7 +329,8 @@ in Fixed-Limit games). Big-bets are only used as min-bets in big-betting stages 
 Constructing Custom Poker Games
 -------------------------------
 
-The above is more than enough to create custom poker games of your own.
+The above is more than enough to create custom poker games of your own. You just need to supply the game's limit,
+definition, stakes, and starting stacks of the players.
 
 .. code-block:: python
 
