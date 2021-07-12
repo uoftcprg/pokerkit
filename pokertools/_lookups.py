@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from itertools import chain, combinations, filterfalse
 
 from pokertools.cards import Card, Rank, Ranks
-from pokertools.utilities import suited, _prod
+from pokertools.utilities import _prod, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
