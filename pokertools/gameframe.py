@@ -1,4 +1,3 @@
-import re
 from functools import partial
 from itertools import starmap
 from numbers import Integral
@@ -244,27 +243,38 @@ class PokerGame(SequentialGame):
         :return: This game.
         """
         for token in tokens:
-            if match := re.fullmatch(r'dh( (?P<cards>\w+))?', token):
-                self.actor.deal_hole(None if (cards := match.group('cards')) is None else parse_cards(cards))
-            elif match := re.fullmatch(r'db( (?P<cards>\w+))?', token):
-                self.actor.deal_board(None if (cards := match.group('cards')) is None else parse_cards(cards))
+            if token == 'dh':
+                self.actor.deal_hole()
+            elif token.startswith('dh '):
+                self.actor.deal_hole(parse_cards(token[3:]))
+            elif token == 'db':
+                self.actor.deal_board()
+            elif token.startswith('db '):
+                self.actor.deal_board(parse_cards(token[3:]))
             elif token == 'f':
                 self.actor.fold()
             elif token == 'cc':
                 self.actor.check_call()
-            elif match := re.fullmatch(r'br( (?P<amount>\d+))?', token):
-                self.actor.bet_raise(None if (amount := match.group('amount')) is None else int(amount))
-            elif match := re.fullmatch(r'dd( (?P<discarded_cards>\w*))?( (?P<drawn_cards>\w*))?', token):
-                self.actor.discard_draw(
-                    () if (cards := match.group('discarded_cards')) is None else parse_cards(cards),
-                    None if (cards := match.group('drawn_cards')) is None else parse_cards(cards),
-                )
-            elif match := re.fullmatch(r's( (?P<forced_status>[0|1]))?', token):
-                self.actor.showdown(
-                    None if (forced_status := match.group('forced_status')) is None else bool(int(forced_status)),
-                )
+            elif token == 'br':
+                self.actor.bet_raise()
+            elif token.startswith('br '):
+                self.actor.bet_raise(int(token[3:]))
+            elif token == 'dd':
+                self.actor.discard_draw()
+            elif token.startswith('dd ') and len(token.split()) == 2:
+                _, discarded_cards = token.split()
+                self.actor.discard_draw(parse_cards(discarded_cards))
+            elif token.startswith('dd ') and len(token.split()) == 3:
+                _, discarded_cards, drawn_cards = token.split()
+                self.actor.discard_draw(parse_cards(discarded_cards), parse_cards(drawn_cards))
+            elif token == 's':
+                self.actor.showdown()
+            elif token == 's 0':
+                self.actor.showdown(False)
+            elif token == 's 1':
+                self.actor.showdown(True)
             else:
-                raise ValueError('Invalid command')
+                raise ValueError(f'Invalid command "{token}"')
 
         return self
 

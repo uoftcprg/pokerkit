@@ -44,7 +44,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                 actions.extend((f'br {game.actor.bet_raise_min_amount}', f'br {game.actor.bet_raise_max_amount}'))
             if game.actor.can_discard_draw():
                 cards = ''.join(map(repr, sample(game.actor.hole, randint(0, len(game.actor.hole)))))
-                actions.append(f'dd {cards}')
+                actions.append(f'dd {cards}' if cards else 'dd')
             if game.actor.can_showdown():
                 actions.append('s')
 
@@ -75,8 +75,9 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
                 if len(game.deck) < len(player.hole):
                     population = set(game.deck + game.muck) - set(player.seen)
+                    cards = set(player.seen) & set(game.muck)
 
-                    if cards := set(player.seen) & set(game.muck):
+                    if cards:
                         assert not player.can_discard_draw(
                             player.hole,
                             tuple(cards) + (game.deck + game.muck)[:max(len(player.hole) - len(cards), 0)],

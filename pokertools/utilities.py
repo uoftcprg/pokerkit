@@ -1,5 +1,6 @@
-import re
+from functools import reduce
 from itertools import islice
+from operator import mul
 
 from pokertools.cards import Card, Rank, Suit
 
@@ -74,9 +75,8 @@ def parse_range(pattern):
     """
     card_sets = set()
 
-    if match := re.fullmatch(r'(\w)(\w)(\w?)', pattern):
-        ranks = tuple(map(Rank, match.groups()[:2]))
-        flag = match.groups()[2]
+    if 2 <= len(pattern) <= 3 and pattern[-1] != '+':
+        ranks, flag = tuple(map(Rank, pattern[:2])), pattern[2:]
         cards = set()
 
         for suit in Suit:
@@ -86,12 +86,11 @@ def parse_range(pattern):
         for card_1 in cards:
             for card_2 in cards:
                 if card_1.rank == ranks[0] and card_2.rank == ranks[1] and card_1 != card_2:
-                    if (flag == 's' and card_1.suit == card_2.suit) or (flag == 'o' and card_1.suit != card_2.suit) \
-                            or not flag:
+                    if not flag or (flag == 's' and card_1.suit == card_2.suit) \
+                            or (flag == 'o' and card_1.suit != card_2.suit):
                         card_sets.add(frozenset({card_1, card_2}))
-    elif match := re.fullmatch(r'(\w)(\w)(\w?)\+', pattern):
-        ranks = tuple(map(Rank, match.groups()[:2]))
-        flag = match.groups()[2]
+    elif 3 <= len(pattern) <= 4 and pattern[-1] == '+':
+        ranks, flag = tuple(map(Rank, pattern[:2])), pattern[2:-1]
 
         if ranks[0] == ranks[1]:
             for rank in islice(Rank, ranks[0]._index, None):
@@ -113,3 +112,7 @@ def _unique(values):
 
 def _rotate(values, index):
     return values[index:] + values[:index]
+
+
+def _prod(values):
+    return reduce(mul, values, 1)
