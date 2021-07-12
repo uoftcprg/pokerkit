@@ -6,11 +6,11 @@ from random import sample
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
+from pokertools._utilities import distinct, rotate
 from pokertools.gameframe import PokerPlayer
 from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,
 )
-from pokertools.utilities import _rotate, _unique
 
 
 class PokerAction(_SequentialAction, ABC):
@@ -39,7 +39,7 @@ class DealingAction(PokerAction, ABC):
         if self.cards is not None:
             if not all(map(self.game.deck.__contains__, self.cards)):
                 raise GameFrameError('All cards dealt must be in deck')
-            elif not _unique(self.cards):
+            elif not distinct(self.cards):
                 raise GameFrameError('Card must not have any duplicates')
             elif len(self.cards) != self.deal_count:
                 raise GameFrameError(f'The number of dealt cards must be {self.deal_count}.')
@@ -184,7 +184,7 @@ class BetRaiseAction(BettingAction):
         self.actor._stack -= self.amount - self.actor.bet
         self.actor._bet = self.amount
 
-        players = list(filter(PokerPlayer._is_relevant, _rotate(self.game.players, self.actor.index)))
+        players = list(filter(PokerPlayer._is_relevant, rotate(self.game.players, self.actor.index)))
         self.game._queue = players[1:] if players and players[0] is self.actor else players
 
 
@@ -213,14 +213,14 @@ class DiscardDrawAction(PokerAction):
             raise GameFrameError('All hole cards must belong to the actor.')
 
         if self.drawn_cards is None:
-            if not _unique(self.discarded_cards):
+            if not distinct(self.discarded_cards):
                 raise GameFrameError('Duplicates in cards')
         else:
             if not all(map(self.population.__contains__, self.drawn_cards)):
                 raise GameFrameError('Card must be in deck or the muck if insufficient')
             elif any(map(self.actor.seen.__contains__, self.drawn_cards)):
                 raise GameFrameError('The poker player should not draw any card they had before')
-            elif not _unique(self.discarded_cards + self.drawn_cards):
+            elif not distinct(self.discarded_cards + self.drawn_cards):
                 raise GameFrameError('Duplicates in cards')
             elif len(self.discarded_cards) != len(self.drawn_cards):
                 raise GameFrameError('The from cards must be of same length as to cards.')

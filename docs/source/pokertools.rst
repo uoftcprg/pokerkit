@@ -15,13 +15,11 @@ classes such as decks, stages, evaluators, et cetera to define and create custom
    :undoc-members:
    :show-inheritance:
 
-
 PokerTools Utilities
 --------------------
 
 All poker utilities in PokerTools are shown below. These include various data types for cards, decks, et cetera. These
 can be supplied as the parameters of poker games to define and create poker games.
-
 
 .. automodule:: pokertools.cards
    :members:

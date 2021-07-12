@@ -51,7 +51,6 @@ The following features are present in PokerTools...
 
 The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/>`_.
 
-
 License
 -------
 `GNU GPLv3 <https://choosealicense.com/licenses/gpl-3.0/>`_

@@ -2,9 +2,9 @@ from abc import ABC
 from functools import partial
 from operator import eq
 
+from pokertools._utilities import rotate
 from pokertools.gameframe import PokerPlayer
 from pokertools.limits import FixedLimit
-from pokertools.utilities import _rotate
 
 
 class Stage(ABC):
@@ -169,7 +169,7 @@ class BettingStage(QueuedStage):
         else:
             opener = self.game._aggressor
 
-        self.game._actor, *self.game._queue = _rotate(players, players.index(opener))
+        self.game._actor, *self.game._queue = rotate(players, players.index(opener))
         self.game._bet_raise_count = int(blinded)
         self.game._max_delta = self.initial_bet_amount
 
@@ -206,5 +206,5 @@ class ShowdownStage(QueuedStage):
 
         self.game._actor, *self.game._queue = list(filter(
             PokerPlayer.is_active,
-            _rotate(self.game.players, self.game._aggressor.index),
+            rotate(self.game.players, self.game._aggressor.index),
         ))

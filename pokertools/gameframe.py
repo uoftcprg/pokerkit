@@ -5,9 +5,8 @@ from operator import gt
 
 from gameframe.sequential import SequentialActor, SequentialGame
 
-from pokertools.cards import HoleCard
+from pokertools.cards import HoleCard, parse_cards
 from pokertools.decks import Deck
-from pokertools.utilities import parse_cards
 
 
 class PokerGame(SequentialGame):
