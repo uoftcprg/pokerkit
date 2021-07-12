@@ -129,6 +129,40 @@ class PokerGame(SequentialGame):
         return tuple(self._deck)
 
     @property
+    def ante(self):
+        """Returns the ante of this poker game.
+
+        :return: The ante of this poker game.
+        """
+        return self.stakes.ante
+
+    @property
+    def blinds(self):
+        """Returns the blinds of this poker game.
+
+        This tuple includes straddles and forced bets.
+
+        :return: The blinds of this poker game.
+        """
+        return self.stakes.blinds
+
+    @property
+    def small_bet(self):
+        """Returns the small bet of this poker game.
+
+        :return: The small bet of this poker game.
+        """
+        return self.stakes.small_bet
+
+    @property
+    def big_bet(self):
+        """Returns the big bet of this poker game.
+
+        :return: The big bet of this poker game.
+        """
+        return self.stakes.big_bet
+
+    @property
     def muck(self):
         """Returns the muck of this poker game.
 
@@ -162,40 +196,6 @@ class PokerGame(SequentialGame):
         :return: The stage of this poker game.
         """
         return self._stage
-
-    @property
-    def ante(self):
-        """Returns the ante of this poker game.
-
-        :return: The ante of this poker game.
-        """
-        return self.stakes.ante
-
-    @property
-    def blinds(self):
-        """Returns the blinds of this poker game.
-
-        This tuple includes straddles and forced bets.
-
-        :return: The blinds of this poker game.
-        """
-        return self.stakes.blinds
-
-    @property
-    def small_bet(self):
-        """Returns the small bet of this poker game.
-
-        :return: The small bet of this poker game.
-        """
-        return self.stakes.small_bet
-
-    @property
-    def big_bet(self):
-        """Returns the big bet of this poker game.
-
-        :return: The big bet of this poker game.
-        """
-        return self.stakes.big_bet
 
     @property
     def side_pots(self):
