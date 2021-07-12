@@ -68,14 +68,12 @@ The following code demonstrates interacting with decks.
    print(len(deck))  # 43
    print(deck)  # [Kd, 3c, Js, 2s, ...]
 
-   decks = (  # A tuple of different decks
-       StandardDeck(),  # Create a standard deck (52 cards)
-       ShortDeck(),  # Create a short deck (36 cards)
-       Deck(),  # Create an empty deck
-       Deck(parse_cards('AcAdAh')),  # Create a deck containing these three cards.
-   )
+   deck = StandardDeck()  # Create a standard deck (52 cards)
+   deck = ShortDeck()  # Create a short deck (36 cards)
+   deck = Deck()  # Create an empty deck
+   deck = Deck(parse_cards('AcAdAh'))  # Create a deck containing these three cards.
 
-Only standard decks are shown here. For more information, look at the PokerTools API documentations.
+Only standard decks are used here. For more information, look at the PokerTools API documentations.
 
 Evaluating Hands
 ----------------
@@ -87,21 +85,20 @@ treated as being greater, and vice versa.
 
    from pokertools import *
 
+   evaluator = StandardEvaluator  # Used for Texas Hold'em, et cetera
+
    print(StandardEvaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKdKh'))
          < StandardEvaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')))  # True
    print(StandardEvaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKd'))
          < StandardEvaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJs')))  # False
 
-   evaluators = (  # A tuple of all evaluators in PokerTools
-       StandardEvaluator,  # Used for Texas Hold'em, et cetera
-       GreekEvaluator,  # Used for Greek Hold'em
-       OmahaEvaluator,  # Used for Omaha Hold'em
-       ShortDeckEvaluator,  # Used for Short-Deck Hold'em, a.k.a. 6+ Hold'em
-       Lowball27Evaluator,  # Used for Lowball 2-to-7 Draw
-       LowballA5Evaluator,  # Used for Lowball A-to-5 Draw
-       BadugiEvaluator,  # Used for Badugi
-       RankEvaluator,  # Hands are compared by maximum ranks (used for Kuhn Poker)
-   )
+   evaluator = GreekEvaluator  # Used for Greek Hold'em
+   evaluator = OmahaEvaluator  # Used for Omaha Hold'em
+   evaluator = ShortDeckEvaluator  # Used for Short-Deck Hold'em, a.k.a. 6+ Hold'em
+   evaluator = Lowball27Evaluator  # Used for Lowball 2-to-7 Draw
+   evaluator = LowballA5Evaluator  # Used for Lowball A-to-5 Draw
+   evaluator = BadugiEvaluator  # Used for Badugi
+   evaluator = RankEvaluator  # Hands are compared by maximum ranks (used for Kuhn Poker)
 
 Only standard evaluators are used here. For more information, you can look at the PokerTools API documentations.
 
@@ -199,11 +196,9 @@ These can be imported as below.
 
    from pokertools import FixedLimit, NoLimit, PotLimit
 
-   limits = (  # A tuple of all limits in PokerTools
-       FixedLimit,
-       PotLimit,
-       NoLimit,
-   )
+   limit = FixedLimit
+   limit = PotLimit
+   limit = NoLimit
 
 In PokerTools, Fixed limit caps the number of bets and raises to 4 per street. If this is unsatisfactory, you can
 subclass the fixed limit class and override corresponding methods, as shown.
@@ -212,7 +207,7 @@ subclass the fixed limit class and override corresponding methods, as shown.
 
    from pokertools import FixedLimit
 
-   class MyFixedLimit(FixedLimit):
+   class CustomFixedLimit(FixedLimit):
        @property
        def _max_count(self):
            return None  # Unlimited if None, otherwise the integral value
@@ -276,8 +271,8 @@ By creating stages in good order, you can define pretty much any game in Poker. 
            ShowdownStage(game),
        )
 
-You might see a catch-22 here. Note that constructing stages require games. But, game also needs stages. The solution
-to this problem brings poker definition classes into the picture.
+You might see a catch-22 here. Note that constructing stages require games. But, game also needs stages to be defined.
+The solution to this problem brings poker definition classes into the picture.
 
 Poker Definitions
 -----------------

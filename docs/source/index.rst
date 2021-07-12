@@ -73,7 +73,7 @@ As seen, treys is a bit faster than PokerTools. However, PokerTools offer a numb
 - Treys represent card as ints, but PokerTools represent them as an instance of Card type (more intuitive)
 - PokerTools have more types of evaluators such as Omaha, Short-Deck, et cetera
 - PokerTools offer range interpretation
-- Seamless integration with PokerTools game logic
+- PokerTools provides seamless integration with PokerTools game logic
 
 Contributing
 ------------
