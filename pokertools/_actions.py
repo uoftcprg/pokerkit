@@ -165,8 +165,9 @@ class BetRaiseAction(BettingAction):
 
         if self.amount is not None:
             if not self.min_amount <= self.amount <= self.max_amount:
-                raise GameFrameError('The bet/raise amount must be within allowed bounds '
-                                     f'({self.amount} not in {self.min_amount}..{self.max_amount})')
+                raise GameFrameError(
+                    f'The bet/raise amount {self.amount} is not within [{self.min_amount}, {self.max_amount}]'
+                )
 
     def apply(self):
         super().apply()
@@ -217,13 +218,13 @@ class DiscardDrawAction(PokerAction):
                 raise GameFrameError('Duplicates in cards')
         else:
             if not all(map(self.population.__contains__, self.drawn_cards)):
-                raise GameFrameError('Card must be in deck or the muck if insufficient')
+                raise GameFrameError('All cards must be in deck (or the muck if insufficient)')
             elif any(map(self.actor.seen.__contains__, self.drawn_cards)):
                 raise GameFrameError('The poker player should not draw any card they had before')
             elif not distinct(self.discarded_cards + self.drawn_cards):
                 raise GameFrameError('Duplicates in cards')
             elif len(self.discarded_cards) != len(self.drawn_cards):
-                raise GameFrameError('The from cards must be of same length as to cards.')
+                raise GameFrameError('The discarded cards must be of same length as the drawn cards.')
 
     def apply(self):
         super().apply()
