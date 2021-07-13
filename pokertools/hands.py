@@ -1,17 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections.abc import Hashable, Iterator
 from functools import total_ordering
 
-from pokertools._utilities import distinct
+from auxiliary import SupportsLessThan, distinct
+
 from pokertools.cards import Card, rainbow
 
 
 @total_ordering
-class Hand(Hashable, ABC):
+class Hand(Hashable, SupportsLessThan, ABC):
     """Hand is the abstract base class for all hands."""
-
-    @abstractmethod
-    def __lt__(self, other): ...
+    ...
 
 
 class IndexedHand(Hand, ABC):

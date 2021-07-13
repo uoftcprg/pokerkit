@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from itertools import chain, zip_longest
+from itertools import zip_longest
 from random import choice, randint, sample
 
+from auxiliary import distinct, flatten
 from gameframe.tests import GameFrameTestCaseMixin
 
 from pokertools import PokerNature, PokerPlayer, Stakes
-from pokertools._utilities import distinct
 
 
 class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
@@ -114,7 +114,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
         assert sum(map(PokerPlayer.total.fget, game.players)) + game.pot \
                == sum(map(PokerPlayer.starting_stack.fget, game.players))
         assert sum(game.side_pots) == game.pot, str(list(game.side_pots)) + ' ' + str(game.pot)
-        assert distinct(game.deck + game.muck + tuple(chain(*map(PokerPlayer.hole.fget, game.players))))
+        assert distinct(game.deck + game.muck + tuple(flatten(map(PokerPlayer.hole.fget, game.players))))
 
         if game.is_terminal():
             assert game.pot == 0

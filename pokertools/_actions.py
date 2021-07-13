@@ -3,10 +3,10 @@ from functools import partial
 from operator import is_not
 from random import sample
 
+from auxiliary import distinct, rotate
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
-from pokertools._utilities import distinct, rotate
 from pokertools.gameframe import PokerPlayer
 from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,

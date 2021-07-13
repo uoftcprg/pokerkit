@@ -1,11 +1,11 @@
 from enum import Enum, unique
 from itertools import islice
 
-from pokertools._utilities import distinct
+from auxiliary import IndexedEnum, chunk, const, distinct
 
 
 @unique
-class Rank(Enum):
+class Rank(IndexedEnum):
     """Rank is the enum class for ranks."""
     TWO = '2'
     '''The rank of 2.'''
@@ -34,19 +34,15 @@ class Rank(Enum):
     ACE = 'A'
     '''The rank of Aces.'''
 
-    @property
-    def _index(self):
-        return tuple(Rank).index(self)
-
 
 @unique
 class Ranks(Enum):
     """Suit is the enum class for tuples of ranks."""
     STANDARD_RANKS = tuple(Rank)
     '''The standard ranks (from deuce to ace).'''
-    SHORT_DECK_RANKS = tuple(Rank)[Rank.SIX._index:]
+    SHORT_DECK_RANKS = tuple(Rank)[Rank.SIX.index:]
     '''The short-deck ranks (from six to ace).'''
-    ACE_LOW_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE._index]
+    ACE_LOW_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
     '''The ace-low ranks (from ace to king).'''
 
 
@@ -144,7 +140,7 @@ def suited(cards):
     :param cards: The cards to check.
     :return: True if the cards are suited, else False.
     """
-    return len(set(map(Card.suit.fget, cards))) <= 1
+    return const(map(Card.suit.fget, cards))
 
 
 def parse_card(card):
@@ -169,7 +165,7 @@ def parse_cards(cards):
     :return: The parsed cards.
     :raises ValueError: If any card-representation is invalid.
     """
-    return map(parse_card, (cards[i:i + 2] for i in range(0, len(cards), 2)))
+    return map(parse_card, chunk(cards, 2))
 
 
 def parse_range(pattern):
@@ -215,10 +211,10 @@ def parse_range(pattern):
         ranks, flag = tuple(map(Rank, pattern[:2])), pattern[2:-1]
 
         if ranks[0] == ranks[1]:
-            for rank in islice(Rank, ranks[0]._index, None):
+            for rank in islice(Rank, ranks[0].index, None):
                 card_sets |= parse_range(rank.value + rank.value + flag)
         else:
-            for rank in islice(Rank, ranks[1]._index, ranks[0]._index):
+            for rank in islice(Rank, ranks[1].index, ranks[0].index):
                 card_sets |= parse_range(ranks[0].value + rank.value + flag)
     else:
         card_sets.add(frozenset(parse_cards(pattern)))

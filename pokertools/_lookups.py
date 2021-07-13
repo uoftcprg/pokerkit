@@ -2,21 +2,22 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from itertools import chain, combinations, filterfalse
 
-from pokertools._utilities import prod
+from auxiliary import prod, window
+
 from pokertools.cards import Card, Rank, Ranks, suited
 
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
 def mask_of(ranks):
-    return prod(map(PRIMES.__getitem__, map(Rank._index.fget, ranks)))
+    return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))
 
 
 def straights_of(ranks, count):
-    keys = [PRIMES[ranks[-1]._index] * mask_of(ranks[:count - 1])]
+    keys = [PRIMES[ranks[-1].index] * mask_of(ranks[:count - 1])]
 
-    for i in range(len(ranks) - count + 1):
-        keys.append(mask_of(ranks[i:i + count]))
+    for straight in window(ranks, count):
+        keys.append(mask_of(straight))
 
     return reversed(keys)
 

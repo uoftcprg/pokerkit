@@ -1,7 +1,8 @@
 from unittest import TestCase, main
 
-from pokertools import Card, parse_cards
 from pokertools._utilities import distinct, prod, rotate
+
+from pokertools import Card, parse_cards
 
 
 class UtilitiesTestCase(TestCase):

@@ -2,7 +2,8 @@ from abc import ABC
 from functools import partial
 from operator import eq
 
-from pokertools._utilities import rotate
+from auxiliary import rotate
+
 from pokertools.gameframe import PokerPlayer
 from pokertools.limits import FixedLimit
 

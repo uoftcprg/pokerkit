@@ -227,19 +227,19 @@ class EvaluatorTestCase(TestCase):
     def test_rank_evaluator(self):
         self.assertEqual(
             RankEvaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsKcJsTs')),
-            LowIndexedHand(Rank.ACE._index),
+            LowIndexedHand(Rank.ACE.index),
         )
         self.assertEqual(
             RankEvaluator.evaluate(parse_cards('9c6c'), parse_cards('9h9sKcJcTc')),
-            LowIndexedHand(Rank.KING._index),
+            LowIndexedHand(Rank.KING.index),
         )
         self.assertEqual(
             RankEvaluator.evaluate(parse_cards('Tc2d')),
-            LowIndexedHand(Rank.TEN._index),
+            LowIndexedHand(Rank.TEN.index),
         )
         self.assertEqual(
             RankEvaluator.evaluate(parse_cards('3c')),
-            LowIndexedHand(Rank.THREE._index),
+            LowIndexedHand(Rank.THREE.index),
         )
 
 
