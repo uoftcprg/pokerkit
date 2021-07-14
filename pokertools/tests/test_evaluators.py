@@ -11,11 +11,11 @@ class EvaluatorTestCase(TestCase):
     def test_standard_evaluator(self):
         self.assertRaises(ValueError, StandardEvaluator.evaluate, (), ())
         self.assertEqual(
-            StandardEvaluator.evaluate(parse_cards('AcAdAhAsKcQdQh')),
+            StandardEvaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQdQh')),
             StandardHand(parse_cards('AcAdAhAsKc')),
         )
         self.assertEqual(
-            StandardEvaluator.evaluate(parse_cards('AcKsAhAsQsJsTs')),
+            StandardEvaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')),
             StandardHand(parse_cards('AsKsQsJsTs')),
         )
         self.assertEqual(
@@ -108,61 +108,61 @@ class EvaluatorTestCase(TestCase):
 
     def test_badugi_evaluator(self):
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('2s4c5d6h')),
+            BadugiEvaluator.evaluate(parse_cards('2s4c5d6h'), ()),
             BadugiHand(parse_cards('2s4c5d6h')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('As2d3d7h')),
+            BadugiEvaluator.evaluate(parse_cards('As2d3d7h'), ()),
             BadugiHand(parse_cards('As2d7h')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('4s4c4dKh')),
+            BadugiEvaluator.evaluate(parse_cards('4s4c4dKh'), ()),
             BadugiHand(parse_cards('4sKh')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('2s3s4d7h')),
+            BadugiEvaluator.evaluate(parse_cards('2s3s4d7h'), ()),
             BadugiHand(parse_cards('2s4d7h')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('As2d3s4h')),
+            BadugiEvaluator.evaluate(parse_cards('As2d3s4h'), ()),
             BadugiHand(parse_cards('As2d4h')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('KcKdKhKs')),
+            BadugiEvaluator.evaluate(parse_cards('KcKdKhKs'), ()),
             BadugiHand(parse_cards('Ks')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('2s2c4d4h')),
+            BadugiEvaluator.evaluate(parse_cards('2s2c4d4h'), ()),
             BadugiHand(parse_cards('2s4d')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('4s5s6dKh')),
+            BadugiEvaluator.evaluate(parse_cards('4s5s6dKh'), ()),
             BadugiHand(parse_cards('4s6dKh')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('As2c3d3s')),
+            BadugiEvaluator.evaluate(parse_cards('As2c3d3s'), ()),
             BadugiHand(parse_cards('As2c3d')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('Ad2hKc3c')),
+            BadugiEvaluator.evaluate(parse_cards('Ad2hKc3c'), ()),
             BadugiHand(parse_cards('Ad2h3c')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('5d7cKcKh')),
+            BadugiEvaluator.evaluate(parse_cards('5d7cKcKh'), ()),
             BadugiHand(parse_cards('5d7cKh')),
         )
         self.assertEqual(
-            BadugiEvaluator.evaluate(parse_cards('2s3dKsKd')),
+            BadugiEvaluator.evaluate(parse_cards('2s3dKsKd'), ()),
             BadugiHand(parse_cards('2s3d')),
         )
 
     def test_lowballA5_evaluator(self):
         self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcAdAhAsKcQdQh')),
+            LowballA5Evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQdQh')),
             LowballA5Hand(parse_cards('AcAsQdQhKc')),
         )
         self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcKsAhAsQsJsTs')),
+            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')),
             LowballA5Hand(parse_cards('KsAsQsJsTs')),
         )
         self.assertEqual(
@@ -192,11 +192,15 @@ class EvaluatorTestCase(TestCase):
 
     def test_lowball27_evaluator(self):
         self.assertEqual(
-            Lowball27Evaluator.evaluate(parse_cards('AcAdAhAsKcQdQh')),
+            Lowball27Evaluator.evaluate(parse_cards('AcAdAhAsKc'), ()),
+            Lowball27Hand(parse_cards('AcAdAhAsKc')),
+        )
+        self.assertEqual(
+            Lowball27Evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQdQh')),
             Lowball27Hand(parse_cards('AhAsKcQdQh')),
         )
         self.assertEqual(
-            Lowball27Evaluator.evaluate(parse_cards('AcKsAhAsQsJsTs')),
+            Lowball27Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')),
             Lowball27Hand(parse_cards('AhAsQsJsTs')),
         )
         self.assertEqual(
@@ -234,11 +238,11 @@ class EvaluatorTestCase(TestCase):
             LowIndexedHand(Rank.KING.index),
         )
         self.assertEqual(
-            RankEvaluator.evaluate(parse_cards('Tc2d')),
+            RankEvaluator.evaluate(parse_cards('Tc2d'), ()),
             LowIndexedHand(Rank.TEN.index),
         )
         self.assertEqual(
-            RankEvaluator.evaluate(parse_cards('3c')),
+            RankEvaluator.evaluate(parse_cards('3c'), ()),
             LowIndexedHand(Rank.THREE.index),
         )
 
