@@ -32,18 +32,36 @@ class Stakes:
 
     @property
     def ante(self):
+        """Returns the ante of this poker game.
+
+        :return: The ante of this poker game.
+        """
         return self.__ante
 
     @property
     def blinds(self):
+        """Returns the blinds of this poker game.
+
+        Forced bets such as straddles and bring-ins are included in this property.
+
+        :return: The blinds of this poker game.
+        """
         return self.__blinds
 
     @property
     def small_bet(self):
+        """Returns the small bet of this poker game.
+
+        :return: The small bet of this poker game.
+        """
         return self.__small_bet
 
     @property
     def big_bet(self):
+        """Returns the big bet of this poker game.
+
+        :return: The big bet of this poker game.
+        """
         return self.__big_bet
 
     def _verify(self, max_value):
