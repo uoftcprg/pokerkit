@@ -120,8 +120,6 @@ class FoldAction(BettingAction):
             raise GameFrameError('Folding action must not be redundant')
 
     def apply(self):
-        super().apply()
-
         self.actor._status = False
 
 
@@ -131,8 +129,6 @@ class CheckCallAction(BettingAction):
         return min(self.actor.stack, max(map(PokerPlayer.bet.fget, self.actor.game.players)) - self.actor.bet)
 
     def apply(self):
-        super().apply()
-
         amount = self.amount
 
         self.actor._stack -= amount
@@ -170,8 +166,6 @@ class BetRaiseAction(BettingAction):
                 )
 
     def apply(self):
-        super().apply()
-
         if self.amount is None:
             self.amount = self.min_amount
 
@@ -227,8 +221,6 @@ class DiscardDrawAction(PokerAction):
                 raise GameFrameError('The discarded cards must be of same length as the drawn cards.')
 
     def apply(self):
-        super().apply()
-
         if self.drawn_cards is None:
             self.drawn_cards = sample(set(self.population) - set(self.actor.seen), len(self.discarded_cards))
 
@@ -265,8 +257,6 @@ class ShowdownAction(PokerAction):
             raise GameFrameError('Game not in showdown')
 
     def apply(self):
-        super().apply()
-
         if self.forced is None:
             self.forced = self.is_necessary()
 
