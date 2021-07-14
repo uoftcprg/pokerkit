@@ -151,13 +151,6 @@ class ShortDeckLookup(SuitedLookup):
                 self.unsuited[key] = self.index_count
 
 
-class BadugiLookup(UnsuitedLookup):
-    def populate(self):
-        for n in range(1, 5):
-            for key in multiples_of(Ranks.ACE_LOW_RANKS.value, {1: n}):
-                self.unsuited[key] = self.index_count
-
-
 class LowballA5Lookup(UnsuitedLookup):
     def populate(self):
         for key in chain(
@@ -169,3 +162,10 @@ class LowballA5Lookup(UnsuitedLookup):
                 multiples_of(Ranks.ACE_LOW_RANKS.value, {1: 5}),
         ):
             self.unsuited[key] = self.index_count
+
+
+class BadugiLookup(UnsuitedLookup):
+    def populate(self):
+        for n in range(1, 5):
+            for key in multiples_of(Ranks.ACE_LOW_RANKS.value, {1: n}):
+                self.unsuited[key] = self.index_count

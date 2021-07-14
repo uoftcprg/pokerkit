@@ -83,6 +83,20 @@ class ShortDeckHand(LookupHandMixin, HighIndexedHand):
     _lookup = _ShortDeckLookup()
 
 
+class Lowball27Hand(LookupHandMixin, LowIndexedHand):
+    """Lowball27Hand is the class for Deuce-to-Seven Lowball hands."""
+    from pokertools._lookups import StandardLookup as _Lowball27Lookup
+
+    _lookup = _Lowball27Lookup()
+
+
+class LowballA5Hand(LookupHandMixin, LowIndexedHand):
+    """LowballA5Hand is the class for Ace-to-Five Lowball hands."""
+    from pokertools._lookups import LowballA5Lookup as _LowballA5Lookup
+
+    _lookup = _LowballA5Lookup()
+
+
 class BadugiHand(LookupHandMixin, LowIndexedHand):
     """BadugiHand is the class for Badugi hands."""
     from pokertools._lookups import BadugiLookup as _BadugiLookup
@@ -101,17 +115,3 @@ class BadugiHand(LookupHandMixin, LowIndexedHand):
             raise ValueError('Not a valid Badugi hand')
 
         super().__init__(cards)
-
-
-class LowballA5Hand(LookupHandMixin, LowIndexedHand):
-    """LowballA5Hand is the class for Ace-to-Five Lowball hands."""
-    from pokertools._lookups import LowballA5Lookup as _LowballA5Lookup
-
-    _lookup = _LowballA5Lookup()
-
-
-class Lowball27Hand(LookupHandMixin, LowIndexedHand):
-    """Lowball27Hand is the class for Deuce-to-Seven Lowball hands."""
-    from pokertools._lookups import StandardLookup as _Lowball27Lookup
-
-    _lookup = _Lowball27Lookup()

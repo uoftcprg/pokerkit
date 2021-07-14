@@ -68,25 +68,6 @@ class HandTestCase(TestCase):
 
         self.assertSequenceEqual(hands, sorted(hands))
 
-    def test_badugi_hand(self):
-        self.assertRaises(ValueError, BadugiHand, parse_cards('Ac2d3c4s5c'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('AcAc'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('Ac2d3c'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('As2s'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('Ad2d3d4d'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('Ad2d3c4h'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('AcAd'))
-        self.assertRaises(ValueError, BadugiHand, parse_cards('AcAd3h4s'))
-
-        hands = tuple(map(BadugiHand, map(parse_cards, (
-            'Ac2d3h4s', 'Ac2d3h5s', 'Ac2d4h5s', 'Ac3d4h5s', 'Ac3d6h9s', 'Ac3d6hTs', '7c8d9hTs', '7c8d9hJs', 'TcJdQhKs',
-            'Ac2d3h', 'As2c4d', 'Ah3s4c', '2d3h4s', '4c5d6h', '4s5c8d', '4h5sTc', '4d8hTs', '4c8dKh', 'JsQcKd',
-            'Ac2d', 'Ah3s', '2c3d', '2h4s', '2c5d', '2h8s', '7c8d', '2hJs', '3cJd', 'ThJs', 'TcKd', 'JhKs', 'QhKs',
-            'Ac', '2d', '3h', '4s', '5c', '6d', '7h', '8s', '9c', 'Td', 'Jh', 'Qs', 'Kc',
-        ))))
-
-        self.assertSequenceEqual(hands, sorted(hands, reverse=True))
-
     def test_lowballA5_hand(self):
         self.assertRaises(ValueError, LowballA5Hand, parse_cards('9sTsJsQsKsAs'))
         self.assertRaises(ValueError, LowballA5Hand, parse_cards('4c5dThJsAcKh2h'))
@@ -112,6 +93,25 @@ class HandTestCase(TestCase):
             'AhAc2c3c5c', '2c2d3s3c4s', 'AcAdKsKcTs', 'AcAdKsKcJs', 'QcQsQhAhKh', 'AcAsAd2s4s', 'AcAsAd3s4s',
             'Ac2s3d4s5s', '2c3s4d5s6s', 'TcJsQdKsAs', '9c5c4c3c2c', 'Kc5c4c3c2c', 'KhKsKdAhAc', 'AcAdAsKhKs',
             '2c2d2h2sQs', '2c2d2h2sKs', 'AcAdAhAsKs', '2c3c4c5c6c', '3d4d5d6d7d', '9sTsJsQsKs', 'TsJsQsKsAs',
+        ))))
+
+        self.assertSequenceEqual(hands, sorted(hands, reverse=True))
+
+    def test_badugi_hand(self):
+        self.assertRaises(ValueError, BadugiHand, parse_cards('Ac2d3c4s5c'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('AcAc'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('Ac2d3c'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('As2s'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('Ad2d3d4d'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('Ad2d3c4h'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('AcAd'))
+        self.assertRaises(ValueError, BadugiHand, parse_cards('AcAd3h4s'))
+
+        hands = tuple(map(BadugiHand, map(parse_cards, (
+            'Ac2d3h4s', 'Ac2d3h5s', 'Ac2d4h5s', 'Ac3d4h5s', 'Ac3d6h9s', 'Ac3d6hTs', '7c8d9hTs', '7c8d9hJs', 'TcJdQhKs',
+            'Ac2d3h', 'As2c4d', 'Ah3s4c', '2d3h4s', '4c5d6h', '4s5c8d', '4h5sTc', '4d8hTs', '4c8dKh', 'JsQcKd',
+            'Ac2d', 'Ah3s', '2c3d', '2h4s', '2c5d', '2h8s', '7c8d', '2hJs', '3cJd', 'ThJs', 'TcKd', 'JhKs', 'QhKs',
+            'Ac', '2d', '3h', '4s', '5c', '6d', '7h', '8s', '9c', 'Td', 'Jh', 'Qs', 'Kc',
         ))))
 
         self.assertSequenceEqual(hands, sorted(hands, reverse=True))

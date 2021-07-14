@@ -35,21 +35,6 @@ class LookupTestCase(TestCase):
         self.assertEqual(min(indices), 0)
         self.assertEqual(max(indices), ShortDeckHand._lookup.index_count - 1)
 
-    @skipUnless(exists('lookups/badugi-lookup.txt'), 'The badugi hand file does not exist')
-    def test_badugi_lookup(self):
-        # Generated with custom Python code
-        with open('lookups/badugi-lookup.txt') as file:
-            lines = map(str.strip, file.readlines())
-
-        indices = tuple(map(BadugiHand._lookup.get_index, map(parse_cards, lines)))
-
-        for i, j in zip(indices, indices[1:]):
-            self.assertGreaterEqual(i, j)
-
-        self.assertEqual(BadugiHand._lookup.index_count, 1092)
-        self.assertEqual(min(indices), 0)
-        self.assertEqual(max(indices), BadugiHand._lookup.index_count - 1)
-
     @skipUnless(exists('lookups/lowballA5-lookup.txt'), 'The lowballA5 hand file does not exist')
     def test_lowballA5_lookup(self):
         # Generated with custom Python code
@@ -64,6 +49,21 @@ class LookupTestCase(TestCase):
         self.assertEqual(LowballA5Hand._lookup.index_count, 6175)
         self.assertEqual(min(indices), 0)
         self.assertEqual(max(indices), LowballA5Hand._lookup.index_count - 1)
+
+    @skipUnless(exists('lookups/badugi-lookup.txt'), 'The badugi hand file does not exist')
+    def test_badugi_lookup(self):
+        # Generated with custom Python code
+        with open('lookups/badugi-lookup.txt') as file:
+            lines = map(str.strip, file.readlines())
+
+        indices = tuple(map(BadugiHand._lookup.get_index, map(parse_cards, lines)))
+
+        for i, j in zip(indices, indices[1:]):
+            self.assertGreaterEqual(i, j)
+
+        self.assertEqual(BadugiHand._lookup.index_count, 1092)
+        self.assertEqual(min(indices), 0)
+        self.assertEqual(max(indices), BadugiHand._lookup.index_count - 1)
 
 
 if __name__ == '__main__':
