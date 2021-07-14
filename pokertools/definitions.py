@@ -20,6 +20,10 @@ class Definition(ABC):
 
     @property
     def game(self):
+        """Returns the game of this definition.
+
+        :return: The game of this definition.
+        """
         return self.__game
 
     @abstractmethod

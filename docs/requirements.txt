@@ -1,3 +1,4 @@
+auxiliary
 gameframe
 sphinx
 sphinx-rtd-theme
