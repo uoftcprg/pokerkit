@@ -40,7 +40,7 @@ class StandardDeck(Deck):
     """StandardDeck is the class for standard decks."""
 
     def __init__(self):
-        super().__init__(starmap(Card, product(Ranks.STANDARD_RANKS.value, Suit)))
+        super().__init__(starmap(Card, product(Ranks.STANDARD.value, Suit)))
 
 
 class ShortDeck(Deck):
@@ -50,4 +50,4 @@ class ShortDeck(Deck):
     """
 
     def __init__(self):
-        super().__init__(starmap(Card, product(Ranks.SHORT_DECK_RANKS.value, Suit)))
+        super().__init__(starmap(Card, product(Ranks.SHORT_DECK.value, Suit)))

@@ -36,17 +36,6 @@ class Rank(IndexedEnum):
 
 
 @unique
-class Ranks(Enum):
-    """Suit is the enum class for tuples of ranks."""
-    STANDARD_RANKS = tuple(Rank)
-    '''The standard ranks (from deuce to ace).'''
-    SHORT_DECK_RANKS = tuple(Rank)[Rank.SIX.index:]
-    '''The short-deck ranks (from six to ace).'''
-    ACE_LOW_RANKS = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
-    '''The ace-low ranks (from ace to king).'''
-
-
-@unique
 class Suit(Enum):
     """Suit is the enum class for suits."""
     CLUB = 'c'
@@ -57,6 +46,17 @@ class Suit(Enum):
     '''The suit of hearts.'''
     SPADE = 's'
     '''The suit of spades.'''
+
+
+@unique
+class Ranks(Enum):
+    """Ranks is the enum class for tuples of ranks."""
+    STANDARD = tuple(Rank)
+    '''The standard ranks (from deuce to ace).'''
+    SHORT_DECK = tuple(Rank)[Rank.SIX.index:]
+    '''The short-deck ranks (from six to ace).'''
+    ACE_LOW = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
+    '''The ace-low ranks (from ace to king).'''
 
 
 class Card:
