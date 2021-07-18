@@ -83,8 +83,9 @@ Contributing
 ------------
 
 Current focuses of development are the following:
+
    - improve existing tools' speed
-   - implement more types of games
+   - implement more types of poker variants
    - improve documentations
 
 You can contribute on `Github <https://github.com/AussieSeaweed/pokertools>`_.

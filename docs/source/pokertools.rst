@@ -4,8 +4,8 @@ PokerTools API
 Classes, functions, and variables in PokerTools are documented below. All of these can be imported from the top-level
 PokerTools module.
 
-PokerTools GameFrame
---------------------
+pokertools.gameframe module
+---------------------------
 
 These classes contains core logic of poker games. They are highly customizable, allowing you to combine various utility
 classes such as decks, stages, evaluators, et cetera to define and create custom poker games.
@@ -15,51 +15,75 @@ classes such as decks, stages, evaluators, et cetera to define and create custom
    :undoc-members:
    :show-inheritance:
 
-PokerTools Utilities
---------------------
-
 All poker utilities in PokerTools are shown below. These include various data types for cards, decks, et cetera. These
 can be supplied as the parameters of poker games to define and create poker games.
+
+pokertools.cards module
+-----------------------
 
 .. automodule:: pokertools.cards
    :members:
    :undoc-members:
    :show-inheritance:
 
+pokertools.decks module
+-----------------------
+
 .. automodule:: pokertools.decks
    :members:
    :undoc-members:
    :show-inheritance:
+
+pokertools.hands module
+-----------------------
 
 .. automodule:: pokertools.hands
    :members:
    :undoc-members:
    :show-inheritance:
 
+pokertools.evaluators module
+----------------------------
+
 .. automodule:: pokertools.evaluators
    :members:
    :undoc-members:
    :show-inheritance:
+
+pokertools.limits module
+------------------------
 
 .. automodule:: pokertools.limits
    :members:
    :undoc-members:
    :show-inheritance:
 
+pokertools.stages module
+------------------------
+
 .. automodule:: pokertools.stages
    :members:
    :undoc-members:
    :show-inheritance:
+
+pokertools.definitions module
+-----------------------------
 
 .. automodule:: pokertools.definitions
    :members:
    :undoc-members:
    :show-inheritance:
 
+pokertools.stakes module
+------------------------
+
 .. automodule:: pokertools.stakes
    :members:
    :undoc-members:
    :show-inheritance:
+
+pokertools.games module
+-----------------------
 
 .. automodule:: pokertools.games
    :members:
