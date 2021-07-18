@@ -50,7 +50,7 @@ class PotLimit(Limit):
     @property
     def _max_amount(self):
         bets = tuple(map(PokerPlayer.bet.fget, self.game.players))
-        amount = max(bets) + self.game.pot + sum(bets) + max(bets) - self.game.actor.bet
+        amount = 2 * max(bets) + sum(bets) - self.game.actor.bet + self.game.pot
 
         return bind(amount, self._min_amount, self.game.actor.total)
 

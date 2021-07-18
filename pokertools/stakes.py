@@ -1,6 +1,6 @@
 from collections.abc import Mapping
 from functools import partial
-from operator import gt
+from operator import gt, truth
 
 
 class Stakes:
@@ -65,7 +65,7 @@ class Stakes:
         return self.__big_bet
 
     def _verify(self, max_value):
-        filtered_bets = list(filter(bool, self.blinds))
+        filtered_bets = list(filter(truth, self.blinds))
 
         if filtered_bets != sorted(filtered_bets):
             raise ValueError('Forced bets must be sorted (except zero values)')

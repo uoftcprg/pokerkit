@@ -9,29 +9,29 @@ from pokertools.cards import Card, Rank, Ranks, suited
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
-def mask_of(ranks):
+def mask(ranks):
     return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))
 
 
-def straights_of(ranks, count):
-    keys = [PRIMES[ranks[-1].index] * mask_of(ranks[:count - 1])]
+def straights(ranks, count):
+    keys = [PRIMES[ranks[-1].index] * mask(ranks[:count - 1])]
 
     for straight in window(ranks, count):
-        keys.append(mask_of(straight))
+        keys.append(mask(straight))
 
     return reversed(keys)
 
 
-def multiples_of(ranks, frequencies):
+def multiples(ranks, frequencies):
     if frequencies:
         keys = []
         count = max(frequencies)
         freq = frequencies.pop(count)
 
         for samples in combinations(reversed(ranks), freq):
-            key = mask_of(samples) ** count
+            key = mask(samples) ** count
 
-            for sub_key in multiples_of(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
+            for sub_key in multiples(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
                 keys.append(key * sub_key)
 
         frequencies[count] = freq
@@ -70,7 +70,7 @@ class UnsuitedLookup(Lookup, ABC):
             cards = tuple(cards)
 
         try:
-            return self.unsuited[mask_of(map(Card.rank.fget, cards))]
+            return self.unsuited[mask(map(Card.rank.fget, cards))]
         except KeyError:
             raise ValueError('Invalid card combination')
 
@@ -90,7 +90,7 @@ class SuitedLookup(UnsuitedLookup, ABC):
             cards = tuple(cards)
 
         try:
-            key = mask_of(map(Card.rank.fget, cards))
+            key = mask(map(Card.rank.fget, cards))
 
             return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
         except KeyError:
@@ -99,27 +99,27 @@ class SuitedLookup(UnsuitedLookup, ABC):
 
 class StandardLookup(SuitedLookup):
     def populate(self):
-        for key in straights_of(Ranks.STANDARD_RANKS.value, 5):
+        for key in straights(Ranks.STANDARD_RANKS.value, 5):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
         for key in chain(
-                multiples_of(Ranks.STANDARD_RANKS.value, {4: 1, 1: 1}),
-                multiples_of(Ranks.STANDARD_RANKS.value, {3: 1, 2: 1}),
+                multiples(Ranks.STANDARD_RANKS.value, {4: 1, 1: 1}),
+                multiples(Ranks.STANDARD_RANKS.value, {3: 1, 2: 1}),
         ):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
-        for key in multiples_of(Ranks.STANDARD_RANKS.value, {1: 5}):
+        for key in multiples(Ranks.STANDARD_RANKS.value, {1: 5}):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
         for key in chain(
-                straights_of(Ranks.STANDARD_RANKS.value, 5),
-                multiples_of(Ranks.STANDARD_RANKS.value, {3: 1, 1: 2}),
-                multiples_of(Ranks.STANDARD_RANKS.value, {2: 2, 1: 1}),
-                multiples_of(Ranks.STANDARD_RANKS.value, {2: 1, 1: 3}),
-                multiples_of(Ranks.STANDARD_RANKS.value, {1: 5}),
+                straights(Ranks.STANDARD_RANKS.value, 5),
+                multiples(Ranks.STANDARD_RANKS.value, {3: 1, 1: 2}),
+                multiples(Ranks.STANDARD_RANKS.value, {2: 2, 1: 1}),
+                multiples(Ranks.STANDARD_RANKS.value, {2: 1, 1: 3}),
+                multiples(Ranks.STANDARD_RANKS.value, {1: 5}),
         ):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
@@ -127,25 +127,25 @@ class StandardLookup(SuitedLookup):
 
 class ShortDeckLookup(SuitedLookup):
     def populate(self):
-        for key in straights_of(Ranks.SHORT_DECK_RANKS.value, 5):
+        for key in straights(Ranks.SHORT_DECK_RANKS.value, 5):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
-        for key in multiples_of(Ranks.SHORT_DECK_RANKS.value, {4: 1, 1: 1}):
+        for key in multiples(Ranks.SHORT_DECK_RANKS.value, {4: 1, 1: 1}):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
 
-        for key in multiples_of(Ranks.SHORT_DECK_RANKS.value, {1: 5}):
+        for key in multiples(Ranks.SHORT_DECK_RANKS.value, {1: 5}):
             if key not in self.suited:
                 self.suited[key] = self.index_count
 
         for key in chain(
-                multiples_of(Ranks.SHORT_DECK_RANKS.value, {3: 1, 2: 1}),
-                straights_of(Ranks.SHORT_DECK_RANKS.value, 5),
-                multiples_of(Ranks.SHORT_DECK_RANKS.value, {3: 1, 1: 2}),
-                multiples_of(Ranks.SHORT_DECK_RANKS.value, {2: 2, 1: 1}),
-                multiples_of(Ranks.SHORT_DECK_RANKS.value, {2: 1, 1: 3}),
-                multiples_of(Ranks.SHORT_DECK_RANKS.value, {1: 5}),
+                multiples(Ranks.SHORT_DECK_RANKS.value, {3: 1, 2: 1}),
+                straights(Ranks.SHORT_DECK_RANKS.value, 5),
+                multiples(Ranks.SHORT_DECK_RANKS.value, {3: 1, 1: 2}),
+                multiples(Ranks.SHORT_DECK_RANKS.value, {2: 2, 1: 1}),
+                multiples(Ranks.SHORT_DECK_RANKS.value, {2: 1, 1: 3}),
+                multiples(Ranks.SHORT_DECK_RANKS.value, {1: 5}),
         ):
             if key not in self.unsuited:
                 self.unsuited[key] = self.index_count
@@ -154,12 +154,12 @@ class ShortDeckLookup(SuitedLookup):
 class LowballA5Lookup(UnsuitedLookup):
     def populate(self):
         for key in chain(
-                multiples_of(Ranks.ACE_LOW_RANKS.value, {4: 1, 1: 1}),
-                multiples_of(Ranks.ACE_LOW_RANKS.value, {3: 1, 2: 1}),
-                multiples_of(Ranks.ACE_LOW_RANKS.value, {3: 1, 1: 2}),
-                multiples_of(Ranks.ACE_LOW_RANKS.value, {2: 2, 1: 1}),
-                multiples_of(Ranks.ACE_LOW_RANKS.value, {2: 1, 1: 3}),
-                multiples_of(Ranks.ACE_LOW_RANKS.value, {1: 5}),
+                multiples(Ranks.ACE_LOW_RANKS.value, {4: 1, 1: 1}),
+                multiples(Ranks.ACE_LOW_RANKS.value, {3: 1, 2: 1}),
+                multiples(Ranks.ACE_LOW_RANKS.value, {3: 1, 1: 2}),
+                multiples(Ranks.ACE_LOW_RANKS.value, {2: 2, 1: 1}),
+                multiples(Ranks.ACE_LOW_RANKS.value, {2: 1, 1: 3}),
+                multiples(Ranks.ACE_LOW_RANKS.value, {1: 5}),
         ):
             self.unsuited[key] = self.index_count
 
@@ -167,5 +167,5 @@ class LowballA5Lookup(UnsuitedLookup):
 class BadugiLookup(UnsuitedLookup):
     def populate(self):
         for n in range(1, 5):
-            for key in multiples_of(Ranks.ACE_LOW_RANKS.value, {1: n}):
+            for key in multiples(Ranks.ACE_LOW_RANKS.value, {1: n}):
                 self.unsuited[key] = self.index_count

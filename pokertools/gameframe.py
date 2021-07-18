@@ -3,6 +3,7 @@ from itertools import starmap
 from numbers import Integral
 from operator import gt
 
+from auxiliary import maxima, reverse_args
 from gameframe.sequential import SequentialActor, SequentialGame
 
 from pokertools.cards import HoleCard, parse_cards
@@ -207,19 +208,19 @@ class PokerGame(SequentialGame):
 
     @property
     def _side_pots(self):
-        players = sorted(self.players, key=PokerPlayer._put.fget)
+        players = sorted(self.players, key=PokerPlayer._put.fget, reverse=True)
         side_pots = []
         pot = 0
         prev = 0
 
         while pot < self.pot:
-            cur = players[0]._put
+            cur = players[-1]._put
             amount = len(players) * (cur - prev)
 
             side_pots.append(self._SidePot(filter(PokerPlayer.is_active, players), amount))
 
             pot += amount
-            prev = players.pop(0)._put
+            prev = players.pop()._put
 
         return side_pots
 
@@ -343,8 +344,9 @@ class PokerGame(SequentialGame):
                 if len(side_pot.players) == 1:
                     players = side_pot.players
                 else:
-                    hand = max(player._get_hand(evaluator) for player in side_pot.players)
-                    players = tuple(player for player in side_pot.players if player._get_hand(evaluator) == hand)
+                    players = tuple(
+                        maxima(side_pot.players, key=partial(reverse_args(PokerPlayer._get_hand), evaluator))
+                    )
 
                 for player, share in zip(players, self._allocate(amount, len(players))):
                     player._stack += share
