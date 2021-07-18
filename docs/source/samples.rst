@@ -1,10 +1,11 @@
 Sample Hands with PokerTools
 ============================
 
-Sample hands played on PokerTools will be displayed below.
+Using the attributes, properties, and methods shown in the previous section, you have all the knowledge you need to
+play games on PokerTools.
 
-Boring Hand
------------
+Example Hand with Showdown
+--------------------------
 
 This is a sample hand that serves as a good introduction to the PokerTools package.
 
@@ -53,14 +54,19 @@ This is a sample hand that serves as a good introduction to the PokerTools packa
    bb.showdown()
    sb.showdown()
 
-Note that the showdown is started by the aggressor. You must not forget to do showdown after all other stages of the
-game is finished. Only after the showdown can the pot be distributed to the winners. All-in pots are exceptions,
-however. As per the WSOP rule, all players involved in an all-in pot is forced to show no matter what. The idea is
-to prevent collusion and chip dumping. As a result, in all-in pots, showdowns are unnecessary, as cards are exposed
-by default.
+All non-all-in pots that reach the end of the game **must** showdown. Only after the showdown can the pot be distributed
+to the winners.
 
-All hands shown below involve all-in pots. Note that just because they do not showdown, you should not forget to
-showdown on non-all-in pots!
+Typically, showdowns are started by the aggressor. If you are not sure who is in turn to showdown, you can access the
+:attr:`pokertools.gameframe.PokerGame.actor` attribute.
+
+An exception to the showdowns are all-in pots. Indeed, as per the WSOP rule, all players involved in an all-in pot are
+forced to show their hands no matter what. The idea is to prevent collusion and chip dumping. As a result, in all-in
+pots, showdowns are unnecessary, as cards are exposed by default without any action taken by the players.
+
+Again, to summarize, you **absolutely must not** forget to showdown in non-all-in pots that reach the end of the game.
+Otherwise, the pot will not be distributed to the rightful owners. This allow people to muck or show on purpose, which
+allow people to surrender their pots even if they win.
 
 Dwan vs Ivey
 ------------
@@ -113,9 +119,11 @@ The result of this poker game is as follows:
 
    Pot: 1109500  (1000 was probably collected as rake in the actual game)
    Players:
-   Ivey: PokerPlayer(0, 572100, Ac2d)
-   Antonius: PokerPlayer(0, 1997500)
-   Dwan: PokerPlayer(0, 1109500, 7h6h)
+
+   - Ivey: PokerPlayer(0, 572100, Ac2d)
+   - Antonius: PokerPlayer(0, 1997500)
+   - Dwan: PokerPlayer(0, 1109500, 7h6h)
+
    Board: Jc3d5c4hJh
 
 Antonius vs Isildur
@@ -165,68 +173,20 @@ The result of this poker game is as follows:
 
    Pot: 135694700 (50 was probably collected as rake in the actual game)
    Players:
-   Antonius: PokerPlayer(0, 193792375, Ah3sKsKh)
-   Isildur: PokerPlayer(0, 0)
+
+   - Antonius: PokerPlayer(0, 193792375, Ah3sKsKh)
+   - Isildur: PokerPlayer(0, 0)
+
    Board: 4s5c2h5h9c
 
 Xuan vs Phua
 ------------
 
-This shows the 800K dollar No-Limit Short-Deck Hold'em pot played between Xuan and Phua.
+This shows the 800K dollar No-Limit Short-Deck Hold'em pot played between Xuan and Phua. This time, the
+:meth:`pokertools.gameframe.PokerGame.parse` method will be used to replace function calls with commands parses for
+applying actions.
 
 Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
-
-.. code-block:: python
-
-   from pokertools import *
-
-   game = NoLimitShortDeckHoldEm(Stakes(3000, {5: 3000}), (495000, 232000, 362000, 403000, 301000, 204000))
-   badziakouski, zhong, xuan, jun, phua, koon = game.players
-
-   # Pre-flop
-
-   game.nature.deal_hole(parse_cards('Th8h'))
-   game.nature.deal_hole(parse_cards('QsJd'))
-   game.nature.deal_hole(parse_cards('QhQd'))
-   game.nature.deal_hole(parse_cards('8d7c'))
-   game.nature.deal_hole(parse_cards('KhKs'))
-   game.nature.deal_hole(parse_cards('8c7h'))
-
-   badziakouski.check_call()
-   zhong.check_call()
-   xuan.bet_raise(35000)
-   jun.fold()
-   phua.bet_raise(298000)
-   koon.fold()
-   badziakouski.fold()
-   zhong.fold()
-   xuan.check_call()
-
-   # Flop
-
-   game.nature.deal_board(parse_cards('9h6cKc'))
-
-   # Turn and River
-
-   game.nature.deal_board(parse_cards('Jh'))
-   game.nature.deal_board(parse_cards('Ts'))
-
-The result of this poker game is as follows:
-
-.. code-block:: console
-
-   Pot: 623000
-   Players:
-   Badziakouski: PokerPlayer(0, 489000)
-   Zhong: PokerPlayer(0, 226000)
-   Xuan: PokerPlayer(0, 684000, QhQd)
-   Jun: PokerPlayer(0, 400000)
-   Phua: PokerPlayer(0, 0, KhKs)
-   Koon: PokerPlayer(0, 198000)
-   Board: 9h6cKcJhTs
-
-All poker games can be interacted in an alternative way, using parsers. The following game is equivalent to the game
-between Xuan and Phua shown just above.
 
 .. code-block:: python
 
@@ -246,62 +206,31 @@ between Xuan and Phua shown just above.
        'db Ts',
    )
 
-Yockey vs Arieh
----------------
-
-This shows the Triple Draw 2-to-7 Lowball pot between Yockey and Arieh during which an insanely bad beat occurred.
-
-Video: `<https://www.youtube.com/watch?v=pChCqb2FNxY>`_
-
-.. code-block:: python
-
-   from pokertools import *
-
-   game = FixedLimitTripleDrawLowball27(Stakes(0, (75000, 150000)), (1180000, 4340000, 5910000, 10765000))
-   yockey, hui, esposito, arieh = game.players
-
-   game.nature.deal_hole(parse_cards('7h6c4c3d2c'))
-   game.nature.deal_hole(parse_cards('JsJcJdJhTs'))  # Cards unknown
-   game.nature.deal_hole(parse_cards('KsKcKdKhTh'))  # Cards unknown
-   game.nature.deal_hole(parse_cards('AsQs6s5c3c'))
-
-   esposito.fold()
-   arieh.bet_raise(300000)
-   yockey.bet_raise(450000)
-   hui.fold()
-   arieh.check_call()
-
-   yockey.discard_draw()
-   arieh.discard_draw(parse_cards('AsQs'), parse_cards('2hQh'))
-
-   yockey.bet_raise(150000)
-   arieh.check_call()
-
-   yockey.discard_draw()
-   arieh.discard_draw((parse_card('Qh'),), (parse_card('4d'),))
-
-   yockey.bet_raise(300000)
-   arieh.check_call()
-
-   yockey.discard_draw()
-   arieh.discard_draw((parse_card('6s'),), (parse_card('7c'),))
-
-   yockey.bet_raise(280000)
-   arieh.check_call()
+Although not shown, a command for showdown is `'s'`, `'s 0'`, `'s 1'`, for automatic showdowns, forced mucks, and forced
+shows, respectively.
 
 The result of this poker game is as follows:
 
 .. code-block:: console
 
-   Pot: 2510000
+   Pot: 623000
    Players:
-   Yockey: PokerPlayer(0, 0, 7h6c4c3d2c)
-   Hui: PokerPlayer(0, 4190000)
-   Esposito: PokerPlayer(0, 5910000)
-   Arieh: PokerPlayer(0, 12095000, 2h4d7c5c3c)
-   Board:
 
-The following game is equivalent to the game between Yockey and Arieh shown just above.
+   - Badziakouski: PokerPlayer(0, 489000)
+   - Zhong: PokerPlayer(0, 226000)
+   - Xuan: PokerPlayer(0, 684000, QhQd)
+   - Jun: PokerPlayer(0, 400000)
+   - Phua: PokerPlayer(0, 0, KhKs)
+   - Koon: PokerPlayer(0, 198000)
+
+   Board: 9h6cKcJhTs
+
+Yockey vs Arieh
+---------------
+
+This shows the Triple Draw 2-to-7 Lowball pot between Yockey and Arieh during which an insane bad beat occurred.
+
+Video: `<https://www.youtube.com/watch?v=pChCqb2FNxY>`_
 
 .. code-block:: python
 
@@ -323,4 +252,16 @@ The following game is equivalent to the game between Yockey and Arieh shown just
        'br 280000', 'cc',
    )
 
-For more information, you can look at the gameframe API documentations.
+The result of this poker game is as follows:
+
+.. code-block:: console
+
+   Pot: 2510000
+   Players:
+
+   - Yockey: PokerPlayer(0, 0, 7h6c4c3d2c)
+   - Hui: PokerPlayer(0, 4190000)
+   - Esposito: PokerPlayer(0, 5910000)
+   - Arieh: PokerPlayer(0, 12095000, 2h4d7c5c3c)
+
+   Board:

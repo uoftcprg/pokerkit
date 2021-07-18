@@ -10,49 +10,53 @@ PokerTools is a Python package for various poker tools.
 
 The following features are present in PokerTools...
 
-- Basic rank, suit, card, and hole card data types
-- Various types of poker decks
-   - Standard
-   - Short-Deck
-- Various types of poker evaluators
-   - Standard
-   - Greek
-   - Omaha
-   - Short-Deck
-   - Badugi
-   - Ace-to-Five Lowball
-   - Deuce-to-Seven Lowball
-- Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
-- Various poker game variants
-   - Texas Hold'em
-      - Fixed-Limit Texas Hold'em
-      - No-Limit Texas Hold'em
-   - Omaha Hold'em
-      - Pot-Limit Omaha Hold'em
-   - 5-Card Omaha Hold'em
-      - Fixed-Limit 5-Card Omaha Hold'em
-      - Pot-Limit 5-Card Omaha Hold'em
-   - 6-Card Omaha Hold'em
-      - Pot-Limit 6-Card Omaha Hold'em
-   - Greek Hold'em
-      - Fixed-Limit Greek Hold'em
-      - Pot-Limit Greek Hold'em
-      - No-Limit Greek Hold'em
-   - Short-Deck Hold'em
-      - No-Limit Short-Deck Hold'em
-   - 5-Card Draw
-      - Fixed-Limit 5-Card Draw
-      - Pot-Limit 5-Card Draw
-      - No-Limit 5-Card Draw
-   - Badugi
-      - Fixed-Limit Badugi
-   - 2-to-7 Single Draw Lowball
-      - No-Limit 2-to-7 Single Draw Lowball
-   - 2-to-7 Triple Draw Lowball
-      - Fixed-Limit 2-to-7 Triple Draw Lowball
-      - Pot-Limit 2-to-7 Triple Draw Lowball
-   - Kuhn Poker
-      - Fixed-Limit Kuhn Poker
+- Types for cards and their components and related helper functions: :mod:`pokertools.cards`
+   - Rank: :class:`pokertools.cards.Rank`
+   - Suit: :class:`pokertools.cards.Suit`
+   - Ranks: :class:`pokertools.cards.Ranks`
+   - Card: :class:`pokertools.cards.Card`
+   - Hole Card: :class:`pokertools.cards.HoleCard`
+- Various types of poker decks: :mod:`pokertools.decks`
+   - Standard Deck: :class:`pokertools.decks.StandardDeck`
+   - Short Deck: :class:`pokertools.decks.ShortDeck`
+- Poker hand evaluations: :mod:`pokertools.hands` and :mod:`pokertools.evaluators`
+   - Standard Evaluator: :class:`pokertools.hands.StandardHand` and :class:`pokertools.evaluators.StandardEvaluator`
+   - Greek Evaluator: :class:`pokertools.hands.StandardHand` and :class:`pokertools.evaluators.GreekEvaluator`
+   - Omaha Evaluator: :class:`pokertools.hands.StandardHand` and :class:`pokertools.evaluators.OmahaEvaluator`
+   - Short-Deck Evaluator: :class:`pokertools.hands.ShortDeckHand` and :class:`pokertools.evaluators.ShortDeckEvaluator`
+   - Deuce-to-Seven Lowball Evaluator: :class:`pokertools.hands.Lowball27Hand` and :class:`pokertools.evaluators.Lowball27Evaluator`
+   - Ace-to-Five Lowball Evaluator: :class:`pokertools.hands.LowballA5Hand` and :class:`pokertools.evaluators.LowballA5Evaluator`
+   - Badugi Evaluator: :class:`pokertools.hands.BadugiHand` and :class:`pokertools.evaluators.BadugiEvaluator`
+- Poker game variants: :mod:`pokertools.games`
+   - Texas Hold'em: :class:`pokertools.definitions.TexasHoldEmDefinition`
+      - Fixed-Limit Texas Hold'em: :const:`pokertools.games.FixedLimitTexasHoldEm`
+      - No-Limit Texas Hold'em: :const:`pokertools.games.NoLimitTexasHoldEm`
+   - Omaha Hold'em: :class:`pokertools.definitions.OmahaHoldEmDefinition`
+      - Pot-Limit Omaha Hold'em: :const:`pokertools.games.PotLimitOmahaHoldEm`
+   - 5-Card Omaha Hold'em: :class:`pokertools.definitions.FiveCardOmahaHoldEmDefinition`
+      - Fixed-Limit 5-Card Omaha Hold'em: :const:`pokertools.games.FixedLimitFiveCardOmahaHoldEm`
+      - Pot-Limit 5-Card Omaha Hold'em: :const:`pokertools.games.PotLimitFiveCardOmahaHoldEm`
+   - 6-Card Omaha Hold'em: :class:`pokertools.definitions.SixCardOmahaHoldEmDefinition`
+      - Pot-Limit 6-Card Omaha Hold'em: :const:`pokertools.games.PotLimitSixCardOmahaHoldEm`
+   - Greek Hold'em: :class:`pokertools.definitions.GreekHoldEmDefinition`
+      - Fixed-Limit Greek Hold'em: :const:`pokertools.games.FixedLimitGreekHoldEm`
+      - Pot-Limit Greek Hold'em: :const:`pokertools.games.PotLimitGreekHoldEm`
+      - No-Limit Greek Hold'em: :const:`pokertools.games.NoLimitGreekHoldEm`
+   - Short-Deck Hold'em: :class:`pokertools.definitions.ShortDeckHoldEmDefinition`
+      - No-Limit Short-Deck Hold'em: :const:`pokertools.games.NoLimitShortDeckHoldEm`
+   - 5-Card Draw: :class:`pokertools.definitions.FiveCardDrawDefinition`
+      - Fixed-Limit 5-Card Draw: :const:`pokertools.games.FixedLimitFiveCardDraw`
+      - Pot-Limit 5-Card Draw: :const:`pokertools.games.PotLimitFiveCardDraw`
+      - No-Limit 5-Card Draw: :const:`pokertools.games.NoLimitFiveCardDraw`
+   - Badugi: :class:`pokertools.definitions.BadugiDefinition`
+      - Fixed-Limit Badugi: :const:`pokertools.games.FixedLimitBadugi`
+   - 2-to-7 Single Draw Lowball: :class:`pokertools.definitions.SingleDrawLowball27Definition`
+      - No-Limit 2-to-7 Single Draw Lowball: :const:`pokertools.games.NoLimitSingleDrawLowball27`
+   - 2-to-7 Triple Draw Lowball: :class:`pokertools.definitions.TripleDrawLowball27Definition`
+      - Fixed-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.FixedLimitTripleDrawLowball27`
+      - Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.PotLimitTripleDrawLowball27`
+   - Kuhn Poker: :class:`pokertools.definitions.KuhnPokerDefinition`
+      - Fixed-Limit Kuhn Poker: :const:`pokertools.games.KuhnPoker`
 
 Speed
 -----
@@ -89,9 +93,13 @@ You can contribute on `Github <https://github.com/AussieSeaweed/pokertools>`_.
    :maxdepth: 1
    :caption: Contents:
 
-   install
-   interact
-   hands
+   setup
+   cards
+   decks
+   evaluations
+   games
+   samples
+   customizations
    pokertools
 
 License

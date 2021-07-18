@@ -5,20 +5,24 @@ PokerTools is a Python package for various poker tools.
 
 The following features are present in PokerTools...
 
-- Basic rank, suit, card, and hole card data types
+- Types for cards and their components and related helper functions
+   - Rank
+   - Suit
+   - Ranks
+   - Card
+   - Hole Card
 - Various types of poker decks
-   - Standard
-   - Short-Deck
-- Various types of poker evaluators
-   - Standard
-   - Greek
-   - Omaha
-   - Short-Deck
-   - Badugi
-   - Ace-to-Five Lowball
-   - Deuce-to-Seven Lowball
-- Range parsing (AKo, T6s, 66, KQ, AsKc, ...)
-- Various poker game variants
+   - Standard Deck
+   - Short Deck
+- Poker hand evaluations
+   - Standard Evaluator
+   - Greek Evaluator
+   - Omaha Evaluator
+   - Short-Deck Evaluator
+   - Deuce-to-Seven Lowball Evaluator
+   - Ace-to-Five Lowball Evaluator
+   - Badugi Evaluator
+- Poker game variants
    - Texas Hold'em
       - Fixed-Limit Texas Hold'em
       - No-Limit Texas Hold'em
