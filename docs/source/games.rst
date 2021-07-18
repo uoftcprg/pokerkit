@@ -22,13 +22,10 @@ PokerTools offer a wide selection of pre-configured poker game variants. The lis
 - Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.PotLimitTripleDrawLowball27`
 - Fixed-Limit Kuhn Poker: :const:`pokertools.games.KuhnPoker`
 
-Poker game definitions are crucial in defining the rules of the game, but for this section, they are kind of irrelevant.
-They become important when discussing customizations of poker games. For now, focus on the game factories themselves.
-
 Creating Pre-configured Poker Games
 -----------------------------------
 
-Creating poker games are very simple.
+Creating pre-configured poker games are very simple.
 
 .. code-block:: python
 
@@ -299,3 +296,8 @@ Parsing Poker Actions
 Interacting with poker games by calling functions are good enough for most, but can be cumbersome and take many lines.
 There exists :meth:`pokertools.gameframe.PokerGame.parse` which allow you to parse commands and apply them to the game.
 Example usages are shown in the later section.
+
+Custom Games
+------------
+
+Creating and interacting with custom games are explained in the later section.

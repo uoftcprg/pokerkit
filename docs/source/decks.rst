@@ -73,8 +73,7 @@ As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has all the
    deck.append(parse_card('Ks'))
    ...
 
-Custom Deck
------------
+Custom Decks
+------------
 
-If you want to create your own deck, you can just subclass the base :class:`pokertools.decks.Deck` class and pass
-desired cards to ``super().__init__`` constructor.
+Creating and using customized decks are explained in the later section.

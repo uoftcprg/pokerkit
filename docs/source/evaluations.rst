@@ -115,9 +115,4 @@ All evaluator types are listed below:
 Custom Hand Evaluations
 -----------------------
 
-Extending evaluators is easy. You just have to override the :meth:`pokertools.evaluators.Evaluator.evaluate` method. If
-you want to use the existing hand facilities, you may subclass :class:`pokertools.hands.LowIndexedHand` or
-:class:`pokertools.hands.HighIndexedHand`. In those classes, the order is denoted by an
-:attr:`pokertools.hands.IndexedHand.index` which is passed onto their constructor during the initialization.
-
-Refer to the GameFrame API documentation for more information.
+Customized hand evaluations are explained in the later section.

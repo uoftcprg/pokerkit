@@ -1,6 +1,31 @@
 Customizing Poker Games
 =======================
 
+The PokerTools package allow extensive customization in the games. Under the hood, poker games in this package just
+combines multiple components from limits, definitions, decks, evaluators, stages, stakes, and starting stacks to setup
+the rules of poker during the game creation.
+
+Due to the unstandardized nature of poker games. Many variants of poker games exist, and depending on a region the game
+is created in, the minor rules may vary. This section explores how you can extend existing poker games to create your
+own custom games with different or unorthodox rules.
+
+Custom Decks
+------------
+
+If you want to create your own deck, you can just subclass the base :class:`pokertools.decks.Deck` class and pass
+desired cards to ``super().__init__`` constructor.
+
+Custom Hand Evaluations
+-----------------------
+
+Extending evaluators is easy. You just have to override the :meth:`pokertools.evaluators.Evaluator.evaluate` method. If
+you want to use the existing hand facilities, you may subclass :class:`pokertools.hands.LowIndexedHand` or
+:class:`pokertools.hands.HighIndexedHand`. In those classes, the order of hands is denoted by an
+:attr:`pokertools.hands.IndexedHand.index` which is passed onto their constructor during the initialization.
+
+Custom Games
+------------
+
 Two things are crucial when defining a poker game variant. The first is limit, which dictates the betting amounts
 throughout the game. The second is the definition, which contains various rules throughout the game such as street and
 betting structure.
