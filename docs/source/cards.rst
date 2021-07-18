@@ -49,16 +49,18 @@ are very simple, as demonstrated below.
 
    from pokertools import *
 
-   # Create cards
+   # Create cards.
    print(Card(Rank.FOUR, Suit.HEART))  # 4h
    print(Card(Rank('4'), Suit('h')))  # 4h
    print(parse_card('4h'))  # 4h
 
-   # Create hole cards
+   # Create hole cards.
+   print(repr(HoleCard(True, parse_card('As'))))  # As
+   print(str(HoleCard(True, parse_card('As'))))  # As
    print(HoleCard(True, parse_card('As')))  # As
-   print(HoleCard(False, parse_card('As')))  # As
-   print(HoleCard(False, parse_card('As')))  # As
+   print(repr(HoleCard(False, parse_card('As'))))  # As
    print(str(HoleCard(False, parse_card('As'))))  # ??
+   print(HoleCard(False, parse_card('As')))  # ??
 
 Cards accept a rank and a suit during its construction. In order to create hole cards, you must supply the status of the
 card, which denotes whether or not the card is face down or up, and supply the card data by supplying the card from
@@ -70,17 +72,17 @@ The card data can be accessed as below.
 
    from pokertools import *
 
-   # Create a card
+   # Create a card.
    card = parse_card('4h')
 
-   print(card.rank)  # Four
-   print(card.suit)  # Heart
+   print(card.rank)  # Rank.FOUR
+   print(card.suit)  # Suit.HEART
 
-   # Create a hole card
+   # Create a hole card.
    hole_card = HoleCard(False, parse_card('As'))
 
-   print(hole_card.rank)  # Ace
-   print(hole_card.suit)  # Spades
+   print(hole_card.rank)  # Rank.ACE
+   print(hole_card.suit)  # Suit.SPADE
    print(hole_card.status)  # False
 
 Note that hole cards instances are also card instances. So, they can access rank and suit attributes just like cards do.
@@ -94,12 +96,12 @@ Creating cards one by one can make code become very long. There are functions th
 
    from pokertools import *
 
-   # Create an iterable of cards
-   print(list(parse_cards('4h4s4cAs')))  # An iterator (unintelligible)
+   # Create an iterable of cards.
+   print(parse_cards('4h4s4cAs'))  # <map object at 0x0123456789ABCDEF>
    print(list(parse_cards('4h4s4cAs')))  # [4h, 4s, 4c, As]
    print(tuple(parse_cards('4h4s4cAs')))  # (4h, 4s, 4c, As)
 
-   # Parse a range
+   # Parse a range.
    print(parse_range('AKo'))  # {frozenset({Kc, Ah}), frozenset({Kc, As}), frozenset({Kh, Ac}), frozenset({Ks, Ac}), ...}
    print(parse_range('AKs'))  # {frozenset({Ks, As}), frozenset({Kc, Ac}), frozenset({Ad, Kd}), frozenset({Kh, Ah})}
    print(parse_range('AK'))  # {frozenset({Ad, Kd}), frozenset({Kh, Ah}), frozenset({Kc, Ad}), frozenset({Kh, Ac}), ...}
@@ -122,7 +124,7 @@ implemented for you. See below for demonstrations on how to use them.
 
    from pokertools import *
 
-   # Query cards
+   # Query cards.
    print(suited(parse_cards('4h4s4cAs')))  # False
    print(suited(parse_cards('3s4sAs')))  # True
    print(rainbow(parse_cards('4h4s4cAs')))  # False

@@ -25,7 +25,7 @@ Hands receive information about cards inside the hand during its construction. T
 
    from pokertools import *
 
-   # Create some hands
+   # Create some hands.
    x = StandardHand(parse_cards('AcAdAhAsKc'))
    y = StandardHand(parse_cards('QsJsTs9s8s'))
 
@@ -71,16 +71,16 @@ arguments to be passed--the hole cards of the player and the board cards of the 
 
    from pokertools import *
 
-   # Create a standard evaluator which is used for games such as Texas Hold'em, et cetera
+   # Create a standard evaluator which is used for games such as Texas Hold'em, et cetera.
    evaluator = StandardEvaluator()
 
-   # Evaluate hands
+   # Evaluate hands.
    x = evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKdKh'))
    y = evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs'))
 
    print(x < y)  # True
 
-   # Evaluate hands
+   # Evaluate hands.
    x = evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKd'))
    y = evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJs'))
 

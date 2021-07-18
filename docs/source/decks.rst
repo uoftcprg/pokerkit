@@ -42,23 +42,23 @@ The method :meth:`pokertools.decks.Deck.draw` allow you to draw cards from decks
 
    from pokertools import *
 
-   # Create a shuffled standard deck (52 cards)
+   # Create a shuffled standard deck (52 cards).
    deck = StandardDeck()
 
    print(len(deck))  # 52
    print(parse_card('4h') in deck)  # True
 
-   # Draw the following cards from the deck
-   deck.draw(parse_cards('4h4s4cAs'))
+   # Draw the following cards from the deck.
+   print(deck.draw(parse_cards('4h4s4cAs')))  # [4h, 4s, 4c, As]
 
    print(len(deck))  # 48
    print(parse_card('4h') in deck)  # False
 
-   # Draw 5 cards from the deck (from the beginning of the deck)
-   deck.draw(5)
+   # Draw 5 cards from the deck (from the beginning of the deck).
+   print(deck.draw(5))  # [5h, Jh, 7h, 2s, Tc]
 
    print(len(deck))  # 43
-   print(deck)  # [Kd, 3c, Js, 2s, ...]
+   print(deck)  # [7d, 3s, Ac, Qh, ..., 7c, Td]
 
 As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has all the methods defined in lists.
 

@@ -13,7 +13,7 @@ Custom Decks
 ------------
 
 If you want to create your own deck, you can just subclass the base :class:`pokertools.decks.Deck` class and pass
-desired cards to ``super().__init__`` constructor.
+desired cards to ``super().__init__(cards)`` constructor.
 
 Custom Hand Evaluations
 -----------------------
@@ -37,9 +37,9 @@ Limits dictate the betting amounts in the game (min-bets, max-bets, and maximum 
 
 Three limits are pre-configured in PokerTools. These are:
 
-- Fixed-Limit
-- Pot-Limit
-- No-Limit
+- Fixed-Limit: :class:`pokertools.limits.FixedLimit`
+- Pot-Limit: :class:`pokertools.limits.PotLimit`
+- No-Limit: :class:`pokertools.limits.NoLimit`
 
 These can be imported as below.
 
@@ -61,7 +61,8 @@ subclass the fixed limit class and override corresponding methods, as shown.
    class CustomFixedLimit(FixedLimit):
        @property
        def _max_count(self):
-           return None  # Unlimited if None, otherwise the integral value
+           """Unlimited if None, otherwise the integral value."""
+           return None
 
 If you want to adjust min or max amounts of limit, you can just subclass the abstract base class for all limits.
 
@@ -90,11 +91,11 @@ Stages are the most important parameters for poker games in PokerTools. It defin
 
 There are different types of stages in PokerTools.
 
-- Hole-card dealing stage
-- Board-card dealing stage
-- Betting stage
-- Discard-Draw stage
-- Showdown stage
+- Hole-card dealing stage: :class:`pokertools.stages.HoleCardDealingStage`
+- Board-card dealing stage: :class:`pokertools.stages.BoardCardDealingStage`
+- Betting stage: :class:`pokertools.stages.BettingStage`
+- Discard-Draw stage: :class:`pokertools.stages.DiscardDrawStage`
+- Showdown stage: :class:`pokertools.stages.ShowdownStage`
 
 By creating stages in good order, you can define pretty much any game in Poker. Below are some examples of stages.
 
@@ -103,7 +104,8 @@ By creating stages in good order, you can define pretty much any game in Poker. 
    from pokertools import *
 
 
-   def create_texas_hold_em_stages(game):  # Create Texas hold'em stages
+   def create_texas_hold_em_stages(game):
+       """Creates Texas hold'em stages."""
        return (
            HoleDealingStage(False, 2, game), BettingStage(False, game),
            BoardDealingStage(3, game), BettingStage(False, game),
@@ -113,7 +115,8 @@ By creating stages in good order, you can define pretty much any game in Poker. 
        )
 
 
-   def create_triple_draw_stages(game):  # Create triple-draw stages
+   def create_triple_draw_stages(game):
+       """Creates triple-draw stages."""
        return (
            HoleDealingStage(False, 5, game), BettingStage(False, game),
            DiscardDrawStage(game), BettingStage(False, game),
@@ -164,7 +167,8 @@ Stakes contain information about antes, blinds, small bets, and big bets. It is 
 
    from pokertools import *
 
-   stakes = (  # Examples of stakes
+   # Create examples of stakes.
+   stakes = (
        Stakes(0, (1, 2)),  # Ante: 0, Small blind: 1, Big Blind: 2
        Stakes(0, (1, 2, 4)),  # Same as above with straddle of 4
        Stakes(0, {5: 2}),  # Button blind of 2 in a 6-Max game
@@ -187,10 +191,10 @@ definition, stakes, and starting stacks of the players.
 
    from pokertools import *
 
-   # 6-Max No-Limit Texas Hold'em
+   # Create a 6-Max No-Limit Texas Hold'em game.
    nlt = PokerGame(NoLimit, TexasHoldEmDefinition, Stakes(1, (1, 2)), (200,) * 6)
 
-   # Heads-Up Pot-Limit Omaha Hold'em
+   # Create a Heads-Up Pot-Limit Omaha Hold'em game.
    plo = PokerGame(PotLimit, OmahaHoldEmDefinition, Stakes(0, (10, 20)), (2000, 3000))
 
 Of course, PokerTools provide pre-configured poker games that allow simpler approach than the ones taken in the above
