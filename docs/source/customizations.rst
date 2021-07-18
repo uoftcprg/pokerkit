@@ -91,8 +91,8 @@ Stages are the most important parameters for poker games in PokerTools. It defin
 
 There are different types of stages in PokerTools.
 
-- Hole-card dealing stage: :class:`pokertools.stages.HoleCardDealingStage`
-- Board-card dealing stage: :class:`pokertools.stages.BoardCardDealingStage`
+- Hole-card dealing stage: :class:`pokertools.stages.HoleDealingStage`
+- Board-card dealing stage: :class:`pokertools.stages.BoardDealingStage`
 - Betting stage: :class:`pokertools.stages.BettingStage`
 - Discard-Draw stage: :class:`pokertools.stages.DiscardDrawStage`
 - Showdown stage: :class:`pokertools.stages.ShowdownStage`
