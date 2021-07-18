@@ -27,7 +27,7 @@ The following features are present in PokerTools...
    - Deuce-to-Seven Lowball Evaluator: :class:`pokertools.hands.Lowball27Hand` and :class:`pokertools.evaluators.Lowball27Evaluator`
    - Ace-to-Five Lowball Evaluator: :class:`pokertools.hands.LowballA5Hand` and :class:`pokertools.evaluators.LowballA5Evaluator`
    - Badugi Evaluator: :class:`pokertools.hands.BadugiHand` and :class:`pokertools.evaluators.BadugiEvaluator`
-- Poker game variants: :mod:`pokertools.games`
+- Poker game variants: :mod:`pokertools.definitions` and :mod:`pokertools.games`
    - Texas Hold'em: :class:`pokertools.definitions.TexasHoldEmDefinition`
       - Fixed-Limit Texas Hold'em: :const:`pokertools.games.FixedLimitTexasHoldEm`
       - No-Limit Texas Hold'em: :const:`pokertools.games.NoLimitTexasHoldEm`

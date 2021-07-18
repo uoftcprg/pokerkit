@@ -131,10 +131,19 @@ Note that accessing or calling the below attributes or methods will not change t
 
    from pokertools import *
 
+   # Create a no-limit Texas hold'em game
    game = NoLimitTexasHoldEm(Stakes(0, (1, 2)), (200, 200, 200))
 
+   # Get the nature
    nature = game.nature
+   # Get the players
+   game.players
+   # Get the first player
    player = game.players[0]
+   # True if the game is terminal, else False
+   game.is_terminal()
+   # Get the current actor (either None, the nature or one of the players)
+   game.actor
 
    # The limit of the game
    game.limit
@@ -169,6 +178,17 @@ Note that accessing or calling the below attributes or methods will not change t
    # The side pots of the game
    game.side_pots
 
+   # The game of this actor
+   nature.game
+   # None if this actor is the nature, else the index of this player
+   nature.index
+   # True if the actor is the nature, else False
+   nature.is_nature()
+   # True if the actor is one of the players, else False
+   nature.is_player()
+   # True if this actor is in turn to act, else False
+   nature.is_actor()
+
    # The player to be dealt hole cards
    nature.deal_hole_player
    # The number of hole cards to be dealt to each player
@@ -184,6 +204,17 @@ Note that accessing or calling the below attributes or methods will not change t
    nature.can_deal_board()
    # True if the nature can deal the specified cards to the board, else False
    nature.can_deal_board(parse_cards('KsKcKh'))
+
+   # The game of this actor
+   player.game
+   # None if this actor is the nature, else the index of this player
+   player.index
+   # True if the actor is the nature, else False
+   player.is_nature()
+   # True if the actor is one of the players, else False
+   player.is_player()
+   # True if this actor is in turn to act, else False
+   player.is_actor()
 
    # The bet of the player
    player.bet

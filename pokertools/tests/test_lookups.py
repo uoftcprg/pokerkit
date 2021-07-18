@@ -7,7 +7,7 @@ from pokertools import BadugiHand, LowballA5Hand, ShortDeckHand, StandardHand, p
 class LookupTestCase(TestCase):
     @skipUnless(exists('lookups/standard-lookup.txt'), 'The standard hand file does not exist')
     def test_standard_lookup(self):
-        # Generated with Python treys package: https://pypi.org/project/treys/
+        # Generated with Python treys package: https://pypi.org/project/treys/.
         with open('lookups/standard-lookup.txt') as file:
             lines = map(str.strip, file.readlines())
 
@@ -22,7 +22,7 @@ class LookupTestCase(TestCase):
 
     @skipUnless(exists('lookups/short-hand-lookup.txt'), 'The short hand file does not exist')
     def test_short_deck_lookup(self):
-        # Generated with short-deck package: https://github.com/amason13/shortdeck
+        # Generated with short-deck package: https://github.com/amason13/shortdeck.
         with open('lookups/short-hand-lookup.txt') as file:
             lines = map(str.strip, file.readlines())
 
@@ -37,7 +37,7 @@ class LookupTestCase(TestCase):
 
     @skipUnless(exists('lookups/lowballA5-lookup.txt'), 'The lowballA5 hand file does not exist')
     def test_lowballA5_lookup(self):
-        # Generated with custom Python code
+        # Generated with custom Python code.
         with open('lookups/lowballA5-lookup.txt') as file:
             lines = map(str.strip, file.readlines())
 
@@ -52,7 +52,7 @@ class LookupTestCase(TestCase):
 
     @skipUnless(exists('lookups/badugi-lookup.txt'), 'The badugi hand file does not exist')
     def test_badugi_lookup(self):
-        # Generated with custom Python code
+        # Generated with custom Python code.
         with open('lookups/badugi-lookup.txt') as file:
             lines = map(str.strip, file.readlines())
 

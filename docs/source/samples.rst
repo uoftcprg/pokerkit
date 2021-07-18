@@ -58,7 +58,7 @@ All non-all-in pots that reach the end of the game **must** showdown. Only after
 to the winners.
 
 Typically, showdowns are started by the aggressor. If you are not sure who is in turn to showdown, you can access the
-:attr:`pokertools.gameframe.PokerGame.actor` attribute.
+``actor`` attribute.
 
 An exception to the showdowns are all-in pots. Indeed, as per the WSOP rule, all players involved in an all-in pot are
 forced to show their hands no matter what. The idea is to prevent collusion and chip dumping. As a result, in all-in
