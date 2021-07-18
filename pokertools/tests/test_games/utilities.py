@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import partial
 from itertools import zip_longest
 from random import choice, randint, sample
 
@@ -32,23 +33,27 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
 
         if isinstance(game.actor, PokerNature):
             if game.actor.can_deal_hole():
-                actions.append('dh')
+                actions.append(game.actor.deal_hole)
             if game.actor.can_deal_board():
-                actions.append('db')
+                actions.append(game.actor.deal_board)
         elif isinstance(game.actor, PokerPlayer):
             if game.actor.can_fold():
-                actions.append('f')
+                actions.append(game.actor.fold)
             if game.actor.can_check_call():
-                actions.append('cc')
+                actions.append(game.actor.check_call)
             if game.actor.can_bet_raise():
-                actions.extend((f'br {game.actor.bet_raise_min_amount}', f'br {game.actor.bet_raise_max_amount}'))
+                actions.extend((
+                    partial(game.actor.bet_raise, game.actor.bet_raise_min_amount),
+                    partial(game.actor.bet_raise, game.actor.bet_raise_max_amount),
+                ))
             if game.actor.can_discard_draw():
-                cards = ''.join(map(repr, sample(game.actor.hole, randint(0, len(game.actor.hole)))))
-                actions.append(f'dd {cards}' if cards else 'dd')
+                actions.append(
+                    partial(game.actor.discard_draw, sample(game.actor.hole, randint(0, len(game.actor.hole))))
+                )
             if game.actor.can_showdown():
-                actions.append('s')
+                actions.append(game.actor.showdown)
 
-        game.parse(choice(actions))
+        choice(actions)()
 
     def verify(self, game):
         if game.nature.can_deal_hole():
