@@ -1,5 +1,5 @@
-PokerTools API
-==============
+PokerTools Package
+==================
 
 Classes, functions, and variables in PokerTools are documented below. All of these can be imported from the top-level
 PokerTools module.
