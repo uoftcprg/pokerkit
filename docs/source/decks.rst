@@ -73,6 +73,23 @@ As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has all the
    deck.append(parse_card('Ks'))
    ...
 
+For example, if you want to order the cards in the deck nicely, you can do what's done below:
+
+.. code-block:: python
+
+   from pokertools import *
+
+   deck = StandardDeck()
+
+   # Print a shuffled deck.
+   print(deck)  # [Ad, 7s, 7d, 3c, ..., Ac, Qh]
+
+   # Sort the deck in place.
+   deck.sort()
+
+   # Print an ordered deck.
+   print(deck)  # [2c, 3c, 4c, 5c, ..., Ks, As]
+
 Custom Decks
 ------------
 
