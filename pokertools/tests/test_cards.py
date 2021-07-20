@@ -27,6 +27,13 @@ class CardTestCase(TestCase):
         self.assertEqual(repr(Card(Rank.ACE, Suit.SPADE)), 'As')
         self.assertEqual(str(Card(Rank.ACE, Suit.SPADE)), 'As')
 
+        self.assertEqual(repr(Card(Rank.ACE, None)), 'A?')
+        self.assertEqual(str(Card(Rank.ACE, None)), 'A?')
+        self.assertEqual(repr(Card(None, Suit.SPADE)), '?s')
+        self.assertEqual(str(Card(None, Suit.SPADE)), '?s')
+        self.assertEqual(repr(Card(None, None)), '??')
+        self.assertEqual(str(Card(None, None)), '??')
+
     def test_hole_card(self):
         self.assertEqual(repr(HoleCard(True, Card(Rank.TWO, Suit.CLUB))), '2c')
         self.assertEqual(str(HoleCard(True, Card(Rank.TWO, Suit.CLUB))), '2c')
@@ -37,6 +44,19 @@ class CardTestCase(TestCase):
         self.assertEqual(str(HoleCard(True, Card(Rank.ACE, Suit.SPADE))), 'As')
         self.assertEqual(repr(HoleCard(False, Card(Rank.ACE, Suit.SPADE))), 'As')
         self.assertEqual(str(HoleCard(False, Card(Rank.ACE, Suit.SPADE))), '??')
+
+        self.assertEqual(repr(HoleCard(True, Card(None, Suit.SPADE))), '?s')
+        self.assertEqual(repr(HoleCard(True, Card(Rank.ACE, None))), 'A?')
+        self.assertEqual(repr(HoleCard(True, Card(None, None))), '??')
+        self.assertEqual(repr(HoleCard(False, Card(None, Suit.SPADE))), '?s')
+        self.assertEqual(repr(HoleCard(False, Card(Rank.ACE, None))), 'A?')
+        self.assertEqual(repr(HoleCard(False, Card(None, None))), '??')
+        self.assertEqual(str(HoleCard(True, Card(None, Suit.SPADE))), '?s')
+        self.assertEqual(str(HoleCard(True, Card(Rank.ACE, None))), 'A?')
+        self.assertEqual(str(HoleCard(True, Card(None, None))), '??')
+        self.assertEqual(str(HoleCard(False, Card(None, Suit.SPADE))), '??')
+        self.assertEqual(str(HoleCard(False, Card(Rank.ACE, None))), '??')
+        self.assertEqual(str(HoleCard(False, Card(None, None))), '??')
 
     def test_rainbow(self):
         self.assertTrue(rainbow(()))
