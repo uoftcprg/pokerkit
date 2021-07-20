@@ -58,6 +58,12 @@ class CardTestCase(TestCase):
         self.assertEqual(str(HoleCard(False, Card(Rank.ACE, None))), '??')
         self.assertEqual(str(HoleCard(False, Card(None, None))), '??')
 
+    def test_show(self):
+        hole_card = HoleCard(False, parse_card('2c'))
+
+        self.assertEqual(hole_card, hole_card.show())
+        self.assertNotEqual(hole_card.status, hole_card.show().status)
+
     def test_rainbow(self):
         self.assertTrue(rainbow(()))
         self.assertTrue(rainbow(parse_cards('Ac')))

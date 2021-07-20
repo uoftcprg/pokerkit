@@ -490,7 +490,7 @@ class PokerPlayer(SequentialActor):
         if self.is_mucked():
             return ()
         elif self.is_shown():
-            return tuple(map(partial(HoleCard, True), self._hole))
+            return tuple(map(HoleCard.show, self._hole))
         else:
             return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
 

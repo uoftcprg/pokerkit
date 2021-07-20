@@ -133,6 +133,15 @@ class HoleCard(Card):
         """
         return self.__status
 
+    def show(self):
+        """Returns the shown version of this hole card.
+
+        The operation is not done in-place.
+
+        :return: The shown version of this hole card.
+        """
+        return HoleCard(True, self)
+
 
 def rainbow(cards):
     """Checks if all cards have a rainbow texture.
