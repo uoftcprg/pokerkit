@@ -230,6 +230,8 @@ Note that accessing or calling the below attributes or methods will not change t
    player.total
    # The effective stack of the player.
    player.effective_stack
+   # The payoff of the player.
+   player.payoff
    # An iterator of the hands of the player.
    player.hands
    # Most poker games only have one evaluator. Get the first hand.

@@ -544,6 +544,17 @@ class PokerPlayer(SequentialActor):
             return min(self.starting_stack, sorted(map(PokerPlayer.starting_stack.fget, active_players))[-2])
 
     @property
+    def payoff(self):
+        """Returns the payoff of this poker player.
+
+        Payoff is the amount this poker player has made/lost. If this poker player made money, this quantity is
+        positive, and vice versa.
+
+        :return: The payoff of this poker player.
+        """
+        return self.stack - self.starting_stack
+
+    @property
     def hands(self):
         """Returns the hands of this poker player.
 
