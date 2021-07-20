@@ -1,7 +1,8 @@
 from enum import Enum, unique
+from functools import total_ordering
 from itertools import islice
 
-from auxiliary import IndexedEnum, chunk, const, distinct
+from auxiliary import IndexedEnum, SupportsLessThan, chunk, const, distinct
 
 
 @unique
@@ -36,7 +37,7 @@ class Rank(IndexedEnum):
 
 
 @unique
-class Suit(Enum):
+class Suit(IndexedEnum):
     """Suit is the enum class for suits."""
     CLUB = 'c'
     """The suit of clubs."""
@@ -59,7 +60,8 @@ class Ranks(Enum):
     """The ace-low ranks (from ace to king)."""
 
 
-class Card:
+@total_ordering
+class Card(SupportsLessThan):
     """Card is the class for cards.
 
     :param rank: The optional rank of this card.
@@ -69,6 +71,12 @@ class Card:
     def __init__(self, rank, suit):
         self.__rank = rank
         self.__suit = suit
+
+    def __lt__(self, other):
+        if isinstance(other, Card):
+            return self.rank < other.rank if self.suit == other.suit else self.suit < other.suit
+        else:
+            return NotImplemented
 
     def __eq__(self, other):
         if isinstance(other, Card):

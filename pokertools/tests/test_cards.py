@@ -1,10 +1,25 @@
 from functools import partial
+from itertools import product, starmap
 from unittest import TestCase, main
 
-from pokertools import Card, HoleCard, Rank, Suit, parse_card, parse_cards, parse_range, rainbow, suited
+from auxiliary import reverse_args
+
+from pokertools import (
+    Card, HoleCard, Rank, Ranks, ShortDeck, StandardDeck, Suit, parse_card, parse_cards, parse_range, rainbow, suited,
+)
 
 
 class CardTestCase(TestCase):
+    def test_lt(self):
+        self.assertSequenceEqual(
+            tuple(map(str, sorted(StandardDeck()))),
+            tuple(map(str, starmap(reverse_args(Card), product(Suit, Ranks.STANDARD.value)))),
+        )
+        self.assertSequenceEqual(
+            tuple(map(str, sorted(ShortDeck()))),
+            tuple(map(str, starmap(reverse_args(Card), product(Suit, Ranks.SHORT_DECK.value)))),
+        )
+
     def test_card(self):
         self.assertEqual(repr(Card(Rank.TWO, Suit.CLUB)), '2c')
         self.assertEqual(str(Card(Rank.TWO, Suit.CLUB)), '2c')
