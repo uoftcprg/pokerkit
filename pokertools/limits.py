@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from auxiliary import bind
+from auxiliary import clip
 
 from pokertools.gameframe import PokerPlayer
 
@@ -52,7 +52,7 @@ class PotLimit(Limit):
         bets = tuple(map(PokerPlayer.bet.fget, self.game.players))
         amount = 2 * max(bets) + sum(bets) - self.game.actor.bet + self.game.pot
 
-        return bind(amount, self._min_amount, self.game.actor.total)
+        return clip(amount, self._min_amount, self.game.actor.total)
 
     @property
     def _max_count(self):
