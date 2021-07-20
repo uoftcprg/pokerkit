@@ -274,7 +274,7 @@ class PokerGame(SequentialGame):
             elif token == 's 1':
                 self.actor.showdown(True)
             else:
-                raise ValueError(f'Invalid command "{token}"')
+                raise ValueError(f'Invalid command \'{token}\'')
 
         return self
 

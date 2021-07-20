@@ -8,55 +8,55 @@ from auxiliary import IndexedEnum, chunk, const, distinct
 class Rank(IndexedEnum):
     """Rank is the enum class for ranks."""
     TWO = '2'
-    '''The rank of 2.'''
+    """The rank of 2."""
     THREE = '3'
-    '''The rank of 3.'''
+    """The rank of 3."""
     FOUR = '4'
-    '''The rank of 4.'''
+    """The rank of 4."""
     FIVE = '5'
-    '''The rank of 5.'''
+    """The rank of 5."""
     SIX = '6'
-    '''The rank of 6.'''
+    """The rank of 6."""
     SEVEN = '7'
-    '''The rank of 7.'''
+    """The rank of 7."""
     EIGHT = '8'
-    '''The rank of 8.'''
+    """The rank of 8."""
     NINE = '9'
-    '''The rank of 9.'''
+    """The rank of 9."""
     TEN = 'T'
-    '''The rank of 10.'''
+    """The rank of 10."""
     JACK = 'J'
-    '''The rank of Jacks.'''
+    """The rank of Jacks."""
     QUEEN = 'Q'
-    '''The rank of Queens.'''
+    """The rank of Queens."""
     KING = 'K'
-    '''The rank of Kings.'''
+    """The rank of Kings."""
     ACE = 'A'
-    '''The rank of Aces.'''
+    """The rank of Aces."""
 
 
 @unique
 class Suit(Enum):
     """Suit is the enum class for suits."""
     CLUB = 'c'
-    '''The suit of clubs.'''
+    """The suit of clubs."""
     DIAMOND = 'd'
-    '''The suit of diamonds.'''
+    """The suit of diamonds."""
     HEART = 'h'
-    '''The suit of hearts.'''
+    """The suit of hearts."""
     SPADE = 's'
-    '''The suit of spades.'''
+    """The suit of spades."""
 
 
 @unique
 class Ranks(Enum):
     """Ranks is the enum class for tuples of ranks."""
     STANDARD = tuple(Rank)
-    '''The standard ranks (from deuce to ace).'''
+    """The standard ranks (from deuce to ace)."""
     SHORT_DECK = tuple(Rank)[Rank.SIX.index:]
-    '''The short-deck ranks (from six to ace).'''
+    """The short-deck ranks (from six to ace)."""
     ACE_LOW = (Rank.ACE,) + tuple(Rank)[:Rank.ACE.index]
-    '''The ace-low ranks (from ace to king).'''
+    """The ace-low ranks (from ace to king)."""
 
 
 class Card:
