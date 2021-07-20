@@ -240,6 +240,8 @@ Note that accessing or calling the below attributes or methods will not change t
    player.bet_raise_min_amount
    # The maximum bet/raise amount.
    player.bet_raise_max_amount
+   # The pot bet/raise amount.
+   player.bet_raise_pot_amount
 
    # True if the player has mucked, else False.
    player.is_mucked()
