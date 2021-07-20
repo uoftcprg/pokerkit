@@ -595,6 +595,22 @@ class PokerPlayer(SequentialActor):
             raise ValueError('The player cannot bet/raise')
 
     @property
+    def bet_raise_pot_amount(self):
+        """Returns the pot bet/raise amount.
+
+        The pot bet/raise amount is calculated using the outstanding bets and the pot amount. It can be obtained with
+        the following equation: 3 * (last wager) + (trail) + (starting pot) + (maximum bet)
+
+        Source: https://en.wikipedia.org/wiki/Betting_in_poker#Pot_limit
+
+        :return: The pot bet/raise amount.
+        """
+        if self.can_bet_raise():
+            return self._get_bet_raise_action().pot_amount
+        else:
+            raise ValueError('The player cannot bet/raise')
+
+    @property
     def _put(self):
         return self.starting_stack - self.total
 

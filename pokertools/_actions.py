@@ -149,6 +149,10 @@ class BetRaiseAction(BettingAction):
     def max_amount(self):
         return self.actor.game.limit._max_amount
 
+    @property
+    def pot_amount(self):
+        return self.actor.game.limit._pot_amount
+
     def verify(self):
         super().verify()
 
