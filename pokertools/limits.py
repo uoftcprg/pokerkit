@@ -25,10 +25,13 @@ class Limit(ABC):
 
     @property
     def _pot_amount(self):
-        bets = tuple(map(PokerPlayer.bet.fget, self.game.players))
-        amount = 2 * max(bets) + sum(bets) - self.game.actor.bet + self.game.pot
+        return clip(self._pot_amount_raw, self._min_amount, self._max_amount)
 
-        return clip(amount, self._min_amount, self.game.actor.total)
+    @property
+    def _pot_amount_raw(self):
+        bets = tuple(map(PokerPlayer.bet.fget, self.game.players))
+
+        return 2 * max(bets) + sum(bets) - self.game.actor.bet + self.game.pot
 
     @property
     @abstractmethod
@@ -56,7 +59,7 @@ class PotLimit(Limit):
 
     @property
     def _max_amount(self):
-        return self._pot_amount
+        return clip(self._pot_amount_raw, self._min_amount, self.game.actor.total)
 
     @property
     def _max_count(self):
