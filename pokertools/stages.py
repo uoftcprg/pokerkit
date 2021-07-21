@@ -5,7 +5,6 @@ from operator import eq
 from auxiliary import rotate
 
 from pokertools.gameframe import PokerPlayer
-from pokertools.limits import FixedLimit
 
 
 class Stage(ABC):
@@ -24,6 +23,55 @@ class Stage(ABC):
         :return: The game of this stage.
         """
         return self.__game
+
+    def is_dealing_stage(self):
+        """Returns whether or not this stage is a dealing stage.
+
+        :return: True if this stage is a dealing stage, else False.
+        """
+        return isinstance(self, DealingStage)
+
+    def is_hole_dealing_stage(self):
+        """Returns whether or not this stage is a hole dealing stage.
+
+        :return: True if this stage is a hole dealing stage, else False.
+        """
+        return isinstance(self, HoleDealingStage)
+
+    def is_board_dealing_stage(self):
+        """Returns whether or not this stage is a board dealing stage.
+
+        :return: True if this stage is a board dealing stage, else False.
+        """
+        return isinstance(self, BoardDealingStage)
+
+    def is_queued_stage(self):
+        """Returns whether or not this stage is a queued stage.
+
+        :return: True if this stage is a queued stage, else False.
+        """
+        return isinstance(self, QueuedStage)
+
+    def is_betting_stage(self):
+        """Returns whether or not this stage is a betting stage.
+
+        :return: True if this stage is a betting stage, else False.
+        """
+        return isinstance(self, BettingStage)
+
+    def is_discard_draw_stage(self):
+        """Returns whether or not this stage is a discard and draw stage.
+
+        :return: True if this stage is a discard and draw stage, else False.
+        """
+        return isinstance(self, DiscardDrawStage)
+
+    def is_showdown_stage(self):
+        """Returns whether or not this stage is a showdown stage.
+
+        :return: True if this stage is a showdown stage, else False.
+        """
+        return isinstance(self, ShowdownStage)
 
     def _is_done(self):
         return self.game._is_folded()
@@ -142,7 +190,7 @@ class BettingStage(QueuedStage):
 
         :return: The initial bet amount of this betting stage.
         """
-        if self.is_big() and isinstance(self.game.limit, FixedLimit):
+        if self.is_big() and self.game.limit.is_fixed_limit():
             return self.game.big_bet
         else:
             return self.game.small_bet

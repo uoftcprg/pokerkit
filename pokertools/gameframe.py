@@ -226,12 +226,11 @@ class PokerGame(SequentialGame):
 
     @property
     def _hole_card_statuses(self):
-        from pokertools.stages import HoleDealingStage
 
         statuses = []
 
         for stage in self.stages:
-            if isinstance(stage, HoleDealingStage):
+            if stage.is_hole_dealing_stage():
                 statuses.extend((stage.status,) * stage.deal_count)
 
         return statuses

@@ -41,6 +41,27 @@ class Limit(ABC):
     @abstractmethod
     def _max_count(self): ...
 
+    def is_fixed_limit(self):
+        """Returns whether or not this limit is a fixed limit.
+
+        :return: True if this limit is a fixed limit, else False.
+        """
+        return isinstance(self, FixedLimit)
+
+    def is_pot_limit(self):
+        """Returns whether or not this limit is a pot limit.
+
+        :return: True if this limit is a pot limit, else False.
+        """
+        return isinstance(self, PotLimit)
+
+    def is_no_limit(self):
+        """Returns whether or not this limit is a no limit.
+
+        :return: True if this limit is a no limit, else False.
+        """
+        return isinstance(self, NoLimit)
+
 
 class FixedLimit(Limit):
     """FixedLimit is the class for fixed-limits."""

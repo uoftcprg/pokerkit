@@ -8,9 +8,6 @@ from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
 from pokertools.gameframe import PokerPlayer
-from pokertools.stages import (
-    BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage,
-)
 
 
 class PokerAction(_SequentialAction, ABC):
@@ -33,7 +30,7 @@ class DealingAction(PokerAction, ABC):
     def verify(self):
         super().verify()
 
-        if not isinstance(self.actor.game.stage, DealingStage):
+        if not self.actor.game.stage.is_dealing_stage():
             raise GameFrameError('Dealing is only allowed in dealing stages')
 
         if self.cards is not None:
@@ -80,7 +77,7 @@ class HoleDealingAction(DealingAction):
     def verify(self):
         super().verify()
 
-        if not isinstance(self.actor.game.stage, HoleDealingStage):
+        if not self.actor.game.stage.is_hole_dealing_stage():
             raise GameFrameError('Hole card dealing is not allowed')
 
         self.verify_player(self.deal_player)
@@ -95,7 +92,7 @@ class BoardDealingAction(DealingAction):
     def verify(self):
         super().verify()
 
-        if not isinstance(self.actor.game.stage, BoardDealingStage):
+        if not self.actor.game.stage.is_board_dealing_stage():
             raise GameFrameError('Board card dealing is not allowed')
         elif len(self.actor.game.board) >= self.actor.game.stage.deal_target:
             raise GameFrameError('The board must not have been dealt already')
@@ -108,7 +105,7 @@ class BettingAction(PokerAction, ABC):
     def verify(self):
         super().verify()
 
-        if not isinstance(self.actor.game.stage, BettingStage):
+        if not self.actor.game.stage.is_betting_stage():
             raise GameFrameError('Not a betting round')
 
 
@@ -206,7 +203,7 @@ class DiscardDrawAction(PokerAction):
     def verify(self):
         super().verify()
 
-        if not isinstance(self.actor.game.stage, DiscardDrawStage):
+        if not self.actor.game.stage.is_discard_draw_stage():
             raise GameFrameError('Not a draw round')
         elif not all(map(self.actor.hole.__contains__, self.discarded_cards)):
             raise GameFrameError('All hole cards must belong to the actor.')
@@ -257,7 +254,7 @@ class ShowdownAction(PokerAction):
     def verify(self):
         super().verify()
 
-        if not isinstance(self.actor.game.stage, ShowdownStage):
+        if not self.actor.game.stage.is_showdown_stage():
             raise GameFrameError('Game not in showdown')
 
     def apply(self):
