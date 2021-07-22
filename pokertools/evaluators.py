@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from functools import partial
 from itertools import chain, combinations
 
-from auxiliary import flatten, reverse_args
+from auxiliary import reverse_args
 
 from pokertools.cards import Card, Rank
 from pokertools.hands import BadugiHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand
@@ -82,7 +82,7 @@ class BadugiEvaluator(Evaluator):
     def evaluate(cls, hole_cards, board_cards):
         return max(map(BadugiHand, filter(
             BadugiHand._is_valid,
-            flatten(map(partial(combinations, tuple(chain(hole_cards, board_cards))), range(1, 5))),
+            chain.from_iterable(map(partial(combinations, tuple(chain(hole_cards, board_cards))), range(1, 5))),
         )))
 
 
