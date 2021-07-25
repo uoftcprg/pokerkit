@@ -515,8 +515,18 @@ class PokerPlayer(SequentialActor):
         :return: The blind of this poker player.
         """
         index = not self.index if len(self.game.players) == 2 else self.index
+        values = []
 
-        return self.game.blinds[index] if index < len(self.game.blinds) else 0
+        for key, value in self.game.blinds.items():
+            if key % len(self.game.players) == index:
+                values.append(value)
+
+        if not values:
+            return 0
+        elif len(values) == 1:
+            return values[0]
+        else:
+            raise ValueError('Multiple possible blind values exist')
 
     @property
     def total(self):

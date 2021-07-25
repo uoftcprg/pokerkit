@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from functools import partial
 from operator import gt, truth
 
-from auxiliary import reverse_args
+from auxiliary import FrozenDict
 
 
 class Stakes:
@@ -19,13 +19,9 @@ class Stakes:
 
     def __init__(self, ante, blinds, small_bet=None, big_bet=None):
         self.__ante = ante
+        self.__blinds = FrozenDict(blinds if isinstance(blinds, Mapping) else enumerate(blinds))
 
-        if isinstance(blinds, Mapping):
-            blinds = map(partial(reverse_args(blinds.get), 0), range(max(blinds) + 1))
-
-        self.__blinds = tuple(blinds)
-
-        max_value = max(self.ante, max(self.blinds, default=0))
+        max_value = max(self.ante, max(self.blinds.values(), default=0))
 
         self.__small_bet = max_value if small_bet is None else small_bet
         self.__big_bet = 2 * self.small_bet if big_bet is None else big_bet
