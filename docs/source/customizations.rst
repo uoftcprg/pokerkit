@@ -2,8 +2,8 @@ Customizing Poker Games
 =======================
 
 The PokerTools package allow extensive customization in the games. Under the hood, poker games in this package just
-combines multiple components from limits, variants, decks, evaluators, stages, stakes, and starting stacks to setup
-the rules of poker during the game creation.
+combines multiple components from limits, variants, decks, evaluators, stages, stakes, and starting stacks to setup the
+rules of poker during the game creation.
 
 Due to the unstandardized nature of poker games. Many variants of poker games exist, and depending on a region the game
 is created in, the minor rules may vary. This section explores how you can extend existing poker games to create your
@@ -27,8 +27,8 @@ Custom Games
 ------------
 
 Two things are crucial when defining a poker game variant. The first is limit, which dictates the betting amounts
-throughout the game. The second is the variant, which contains various rules throughout the game such as street and
-betting structure.
+throughout the game. The second is the variant, which contains various rules throughout the game such as the streets and
+the betting structure.
 
 Poker Limits
 ------------
@@ -129,11 +129,11 @@ You might see a catch-22 here. Note that constructing stages require games. But,
 The solution to this problem brings poker variant classes into the picture.
 
 Poker Variants
------------------
+--------------
 
-You can think of variants as the class that contains everything about poker rules. You supply an instance of this to
-the constructor of the poker game. The game then will call variant's methods to create decks, evaluators, and, of
-course, stages.
+You can think of variants as the class that contains everything about poker rules. You supply an instance of this to the
+constructor of the poker game. The game then will call variant's methods to create decks, evaluators, and, of course,
+stages.
 
 .. code-block:: python
 
