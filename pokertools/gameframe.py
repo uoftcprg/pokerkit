@@ -20,7 +20,7 @@ class PokerGame(SequentialGame):
     The number of players, denoted by the length of the starting_stacks property, must be greater than or equal to 2.
 
     :param limit_type: The limit type of this poker game.
-    :param definition_type: The definition type this poker game.
+    :param variant_type: The variant type of this poker game.
     :param stakes: The stakes of this poker game.
     :param starting_stacks: The starting stacks of this poker game.
     """
@@ -49,17 +49,17 @@ class PokerGame(SequentialGame):
         def amount(self):
             return self.__amount
 
-    def __init__(self, limit_type, definition_type, stakes, starting_stacks):
+    def __init__(self, limit_type, variant_type, stakes, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
 
         self.__limit = limit_type(self)
-        self.__definition = definition_type(self)
+        self.__variant = variant_type(self)
         self.__stakes = stakes
         self.__starting_stacks = tuple(starting_stacks)
-        self.__stages = self.definition.create_stages()
-        self.__evaluators = self.definition.create_evaluators()
+        self.__stages = self.variant.create_stages()
+        self.__evaluators = self.variant.create_evaluators()
 
-        self._deck = self.definition.create_deck()
+        self._deck = self.variant.create_deck()
         self._muck = Deck()
         self._pot = 0
         self._board = []
@@ -82,12 +82,12 @@ class PokerGame(SequentialGame):
         return self.__limit
 
     @property
-    def definition(self):
-        """Returns the definition of this poker game.
+    def variant(self):
+        """Returns the variant of this poker game.
 
-        :return: The definition of this poker game.
+        :return: The variant of this poker game.
         """
-        return self.__definition
+        return self.__variant
 
     @property
     def stakes(self):

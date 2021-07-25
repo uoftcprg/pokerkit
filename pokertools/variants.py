@@ -9,10 +9,12 @@ from pokertools.evaluators import (
 from pokertools.stages import BettingStage, BoardDealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage
 
 
-class Definition(ABC):
-    """Definition is the abstract base class for all poker definitions.
+class Variant(ABC):
+    """Variant is the abstract base class for all poker variants.
 
-    :param game: The game of this poker definition.
+    Variants contain defines various information about their types of poker games.
+
+    :param game: The game of this poker variant.
     """
 
     def __init__(self, game):
@@ -20,39 +22,39 @@ class Definition(ABC):
 
     @property
     def game(self):
-        """Returns the game of this definition.
+        """Returns the game of this variant.
 
-        :return: The game of this definition.
+        :return: The game of this variant.
         """
         return self.__game
 
     @abstractmethod
     def create_stages(self):
-        """Returns the stages of the poker game defined by this poker definition.
+        """Returns the stages of the poker game defined by this poker variant.
 
-        :return: The stages of this poker definition.
+        :return: The stages of this poker variant.
         """
         ...
 
     @abstractmethod
     def create_evaluators(self):
-        """Returns the evaluators of the poker game defined by this poker definition.
+        """Returns the evaluators of the poker game defined by this poker variant.
 
-        :return: The evaluators of this poker definition.
+        :return: The evaluators of this poker variant.
         """
         ...
 
     @abstractmethod
     def create_deck(self):
-        """Creates a deck of the poker game defined by this poker definition.
+        """Creates a deck of the poker game defined by this poker variant.
 
-        :return: The created deck of this poker definition.
+        :return: The created deck of this poker variant.
         """
         ...
 
 
-class StaticHoleDefinitionMixin(Definition, ABC):
-    """StaticHoleDefinitionMixin is the mixin for all game definitions with a static number of hole cards."""
+class StaticHoleVariantMixin(Variant, ABC):
+    """StaticHoleVariantMixin is the mixin for all game variants with a static number of hole cards."""
 
     @property
     @abstractmethod
@@ -64,8 +66,8 @@ class StaticHoleDefinitionMixin(Definition, ABC):
         ...
 
 
-class HoldEmDefinition(StaticHoleDefinitionMixin, Definition, ABC):
-    """HoldEmDefinition is the abstract base class for all Hold'em game definitions."""
+class HoldEmVariant(StaticHoleVariantMixin, Variant, ABC):
+    """HoldEmVariant is the abstract base class for all Hold'em game variants."""
 
     def create_stages(self):
         return (
@@ -77,8 +79,8 @@ class HoldEmDefinition(StaticHoleDefinitionMixin, Definition, ABC):
         )
 
 
-class TexasHoldEmDefinition(HoldEmDefinition):
-    """TexasHoldEmDefinition is the class for Texas Hold'em game definitions."""
+class TexasHoldEmVariant(HoldEmVariant):
+    """TexasHoldEmVariant is the class for Texas Hold'em game variants."""
 
     @property
     def hole_card_count(self):
@@ -91,8 +93,8 @@ class TexasHoldEmDefinition(HoldEmDefinition):
         return StandardDeck()
 
 
-class OmahaHoldEmDefinition(HoldEmDefinition):
-    """OmahaHoldEmDefinition is the class for Omaha Hold'em game definitions."""
+class OmahaHoldEmVariant(HoldEmVariant):
+    """OmahaHoldEmVariant is the class for Omaha Hold'em game variants."""
 
     @property
     def hole_card_count(self):
@@ -105,24 +107,24 @@ class OmahaHoldEmDefinition(HoldEmDefinition):
         return StandardDeck()
 
 
-class FiveCardOmahaHoldEmDefinition(OmahaHoldEmDefinition):
-    """FiveCardOmahaHoldEmDefinition is the class for 5-Card Omaha Hold'em game definitions."""
+class FiveCardOmahaHoldEmVariant(OmahaHoldEmVariant):
+    """FiveCardOmahaHoldEmVariant is the class for 5-Card Omaha Hold'em game variants."""
 
     @property
     def hole_card_count(self):
         return 5
 
 
-class SixCardOmahaHoldEmDefinition(OmahaHoldEmDefinition):
-    """SixCardOmahaHoldEmDefinition is the class for 6-Card Omaha Hold'em game definitions."""
+class SixCardOmahaHoldEmVariant(OmahaHoldEmVariant):
+    """SixCardOmahaHoldEmVariant is the class for 6-Card Omaha Hold'em game variants."""
 
     @property
     def hole_card_count(self):
         return 6
 
 
-class GreekHoldEmDefinition(HoldEmDefinition):
-    """GreekHoldEmDefinition is the class for Greek Hold'em game definitions."""
+class GreekHoldEmVariant(HoldEmVariant):
+    """GreekHoldEmVariant is the class for Greek Hold'em game variants."""
 
     @property
     def hole_card_count(self):
@@ -135,8 +137,8 @@ class GreekHoldEmDefinition(HoldEmDefinition):
         return StandardDeck()
 
 
-class ShortDeckHoldEmDefinition(HoldEmDefinition):
-    """ShortDeckHoldEmDefinition is the class for Short-deck Hold'em game definitions."""
+class ShortDeckHoldEmVariant(HoldEmVariant):
+    """ShortDeckHoldEmVariant is the class for Short-deck Hold'em game variants."""
 
     @property
     def hole_card_count(self):
@@ -149,13 +151,13 @@ class ShortDeckHoldEmDefinition(HoldEmDefinition):
         return ShortDeck()
 
 
-class DrawDefinition(StaticHoleDefinitionMixin, Definition, ABC):
-    """DrawDefinition is the abstract base class for all draw game definitions."""
+class DrawVariant(StaticHoleVariantMixin, Variant, ABC):
+    """DrawVariant is the abstract base class for all draw game variants."""
     ...
 
 
-class SingleDrawDefinition(DrawDefinition, ABC):
-    """SingleDrawDefinition is the abstract base class for all single draw game definitions."""
+class SingleDrawVariant(DrawVariant, ABC):
+    """SingleDrawVariant is the abstract base class for all single draw game variants."""
 
     def create_stages(self):
         return (
@@ -165,8 +167,8 @@ class SingleDrawDefinition(DrawDefinition, ABC):
         )
 
 
-class TripleDrawDefinition(DrawDefinition, ABC):
-    """TripleDrawDefinition is the abstract base class for all triple draw game definitions."""
+class TripleDrawVariant(DrawVariant, ABC):
+    """TripleDrawVariant is the abstract base class for all triple draw game variants."""
 
     def create_stages(self):
         return (
@@ -178,8 +180,8 @@ class TripleDrawDefinition(DrawDefinition, ABC):
         )
 
 
-class FiveCardDrawDefinition(SingleDrawDefinition):
-    """FiveCardDrawDefinition is the class for Five-Card Draw game definitions."""
+class FiveCardDrawVariant(SingleDrawVariant):
+    """FiveCardDrawVariant is the class for Five-card Draw game variants."""
 
     @property
     def hole_card_count(self):
@@ -192,8 +194,8 @@ class FiveCardDrawDefinition(SingleDrawDefinition):
         return StandardDeck()
 
 
-class BadugiDefinition(TripleDrawDefinition):
-    """BadugiDefinition is the class for Badugi game definitions."""
+class BadugiVariant(TripleDrawVariant):
+    """BadugiVariant is the class for Badugi game variants."""
 
     @property
     def hole_card_count(self):
@@ -206,8 +208,8 @@ class BadugiDefinition(TripleDrawDefinition):
         return StandardDeck()
 
 
-class SingleDrawLowball27Definition(SingleDrawDefinition):
-    """SingleDrawLowball27Definition is the class for 2-7 Single Draw Lowball game definitions."""
+class SingleDrawLowball27Variant(SingleDrawVariant):
+    """SingleDrawLowball27Variant is the class for 2-7 Single Draw Lowball game variants."""
 
     @property
     def hole_card_count(self):
@@ -220,8 +222,8 @@ class SingleDrawLowball27Definition(SingleDrawDefinition):
         return StandardDeck()
 
 
-class TripleDrawLowball27Definition(TripleDrawDefinition):
-    """TripleDrawLowball27Definition is the class for 2-7 Triple Draw Lowball game definitions."""
+class TripleDrawLowball27Variant(TripleDrawVariant):
+    """TripleDrawLowball27Variant is the class for 2-7 Triple Draw Lowball game variants."""
 
     @property
     def hole_card_count(self):
@@ -234,8 +236,8 @@ class TripleDrawLowball27Definition(TripleDrawDefinition):
         return StandardDeck()
 
 
-class KuhnPokerDefinition(Definition):
-    """KuhnPokerDefinition is the class for Kuhn Poker game definitions."""
+class KuhnPokerVariant(Variant):
+    """KuhnPokerVariant is the class for Kuhn Poker game variants."""
 
     def create_stages(self):
         return HoleDealingStage(False, 1, self.game), BettingStage(1, self.game), ShowdownStage(self.game)
