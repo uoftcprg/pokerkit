@@ -70,10 +70,10 @@ pokertools.stages module
    :undoc-members:
    :show-inheritance:
 
-pokertools.definitions module
+pokertools.variants module
 -----------------------------
 
-.. automodule:: pokertools.definitions
+.. automodule:: pokertools.variants
    :members:
    :undoc-members:
    :show-inheritance:

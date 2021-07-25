@@ -145,8 +145,8 @@ Note that accessing or calling the below attributes or methods will not change t
 
    # The limit of the game.
    game.limit
-   # The definition of the game.
-   game.definition
+   # The variant of the game.
+   game.variant
    # The stakes of the game.
    game.stakes
    # The starting stacks of the game.

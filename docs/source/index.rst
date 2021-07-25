@@ -27,35 +27,35 @@ The following features are present in PokerTools...
    - Deuce-to-Seven Lowball Evaluator: :class:`pokertools.hands.Lowball27Hand` and :class:`pokertools.evaluators.Lowball27Evaluator`
    - Ace-to-Five Lowball Evaluator: :class:`pokertools.hands.LowballA5Hand` and :class:`pokertools.evaluators.LowballA5Evaluator`
    - Badugi Evaluator: :class:`pokertools.hands.BadugiHand` and :class:`pokertools.evaluators.BadugiEvaluator`
-- Poker game variants: :mod:`pokertools.definitions` and :mod:`pokertools.games`
-   - Texas Hold'em: :class:`pokertools.definitions.TexasHoldEmDefinition`
+- Poker game variants: :mod:`pokertools.variants` and :mod:`pokertools.games`
+   - Texas Hold'em: :class:`pokertools.variants.TexasHoldEmVariant`
       - Fixed-Limit Texas Hold'em: :const:`pokertools.games.FixedLimitTexasHoldEm`
       - No-Limit Texas Hold'em: :const:`pokertools.games.NoLimitTexasHoldEm`
-   - Omaha Hold'em: :class:`pokertools.definitions.OmahaHoldEmDefinition`
+   - Omaha Hold'em: :class:`pokertools.variants.OmahaHoldEmVariant`
       - Pot-Limit Omaha Hold'em: :const:`pokertools.games.PotLimitOmahaHoldEm`
-   - 5-Card Omaha Hold'em: :class:`pokertools.definitions.FiveCardOmahaHoldEmDefinition`
+   - 5-Card Omaha Hold'em: :class:`pokertools.variants.FiveCardOmahaHoldEmVariant`
       - Fixed-Limit 5-Card Omaha Hold'em: :const:`pokertools.games.FixedLimitFiveCardOmahaHoldEm`
       - Pot-Limit 5-Card Omaha Hold'em: :const:`pokertools.games.PotLimitFiveCardOmahaHoldEm`
-   - 6-Card Omaha Hold'em: :class:`pokertools.definitions.SixCardOmahaHoldEmDefinition`
+   - 6-Card Omaha Hold'em: :class:`pokertools.variants.SixCardOmahaHoldEmVariant`
       - Pot-Limit 6-Card Omaha Hold'em: :const:`pokertools.games.PotLimitSixCardOmahaHoldEm`
-   - Greek Hold'em: :class:`pokertools.definitions.GreekHoldEmDefinition`
+   - Greek Hold'em: :class:`pokertools.variants.GreekHoldEmVariant`
       - Fixed-Limit Greek Hold'em: :const:`pokertools.games.FixedLimitGreekHoldEm`
       - Pot-Limit Greek Hold'em: :const:`pokertools.games.PotLimitGreekHoldEm`
       - No-Limit Greek Hold'em: :const:`pokertools.games.NoLimitGreekHoldEm`
-   - Short-Deck Hold'em: :class:`pokertools.definitions.ShortDeckHoldEmDefinition`
+   - Short-Deck Hold'em: :class:`pokertools.variants.ShortDeckHoldEmVariant`
       - No-Limit Short-Deck Hold'em: :const:`pokertools.games.NoLimitShortDeckHoldEm`
-   - 5-Card Draw: :class:`pokertools.definitions.FiveCardDrawDefinition`
+   - 5-Card Draw: :class:`pokertools.variants.FiveCardDrawVariant`
       - Fixed-Limit 5-Card Draw: :const:`pokertools.games.FixedLimitFiveCardDraw`
       - Pot-Limit 5-Card Draw: :const:`pokertools.games.PotLimitFiveCardDraw`
       - No-Limit 5-Card Draw: :const:`pokertools.games.NoLimitFiveCardDraw`
-   - Badugi: :class:`pokertools.definitions.BadugiDefinition`
+   - Badugi: :class:`pokertools.variants.BadugiVariant`
       - Fixed-Limit Badugi: :const:`pokertools.games.FixedLimitBadugi`
-   - 2-to-7 Single Draw Lowball: :class:`pokertools.definitions.SingleDrawLowball27Definition`
+   - 2-to-7 Single Draw Lowball: :class:`pokertools.variants.SingleDrawLowball27Variant`
       - No-Limit 2-to-7 Single Draw Lowball: :const:`pokertools.games.NoLimitSingleDrawLowball27`
-   - 2-to-7 Triple Draw Lowball: :class:`pokertools.definitions.TripleDrawLowball27Definition`
+   - 2-to-7 Triple Draw Lowball: :class:`pokertools.variants.TripleDrawLowball27Variant`
       - Fixed-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.FixedLimitTripleDrawLowball27`
       - Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.PotLimitTripleDrawLowball27`
-   - Kuhn Poker: :class:`pokertools.definitions.KuhnPokerDefinition`
+   - Kuhn Poker: :class:`pokertools.variants.KuhnPokerVariant`
       - Fixed-Limit Kuhn Poker: :const:`pokertools.games.KuhnPoker`
 
 Speed
