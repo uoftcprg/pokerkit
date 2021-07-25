@@ -63,13 +63,13 @@ class Stakes:
         return self.__big_bet
 
     def _verify(self, max_value):
-        filtered_bets = list(filter(truth, self.blinds))
+        filtered_bets = list(filter(truth, self.blinds.values()))
 
         if filtered_bets != sorted(filtered_bets):
             raise ValueError('Forced bets must be sorted (except zero values)')
         elif self.ante < 0:
             raise ValueError('The ante must be a positive value')
-        elif any(map(partial(gt, 0), self.blinds)):
+        elif any(map(partial(gt, 0), self.blinds.values())):
             raise ValueError('The blinds must be positive values')
         elif not max_value:
             raise ValueError('At least one positive value must be supplied as the ante or the blinds')
