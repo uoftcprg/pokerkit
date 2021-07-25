@@ -141,7 +141,7 @@ class PokerGame(SequentialGame):
     def blinds(self):
         """Returns the blinds of this poker game.
 
-        This tuple includes straddles and forced bets.
+        This frozen dictionary includes straddles and forced bets.
 
         :return: The blinds of this poker game.
         """
