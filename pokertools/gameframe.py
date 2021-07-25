@@ -25,6 +25,17 @@ class PokerGame(SequentialGame):
     :param starting_stacks: The starting stacks of this poker game.
     """
 
+    @classmethod
+    def _allocate(cls, amount, count):
+        if isinstance(amount, Integral):
+            amounts = [amount // count] * count
+            amounts[0] += amount % count
+        else:
+            amounts = [amount / count] * count
+            amounts[0] += amount - sum(amounts)
+
+        return amounts
+
     class _SidePot:
         def __init__(self, players, amount):
             self.__players = tuple(players)
@@ -37,17 +48,6 @@ class PokerGame(SequentialGame):
         @property
         def amount(self):
             return self.__amount
-
-    @classmethod
-    def _allocate(cls, amount, count):
-        if isinstance(amount, Integral):
-            amounts = [amount // count] * count
-            amounts[0] += amount % count
-        else:
-            amounts = [amount / count] * count
-            amounts[0] += amount - sum(amounts)
-
-        return amounts
 
     def __init__(self, limit_type, definition_type, stakes, starting_stacks):
         super().__init__(None, PokerNature(self), (PokerPlayer(self) for _ in range(len(starting_stacks))))
@@ -226,7 +226,6 @@ class PokerGame(SequentialGame):
 
     @property
     def _hole_card_statuses(self):
-
         statuses = []
 
         for stage in self.stages:

@@ -2,6 +2,8 @@ from collections.abc import Mapping
 from functools import partial
 from operator import gt, truth
 
+from auxiliary import reverse_args
+
 
 class Stakes:
     """Stakes is the class for poker stakes. It contains information about various parameters of poker games, from ante,
@@ -19,9 +21,9 @@ class Stakes:
         self.__ante = ante
 
         if isinstance(blinds, Mapping):
-            self.__blinds = tuple(blinds[i] if i in blinds else 0 for i in range(max(blinds) + 1))
-        else:
-            self.__blinds = tuple(blinds)
+            blinds = map(partial(reverse_args(blinds.get), 0), range(max(blinds) + 1))
+
+        self.__blinds = tuple(blinds)
 
         max_value = max(self.ante, max(self.blinds, default=0))
 
