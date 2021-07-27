@@ -364,10 +364,10 @@ class PokerNature(SequentialActor):
 
         :return: The player that can be dealt hole cards.
         """
-        if self.can_deal_hole():
-            return self._get_hole_deal_action().deal_player
-        else:
+        if not self.can_deal_hole():
             raise ValueError('The nature cannot deal hole cards')
+
+        return self._get_hole_deal_action().deal_player
 
     @property
     def deal_hole_count(self):
