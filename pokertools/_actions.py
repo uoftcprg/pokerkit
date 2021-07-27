@@ -60,12 +60,6 @@ class HoleDealingAction(DealingAction):
     def deal_player(self):
         return next(filter(self.can_deal, self.actor.game.players))
 
-    def verify_player(self, player):
-        if player.is_mucked():
-            raise GameFrameError('Cannot deal to a mucked player')
-        elif len(player.hole) >= self.actor.game.stage.deal_target:
-            raise GameFrameError('The player must not have been dealt already')
-
     def can_deal(self, player):
         try:
             self.verify_player(player)
@@ -73,6 +67,12 @@ class HoleDealingAction(DealingAction):
             return False
 
         return True
+
+    def verify_player(self, player):
+        if player.is_mucked():
+            raise GameFrameError('Cannot deal to a mucked player')
+        elif len(player.hole) >= self.actor.game.stage.deal_target:
+            raise GameFrameError('The player must not have been dealt already')
 
     def verify(self):
         super().verify()

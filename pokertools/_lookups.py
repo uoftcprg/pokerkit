@@ -9,38 +9,6 @@ from pokertools.cards import Card, Rank, Ranks, suited
 PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
-def mask(ranks):
-    return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))
-
-
-def straights(ranks, count):
-    keys = [PRIMES[ranks[-1].index] * mask(ranks[:count - 1])]
-
-    for straight in window(ranks, count):
-        keys.append(mask(straight))
-
-    return reversed(keys)
-
-
-def multiples(ranks, frequencies):
-    if not frequencies:
-        return 1,
-
-    keys = []
-    count = max(frequencies)
-    freq = frequencies.pop(count)
-
-    for samples in combinations(reversed(ranks), freq):
-        key = mask(samples) ** count
-
-        for sub_key in multiples(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
-            keys.append(key * sub_key)
-
-    frequencies[count] = freq
-
-    return keys
-
-
 class Lookup(ABC):
     def __init__(self):
         self.populate()
@@ -98,6 +66,26 @@ class SuitedLookup(UnsuitedLookup, ABC):
             raise ValueError('Invalid card combination')
 
 
+class LowballA5Lookup(UnsuitedLookup):
+    def populate(self):
+        for key in chain(
+                multiples(Ranks.ACE_LOW.value, {4: 1, 1: 1}),
+                multiples(Ranks.ACE_LOW.value, {3: 1, 2: 1}),
+                multiples(Ranks.ACE_LOW.value, {3: 1, 1: 2}),
+                multiples(Ranks.ACE_LOW.value, {2: 2, 1: 1}),
+                multiples(Ranks.ACE_LOW.value, {2: 1, 1: 3}),
+                multiples(Ranks.ACE_LOW.value, {1: 5}),
+        ):
+            self.unsuited[key] = self.index_count
+
+
+class BadugiLookup(UnsuitedLookup):
+    def populate(self):
+        for n in range(1, 5):
+            for key in multiples(Ranks.ACE_LOW.value, {1: n}):
+                self.unsuited[key] = self.index_count
+
+
 class StandardLookup(SuitedLookup):
     def populate(self):
         for key in straights(Ranks.STANDARD.value, 5):
@@ -152,21 +140,33 @@ class ShortDeckLookup(SuitedLookup):
                 self.unsuited[key] = self.index_count
 
 
-class LowballA5Lookup(UnsuitedLookup):
-    def populate(self):
-        for key in chain(
-                multiples(Ranks.ACE_LOW.value, {4: 1, 1: 1}),
-                multiples(Ranks.ACE_LOW.value, {3: 1, 2: 1}),
-                multiples(Ranks.ACE_LOW.value, {3: 1, 1: 2}),
-                multiples(Ranks.ACE_LOW.value, {2: 2, 1: 1}),
-                multiples(Ranks.ACE_LOW.value, {2: 1, 1: 3}),
-                multiples(Ranks.ACE_LOW.value, {1: 5}),
-        ):
-            self.unsuited[key] = self.index_count
+def mask(ranks):
+    return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))
 
 
-class BadugiLookup(UnsuitedLookup):
-    def populate(self):
-        for n in range(1, 5):
-            for key in multiples(Ranks.ACE_LOW.value, {1: n}):
-                self.unsuited[key] = self.index_count
+def straights(ranks, count):
+    keys = [PRIMES[ranks[-1].index] * mask(ranks[:count - 1])]
+
+    for straight in window(ranks, count):
+        keys.append(mask(straight))
+
+    return reversed(keys)
+
+
+def multiples(ranks, frequencies):
+    if not frequencies:
+        return 1,
+
+    keys = []
+    count = max(frequencies)
+    freq = frequencies.pop(count)
+
+    for samples in combinations(reversed(ranks), freq):
+        key = mask(samples) ** count
+
+        for sub_key in multiples(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
+            keys.append(key * sub_key)
+
+    frequencies[count] = freq
+
+    return keys

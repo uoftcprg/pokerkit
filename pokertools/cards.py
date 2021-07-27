@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from enum import Enum, unique
 from functools import total_ordering
 from itertools import islice
@@ -61,7 +62,7 @@ class Ranks(Enum):
 
 
 @total_ordering
-class Card(SupportsLessThan):
+class Card(SupportsLessThan, Hashable):
     """Card is the class for cards.
 
     :param rank: The optional rank of this card.
@@ -160,6 +161,16 @@ def suited(cards):
     return const(map(Card.suit.fget, cards))
 
 
+def parse_cards(cards):
+    """Parses the string of card representations.
+
+    :param cards: The string of card representations.
+    :return: The parsed cards.
+    :raises ValueError: If any card-representation is invalid.
+    """
+    return map(parse_card, chunk(cards, 2))
+
+
 def parse_card(card):
     """Parses the string of the card representation.
 
@@ -173,16 +184,6 @@ def parse_card(card):
     rank, suit = card
 
     return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
-
-
-def parse_cards(cards):
-    """Parses the string of card representations.
-
-    :param cards: The string of card representations.
-    :return: The parsed cards.
-    :raises ValueError: If any card-representation is invalid.
-    """
-    return map(parse_card, chunk(cards, 2))
 
 
 def parse_range(pattern):
