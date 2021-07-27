@@ -375,10 +375,10 @@ class PokerNature(SequentialActor):
 
         :return: The number of cards to deal to the player hole.
         """
-        if self.can_deal_hole():
-            return self._get_hole_deal_action().deal_count
-        else:
+        if not self.can_deal_hole():
             raise ValueError('The nature cannot deal hole cards')
+
+        return self._get_hole_deal_action().deal_count
 
     @property
     def deal_board_count(self):
@@ -386,10 +386,10 @@ class PokerNature(SequentialActor):
 
         :return: The number of cards to deal to the board.
         """
-        if self.can_deal_board():
-            return self._get_board_deal_action().deal_count
-        else:
+        if not self.can_deal_board():
             raise ValueError('The nature cannot deal board cards')
+
+        return self._get_board_deal_action().deal_count
 
     def deal_hole(self, cards=None):
         """Deals the optionally supplied hole cards to the next player to be dealt hole cards.
@@ -460,8 +460,8 @@ class PokerPlayer(SequentialActor):
     def __repr__(self):
         if self.is_mucked():
             return f'PokerPlayer({self.bet}, {self.stack})'
-        else:
-            return f'PokerPlayer({self.bet}, {self.stack}, ' + ''.join(map(str, self.hole)) + ')'
+
+        return f'PokerPlayer({self.bet}, {self.stack}, ' + ''.join(map(str, self.hole)) + ')'
 
     @property
     def bet(self):
@@ -489,8 +489,8 @@ class PokerPlayer(SequentialActor):
             return ()
         elif self.is_shown():
             return tuple(map(HoleCard.show, self._hole))
-        else:
-            return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
+
+        return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
 
     @property
     def seen(self):
@@ -525,8 +525,8 @@ class PokerPlayer(SequentialActor):
             return 0
         elif len(values) == 1:
             return values[0]
-        else:
-            raise ValueError('Multiple possible blind values exist')
+
+        raise ValueError('Multiple possible blind values exist')
 
     @property
     def total(self):
@@ -548,8 +548,8 @@ class PokerPlayer(SequentialActor):
 
         if self.is_mucked() or len(active_players) < 2:
             return 0
-        else:
-            return min(self.starting_stack, sorted(map(PokerPlayer.starting_stack.fget, active_players))[-2])
+
+        return min(self.starting_stack, sorted(map(PokerPlayer.starting_stack.fget, active_players))[-2])
 
     @property
     def payoff(self):
@@ -582,10 +582,10 @@ class PokerPlayer(SequentialActor):
 
         :return: The check/call amount.
         """
-        if self.can_check_call():
-            return self._get_check_call_action().amount
-        else:
+        if not self.can_check_call():
             raise ValueError('The player cannot check/call')
+
+        return self._get_check_call_action().amount
 
     @property
     def bet_raise_min_amount(self):
@@ -595,10 +595,10 @@ class PokerPlayer(SequentialActor):
 
         :return: The minimum bet/raise amount.
         """
-        if self.can_bet_raise():
-            return self._get_bet_raise_action().min_amount
-        else:
+        if not self.can_bet_raise():
             raise ValueError('The player cannot bet/raise')
+
+        return self._get_bet_raise_action().min_amount
 
     @property
     def bet_raise_max_amount(self):
@@ -608,10 +608,10 @@ class PokerPlayer(SequentialActor):
 
         :return: The maximum bet/raise amount.
         """
-        if self.can_bet_raise():
-            return self._get_bet_raise_action().max_amount
-        else:
+        if not self.can_bet_raise():
             raise ValueError('The player cannot bet/raise')
+
+        return self._get_bet_raise_action().max_amount
 
     @property
     def bet_raise_pot_amount(self):
@@ -624,10 +624,10 @@ class PokerPlayer(SequentialActor):
 
         :return: The pot bet/raise amount.
         """
-        if self.can_bet_raise():
-            return self._get_bet_raise_action().pot_amount
-        else:
+        if not self.can_bet_raise():
             raise ValueError('The player cannot bet/raise')
+
+        return self._get_bet_raise_action().pot_amount
 
     @property
     def _put(self):
@@ -667,10 +667,10 @@ class PokerPlayer(SequentialActor):
 
         :return: True if the showdown is necessary, else False.
         """
-        if self.can_showdown():
-            return self._get_showdown_action().is_necessary()
-        else:
+        if not self.can_showdown():
             raise ValueError('The player cannot showdown')
+
+        return self._get_showdown_action().is_necessary()
 
     def fold(self):
         """Folds the poker player's hand.

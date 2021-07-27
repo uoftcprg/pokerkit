@@ -73,16 +73,13 @@ class Card(SupportsLessThan):
         self.__suit = suit
 
     def __lt__(self, other):
-        if isinstance(other, Card):
-            return self.rank < other.rank if self.suit == other.suit else self.suit < other.suit
-        else:
+        if not isinstance(other, Card):
             return NotImplemented
 
+        return self.rank < other.rank if self.suit == other.suit else self.suit < other.suit
+
     def __eq__(self, other):
-        if isinstance(other, Card):
-            return self.rank == other.rank and self.suit == other.suit
-        else:
-            return NotImplemented
+        return self.rank == other.rank and self.suit == other.suit if isinstance(other, Card) else NotImplemented
 
     def __hash__(self):
         return hash(self.rank) ^ hash(self.suit)
@@ -170,12 +167,12 @@ def parse_card(card):
     :return: The parsed card.
     :raises ValueError: If the card-representation is invalid.
     """
-    if len(card) == 2:
-        rank, suit = card
-
-        return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
-    else:
+    if len(card) != 2:
         raise ValueError('Invalid card representation')
+
+    rank, suit = card
+
+    return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
 
 
 def parse_cards(cards):

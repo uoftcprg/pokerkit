@@ -23,21 +23,22 @@ def straights(ranks, count):
 
 
 def multiples(ranks, frequencies):
-    if frequencies:
-        keys = []
-        count = max(frequencies)
-        freq = frequencies.pop(count)
-
-        for samples in combinations(reversed(ranks), freq):
-            key = mask(samples) ** count
-
-            for sub_key in multiples(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
-                keys.append(key * sub_key)
-
-        frequencies[count] = freq
-        return keys
-    else:
+    if not frequencies:
         return 1,
+
+    keys = []
+    count = max(frequencies)
+    freq = frequencies.pop(count)
+
+    for samples in combinations(reversed(ranks), freq):
+        key = mask(samples) ** count
+
+        for sub_key in multiples(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
+            keys.append(key * sub_key)
+
+    frequencies[count] = freq
+
+    return keys
 
 
 class Lookup(ABC):

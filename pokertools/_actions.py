@@ -71,8 +71,8 @@ class HoleDealingAction(DealingAction):
             self.verify_player(player)
         except GameFrameError:
             return False
-        else:
-            return True
+
+        return True
 
     def verify(self):
         super().verify()
