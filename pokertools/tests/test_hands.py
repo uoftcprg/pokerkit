@@ -68,19 +68,6 @@ class HandTestCase(TestCase):
 
         self.assertSequenceEqual(hands, sorted(hands))
 
-    def test_lowballA5_hand(self):
-        self.assertRaises(ValueError, LowballA5Hand, parse_cards('9sTsJsQsKsAs'))
-        self.assertRaises(ValueError, LowballA5Hand, parse_cards('4c5dThJsAcKh2h'))
-        self.assertRaises(ValueError, LowballA5Hand, parse_cards('AcAdAhAsAc'))
-
-        hands = tuple(map(LowballA5Hand, map(parse_cards, (
-            'Ac2c3c4c5c', '6c4d3h2sAc', '6c5d3h2sAc', '6c5c4c2cAc', '6c5d4h3sAc', '6c5d4h3s2c', '7c4d3h2sAc',
-            '7c5d3h2sAc', '7c6d5h4s3c', '8c5d4h3sAc', '8c5d4h3s2c', '9c7d6h4s3c', 'KcJd8h6s4c', 'AcAd9h5s3c',
-            '2c2d5h4s3c', '3c3d6h4s2c', '3c3d6h5sAc', '2s2c3s3cAh', 'AcAdAsKhQs', 'KhKsKcAcAd', 'KhKsKcKdAc',
-        ))))
-
-        self.assertSequenceEqual(hands, sorted(hands, reverse=True))
-
     def test_lowball27_hand(self):
         self.assertRaises(ValueError, Lowball27Hand, parse_cards('9sTsJsQsKsAs'))
         self.assertRaises(ValueError, Lowball27Hand, parse_cards('4c5dThJsAcKh2h'))
@@ -93,6 +80,19 @@ class HandTestCase(TestCase):
             'AhAc2c3c5c', '2c2d3s3c4s', 'AcAdKsKcTs', 'AcAdKsKcJs', 'QcQsQhAhKh', 'AcAsAd2s4s', 'AcAsAd3s4s',
             'Ac2s3d4s5s', '2c3s4d5s6s', 'TcJsQdKsAs', '9c5c4c3c2c', 'Kc5c4c3c2c', 'KhKsKdAhAc', 'AcAdAsKhKs',
             '2c2d2h2sQs', '2c2d2h2sKs', 'AcAdAhAsKs', '2c3c4c5c6c', '3d4d5d6d7d', '9sTsJsQsKs', 'TsJsQsKsAs',
+        ))))
+
+        self.assertSequenceEqual(hands, sorted(hands, reverse=True))
+
+    def test_lowballA5_hand(self):
+        self.assertRaises(ValueError, LowballA5Hand, parse_cards('9sTsJsQsKsAs'))
+        self.assertRaises(ValueError, LowballA5Hand, parse_cards('4c5dThJsAcKh2h'))
+        self.assertRaises(ValueError, LowballA5Hand, parse_cards('AcAdAhAsAc'))
+
+        hands = tuple(map(LowballA5Hand, map(parse_cards, (
+            'Ac2c3c4c5c', '6c4d3h2sAc', '6c5d3h2sAc', '6c5c4c2cAc', '6c5d4h3sAc', '6c5d4h3s2c', '7c4d3h2sAc',
+            '7c5d3h2sAc', '7c6d5h4s3c', '8c5d4h3sAc', '8c5d4h3s2c', '9c7d6h4s3c', 'KcJd8h6s4c', 'AcAd9h5s3c',
+            '2c2d5h4s3c', '3c3d6h4s2c', '3c3d6h5sAc', '2s2c3s3cAh', 'AcAdAsKhQs', 'KhKsKcAcAd', 'KhKsKcKdAc',
         ))))
 
         self.assertSequenceEqual(hands, sorted(hands, reverse=True))

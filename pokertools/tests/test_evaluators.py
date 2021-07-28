@@ -106,40 +106,6 @@ class EvaluatorTestCase(TestCase):
             ShortDeckHand(parse_cards('AhKhQhJhTh')),
         )
 
-    def test_lowballA5_evaluator(self):
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQdQh')),
-            LowballA5Hand(parse_cards('AcAsQdQhKc')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')),
-            LowballA5Hand(parse_cards('KsAsQsJsTs')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQd')),
-            LowballA5Hand(parse_cards('AdAhAsKcQd')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJs')),
-            LowballA5Hand(parse_cards('AhAsKsQsJs')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQs')),
-            LowballA5Hand(parse_cards('AcAhAsKsQs')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
-            LowballA5Hand(parse_cards('AcQdJdTh2d')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('AsKs'), parse_cards('QsJsTs2c2s')),
-            LowballA5Hand(parse_cards('AsQsJsTs2s')),
-        )
-        self.assertEqual(
-            LowballA5Evaluator.evaluate(parse_cards('Ac9c'), parse_cards('AhKhQhJhTh')),
-            LowballA5Hand(parse_cards('AhQhJhTh9c')),
-        )
-
     def test_lowball27_evaluator(self):
         self.assertEqual(
             Lowball27Evaluator.evaluate(parse_cards('AcAdAhAsKc'), ()),
@@ -176,6 +142,40 @@ class EvaluatorTestCase(TestCase):
         self.assertEqual(
             Lowball27Evaluator.evaluate(parse_cards('Ac9c'), parse_cards('AhKhQhJhTh')),
             Lowball27Hand(parse_cards('AcQhJhTh9c')),
+        )
+
+    def test_lowballA5_evaluator(self):
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQdQh')),
+            LowballA5Hand(parse_cards('AcAsQdQhKc')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs')),
+            LowballA5Hand(parse_cards('KsAsQsJsTs')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcQd')),
+            LowballA5Hand(parse_cards('AdAhAsKcQd')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJs')),
+            LowballA5Hand(parse_cards('AhAsKsQsJs')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQs')),
+            LowballA5Hand(parse_cards('AcAhAsKsQs')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('Ac2d'), parse_cards('QdJdTh2sKs')),
+            LowballA5Hand(parse_cards('AcQdJdTh2d')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('AsKs'), parse_cards('QsJsTs2c2s')),
+            LowballA5Hand(parse_cards('AsQsJsTs2s')),
+        )
+        self.assertEqual(
+            LowballA5Evaluator.evaluate(parse_cards('Ac9c'), parse_cards('AhKhQhJhTh')),
+            LowballA5Hand(parse_cards('AhQhJhTh9c')),
         )
 
     def test_badugi_evaluator(self):

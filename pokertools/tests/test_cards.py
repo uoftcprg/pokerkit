@@ -64,36 +64,6 @@ class CardTestCase(TestCase):
         self.assertEqual(hole_card, hole_card.show())
         self.assertNotEqual(hole_card.status, hole_card.show().status)
 
-    def test_rainbow(self):
-        self.assertTrue(rainbow(()))
-        self.assertTrue(rainbow(parse_cards('Ac')))
-        self.assertTrue(rainbow(parse_cards('AhJsQc')))
-        self.assertTrue(rainbow(parse_cards('AhAsJdQc')))
-        self.assertFalse(rainbow(parse_cards('AhAsJsQhAh')))
-        self.assertFalse(rainbow(parse_cards('AhAsJsQh')))
-
-    def test_suited(self):
-        self.assertTrue(suited(()))
-        self.assertTrue(suited((parse_card('Ah'),)))
-        self.assertTrue(suited(parse_cards('AhKhQhJhTh')))
-        self.assertFalse(suited(parse_cards('AhKhQhJhTs')))
-        self.assertFalse(suited(parse_cards('AsKc')))
-        self.assertFalse(suited(parse_cards('AsKcQdJhTs')))
-
-    def test_parse_card(self):
-        self.assertEqual(parse_card('Ah'), Card(Rank.ACE, Suit.HEART))
-        self.assertEqual(parse_card('Kd'), Card(Rank.KING, Suit.DIAMOND))
-        self.assertEqual(parse_card('?h'), Card(None, Suit.HEART))
-        self.assertEqual(parse_card('A?'), Card(Rank.ACE, None))
-        self.assertEqual(parse_card('??'), Card(None, None))
-
-    def test_parse_cards(self):
-        self.assertCountEqual(parse_cards('AcAdAhAs'), map(partial(Card, Rank.ACE), Suit))
-        self.assertCountEqual(parse_cards('Kh???sJhA?????2c'), (
-            Card(Rank.KING, Suit.HEART), Card(None, None), Card(None, Suit.SPADE), Card(Rank.JACK, Suit.HEART),
-            Card(Rank.ACE, None), Card(None, None), Card(None, None), Card(Rank.TWO, Suit.CLUB),
-        ))
-
     def test_parse_range(self):
         self.assertSetEqual(frozenset(map(lambda cards: frozenset(map(str, cards)), parse_range('QTs'))), {
             frozenset({'Qc', 'Tc'}), frozenset({'Qd', 'Td'}), frozenset({'Qh', 'Th'}), frozenset({'Qs', 'Ts'}),
@@ -147,6 +117,36 @@ class CardTestCase(TestCase):
             frozenset({'Qc', 'Jc'}), frozenset({'Qd', 'Jd'}), frozenset({'Qh', 'Jh'}), frozenset({'Qs', 'Js'}),
         })
         self.assertSetEqual(frozenset(map(lambda cards: frozenset(map(str, cards)), parse_range('9T+'))), set())
+
+    def test_parse_cards(self):
+        self.assertCountEqual(parse_cards('AcAdAhAs'), map(partial(Card, Rank.ACE), Suit))
+        self.assertCountEqual(parse_cards('Kh???sJhA?????2c'), (
+            Card(Rank.KING, Suit.HEART), Card(None, None), Card(None, Suit.SPADE), Card(Rank.JACK, Suit.HEART),
+            Card(Rank.ACE, None), Card(None, None), Card(None, None), Card(Rank.TWO, Suit.CLUB),
+        ))
+
+    def test_parse_card(self):
+        self.assertEqual(parse_card('Ah'), Card(Rank.ACE, Suit.HEART))
+        self.assertEqual(parse_card('Kd'), Card(Rank.KING, Suit.DIAMOND))
+        self.assertEqual(parse_card('?h'), Card(None, Suit.HEART))
+        self.assertEqual(parse_card('A?'), Card(Rank.ACE, None))
+        self.assertEqual(parse_card('??'), Card(None, None))
+
+    def test_rainbow(self):
+        self.assertTrue(rainbow(()))
+        self.assertTrue(rainbow(parse_cards('Ac')))
+        self.assertTrue(rainbow(parse_cards('AhJsQc')))
+        self.assertTrue(rainbow(parse_cards('AhAsJdQc')))
+        self.assertFalse(rainbow(parse_cards('AhAsJsQhAh')))
+        self.assertFalse(rainbow(parse_cards('AhAsJsQh')))
+
+    def test_suited(self):
+        self.assertTrue(suited(()))
+        self.assertTrue(suited((parse_card('Ah'),)))
+        self.assertTrue(suited(parse_cards('AhKhQhJhTh')))
+        self.assertFalse(suited(parse_cards('AhKhQhJhTs')))
+        self.assertFalse(suited(parse_cards('AsKc')))
+        self.assertFalse(suited(parse_cards('AsKcQdJhTs')))
 
 
 if __name__ == '__main__':

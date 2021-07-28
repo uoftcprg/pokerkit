@@ -141,26 +141,6 @@ class HoleCard(Card):
         return HoleCard(True, self)
 
 
-def rainbow(cards):
-    """Checks if all cards have a rainbow texture.
-
-    Cards have a rainbow texture when their suits are all unique to each other.
-
-    :param cards: The cards to check.
-    :return: True if the cards have a rainbow texture, else False.
-    """
-    return distinct(map(Card.suit.fget, cards))
-
-
-def suited(cards):
-    """Checks if all cards are of the same suit.
-
-    :param cards: The cards to check.
-    :return: True if the cards are suited, else False.
-    """
-    return const(map(Card.suit.fget, cards))
-
-
 def parse_range(pattern):
     """Parses the supplied pattern.
 
@@ -238,3 +218,23 @@ def parse_card(card):
     rank, suit = card
 
     return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
+
+
+def rainbow(cards):
+    """Checks if all cards have a rainbow texture.
+
+    Cards have a rainbow texture when their suits are all unique to each other.
+
+    :param cards: The cards to check.
+    :return: True if the cards have a rainbow texture, else False.
+    """
+    return distinct(map(Card.suit.fget, cards))
+
+
+def suited(cards):
+    """Checks if all cards are of the same suit.
+
+    :param cards: The cards to check.
+    :return: True if the cards are suited, else False.
+    """
+    return const(map(Card.suit.fget, cards))

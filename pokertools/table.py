@@ -91,8 +91,6 @@ class Seat:
     def __init__(self, table):
         self.__table = table
         self.__user = None
-        self.__index = None
-        self.__pending_buy_in = None
 
     @property
     def table(self):
@@ -101,14 +99,6 @@ class Seat:
     @property
     def user(self):
         return self.__user
-
-    @property
-    def index(self):
-        return self.__index
-
-    @property
-    def pending_buy_in(self):
-        return self.__pending_buy_in
 
     def seat(self, user_info):
         if self.user is not None:
@@ -126,6 +116,13 @@ class User:
         self.__info = info
         self.__index = None
         self.__buy_in = None
+
+    @property
+    def player(self):
+        if not self.is_player():
+            raise ValueError('The user is not a player')
+
+        return self.table.game.players[self.index]
 
     @property
     def table(self):
@@ -147,15 +144,8 @@ class User:
     def buy_in(self):
         return self.__buy_in
 
-    @property
-    def player(self):
-        if self.index is None:
-            raise ValueError('The user is not a player')
-
-        return self.table.game.players[self.index]
-
     def is_player(self):
         return self.index is not None
 
     def parse(self, command):
-        ...
+        ...  # TODO
