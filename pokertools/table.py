@@ -9,7 +9,6 @@ class Table:
             nature_time,
             player_time,
             reset_time,
-            min_player_count=2,
     ):
         self.__limit_type = limit_type
         self.__variant_type = variant_type
@@ -20,8 +19,6 @@ class Table:
         self.__nature_time = nature_time
         self.__player_time = player_time
         self.__reset_time = reset_time
-
-        self.__min_player_count = min_player_count
 
         self.__game = None
 
@@ -58,10 +55,6 @@ class Table:
         return self.__reset_time
 
     @property
-    def min_player_count(self):
-        return self.__min_player_count
-
-    @property
     def game(self):
         return self.__game
 
@@ -77,7 +70,7 @@ class Table:
         return True
 
     def get_seat(self, user_info):
-        for seat in self.seats:
+        for seat in filter(Seat.is_occupied, self.seats):
             if seat.user.info == user_info:
                 return seat
 
@@ -100,8 +93,11 @@ class Seat:
     def user(self):
         return self.__user
 
+    def is_occupied(self):
+        return self.user is None
+
     def seat(self, user_info):
-        if self.user is not None:
+        if self.is_occupied():
             raise ValueError('The seat is already occupied')
 
         self.__user = User(self, user_info)
@@ -147,5 +143,5 @@ class User:
     def is_player(self):
         return self.index is not None
 
-    def parse(self, command):
+    def _parse(self, command):
         ...  # TODO
