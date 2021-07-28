@@ -95,14 +95,6 @@ class DealingStage(Stage, ABC):
         self.__deal_count = deal_count
 
     @property
-    def deal_count(self):
-        """Returns the number of cards to be dealt in this stage.
-
-        :return: The number of cards to be dealt in this stage.
-        """
-        return self.__deal_count
-
-    @property
     def deal_target(self):
         """Returns the target number of cards to be dealt by the end of this stage.
 
@@ -115,6 +107,14 @@ class DealingStage(Stage, ABC):
                 count += stage.deal_count
 
         return count
+
+    @property
+    def deal_count(self):
+        """Returns the number of cards to be dealt in this stage.
+
+        :return: The number of cards to be dealt in this stage.
+        """
+        return self.__deal_count
 
     def _open(self):
         super()._open()

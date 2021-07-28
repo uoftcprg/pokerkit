@@ -161,31 +161,6 @@ def suited(cards):
     return const(map(Card.suit.fget, cards))
 
 
-def parse_cards(cards):
-    """Parses the string of card representations.
-
-    :param cards: The string of card representations.
-    :return: The parsed cards.
-    :raises ValueError: If any card-representation is invalid.
-    """
-    return map(parse_card, chunk(cards, 2))
-
-
-def parse_card(card):
-    """Parses the string of the card representation.
-
-    :param card: The string of the card representation.
-    :return: The parsed card.
-    :raises ValueError: If the card-representation is invalid.
-    """
-    if len(card) != 2:
-        raise ValueError('Invalid card representation')
-
-    rank, suit = card
-
-    return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
-
-
 def parse_range(pattern):
     """Parses the supplied pattern.
 
@@ -238,3 +213,28 @@ def parse_range(pattern):
         card_sets.add(frozenset(parse_cards(pattern)))
 
     return frozenset(card_sets)
+
+
+def parse_cards(cards):
+    """Parses the string of card representations.
+
+    :param cards: The string of card representations.
+    :return: The parsed cards.
+    :raises ValueError: If any card-representation is invalid.
+    """
+    return map(parse_card, chunk(cards, 2))
+
+
+def parse_card(card):
+    """Parses the string of the card representation.
+
+    :param card: The string of the card representation.
+    :return: The parsed card.
+    :raises ValueError: If the card-representation is invalid.
+    """
+    if len(card) != 2:
+        raise ValueError('Invalid card representation')
+
+    rank, suit = card
+
+    return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))

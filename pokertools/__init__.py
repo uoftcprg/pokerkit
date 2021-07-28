@@ -23,6 +23,7 @@ from pokertools.stages import (
     Stage,
 )
 from pokertools.stakes import Stakes
+from pokertools.table import Seat, Table
 from pokertools.variants import (
     BadugiVariant, DrawVariant, FiveCardDrawVariant, FiveCardOmahaHoldEmVariant, GreekHoldEmVariant, HoldEmVariant,
     KuhnPokerVariant, OmahaHoldEmVariant, ShortDeckHoldEmVariant, SingleDrawLowball27Variant, SingleDrawVariant,
@@ -41,8 +42,8 @@ __all__ = (
     'PotLimitOmahaHoldEm', 'PotLimitSixCardOmahaHoldEm', 'PotLimitTripleDrawLowball27', 'BadugiHand', 'Hand',
     'HighIndexedHand', 'IndexedHand', 'LookupHandMixin', 'LowIndexedHand', 'Lowball27Hand', 'LowballA5Hand',
     'ShortDeckHand', 'StandardHand', 'FixedLimit', 'Limit', 'NoLimit', 'PotLimit', 'BettingStage', 'BoardDealingStage',
-    'DealingStage', 'DiscardDrawStage', 'HoleDealingStage', 'QueuedStage', 'ShowdownStage', 'Stage', 'Stakes',
-    'BadugiVariant', 'DrawVariant', 'FiveCardDrawVariant', 'FiveCardOmahaHoldEmVariant', 'GreekHoldEmVariant',
+    'DealingStage', 'DiscardDrawStage', 'HoleDealingStage', 'QueuedStage', 'ShowdownStage', 'Stage', 'Stakes', 'Seat',
+    'Table', 'BadugiVariant', 'DrawVariant', 'FiveCardDrawVariant', 'FiveCardOmahaHoldEmVariant', 'GreekHoldEmVariant',
     'HoldEmVariant', 'KuhnPokerVariant', 'OmahaHoldEmVariant', 'ShortDeckHoldEmVariant', 'SingleDrawLowball27Variant',
     'SingleDrawVariant', 'SixCardOmahaHoldEmVariant', 'StaticHoleVariantMixin', 'TexasHoldEmVariant',
     'TripleDrawLowball27Variant', 'TripleDrawVariant', 'Variant',

@@ -140,10 +140,6 @@ class ShortDeckLookup(SuitedLookup):
                 self.unsuited[key] = self.index_count
 
 
-def mask(ranks):
-    return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))
-
-
 def straights(ranks, count):
     keys = [PRIMES[ranks[-1].index] * mask(ranks[:count - 1])]
 
@@ -170,3 +166,7 @@ def multiples(ranks, frequencies):
     frequencies[count] = freq
 
     return keys
+
+
+def mask(ranks):
+    return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))

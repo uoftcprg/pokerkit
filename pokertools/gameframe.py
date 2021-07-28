@@ -56,6 +56,7 @@ class PokerGame(SequentialGame):
         self.__variant = variant_type(self)
         self.__stakes = stakes
         self.__starting_stacks = tuple(starting_stacks)
+
         self.__stages = self.variant.create_stages()
         self.__evaluators = self.variant.create_evaluators()
 
@@ -234,53 +235,47 @@ class PokerGame(SequentialGame):
 
         return statuses
 
-    def parse(self, *tokens):
-        """Parses the tokens as actions and applies them this poker game.
+    def parse(self, *commands):
+        """Parses the commands as actions and applies them this poker game.
 
-        :param tokens: The tokens to parse as actions.
+        :param commands: The commands to parse as actions.
         :return: This game.
         """
-        for token in tokens:
-            if token == 'dh':
+        for command in commands:
+            if command == 'dh':
                 self.actor.deal_hole()
-            elif token.startswith('dh '):
-                self.actor.deal_hole(parse_cards(token[3:]))
-            elif token == 'db':
+            elif command.startswith('dh '):
+                self.actor.deal_hole(parse_cards(command[3:]))
+            elif command == 'db':
                 self.actor.deal_board()
-            elif token.startswith('db '):
-                self.actor.deal_board(parse_cards(token[3:]))
-            elif token == 'f':
+            elif command.startswith('db '):
+                self.actor.deal_board(parse_cards(command[3:]))
+            elif command == 'f':
                 self.actor.fold()
-            elif token == 'cc':
+            elif command == 'cc':
                 self.actor.check_call()
-            elif token == 'br':
+            elif command == 'br':
                 self.actor.bet_raise()
-            elif token.startswith('br '):
-                self.actor.bet_raise(int(token[3:]))
-            elif token == 'dd':
+            elif command.startswith('br '):
+                self.actor.bet_raise(int(command[3:]))
+            elif command == 'dd':
                 self.actor.discard_draw()
-            elif token.startswith('dd ') and len(token.split()) == 2:
-                _, discarded_cards = token.split()
+            elif command.startswith('dd ') and len(command.split()) == 2:
+                _, discarded_cards = command.split()
                 self.actor.discard_draw(parse_cards(discarded_cards))
-            elif token.startswith('dd ') and len(token.split()) == 3:
-                _, discarded_cards, drawn_cards = token.split()
+            elif command.startswith('dd ') and len(command.split()) == 3:
+                _, discarded_cards, drawn_cards = command.split()
                 self.actor.discard_draw(parse_cards(discarded_cards), parse_cards(drawn_cards))
-            elif token == 's':
+            elif command == 's':
                 self.actor.showdown()
-            elif token == 's 0':
+            elif command == 's 0':
                 self.actor.showdown(False)
-            elif token == 's 1':
+            elif command == 's 1':
                 self.actor.showdown(True)
             else:
-                raise ValueError(f'Invalid command \'{token}\'')
+                raise ValueError(f'Invalid command \'{command}\'')
 
         return self
-
-    def _is_all_in(self):
-        return not self._is_folded() and not any(map(PokerPlayer._is_relevant, self.players))
-
-    def _is_folded(self):
-        return sum(map(PokerPlayer.is_active, self.players)) == 1
 
     def _verify(self):
         if len(self.starting_stacks) < 2:
@@ -305,15 +300,6 @@ class PokerGame(SequentialGame):
                 player._status = True
 
         self._update()
-
-    def _collect(self):
-        effective_bet = sorted(map(PokerPlayer.bet.fget, self.players))[-2]
-
-        for player in self.players:
-            bet = min(effective_bet, player.bet)
-            self._pot += bet
-            player._stack += player.bet - bet
-            player._bet = 0
 
     def _update(self):
         if self.stage is None or self.stage._is_done():
@@ -350,6 +336,21 @@ class PokerGame(SequentialGame):
                     player._stack += share
 
         self._pot = 0
+
+    def _collect(self):
+        effective_bet = sorted(map(PokerPlayer.bet.fget, self.players))[-2]
+
+        for player in self.players:
+            bet = min(effective_bet, player.bet)
+            self._pot += bet
+            player._stack += player.bet - bet
+            player._bet = 0
+
+    def _is_all_in(self):
+        return not self._is_folded() and not any(map(PokerPlayer._is_relevant, self.players))
+
+    def _is_folded(self):
+        return sum(map(PokerPlayer.is_active, self.players)) == 1
 
 
 class PokerNature(SequentialActor):
@@ -462,51 +463,6 @@ class PokerPlayer(SequentialActor):
             return f'PokerPlayer({self.bet}, {self.stack})'
 
         return f'PokerPlayer({self.bet}, {self.stack}, ' + ''.join(map(str, self.hole)) + ')'
-
-    @property
-    def bet(self):
-        """Returns the bet of this poker player.
-
-        :return: The bet of this poker player.
-        """
-        return self._bet
-
-    @property
-    def stack(self):
-        """Returns the stack of this poker player.
-
-        :return: The stack of this poker player.
-        """
-        return self._stack
-
-    @property
-    def hole(self):
-        """Returns the hole cards of this poker player.
-
-        :return: The hole cards of this poker player.
-        """
-        if self.is_mucked():
-            return ()
-        elif self.is_shown():
-            return tuple(map(HoleCard.show, self._hole))
-
-        return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
-
-    @property
-    def seen(self):
-        """Returns the cards that this poker player have had before in his/her hole.
-
-        :return: The seen cards of this poker player.
-        """
-        return tuple(self._seen)
-
-    @property
-    def starting_stack(self):
-        """Returns the starting stack of this poker player.
-
-        :return: The starting stack of this poker player.
-        """
-        return self.game.starting_stacks[self.index]
 
     @property
     def blind(self):
@@ -630,12 +586,66 @@ class PokerPlayer(SequentialActor):
         return self._get_bet_raise_action().pot_amount
 
     @property
+    def starting_stack(self):
+        """Returns the starting stack of this poker player.
+
+        :return: The starting stack of this poker player.
+        """
+        return self.game.starting_stacks[self.index]
+
+    @property
+    def bet(self):
+        """Returns the bet of this poker player.
+
+        :return: The bet of this poker player.
+        """
+        return self._bet
+
+    @property
+    def stack(self):
+        """Returns the stack of this poker player.
+
+        :return: The stack of this poker player.
+        """
+        return self._stack
+
+    @property
+    def hole(self):
+        """Returns the hole cards of this poker player.
+
+        :return: The hole cards of this poker player.
+        """
+        if self.is_mucked():
+            return ()
+        elif self.is_shown():
+            return tuple(map(HoleCard.show, self._hole))
+
+        return tuple(starmap(HoleCard, zip(self.game._hole_card_statuses, self._hole)))
+
+    @property
+    def seen(self):
+        """Returns the cards that this poker player have had before in his/her hole.
+
+        :return: The seen cards of this poker player.
+        """
+        return tuple(self._seen)
+
+    @property
     def _put(self):
         return self.starting_stack - self.total
 
     @property
     def _lost(self):
         return self.starting_stack - self.stack
+
+    def is_active(self):
+        """Returns whether or not the player is active.
+
+        The player is active if he/she is in a hand.
+
+        :return: True if this poker player is active, else False.
+        """
+        return not self.is_mucked()
 
     def is_mucked(self):
         """Returns whether or not the player has mucked his/her hand.
@@ -650,15 +660,6 @@ class PokerPlayer(SequentialActor):
         :return: True if this poker player has shown his/her hand, else False.
         """
         return self._status is True
-
-    def is_active(self):
-        """Returns whether or not the player is active.
-
-        The player is active if he/she is in a hand.
-
-        :return: True if this poker player is active, else False.
-        """
-        return not self.is_mucked()
 
     def is_showdown_necessary(self):
         """Returns whether or not showdown is necessary to win the pot.
