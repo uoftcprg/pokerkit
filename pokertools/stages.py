@@ -4,7 +4,7 @@ from operator import eq
 
 from auxiliary import rotate
 
-from pokertools.gameframe import PokerPlayer
+from pokertools.game import PokerPlayer
 
 
 class Stage(ABC):

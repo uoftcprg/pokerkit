@@ -183,7 +183,7 @@ Xuan vs Phua
 ------------
 
 This shows the 800K dollar No-Limit Short-Deck Hold'em pot played between Xuan and Phua. This time, the
-:meth:`pokertools.gameframe.PokerGame.parse` method will be used to replace function calls with commands parses for
+:meth:`pokertools.game.PokerGame.parse` method will be used to replace function calls with commands parses for
 applying actions.
 
 Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_

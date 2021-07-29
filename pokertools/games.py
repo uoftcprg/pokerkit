@@ -1,6 +1,6 @@
 from functools import partial
 
-from pokertools.gameframe import PokerGame
+from pokertools.game import PokerGame
 from pokertools.limits import FixedLimit, NoLimit, PotLimit
 from pokertools.stakes import Stakes
 from pokertools.variants import (

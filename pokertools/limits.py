@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from auxiliary import clip
 
-from pokertools.gameframe import PokerPlayer
+from pokertools.game import PokerPlayer
 
 
 class Limit(ABC):

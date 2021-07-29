@@ -7,7 +7,7 @@ from auxiliary import distinct, rotate
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
-from pokertools.gameframe import PokerPlayer
+from pokertools.game import PokerPlayer
 
 
 class PokerAction(_SequentialAction, ABC):

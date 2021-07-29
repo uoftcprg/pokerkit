@@ -15,6 +15,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../..'))
 
+pokertools = __import__('pokertools')
+
 # -- Project information -----------------------------------------------------
 
 project = 'pokertools'
@@ -22,7 +24,7 @@ copyright = '2021, Juho Kim'
 author = 'Juho Kim'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.3.dev50'
+release = pokertools.__version__
 
 # -- General configuration ---------------------------------------------------
 

@@ -4,17 +4,17 @@ PokerTools Package
 Classes, functions, and variables in PokerTools are documented below. All of these can be imported from the top-level
 PokerTools module.
 
-pokertools.gameframe module
----------------------------
+pokertools.game module
+----------------------
 
 These classes contains core logic of poker games. They are highly customizable, allowing you to combine various utility
 classes such as decks, stages, evaluators, et cetera to define and create custom poker games.
 
-The :class:`pokertools.gameframe.PokerGame` class, the :class:`pokertools.gameframe.PokerNature` class, and the
-:class:`pokertools.gameframe.PokerPlayer` classes inherit from sequential game classes defined in the
+The :class:`pokertools.game.PokerGame` class, the :class:`pokertools.game.PokerNature` class, and the
+:class:`pokertools.game.PokerPlayer` classes inherit from sequential game classes defined in the
 `GameFrame <https://gameframe.readthedocs.io/>`_ package.
 
-.. automodule:: pokertools.gameframe
+.. automodule:: pokertools.game
    :members:
    :undoc-members:
    :show-inheritance:

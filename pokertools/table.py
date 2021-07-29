@@ -20,7 +20,7 @@ class Table:
         self.__player_time = player_time
         self.__reset_time = reset_time
 
-        self.__game = None
+        self._game = None
 
     @property
     def limit_type(self):
@@ -56,7 +56,7 @@ class Table:
 
     @property
     def game(self):
-        return self.__game
+        return self._game
 
     def is_playing(self):
         return self.game is not None
@@ -76,8 +76,51 @@ class Table:
 
         raise ValueError('User is not seated')
 
-    def parse(self, user, command):
+    def parse(self, user_info, command):
+        self._parse(user_info, command)
+        self._update()
+
+    def create_game(self):
+        ...  # TODO
+
+    def remove_game(self):
+        ...  # TODO
+
+    def autoplay(self):
+        ...  # TODO
+
+    def _parse_user(self, user_info, command):
         ...
+
+    def _parse_root(self, user_info, command):
+        if command == 'c':
+            if user_info is not None:
+                raise ValueError('Users can\'t use this command')
+
+            self.create_game()
+        elif command == 'r':
+            if user_info is not None:
+                raise ValueError('Users can\'t use this command')
+
+            self.remove_game()
+        elif command == 'a':
+            if user_info is not None:
+                raise ValueError('Users can\'t use this command')
+
+            self.autoplay()
+        elif command.startswith('s '):
+            self.seats[int(command[2:])].seat(user_info)
+        elif command == 'us':
+            self.get_seat(user_info).unseat()
+        elif command.startswith('b '):
+            self.get_seat(user_info).user.buy_in(int(command[2:]))
+        elif self.get_seat(user_info).user.player == self.game.actor:
+            self.game.parse(command)
+        else:
+            raise ValueError(f'Unknown command: {command}')
+
+    def _update(self):
+        ...  # TODO
 
 
 class Seat:
@@ -93,9 +136,6 @@ class Seat:
     def user(self):
         return self.__user
 
-    def is_occupied(self):
-        return self.user is None
-
     def seat(self, user_info):
         if self.is_occupied():
             raise ValueError('The seat is already occupied')
@@ -105,13 +145,17 @@ class Seat:
     def unseat(self):
         self.__user = None
 
+    def is_occupied(self):
+        return self.user is None
+
 
 class User:
     def __init__(self, seat, info):
         self.__seat = seat
         self.__info = info
         self.__index = None
-        self.__buy_in = None
+        self.__buy_in_amount = None
+        self.__active_status = True
 
     @property
     def player(self):
@@ -137,11 +181,14 @@ class User:
         return self.__index
 
     @property
-    def buy_in(self):
-        return self.__buy_in
+    def buy_in_amount(self):
+        return self.__buy_in_amount
 
     def is_player(self):
         return self.index is not None
 
-    def _parse(self, command):
-        ...  # TODO
+    def is_active(self):
+        return self.__active_status
+
+    def buy_in(self, amount):
+        self.__buy_in_amount = amount

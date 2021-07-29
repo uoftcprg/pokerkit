@@ -1,11 +1,13 @@
 from setuptools import find_packages, setup
 
+from pokertools import __version__
+
 with open('README.rst', 'r') as long_description_file:
     long_description = long_description_file.read()
 
 setup(
     name='pokertools',
-    version='0.0.3.dev50',
+    version=__version__,
     author='Juho Kim',
     author_email='juho-kim@outlook.com',
     description='A Python package for various poker tools',
