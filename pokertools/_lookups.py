@@ -41,7 +41,7 @@ class UnsuitedLookup(Lookup, ABC):
         try:
             return self.unsuited[mask(map(Card.rank.fget, cards))]
         except KeyError:
-            raise ValueError('Invalid card combination')
+            raise ValueError('invalid card combination')
 
 
 class SuitedLookup(UnsuitedLookup, ABC):
@@ -66,7 +66,7 @@ class SuitedLookup(UnsuitedLookup, ABC):
             else:
                 return self.unsuited[key]
         except KeyError:
-            raise ValueError('Invalid card combination')
+            raise ValueError('invalid card combination')
 
 
 class LowballA5Lookup(UnsuitedLookup):

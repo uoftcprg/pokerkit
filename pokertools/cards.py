@@ -163,7 +163,7 @@ def parse_card(card):
     :raises ValueError: If the card-representation is invalid.
     """
     if len(card) != 2:
-        raise ValueError('Invalid card representation')
+        raise ValueError('invalid card representation')
 
     rank_str, suit_str = card
     rank = None if rank_str == '?' else Rank(rank_str)

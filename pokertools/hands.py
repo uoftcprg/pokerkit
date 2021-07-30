@@ -20,7 +20,10 @@ class IndexedHand(Hand, ABC):
         self.__index = index
 
     def __eq__(self, other):
-        return self.__index == other.__index if type(self) == type(other) else NotImplemented
+        if type(self) == type(other):
+            return self.__index == other.__index
+        else:
+            return NotImplemented
 
     def __hash__(self):
         return hash(self.__index)
@@ -35,17 +38,27 @@ class IndexedHand(Hand, ABC):
 
 
 class HighIndexedHand(IndexedHand):
-    """HighIndexedHand is the abstract base class for all high indexed hands."""
+    """HighIndexedHand is the abstract base class for all high indexed
+    hands.
+    """
 
     def __lt__(self, other):
-        return self.index > other.index if type(self) == type(other) else NotImplemented
+        if type(self) == type(other):
+            return self.index > other.index
+        else:
+            return NotImplemented
 
 
 class LowIndexedHand(IndexedHand):
-    """LowIndexedHand is the abstract base class for all low indexed hands."""
+    """LowIndexedHand is the abstract base class for all low indexed
+    hands.
+    """
 
     def __lt__(self, other):
-        return self.index < other.index if type(self) == type(other) else NotImplemented
+        if type(self) == type(other):
+            return self.index < other.index
+        else:
+            return NotImplemented
 
 
 class LookupHandMixin(IndexedHand, ABC):
@@ -103,6 +116,6 @@ class BadugiHand(LookupHandMixin, LowIndexedHand):
             cards = tuple(cards)
 
         if not self._is_valid(cards):
-            raise ValueError('Not a valid Badugi hand')
+            raise ValueError('not a badugi hand')
 
         super().__init__(cards)

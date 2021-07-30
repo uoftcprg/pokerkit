@@ -382,7 +382,7 @@ class PokerNature(SequentialActor):
         :return: The player that can be dealt hole cards.
         """
         if not self.can_deal_hole():
-            raise ValueError('The nature cannot deal hole cards')
+            raise ValueError('cannot deal hole cards')
 
         return self._get_hole_deal_action().deal_player
 
@@ -393,7 +393,7 @@ class PokerNature(SequentialActor):
         :return: The number of cards to deal to the player hole.
         """
         if not self.can_deal_hole():
-            raise ValueError('The nature cannot deal hole cards')
+            raise ValueError('cannot deal hole cards')
 
         return self._get_hole_deal_action().deal_count
 
@@ -404,7 +404,7 @@ class PokerNature(SequentialActor):
         :return: The number of cards to deal to the board.
         """
         if not self.can_deal_board():
-            raise ValueError('The nature cannot deal board cards')
+            raise ValueError('cannot deal board cards')
 
         return self._get_board_deal_action().deal_count
 
@@ -505,7 +505,7 @@ class PokerPlayer(SequentialActor):
         elif len(values) == 1:
             return values[0]
 
-        raise ValueError('Multiple possible blind values exist')
+        raise ValueError('multiple possible blind values')
 
     @property
     def total(self):
@@ -570,7 +570,7 @@ class PokerPlayer(SequentialActor):
         :return: The check/call amount.
         """
         if not self.can_check_call():
-            raise ValueError('The player cannot check/call')
+            raise ValueError('cannot check/call')
 
         return self._get_check_call_action().amount
 
@@ -584,7 +584,7 @@ class PokerPlayer(SequentialActor):
         :return: The minimum bet/raise amount.
         """
         if not self.can_bet_raise():
-            raise ValueError('The player cannot bet/raise')
+            raise ValueError('cannot bet/raise')
 
         return self._get_bet_raise_action().min_amount
 
@@ -598,7 +598,7 @@ class PokerPlayer(SequentialActor):
         :return: The maximum bet/raise amount.
         """
         if not self.can_bet_raise():
-            raise ValueError('The player cannot bet/raise')
+            raise ValueError('cannot bet/raise')
 
         return self._get_bet_raise_action().max_amount
 
@@ -617,7 +617,7 @@ class PokerPlayer(SequentialActor):
         :return: The pot bet/raise amount.
         """
         if not self.can_bet_raise():
-            raise ValueError('The player cannot bet/raise')
+            raise ValueError('cannot bet/raise')
 
         return self._get_bet_raise_action().pot_amount
 
@@ -712,7 +712,7 @@ class PokerPlayer(SequentialActor):
         :return: True if the showdown is necessary, else False.
         """
         if not self.can_showdown():
-            raise ValueError('The player cannot showdown')
+            raise ValueError('cannot showdown')
 
         return self._get_showdown_action().is_necessary()
 

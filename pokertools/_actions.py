@@ -282,7 +282,7 @@ class ShowdownAction(PokerAction):
         super().verify()
 
         if not self.actor.game.stage.is_showdown_stage():
-            raise GameFrameError('Game not in showdown')
+            raise GameFrameError('not in showdown')
 
     def apply(self):
         if self.forced is None:

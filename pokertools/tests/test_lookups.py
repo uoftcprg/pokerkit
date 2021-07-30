@@ -2,7 +2,9 @@ from os.path import exists
 from pathlib import Path
 from unittest import TestCase, main, skipUnless
 
-from pokertools import BadugiHand, LowballA5Hand, ShortDeckHand, StandardHand, parse_cards
+from pokertools import (
+    BadugiHand, LowballA5Hand, ShortDeckHand, StandardHand, parse_cards,
+)
 
 TEST_DIR = Path(__file__).parent / 'lookups'
 
