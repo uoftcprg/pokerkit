@@ -1,6 +1,8 @@
 from unittest import TestCase, main
 
-from pokertools import FixedLimitFiveCardOmahaHoldEm, PotLimitFiveCardOmahaHoldEm, Stakes
+from pokertools import (
+    FixedLimitFiveCardOmahaHoldEm, PotLimitFiveCardOmahaHoldEm, Stakes,
+)
 from pokertools.tests import PokerTestCaseMixin
 
 
@@ -8,7 +10,9 @@ class FixedLimitFiveCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = FixedLimitFiveCardOmahaHoldEm
 
     def test_hands(self):
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(0, (50000, 100000)), (125945025, 67847350)).parse(
+        self.assert_terminal_poker_game(self.GAME_TYPE(
+            Stakes(0, (50000, 100000)), (125945025, 67847350),
+        ).parse(
             'dh Ah3sKsKh2c', 'dh 6d9s7d8h2d',
             'cc', 'cc',
             'db 4s5c2h',
@@ -25,7 +29,9 @@ class PotLimitFiveCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = PotLimitFiveCardOmahaHoldEm
 
     def test_hands(self):
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(0, (50000, 100000)), (125945025, 67847350)).parse(
+        self.assert_terminal_poker_game(self.GAME_TYPE(
+            Stakes(0, (50000, 100000)), (125945025, 67847350),
+        ).parse(
             'dh Ah3sKsKh2c', 'dh 6d9s7d8h2d',
             'br 300000', 'br 900000', 'br 2700000', 'br 8100000', 'cc',
             'db 4s5c2h',

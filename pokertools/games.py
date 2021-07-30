@@ -4,9 +4,10 @@ from pokertools.game import PokerGame
 from pokertools.limits import FixedLimit, NoLimit, PotLimit
 from pokertools.stakes import Stakes
 from pokertools.variants import (
-    BadugiVariant, FiveCardDrawVariant, FiveCardOmahaHoldEmVariant, GreekHoldEmVariant, KuhnPokerVariant,
-    OmahaHoldEmVariant, ShortDeckHoldEmVariant, SingleDrawLowball27Variant, SixCardOmahaHoldEmVariant,
-    TexasHoldEmVariant, TripleDrawLowball27Variant,
+    BadugiVariant, FiveCardDrawVariant, FiveCardOmahaHoldEmVariant,
+    GreekHoldEmVariant, KuhnPokerVariant, OmahaHoldEmVariant,
+    ShortDeckHoldEmVariant, SingleDrawLowball27Variant,
+    SixCardOmahaHoldEmVariant, TexasHoldEmVariant, TripleDrawLowball27Variant,
 )
 
 FixedLimitTexasHoldEm = partial(PokerGame, FixedLimit, TexasHoldEmVariant)
@@ -17,12 +18,18 @@ NoLimitTexasHoldEm = partial(PokerGame, NoLimit, TexasHoldEmVariant)
 PotLimitOmahaHoldEm = partial(PokerGame, PotLimit, OmahaHoldEmVariant)
 """Pot-Limit Omaha Hold'em"""
 
-FixedLimitFiveCardOmahaHoldEm = partial(PokerGame, FixedLimit, FiveCardOmahaHoldEmVariant)
+FixedLimitFiveCardOmahaHoldEm = partial(
+    PokerGame, FixedLimit, FiveCardOmahaHoldEmVariant,
+)
 """Fixed-Limit 5-Card Omaha Hold'em"""
-PotLimitFiveCardOmahaHoldEm = partial(PokerGame, PotLimit, FiveCardOmahaHoldEmVariant)
+PotLimitFiveCardOmahaHoldEm = partial(
+    PokerGame, PotLimit, FiveCardOmahaHoldEmVariant,
+)
 """Pot-Limit 5-Card Omaha Hold'em"""
 
-PotLimitSixCardOmahaHoldEm = partial(PokerGame, PotLimit, SixCardOmahaHoldEmVariant)
+PotLimitSixCardOmahaHoldEm = partial(
+    PokerGame, PotLimit, SixCardOmahaHoldEmVariant,
+)
 """Pot-Limit 6-Card Omaha Hold'em"""
 
 FixedLimitGreekHoldEm = partial(PokerGame, FixedLimit, GreekHoldEmVariant)
@@ -45,13 +52,21 @@ NoLimitFiveCardDraw = partial(PokerGame, NoLimit, FiveCardDrawVariant)
 FixedLimitBadugi = partial(PokerGame, FixedLimit, BadugiVariant)
 """Fixed-Limit Badugi"""
 
-NoLimitSingleDrawLowball27 = partial(PokerGame, NoLimit, SingleDrawLowball27Variant)
+NoLimitSingleDrawLowball27 = partial(
+    PokerGame, NoLimit, SingleDrawLowball27Variant,
+)
 """No-Limit 2-to-7 Single Draw Lowball"""
 
-FixedLimitTripleDrawLowball27 = partial(PokerGame, FixedLimit, TripleDrawLowball27Variant)
+FixedLimitTripleDrawLowball27 = partial(
+    PokerGame, FixedLimit, TripleDrawLowball27Variant,
+)
 """Fixed-Limit 2-to-7 Triple Draw Lowball"""
-PotLimitTripleDrawLowball27 = partial(PokerGame, PotLimit, TripleDrawLowball27Variant)
+PotLimitTripleDrawLowball27 = partial(
+    PokerGame, PotLimit, TripleDrawLowball27Variant,
+)
 """Pot-Limit 2-to-7 Triple Draw Lowball"""
 
-KuhnPoker = partial(PokerGame, FixedLimit, KuhnPokerVariant, Stakes(1, ()), (2, 2))
+KuhnPoker = partial(
+    PokerGame, FixedLimit, KuhnPokerVariant, Stakes(1, ()), (2, 2),
+)
 """Fixed-Limit Kuhn Poker"""

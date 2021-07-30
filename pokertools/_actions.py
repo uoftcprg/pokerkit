@@ -31,15 +31,15 @@ class DealingAction(PokerAction, ABC):
         super().verify()
 
         if not self.actor.game.stage.is_dealing_stage():
-            raise GameFrameError('Dealing is only allowed in dealing stages')
+            raise GameFrameError('not a dealing stage')
 
         if self.cards is not None:
             if not all(map(self.actor.game.deck.__contains__, self.cards)):
-                raise GameFrameError('All cards dealt must be in deck')
+                raise GameFrameError('some or one cards not in deck')
             elif not distinct(self.cards):
-                raise GameFrameError('Card must not have any duplicates')
+                raise GameFrameError('duplicates in cards')
             elif len(self.cards) != self.deal_count:
-                raise GameFrameError(f'The number of dealt cards must be {self.deal_count}.')
+                raise GameFrameError(f'number of deals not {self.deal_count}.')
 
     def apply(self):
         if self.cards is None:
@@ -70,15 +70,15 @@ class HoleDealingAction(DealingAction):
 
     def verify_player(self, player):
         if player.is_mucked():
-            raise GameFrameError('Cannot deal to a mucked player')
+            raise GameFrameError('deal to mucked player')
         elif len(player.hole) >= self.actor.game.stage.deal_target:
-            raise GameFrameError('The player must not have been dealt already')
+            raise GameFrameError('player already dealt')
 
     def verify(self):
         super().verify()
 
         if not self.actor.game.stage.is_hole_dealing_stage():
-            raise GameFrameError('Hole card dealing is not allowed')
+            raise GameFrameError('not a hole dealing stage')
 
         self.verify_player(self.deal_player)
 
@@ -93,9 +93,9 @@ class BoardDealingAction(DealingAction):
         super().verify()
 
         if not self.actor.game.stage.is_board_dealing_stage():
-            raise GameFrameError('Board card dealing is not allowed')
+            raise GameFrameError('not a board dealing stage')
         elif len(self.actor.game.board) >= self.actor.game.stage.deal_target:
-            raise GameFrameError('The board must not have been dealt already')
+            raise GameFrameError('board already dealt')
 
     def deal(self):
         self.actor.game._board.extend(self.cards)
@@ -106,15 +106,17 @@ class BettingAction(PokerAction, ABC):
         super().verify()
 
         if not self.actor.game.stage.is_betting_stage():
-            raise GameFrameError('Not a betting round')
+            raise GameFrameError('not a betting round')
 
 
 class FoldAction(BettingAction):
     def verify(self):
         super().verify()
 
-        if self.actor.bet >= max(map(PokerPlayer.bet.fget, self.actor.game.players)):
-            raise GameFrameError('Folding action must not be redundant')
+        if self.actor.bet >= max(map(
+                PokerPlayer.bet.fget, self.actor.game.players,
+        )):
+            raise GameFrameError('redundant fold')
 
     def apply(self):
         self.actor._status = False
@@ -123,7 +125,9 @@ class FoldAction(BettingAction):
 class CheckCallAction(BettingAction):
     @property
     def amount(self):
-        return min(self.actor.stack, max(map(PokerPlayer.bet.fget, self.actor.game.players)) - self.actor.bet)
+        return min(self.actor.stack, max(map(
+            PokerPlayer.bet.fget, self.actor.game.players,
+        )) - self.actor.bet)
 
     def apply(self):
         amount = self.amount
@@ -153,35 +157,45 @@ class BetRaiseAction(BettingAction):
     def verify(self):
         super().verify()
 
-        if max(map(PokerPlayer.bet.fget, self.actor.game.players)) >= self.actor.total:
-            raise GameFrameError('Cannot bet/raise when the stack of the player is covered')
-        elif not any(map(PokerPlayer._is_relevant, filter(partial(is_not, self.actor), self.actor.game.players))):
-            raise GameFrameError('Cannot bet/raise when redundant')
-        elif self.actor.game._bet_raise_count == self.actor.game.limit._max_count:
-            raise GameFrameError('Too many number of bets/raises')
+        if self.actor.total <= max(map(
+                PokerPlayer.bet.fget, self.actor.game.players,
+        )):
+            raise GameFrameError('player stack is covered')
+        elif not any(map(PokerPlayer._is_relevant, filter(
+                partial(is_not, self.actor), self.actor.game.players,
+        ))):
+            raise GameFrameError('redundant bet/raise')
+        elif self.actor.game._bet_raise_count \
+                == self.actor.game.limit._max_count:
+            raise GameFrameError('too many bets/raises')
 
         if self.amount is not None:
-            if not self.min_amount <= self.amount <= self.max_amount:
-                raise GameFrameError(
-                    f'The bet/raise amount {self.amount} is not within [{self.min_amount}, {self.max_amount}]'
-                )
+            if self.amount < self.min_amount:
+                raise GameFrameError('amount below min-bet/raise')
+            elif self.amount > self.max_amount:
+                raise GameFrameError('amount above max-bet/raise')
 
     def apply(self):
         if self.amount is None:
             self.amount = self.min_amount
 
         self.actor.game._aggressor = self.actor
-        self.actor.game._max_delta = max(
-            self.actor.game._max_delta,
-            self.amount - max(map(PokerPlayer.bet.fget, self.actor.game.players)),
-        )
+        self.actor.game._max_delta = max(self.amount - max(map(
+            PokerPlayer.bet.fget, self.actor.game.players,
+        )), self.actor.game._max_delta)
         self.actor.game._bet_raise_count += 1
 
         self.actor._stack -= self.amount - self.actor.bet
         self.actor._bet = self.amount
 
-        players = list(filter(PokerPlayer._is_relevant, rotate(self.actor.game.players, self.actor.index)))
-        self.actor.game._queue = players[1:] if players and players[0] is self.actor else players
+        players = list(filter(PokerPlayer._is_relevant, rotate(
+            self.actor.game.players, self.actor.index,
+        )))
+
+        if players and players[0] is self.actor:
+            self.actor.game._queue = players[1:]
+        else:
+            self.actor.game._queue = players
 
 
 class DiscardDrawAction(PokerAction):
@@ -204,34 +218,44 @@ class DiscardDrawAction(PokerAction):
         super().verify()
 
         if not self.actor.game.stage.is_discard_draw_stage():
-            raise GameFrameError('Not a draw round')
+            raise GameFrameError('not a draw round')
         elif not all(map(self.actor.hole.__contains__, self.discarded_cards)):
-            raise GameFrameError('All hole cards must belong to the actor.')
+            raise GameFrameError('hole cards not in actor hole')
 
         if self.drawn_cards is None:
             if not distinct(self.discarded_cards):
-                raise GameFrameError('Duplicates in cards')
+                raise GameFrameError('duplicates in cards')
         else:
             if not all(map(self.population.__contains__, self.drawn_cards)):
-                raise GameFrameError('All cards must be in deck (or the muck if insufficient)')
+                raise GameFrameError('cards not in deck or muck if not enough')
             elif any(map(self.actor.seen.__contains__, self.drawn_cards)):
-                raise GameFrameError('The poker player should not draw any card they had before')
+                raise GameFrameError('drawing card previously seen')
             elif not distinct(self.discarded_cards + self.drawn_cards):
-                raise GameFrameError('Duplicates in cards')
+                raise GameFrameError('duplicates in cards')
             elif len(self.discarded_cards) != len(self.drawn_cards):
-                raise GameFrameError('The discarded cards must be of same length as the drawn cards.')
+                raise GameFrameError('cannot match discarded cards with draws')
 
     def apply(self):
         if self.drawn_cards is None:
-            self.drawn_cards = sample(set(self.population) - set(self.actor.seen), len(self.discarded_cards))
+            self.drawn_cards = sample(
+                set(self.population) - set(self.actor.seen),
+                len(self.discarded_cards),
+            )
 
-        self.actor.game._deck.draw(filter(self.actor.game.deck.__contains__, self.drawn_cards))
-        self.actor.game._muck.draw(filter(self.actor.game.muck.__contains__, self.drawn_cards))
+        self.actor.game._deck.draw(filter(
+            self.actor.game.deck.__contains__, self.drawn_cards,
+        ))
+        self.actor.game._muck.draw(filter(
+            self.actor.game.muck.__contains__, self.drawn_cards,
+        ))
         self.actor.game._muck.extend(self.discarded_cards)
         self.actor._seen.extend(self.drawn_cards)
 
-        for discarded_card, drawn_card in zip(self.discarded_cards, self.drawn_cards):
-            self.actor._hole[self.actor.hole.index(discarded_card)] = drawn_card
+        for discarded_card, drawn_card in zip(
+                self.discarded_cards, self.drawn_cards,
+        ):
+            index = self.actor.hole.index(discarded_card)
+            self.actor._hole[index] = drawn_card
 
 
 class ShowdownAction(PokerAction):
@@ -245,8 +269,11 @@ class ShowdownAction(PokerAction):
 
         for player in self.actor.game.players:
             if player.is_shown():
-                for i, (actor_hand, player_hand) in enumerate(zip(self.actor.hands, player.hands)):
-                    if player_hand > actor_hand and player._put >= self.actor._put:
+                for i, (actor_hand, player_hand) in enumerate(zip(
+                        self.actor.hands, player.hands,
+                )):
+                    if player_hand > actor_hand \
+                            and player._put >= self.actor._put:
                         staked[i] = False
 
         return any(staked)

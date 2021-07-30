@@ -1,6 +1,8 @@
 from unittest import TestCase, main
 
-from pokertools import FixedLimitGreekHoldEm, NoLimitGreekHoldEm, PotLimitGreekHoldEm, Stakes
+from pokertools import (
+    FixedLimitGreekHoldEm, NoLimitGreekHoldEm, PotLimitGreekHoldEm, Stakes,
+)
 from pokertools.tests import PokerTestCaseMixin
 
 
@@ -8,7 +10,9 @@ class FixedLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = FixedLimitGreekHoldEm
 
     def test_hands(self):
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 5), small_bet=10), (100, 100)).parse(
+        self.assert_terminal_poker_game(self.GAME_TYPE(
+            Stakes(1, (2, 5), small_bet=10), (100, 100),
+        ).parse(
             'dh AhAc', 'dh AsKs',
             'br', 'cc',
             'db KcQdJh',
@@ -25,7 +29,9 @@ class PotLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     GAME_TYPE = PotLimitGreekHoldEm
 
     def test_hands(self):
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 5), small_bet=10), (100, 100)).parse(
+        self.assert_terminal_poker_game(self.GAME_TYPE(
+            Stakes(1, (2, 5), small_bet=10), (100, 100),
+        ).parse(
             'dh AhAc', 'dh AsKs',
             'br', 'cc',
             'db KcQdJh',
@@ -44,7 +50,9 @@ class NoLimitGreekHoldEmTestCase(PotLimitGreekHoldEmTestCase, TestCase):
     def test_hands(self):
         super().test_hands()
 
-        self.assert_terminal_poker_game(self.GAME_TYPE(Stakes(1, (2, 5)), (100, 100)).parse(
+        self.assert_terminal_poker_game(self.GAME_TYPE(
+            Stakes(1, (2, 5)), (100, 100),
+        ).parse(
             'dh AhAc', 'dh AsKs',
             'br', 'cc',
             'db KcQdJh',

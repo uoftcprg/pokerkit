@@ -3,16 +3,20 @@ from abc import ABC, abstractmethod
 from pokertools.cards import Card, Rank, Suit
 from pokertools.decks import Deck, ShortDeck, StandardDeck
 from pokertools.evaluators import (
-    BadugiEvaluator, GreekEvaluator, Lowball27Evaluator, OmahaEvaluator, RankEvaluator, ShortDeckEvaluator,
-    StandardEvaluator,
+    BadugiEvaluator, GreekEvaluator, Lowball27Evaluator, OmahaEvaluator,
+    RankEvaluator, ShortDeckEvaluator, StandardEvaluator,
 )
-from pokertools.stages import BettingStage, BoardDealingStage, DiscardDrawStage, HoleDealingStage, ShowdownStage
+from pokertools.stages import (
+    BettingStage, BoardDealingStage, DiscardDrawStage, HoleDealingStage,
+    ShowdownStage,
+)
 
 
 class Variant(ABC):
     """Variant is the abstract base class for all poker variants.
 
-    Variants contain defines various information about their types of poker games.
+    Variants contain defines various information about their types of
+    poker games.
 
     :param game: The game of this poker variant.
     """
@@ -30,7 +34,8 @@ class Variant(ABC):
 
     @abstractmethod
     def create_stages(self):
-        """Returns the stages of the poker game defined by this poker variant.
+        """Returns the stages of the poker game defined by this poker
+        variant.
 
         :return: The stages of this poker variant.
         """
@@ -38,7 +43,8 @@ class Variant(ABC):
 
     @abstractmethod
     def create_evaluators(self):
-        """Returns the evaluators of the poker game defined by this poker variant.
+        """Returns the evaluators of the poker game defined by this
+        poker variant.
 
         :return: The evaluators of this poker variant.
         """
@@ -46,7 +52,8 @@ class Variant(ABC):
 
     @abstractmethod
     def create_deck(self):
-        """Creates a deck of the poker game defined by this poker variant.
+        """Creates a deck of the poker game defined by this poker
+        variant.
 
         :return: The created deck of this poker variant.
         """
@@ -54,7 +61,9 @@ class Variant(ABC):
 
 
 class StaticHoleVariantMixin(Variant, ABC):
-    """StaticHoleVariantMixin is the mixin for all game variants with a static number of hole cards."""
+    """StaticHoleVariantMixin is the mixin for all game variants with a
+    static number of hole cards.
+    """
 
     @property
     @abstractmethod
@@ -67,14 +76,20 @@ class StaticHoleVariantMixin(Variant, ABC):
 
 
 class HoldEmVariant(StaticHoleVariantMixin, Variant, ABC):
-    """HoldEmVariant is the abstract base class for all Hold'em game variants."""
+    """HoldEmVariant is the abstract base class for all Hold'em game
+    variants.
+    """
 
     def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, self.game), BettingStage(False, self.game),
-            BoardDealingStage(3, self.game), BettingStage(False, self.game),
-            BoardDealingStage(1, self.game), BettingStage(True, self.game),
-            BoardDealingStage(1, self.game), BettingStage(True, self.game),
+            HoleDealingStage(False, self.hole_card_count, self.game),
+            BettingStage(False, self.game),
+            BoardDealingStage(3, self.game),
+            BettingStage(False, self.game),
+            BoardDealingStage(1, self.game),
+            BettingStage(True, self.game),
+            BoardDealingStage(1, self.game),
+            BettingStage(True, self.game),
             ShowdownStage(self.game),
         )
 
@@ -108,7 +123,9 @@ class OmahaHoldEmVariant(HoldEmVariant):
 
 
 class FiveCardOmahaHoldEmVariant(OmahaHoldEmVariant):
-    """FiveCardOmahaHoldEmVariant is the class for 5-Card Omaha Hold'em game variants."""
+    """FiveCardOmahaHoldEmVariant is the class for 5-Card Omaha Hold'em
+    game variants.
+    """
 
     @property
     def hole_card_count(self):
@@ -116,7 +133,9 @@ class FiveCardOmahaHoldEmVariant(OmahaHoldEmVariant):
 
 
 class SixCardOmahaHoldEmVariant(OmahaHoldEmVariant):
-    """SixCardOmahaHoldEmVariant is the class for 6-Card Omaha Hold'em game variants."""
+    """SixCardOmahaHoldEmVariant is the class for 6-Card Omaha Hold'em
+    game variants.
+    """
 
     @property
     def hole_card_count(self):
@@ -138,7 +157,9 @@ class GreekHoldEmVariant(HoldEmVariant):
 
 
 class ShortDeckHoldEmVariant(HoldEmVariant):
-    """ShortDeckHoldEmVariant is the class for Short-deck Hold'em game variants."""
+    """ShortDeckHoldEmVariant is the class for Short-deck Hold'em game
+    variants.
+    """
 
     @property
     def hole_card_count(self):
@@ -152,36 +173,50 @@ class ShortDeckHoldEmVariant(HoldEmVariant):
 
 
 class DrawVariant(StaticHoleVariantMixin, Variant, ABC):
-    """DrawVariant is the abstract base class for all draw game variants."""
+    """DrawVariant is the abstract base class for all draw game
+    variants.
+    """
     ...
 
 
 class SingleDrawVariant(DrawVariant, ABC):
-    """SingleDrawVariant is the abstract base class for all single draw game variants."""
+    """SingleDrawVariant is the abstract base class for all single draw
+    game variants.
+    """
 
     def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, self.game), BettingStage(False, self.game),
-            DiscardDrawStage(self.game), BettingStage(True, self.game),
+            HoleDealingStage(False, self.hole_card_count, self.game),
+            BettingStage(False, self.game),
+            DiscardDrawStage(self.game),
+            BettingStage(True, self.game),
             ShowdownStage(self.game),
         )
 
 
 class TripleDrawVariant(DrawVariant, ABC):
-    """TripleDrawVariant is the abstract base class for all triple draw game variants."""
+    """TripleDrawVariant is the abstract base class for all triple draw
+    game variants.
+    """
 
     def create_stages(self):
         return (
-            HoleDealingStage(False, self.hole_card_count, self.game), BettingStage(False, self.game),
-            DiscardDrawStage(self.game), BettingStage(False, self.game),
-            DiscardDrawStage(self.game), BettingStage(True, self.game),
-            DiscardDrawStage(self.game), BettingStage(True, self.game),
+            HoleDealingStage(False, self.hole_card_count, self.game),
+            BettingStage(False, self.game),
+            DiscardDrawStage(self.game),
+            BettingStage(False, self.game),
+            DiscardDrawStage(self.game),
+            BettingStage(True, self.game),
+            DiscardDrawStage(self.game),
+            BettingStage(True, self.game),
             ShowdownStage(self.game),
         )
 
 
 class FiveCardDrawVariant(SingleDrawVariant):
-    """FiveCardDrawVariant is the class for Five-card Draw game variants."""
+    """FiveCardDrawVariant is the class for Five-card Draw game
+    variants.
+    """
 
     @property
     def hole_card_count(self):
@@ -209,7 +244,9 @@ class BadugiVariant(TripleDrawVariant):
 
 
 class SingleDrawLowball27Variant(SingleDrawVariant):
-    """SingleDrawLowball27Variant is the class for 2-7 Single Draw Lowball game variants."""
+    """SingleDrawLowball27Variant is the class for 2-7 Single Draw
+    Lowball game variants.
+    """
 
     @property
     def hole_card_count(self):
@@ -223,7 +260,9 @@ class SingleDrawLowball27Variant(SingleDrawVariant):
 
 
 class TripleDrawLowball27Variant(TripleDrawVariant):
-    """TripleDrawLowball27Variant is the class for 2-7 Triple Draw Lowball game variants."""
+    """TripleDrawLowball27Variant is the class for 2-7 Triple Draw
+    Lowball game variants.
+    """
 
     @property
     def hole_card_count(self):
@@ -240,10 +279,18 @@ class KuhnPokerVariant(Variant):
     """KuhnPokerVariant is the class for Kuhn Poker game variants."""
 
     def create_stages(self):
-        return HoleDealingStage(False, 1, self.game), BettingStage(1, self.game), ShowdownStage(self.game)
+        return (
+            HoleDealingStage(False, 1, self.game),
+            BettingStage(1, self.game),
+            ShowdownStage(self.game),
+        )
 
     def create_evaluators(self):
         return RankEvaluator(),
 
     def create_deck(self):
-        return Deck((Card(Rank.JACK, Suit.SPADE), Card(Rank.QUEEN, Suit.SPADE), Card(Rank.KING, Suit.SPADE)))
+        return Deck((
+            Card(Rank.JACK, Suit.SPADE),
+            Card(Rank.QUEEN, Suit.SPADE),
+            Card(Rank.KING, Suit.SPADE),
+        ))

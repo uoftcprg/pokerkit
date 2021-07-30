@@ -6,25 +6,40 @@ from auxiliary import FrozenDict
 
 
 class Stakes:
-    """Stakes is the class for poker stakes. It contains information about various parameters of poker games, from ante,
-    blinds to small bets and big bets.
+    """Stakes is the class for poker stakes. It contains information
+    about various parameters of poker games, from ante, blinds to small
+    bets and big bets.
 
-    The term low-stakes, mid-stakes, and high-stakes just denote the magnitudes of the numeric values within the stakes.
+    The term low-stakes, mid-stakes, and high-stakes just denote the
+    magnitudes of the numeric values within the stakes.
 
     :param ante: The ante of this poker game.
     :param blinds: The blinds of this poker game.
-    :param small_bet: The optional small bet of the poker stakes, defaults to the maximum numeric value supplied.
-    :param big_bet: The optional big bet of the poker stakes, defaults to twice the small bet.
+    :param small_bet: The optional small bet of the poker stakes,
+                      defaults to the maximum numeric value supplied.
+    :param big_bet: The optional big bet of the poker stakes, defaults
+                    to twice the small bet.
     """
 
     def __init__(self, ante, blinds, small_bet=None, big_bet=None):
         self.__ante = ante
-        self.__blinds = FrozenDict(blinds if isinstance(blinds, Mapping) else enumerate(blinds))
+
+        if not isinstance(blinds, Mapping):
+            blinds = enumerate(blinds)
+
+        self.__blinds = FrozenDict(blinds)
 
         max_value = max(self.ante, max(self.blinds.values(), default=0))
 
-        self.__small_bet = max_value if small_bet is None else small_bet
-        self.__big_bet = 2 * self.small_bet if big_bet is None else big_bet
+        if small_bet is None:
+            self.__small_bet = max_value
+        else:
+            self.__small_bet = small_bet
+
+        if big_bet is None:
+            self.__big_bet = 2 * self.small_bet
+        else:
+            self.__big_bet = big_bet
 
         self._verify(max_value)
 
@@ -40,7 +55,8 @@ class Stakes:
     def blinds(self):
         """Returns the blinds of this poker game.
 
-        Forced bets such as straddles and bring-ins are included in this property.
+        Forced bets such as straddles and bring-ins are included in this
+        property.
 
         :return: The blinds of this poker game.
         """
@@ -63,16 +79,15 @@ class Stakes:
         return self.__big_bet
 
     def _verify(self, max_value):
-        filtered_bets = list(filter(truth, self.blinds.values()))
+        blinds = list(filter(truth, self.blinds.values()))
 
-        if filtered_bets != sorted(filtered_bets):
-            raise ValueError('Forced bets must be sorted (except zero values)')
+        if blinds != sorted(blinds):
+            raise ValueError('non-zero blinds are not sorted')
         elif self.ante < 0:
-            raise ValueError('The ante must be a positive value')
+            raise ValueError('ante is negative')
         elif any(map(partial(gt, 0), self.blinds.values())):
-            raise ValueError('The blinds must be positive values')
+            raise ValueError('blind is negative')
         elif not max_value:
-            raise ValueError('At least one positive value must be supplied as the ante or the blinds')
+            raise ValueError('all values are zero')
         elif not max_value <= self.small_bet <= self.big_bet:
-            raise ValueError('The maximum forced bets must be less than or equal to the small bet which, in turn, '
-                             'should be less than or equal to the big bet')
+            raise ValueError('invalid configuration')

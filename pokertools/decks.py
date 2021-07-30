@@ -17,14 +17,16 @@ class Deck(list):
         shuffle(self)
 
     def draw(self, cards):
-        """Draws the number of cards or the specified cards from this deck.
+        """Draws the number of cards or the specified cards from this
+        deck.
 
-        :param cards: The number of cards or the specified cards to be drawn.
+        :param cards: The number of cards or the specified cards to be
+                      drawn.
         :return: The removed cards.
         """
         if isinstance(cards, int):
             if len(self) < cards:
-                raise ValueError('Number of dealt cards must be less than or equal to the length of this deck')
+                raise ValueError('not enough cards in deck')
 
             cards = self[:cards]
         elif isinstance(cards, Iterator):

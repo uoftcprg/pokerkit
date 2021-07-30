@@ -28,7 +28,9 @@ class DeckTestCase(TestCase):
 
         self.assertEqual(len(deck), 52)
         self.assertIn(parse_card('4h'), deck)
-        self.assertEqual(deck.draw(parse_cards('4h4c4s')), tuple(parse_cards('4h4c4s')))
+        self.assertEqual(deck.draw(parse_cards('4h4c4s')), tuple(parse_cards(
+            '4h4c4s'
+        )))
         self.assertEqual(len(deck), 49)
         self.assertNotIn(parse_card('4h'), deck)
         self.assertEqual(len(deck.draw(1)), 1)

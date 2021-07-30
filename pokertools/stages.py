@@ -41,7 +41,8 @@ class Stage(ABC):
     def is_board_dealing_stage(self):
         """Returns whether or not this stage is a board dealing stage.
 
-        :return: True if this stage is a board dealing stage, else False.
+        :return: True if this stage is a board dealing stage, else
+                 False.
         """
         return isinstance(self, BoardDealingStage)
 
@@ -60,9 +61,11 @@ class Stage(ABC):
         return isinstance(self, BettingStage)
 
     def is_discard_draw_stage(self):
-        """Returns whether or not this stage is a discard and draw stage.
+        """Returns whether or not this stage is a discard and draw
+        stage.
 
-        :return: True if this stage is a discard and draw stage, else False.
+        :return: True if this stage is a discard and draw stage, else
+                 False.
         """
         return isinstance(self, DiscardDrawStage)
 
@@ -96,9 +99,11 @@ class DealingStage(Stage, ABC):
 
     @property
     def deal_target(self):
-        """Returns the target number of cards to be dealt by the end of this stage.
+        """Returns the target number of cards to be dealt by the end of
+        this stage.
 
-        :return: The target number of cards to be dealt by the end of this stage.
+        :return: The target number of cards to be dealt by the end of
+                 this stage.
         """
         count = 0
 
@@ -125,7 +130,8 @@ class DealingStage(Stage, ABC):
 class HoleDealingStage(DealingStage):
     """HoleDealingStage is the class for hole card dealing stages.
 
-    :param status: The status of the hole card being dealt. True if the dealing is made face-up, False otherwise.
+    :param status: The status of the hole card being dealt. True if the
+                   dealing is made face-up, False otherwise.
     :param deal_count: The number of hole cards to deal.
     """
 
@@ -136,9 +142,11 @@ class HoleDealingStage(DealingStage):
 
     @property
     def status(self):
-        """Returns the status of the hole card being dealt in this hole dealing stage.
+        """Returns the status of the hole card being dealt in this hole
+        dealing stage.
 
-        True is returned if the dealing is made face-up. Otherwise, False is returned.
+        True is returned if the dealing is made face-up. Otherwise,
+        False is returned.
 
         :return: The status of the hole card being dealt.
         """
@@ -147,7 +155,9 @@ class HoleDealingStage(DealingStage):
     def _is_done(self):
         return super()._is_done() or all(map(
             partial(eq, self.deal_target),
-            map(len, map(PokerPlayer.hole.fget, filter(PokerPlayer.is_active, self.game.players))),
+            map(len, map(PokerPlayer.hole.fget, filter(
+                PokerPlayer.is_active, self.game.players,
+            ))),
         ))
 
 
@@ -159,10 +169,14 @@ class BoardDealingStage(DealingStage):
 
 
 class QueuedStage(Stage, ABC):
-    """QueuedStage is the abstract base class for all stages where players act in queued order."""
+    """QueuedStage is the abstract base class for all stages where
+    players act in queued order.
+    """
 
     def _is_done(self):
-        return super()._is_done() or (self.game.stage is self and not self.game._queue)
+        return super()._is_done() or (
+                self.game.stage is self and not self.game._queue
+        )
 
     def _close(self):
         super()._close()
@@ -173,7 +187,8 @@ class QueuedStage(Stage, ABC):
 class BettingStage(QueuedStage):
     """BettingStage is the class for betting stages.
 
-    :param big: True if this betting stage's min-raise is the big bet, else False. (Only relevant in fixed-limit games)
+    :param big: True if this betting stage's min-raise is the big bet,
+                else False. (Only relevant in fixed-limit games)
     """
 
     def __init__(self, big, game):
@@ -185,15 +200,20 @@ class BettingStage(QueuedStage):
     def initial_bet_amount(self):
         """Returns the initial bet amount of this betting stage.
 
-        The initial bet amount depends on the maximum value of the forced bets and whether or not this betting stage is
-        a big betting stage and the game if fixed-limit.
+        The initial bet amount depends on the maximum value of the
+        forced bets and whether or not this betting stage is a big
+        betting stage and the game if fixed-limit.
 
         :return: The initial bet amount of this betting stage.
         """
-        return self.game.big_bet if self.is_big() and self.game.limit.is_fixed_limit() else self.game.small_bet
+        if self.is_big() and self.game.limit.is_fixed_limit():
+            return self.game.big_bet
+        else:
+            return self.game.small_bet
 
     def is_big(self):
-        """Returns whether or not this betting stage is a big betting stage.
+        """Returns whether or not this betting stage is a big betting
+        stage.
 
         :return: True if this betting stage is big, else False.
         """
@@ -211,11 +231,14 @@ class BettingStage(QueuedStage):
         self.game._aggressor = max(players, key=PokerPlayer.bet.fget)
 
         if blinded:
-            opener = players[(players.index(self.game._aggressor) + 1) % len(players)]
+            index = (players.index(self.game._aggressor) + 1) % len(players)
+            opener = players[index]
         else:
             opener = self.game._aggressor
 
-        self.game._actor, *self.game._queue = rotate(players, players.index(opener))
+        self.game._actor, *self.game._queue = rotate(
+            players, players.index(opener),
+        )
         self.game._bet_raise_count = int(blinded)
         self.game._max_delta = self.initial_bet_amount
 
@@ -238,14 +261,18 @@ class DiscardDrawStage(QueuedStage):
     def _open(self):
         super()._open()
 
-        self.game._actor, *self.game._queue = list(filter(PokerPlayer.is_active, self.game.players))
+        self.game._actor, *self.game._queue = list(
+            filter(PokerPlayer.is_active, self.game.players)
+        )
 
 
 class ShowdownStage(QueuedStage):
     """ShowdownStage is the class for showdown stages."""
 
     def _is_done(self):
-        return super()._is_done() or (self is not self.game.stage and self.game._is_all_in())
+        return super()._is_done() or (
+                self is not self.game.stage and self.game._is_all_in()
+        )
 
     def _open(self):
         super()._open()

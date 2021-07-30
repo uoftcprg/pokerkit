@@ -1,14 +1,13 @@
 from collections.abc import Hashable
 from enum import Enum, unique
 from functools import total_ordering
-from itertools import islice
 
 from auxiliary import IndexedEnum, SupportsLessThan, chunk, const, distinct
 
 
 @unique
 class Rank(IndexedEnum):
-    """Rank is the enum class for ranks."""
+    """The enum class for ranks."""
     TWO = '2'
     """The rank of 2."""
     THREE = '3'
@@ -39,7 +38,7 @@ class Rank(IndexedEnum):
 
 @unique
 class Suit(IndexedEnum):
-    """Suit is the enum class for suits."""
+    """The enum class for suits."""
     CLUB = 'c'
     """The suit of clubs."""
     DIAMOND = 'd'
@@ -52,7 +51,7 @@ class Suit(IndexedEnum):
 
 @unique
 class Ranks(Enum):
-    """Ranks is the enum class for tuples of ranks."""
+    """The enum class for tuples of ranks."""
     STANDARD = tuple(Rank)
     """The standard ranks (from deuce to ace)."""
     SHORT_DECK = tuple(Rank)[Rank.SIX.index:]
@@ -63,7 +62,7 @@ class Ranks(Enum):
 
 @total_ordering
 class Card(SupportsLessThan, Hashable):
-    """Card is the class for cards.
+    """The class for cards.
 
     :param rank: The optional rank of this card.
     :param suit: The optional suit of this card.
@@ -76,11 +75,16 @@ class Card(SupportsLessThan, Hashable):
     def __lt__(self, other):
         if not isinstance(other, Card):
             return NotImplemented
-
-        return self.rank < other.rank if self.suit == other.suit else self.suit < other.suit
+        elif self.suit == other.suit:
+            return self.rank < other.rank
+        else:
+            return self.suit < other.suit
 
     def __eq__(self, other):
-        return self.rank == other.rank and self.suit == other.suit if isinstance(other, Card) else NotImplemented
+        if isinstance(other, Card):
+            return self.rank == other.rank and self.suit == other.suit
+        else:
+            return NotImplemented
 
     def __hash__(self):
         return hash(self.rank) ^ hash(self.suit)
@@ -109,9 +113,9 @@ class Card(SupportsLessThan, Hashable):
 
 
 class HoleCard(Card):
-    """HoleCard is the class for hole cards.
+    """The class for hole cards.
 
-    :param status: The status of this hole card. True if exposed, False otherwise.
+    :param status: True if this hole card is exposed, False otherwise.
     :param card: The card value.
     """
 
@@ -141,60 +145,6 @@ class HoleCard(Card):
         return HoleCard(True, self)
 
 
-def parse_range(pattern):
-    """Parses the supplied pattern.
-
-    >>> from pokertools import parse_range
-    >>> parse_range('AKo')
-    frozenset({frozenset({Kc, Ah}), frozenset({Kc, As}), frozenset({Kh, Ac}), ..., frozenset({Ks, Ac})})
-    >>> parse_range('AKs')
-    frozenset({frozenset({Ks, As}), frozenset({Kc, Ac}), frozenset({Ad, Kd}), frozenset({Kh, Ah})})
-    >>> parse_range('AK')
-    frozenset({frozenset({Ad, Kd}), frozenset({Kh, Ah}), frozenset({Kc, Ad}), ..., frozenset({Kh, Ac})})
-    >>> parse_range('AA')
-    frozenset({frozenset({Ah, Ac}), frozenset({Ad, Ah}), frozenset({Ad, As}), ..., frozenset({As, Ac})})
-    >>> parse_range('QQ+')
-    frozenset({frozenset({Qc, Qh}), frozenset({Kc, Kd}), frozenset({Ad, As}), ..., frozenset({Qd, Qc})})
-    >>> parse_range('QT+')
-    frozenset({frozenset({Qd, Ts}), frozenset({Qd, Th}), frozenset({Jd, Qc}), ..., frozenset({Jh, Qc})})
-    >>> parse_range('QsTs')
-    frozenset({frozenset({Qs, Ts})})
-
-    :param pattern: The supplied pattern to be parsed.
-    :return: The parsed card sets.
-    :raises ValueError: If the pattern cannot be parsed.
-    """
-    card_sets = set()
-
-    if 2 <= len(pattern) <= 3 and pattern[-1] != '+':
-        ranks, flag = tuple(map(Rank, pattern[:2])), pattern[2:]
-        cards = set()
-
-        for suit in Suit:
-            cards.add(Card(ranks[0], suit))
-            cards.add(Card(ranks[1], suit))
-
-        for card_1 in cards:
-            for card_2 in cards:
-                if card_1.rank == ranks[0] and card_2.rank == ranks[1] and card_1 != card_2:
-                    if not flag or (flag == 's' and card_1.suit == card_2.suit) \
-                            or (flag == 'o' and card_1.suit != card_2.suit):
-                        card_sets.add(frozenset({card_1, card_2}))
-    elif 3 <= len(pattern) <= 4 and pattern[-1] == '+':
-        ranks, flag = tuple(map(Rank, pattern[:2])), pattern[2:-1]
-
-        if ranks[0] == ranks[1]:
-            for rank in islice(Rank, ranks[0].index, None):
-                card_sets |= parse_range(rank.value + rank.value + flag)
-        else:
-            for rank in islice(Rank, ranks[1].index, ranks[0].index):
-                card_sets |= parse_range(ranks[0].value + rank.value + flag)
-    else:
-        card_sets.add(frozenset(parse_cards(pattern)))
-
-    return frozenset(card_sets)
-
-
 def parse_cards(cards):
     """Parses the string of card representations.
 
@@ -215,15 +165,18 @@ def parse_card(card):
     if len(card) != 2:
         raise ValueError('Invalid card representation')
 
-    rank, suit = card
+    rank_str, suit_str = card
+    rank = None if rank_str == '?' else Rank(rank_str)
+    suit = None if suit_str == '?' else Suit(suit_str)
 
-    return Card(None if rank == '?' else Rank(rank), None if suit == '?' else Suit(suit))
+    return Card(rank, suit)
 
 
 def rainbow(cards):
     """Checks if all cards have a rainbow texture.
 
-    Cards have a rainbow texture when their suits are all unique to each other.
+    Cards have a rainbow texture when their suits are all unique to each
+    other.
 
     :param cards: The cards to check.
     :return: True if the cards have a rainbow texture, else False.

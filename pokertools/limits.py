@@ -21,7 +21,9 @@ class Limit(ABC):
 
     @property
     def _min_amount(self):
-        return min(max(map(PokerPlayer.bet.fget, self.game.players)) + self.game._max_delta, self.game.actor.total)
+        return min(max(map(
+            PokerPlayer.bet.fget, self.game.players,
+        )) + self.game._max_delta, self.game.actor.total)
 
     @property
     def _pot_amount(self):
@@ -80,7 +82,9 @@ class PotLimit(Limit):
 
     @property
     def _max_amount(self):
-        return clip(self._pot_amount_raw, self._min_amount, self.game.actor.total)
+        return clip(
+            self._pot_amount_raw, self._min_amount, self.game.actor.total,
+        )
 
     @property
     def _max_count(self):

@@ -61,7 +61,10 @@ class SuitedLookup(UnsuitedLookup, ABC):
         try:
             key = mask(map(Card.rank.fget, cards))
 
-            return min(self.suited[key], self.unsuited[key]) if suited(cards) else self.unsuited[key]
+            if suited(cards):
+                return min(self.suited[key], self.unsuited[key])
+            else:
+                return self.unsuited[key]
         except KeyError:
             raise ValueError('Invalid card combination')
 
@@ -160,7 +163,9 @@ def multiples(ranks, frequencies):
     for samples in combinations(reversed(ranks), freq):
         key = mask(samples) ** count
 
-        for sub_key in multiples(tuple(filterfalse(samples.__contains__, ranks)), frequencies):
+        for sub_key in multiples(
+                tuple(filterfalse(samples.__contains__, ranks)), frequencies,
+        ):
             keys.append(key * sub_key)
 
     frequencies[count] = freq

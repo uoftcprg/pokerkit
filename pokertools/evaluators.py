@@ -6,7 +6,10 @@ from itertools import chain, combinations
 from auxiliary import reverse_args
 
 from pokertools.cards import Card, Rank
-from pokertools.hands import BadugiHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand
+from pokertools.hands import (
+    BadugiHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand,
+    StandardHand,
+)
 
 
 class Evaluator(ABC):
@@ -15,7 +18,8 @@ class Evaluator(ABC):
     @classmethod
     @abstractmethod
     def evaluate(cls, hole_cards, board_cards):
-        """Evaluates the hand of the combinations of the hole cards and the board cards.
+        """Evaluates the hand of the combinations of the hole cards and
+        the board cards.
 
         :param hole_cards: The hole cards.
         :param board_cards: The board cards.
@@ -32,7 +36,9 @@ class StandardEvaluator(Evaluator):
 
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
-        return max(map(cls._hand_type, combinations(chain(hole_cards, board_cards), 5)))
+        return max(map(cls._hand_type, combinations(
+            chain(hole_cards, board_cards), 5,
+        )))
 
 
 class GreekEvaluator(StandardEvaluator):
@@ -43,7 +49,9 @@ class GreekEvaluator(StandardEvaluator):
         if isinstance(hole_cards, Iterator):
             hole_cards = tuple(hole_cards)
 
-        return max(map(cls._hand_type, map(partial(chain, hole_cards), combinations(board_cards, 3))))
+        return max(map(cls._hand_type, map(
+            partial(chain, hole_cards), combinations(board_cards, 3),
+        )))
 
 
 class OmahaEvaluator(GreekEvaluator):
@@ -54,7 +62,10 @@ class OmahaEvaluator(GreekEvaluator):
         if isinstance(board_cards, Iterator):
             board_cards = tuple(board_cards)
 
-        return max(map(partial(reverse_args(super().evaluate), board_cards), combinations(hole_cards, 2)))
+        return max(map(
+            partial(reverse_args(super().evaluate), board_cards),
+            combinations(hole_cards, 2),
+        ))
 
 
 class ShortDeckEvaluator(StandardEvaluator):
@@ -64,13 +75,17 @@ class ShortDeckEvaluator(StandardEvaluator):
 
 
 class Lowball27Evaluator(StandardEvaluator):
-    """Lowball27Evaluator is the class for Deuce-to-seven Lowball evaluators."""
+    """Lowball27Evaluator is the class for Deuce-to-seven Lowball
+    evaluators.
+    """
 
     _hand_type = Lowball27Hand
 
 
 class LowballA5Evaluator(StandardEvaluator):
-    """LowballA5Evaluator is the class for Ace-to-five Lowball evaluators."""
+    """LowballA5Evaluator is the class for Ace-to-five Lowball
+    evaluators.
+    """
 
     _hand_type = LowballA5Hand
 
@@ -81,8 +96,10 @@ class BadugiEvaluator(Evaluator):
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
         return max(map(BadugiHand, filter(
-            BadugiHand._is_valid,
-            chain.from_iterable(map(partial(combinations, tuple(chain(hole_cards, board_cards))), range(1, 5))),
+            BadugiHand._is_valid, chain.from_iterable(map(
+                partial(combinations, tuple(chain(hole_cards, board_cards))),
+                range(1, 5)),
+            ),
         )))
 
 
@@ -91,4 +108,6 @@ class RankEvaluator(Evaluator):
 
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
-        return LowIndexedHand(max(map(Rank.index.fget, map(Card.rank.fget, chain(hole_cards, board_cards)))))
+        return LowIndexedHand(max(map(Rank.index.fget, map(
+            Card.rank.fget, chain(hole_cards, board_cards),
+        ))))
