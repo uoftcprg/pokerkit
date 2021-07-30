@@ -341,7 +341,7 @@ class PokerGame(SequentialGame):
                     players = side_pot.players
                 else:
                     players = tuple(maxima(side_pot.players, key=partial(
-                        reverse_args(PokerPlayer._get_hand), evaluator
+                        reverse_args(PokerPlayer._get_hand), evaluator,
                     )))
 
                 for player, share in zip(players, self._allocate(
