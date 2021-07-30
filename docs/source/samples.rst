@@ -1,13 +1,15 @@
 Sample Hands with PokerTools
 ============================
 
-Using the attributes, properties, and methods shown in the previous section, you have all the knowledge you need to
-play games on PokerTools.
+Using the attributes, properties, and methods shown in the previous
+section, you have all the knowledge you need to play games on
+PokerTools.
 
 Example Hand with Showdown
 --------------------------
 
-This is a sample hand that serves as a good introduction to the PokerTools package.
+This is a sample hand that serves as a good introduction to the
+PokerTools package.
 
 .. code-block:: python
 
@@ -54,24 +56,29 @@ This is a sample hand that serves as a good introduction to the PokerTools packa
    bb.showdown()
    sb.showdown()
 
-All non-all-in pots that reach the end of the game **must** showdown. Only after the showdown can the pot be distributed
-to the winners.
+All non-all-in pots that reach the end of the game **must** showdown.
+Only after the showdown can the pot be distributed to the winners.
 
-Typically, showdowns are started by the aggressor. If you are not sure who is in turn to showdown, you can access the
-``actor`` attribute.
+Typically, showdowns are started by the aggressor. If you are not sure
+who is in turn to showdown, you can access the ``actor`` attribute.
 
-An exception to the showdowns are all-in pots. Indeed, as per the WSOP rule, all players involved in an all-in pot are
-forced to show their hands no matter what. The idea is to prevent collusion and chip dumping. As a result, in all-in
-pots, showdowns are unnecessary, as cards are exposed by default without any action taken by the players.
+An exception to the showdowns are all-in pots. Indeed, as per the WSOP
+rule, all players involved in an all-in pot are forced to show their
+hands no matter what. The idea is to prevent collusion and chip dumping.
+As a result, in all-in pots, showdowns are unnecessary, as cards are
+exposed by default without any action taken by the players.
 
-Again, to summarize, you **absolutely must not** forget to showdown in non-all-in pots that reach the end of the game.
-Otherwise, the pot will not be distributed to the rightful owners. This allow people to muck or show on purpose, which
-allow people to surrender their pots even if they win.
+Again, to summarize, you **absolutely must not** forget to showdown in
+non-all-in pots that reach the end of the game. Otherwise, the pot will
+not be distributed to the rightful owners. This allow people to muck or
+show on purpose, which allow people to surrender their pots even if they
+win.
 
 Dwan vs Ivey
 ------------
 
-This shows the 1.1 million dollar No-Limit Texas Hold'em pot played between Dwan and Ivey.
+This shows the 1.1 million dollar No-Limit Texas Hold'em pot played
+between Dwan and Ivey.
 
 Video: `<https://www.youtube.com/watch?v=GnxFohpljqM>`_
 
@@ -79,7 +86,9 @@ Video: `<https://www.youtube.com/watch?v=GnxFohpljqM>`_
 
    from pokertools import *
 
-   game = NoLimitTexasHoldEm(Stakes(500, (1000, 2000)), (1125600, 2000000, 553500))  # Antonius's stack is unknown
+   game = NoLimitTexasHoldEm(
+       Stakes(500, (1000, 2000)), (1125600, 2000000, 553500),
+   )  # Antonius's stack is unknown
    ivey, antonius, dwan = game.players
 
    # Pre-flop
@@ -117,7 +126,7 @@ The result of this poker game is as follows:
 
 .. code-block:: console
 
-   Pot: 1109500  (1000 was probably collected as rake in the actual game)
+   Pot: 1109500  (1000 was probably collected as rake)
    Players:
 
    - Ivey: PokerPlayer(0, 572100, Ac2d)
@@ -129,7 +138,8 @@ The result of this poker game is as follows:
 Antonius vs Isildur
 -------------------
 
-This shows the 1.3 million dollar Pot-Limit Omaha Hold'em pot played between Antonius and Isildur.
+This shows the 1.3 million dollar Pot-Limit Omaha Hold'em pot played
+between Antonius and Isildur.
 
 The integral values are multiplied by 100 to represent cents in dollars.
 
@@ -139,7 +149,9 @@ Video: `<https://www.youtube.com/watch?v=UMBm66Id2AA>`_
 
    from pokertools import *
 
-   game = PotLimitOmahaHoldEm(Stakes(0, (50000, 100000)), (125945025, 67847350))
+   game = PotLimitOmahaHoldEm(
+       Stakes(0, (50000, 100000)), (125945025, 67847350),
+   )
    antonius, isildur = game.players
 
    # Pre-flop
@@ -171,7 +183,7 @@ The result of this poker game is as follows:
 
 .. code-block:: console
 
-   Pot: 135694700 (50 was probably collected as rake in the actual game)
+   Pot: 135694700 (50 was probably collected as rake)
    Players:
 
    - Antonius: PokerPlayer(0, 193792375, Ah3sKsKh)
@@ -182,9 +194,10 @@ The result of this poker game is as follows:
 Xuan vs Phua
 ------------
 
-This shows the 800K dollar No-Limit Short-Deck Hold'em pot played between Xuan and Phua. This time, the
-:meth:`pokertools.game.PokerGame.parse` method will be used to replace function calls with commands parses for
-applying actions.
+This shows the 800K dollar No-Limit Short-Deck Hold'em pot played
+between Xuan and Phua. This time, the
+:meth:`pokertools.game.PokerGame.parse` method will be used to replace
+function calls with commands parses for applying actions.
 
 Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
 
@@ -192,7 +205,10 @@ Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
 
    from pokertools import *
 
-   game = NoLimitShortDeckHoldEm(Stakes(3000, {5: 3000}), (495000, 232000, 362000, 403000, 301000, 204000))
+   game = NoLimitShortDeckHoldEm(
+       Stakes(3000, {5: 3000}),
+       (495000, 232000, 362000, 403000, 301000, 204000),
+   )
 
    game.parse(
        # Pre-flop
@@ -206,8 +222,8 @@ Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
        'db Ts',
    )
 
-Although not shown, a command for showdown is `'s'`, `'s 0'`, `'s 1'`, for automatic showdowns, forced mucks, and forced
-shows, respectively.
+Although not shown, a command for showdown is `'s'`, `'s 0'`, `'s 1'`,
+for automatic showdowns, forced mucks, and forced shows, respectively.
 
 The result of this poker game is as follows:
 
@@ -228,7 +244,8 @@ The result of this poker game is as follows:
 Yockey vs Arieh
 ---------------
 
-This shows the Triple Draw 2-to-7 Lowball pot between Yockey and Arieh during which an insane bad beat occurred.
+This shows the Triple Draw 2-to-7 Lowball pot between Yockey and Arieh
+during which an insane bad beat occurred.
 
 Video: `<https://www.youtube.com/watch?v=pChCqb2FNxY>`_
 
@@ -236,7 +253,9 @@ Video: `<https://www.youtube.com/watch?v=pChCqb2FNxY>`_
 
    from pokertools import *
 
-   game = FixedLimitTripleDrawLowball27(Stakes(0, (75000, 150000)), (1180000, 4340000, 5910000, 10765000))
+   game = FixedLimitTripleDrawLowball27(
+       Stakes(0, (75000, 150000)), (1180000, 4340000, 5910000, 10765000),
+   )
 
    game.parse(
        'dh 7h6c4c3d2c', 'dh JsJcJdJhTs', 'dh KsKcKdKhTh', 'dh AsQs6s5c3c',

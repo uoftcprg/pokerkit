@@ -15,7 +15,8 @@ PokerTools can be installed by typing the following in terminal:
 Importing
 ---------
 
-In order to use the PokerTools package in your project, you must first import it.
+In order to use the PokerTools package in your project, you must first
+import it.
 
 .. code-block:: python
 

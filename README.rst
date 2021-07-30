@@ -53,7 +53,8 @@ The following features are present in PokerTools...
    - Kuhn Poker
       - Fixed-Limit Kuhn Poker
 
-The full documentation is available at `Read the Docs <https://pokertools.readthedocs.io/>`_.
+The full documentation is available at
+`Read the Docs <https://pokertools.readthedocs.io/>`_.
 
 License
 -------

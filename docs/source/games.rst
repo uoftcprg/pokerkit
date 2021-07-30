@@ -1,7 +1,8 @@
 Interacting with Poker Games
 ============================
 
-PokerTools offer a wide selection of pre-configured poker game variants. The list of those are as follows:
+PokerTools offer a wide selection of pre-configured poker game variants.
+The list of those are as follows:
 
 - Fixed-Limit Texas Hold'em: :const:`pokertools.games.FixedLimitTexasHoldEm`
 - No-Limit Texas Hold'em: :const:`pokertools.games.NoLimitTexasHoldEm`
@@ -90,8 +91,9 @@ Creating pre-configured poker games are very simple.
    # Create a Kuhn Poker game.
    kuhn = KuhnPoker()
 
-Often times, Short-deck hold'ems are played with button blinds. Games with button blinds can be created just with custom
-blind structures, as shown below.
+Often times, Short-deck hold'ems are played with button blinds. Games
+with button blinds can be created just with custom blind structures, as
+shown below.
 
 .. code-block:: python
 
@@ -115,15 +117,19 @@ blind structures, as shown below.
 
 You can even pass a dictionary as the blinds.
 
-Above games follow the main-stream rules of poker. But if these default rules are not desired, custom poker games can be
-created by putting different components together. More about this is explained in a later section.
+Above games follow the main-stream rules of poker. But if these default
+rules are not desired, custom poker games can be created by putting
+different components together. More about this is explained in a later
+section.
 
 Querying Game Information
 -------------------------
 
-The current game information can be queried by calling methods or accessing attributes.
+The current game information can be queried by calling methods or
+accessing attributes.
 
-Note that accessing or calling the below attributes or methods will not change the game state.
+Note that accessing or calling the below attributes or methods will not
+change the game state.
 
 .. code-block:: python
 
@@ -278,8 +284,8 @@ Note that accessing or calling the below attributes or methods will not change t
 Taking Actions in Poker Games
 -----------------------------
 
-The below demonstrates all possible actions that can be taken in PokerTools. Calling these methods will change the game
-state.
+The below demonstrates all possible actions that can be taken in
+PokerTools. Calling these methods will change the game state.
 
 .. code-block:: python
 
@@ -326,11 +332,14 @@ state.
 Parsing Poker Actions
 ---------------------
 
-Interacting with poker games by calling functions are good enough for most, but can be cumbersome and take many lines.
-There exists :meth:`pokertools.game.PokerGame.parse` which allow you to parse commands and apply them to the game.
-Example usages are shown in the later section.
+Interacting with poker games by calling functions are good enough for
+most, but can be cumbersome and take many lines. There exists
+:meth:`pokertools.game.PokerGame.parse` which allow you to parse
+commands and apply them to the game. Example usages are shown in the
+later section.
 
 Custom Games
 ------------
 
-Creating and interacting with custom games are explained in the later section.
+Creating and interacting with custom games are explained in the later
+section.

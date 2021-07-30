@@ -61,9 +61,10 @@ The following features are present in PokerTools...
 Speed
 -----
 
-Although PokerTools is entirely written in Python, it should be fast enough for many tasks. Below table show the speeds
-of PokerTools and treys (other popular framework) when evaluating all possible 5 card combinations (2598960) as standard
-hands.
+Although PokerTools is entirely written in Python, it should be fast
+enough for many tasks. Below table show the speeds of PokerTools and
+treys (other popular framework) when evaluating all possible 5 card
+combinations (2598960) as standard hands.
 
 ============  ================  ===================
   Framework    Total Time (s)    Speed (# hands/s)
@@ -72,10 +73,13 @@ hands.
    treys            ~30               ~87000
 ============  ================  ===================
 
-As seen, treys is a bit faster than PokerTools. However, PokerTools offer a number of advantages over treys.
+As seen, treys is a bit faster than PokerTools. However, PokerTools
+offer a number of advantages over treys.
 
-- Treys represent card as ints, but PokerTools represent them as an instance of Card type (more intuitive)
-- PokerTools have more types of evaluators such as Omaha, Short-Deck, et cetera
+- Treys represent card as ints, but PokerTools represent them as an
+  instance of Card type (more intuitive)
+- PokerTools have more types of evaluators such as Omaha, Short-Deck, et
+  cetera
 - PokerTools offer range interpretation
 - PokerTools provides seamless integration with PokerTools game logic
 
@@ -88,7 +92,8 @@ Current focuses of development are the following:
    - implement more types of poker variants
    - improve documentations
 
-You can contribute on `Github <https://github.com/AussieSeaweed/pokertools>`_.
+You can contribute on
+`Github <https://github.com/AussieSeaweed/pokertools>`_.
 
 .. toctree::
    :maxdepth: 1

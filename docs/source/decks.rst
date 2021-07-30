@@ -1,17 +1,19 @@
 Using Decks
 ===========
 
-Decks, in PokerTools, can be thought of as a list of card instances. All deck subclasses inherit from the base class
-:class:`pokertools.decks.Deck`. They are all shuffled upon creation. Allowing you to use them right after creation
-without shuffling them first.
+Decks, in PokerTools, can be thought of as a list of card instances. All
+deck subclasses inherit from the base class
+:class:`pokertools.decks.Deck`. They are all shuffled upon creation.
+Allowing you to use them right after creation without shuffling them
+first.
 
 Currently, there are two types of decks:
 
 - Standard Deck: :class:`pokertools.decks.StandardDeck`
 - Short Deck: :class:`pokertools.decks.ShortDeck`
 
-Standard decks are 52 card decks that are most commonly used. Short decks are 36 card decks that do not have cards with
-ranks below 6.
+Standard decks are 52 card decks that are most commonly used. Short
+decks are 36 card decks that do not have cards with ranks below 6.
 
 Creating Decks
 --------------
@@ -36,7 +38,8 @@ Remember that all decks are shuffled upon creation.
 Deck operations
 ---------------
 
-The method :meth:`pokertools.decks.Deck.draw` allow you to draw cards from decks.
+The method :meth:`pokertools.decks.Deck.draw` allow you to draw cards
+from decks.
 
 .. code-block:: python
 
@@ -60,7 +63,8 @@ The method :meth:`pokertools.decks.Deck.draw` allow you to draw cards from decks
    print(len(deck))  # 43
    print(deck)  # [7d, 3s, Ac, Qh, ..., 7c, Td]
 
-As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has all the methods defined in lists.
+As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has
+all the methods defined in lists.
 
 .. code-block:: python
 
@@ -73,7 +77,8 @@ As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has all the
    deck.append(parse_card('Ks'))
    ...
 
-For example, if you want to order the cards in the deck nicely, you can do what's done below:
+For example, if you want to order the cards in the deck nicely, you can
+do what's done below:
 
 .. code-block:: python
 
