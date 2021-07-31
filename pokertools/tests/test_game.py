@@ -8,7 +8,7 @@ from pokertools import (
 )
 
 
-class GameFrameTestCase(TestCase):
+class GameTestCase(TestCase):
     def test_betting_action_when_not_betting_stage(self):
         self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
