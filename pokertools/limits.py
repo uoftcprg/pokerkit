@@ -24,7 +24,7 @@ class Limit(ABC):
         max_bet = 0
 
         for player in self.game.players:
-            max_bet = max(player.bet)
+            max_bet = max(max_bet, player.bet)
 
         return min(max_bet + self.game._max_delta, self.game.actor.total)
 
