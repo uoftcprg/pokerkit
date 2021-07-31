@@ -8,6 +8,7 @@ from auxiliary import IndexedEnum, SupportsLessThan, chunk, const, distinct
 @unique
 class Rank(IndexedEnum):
     """The enum class for ranks."""
+
     TWO = '2'
     """The rank of 2."""
     THREE = '3'
@@ -39,6 +40,7 @@ class Rank(IndexedEnum):
 @unique
 class Suit(IndexedEnum):
     """The enum class for suits."""
+
     CLUB = 'c'
     """The suit of clubs."""
     DIAMOND = 'd'
@@ -52,6 +54,7 @@ class Suit(IndexedEnum):
 @unique
 class Ranks(Enum):
     """The enum class for tuples of ranks."""
+
     STANDARD = tuple(Rank)
     """The standard ranks (from deuce to ace)."""
     SHORT_DECK = tuple(Rank)[Rank.SIX.index:]
@@ -69,8 +72,8 @@ class Card(SupportsLessThan, Hashable):
     """
 
     def __init__(self, rank, suit):
-        self.__rank = rank
-        self.__suit = suit
+        self._rank = rank
+        self._suit = suit
 
     def __lt__(self, other):
         if not isinstance(other, Card):
@@ -97,19 +100,19 @@ class Card(SupportsLessThan, Hashable):
 
     @property
     def rank(self):
-        """Returns the rank of this card.
+        """Return the rank of this card.
 
         :return: The rank of this card.
         """
-        return self.__rank
+        return self._rank
 
     @property
     def suit(self):
-        """Returns the suit of this card.
+        """Return the suit of this card.
 
         :return: The suit of this card.
         """
-        return self.__suit
+        return self._suit
 
 
 class HoleCard(Card):
@@ -122,21 +125,21 @@ class HoleCard(Card):
     def __init__(self, status, card):
         super().__init__(card.rank, card.suit)
 
-        self.__status = status
+        self._status = status
 
     def __str__(self):
         return repr(self) if self.status else '??'
 
     @property
     def status(self):
-        """Returns the status of this hole card.
+        """Return the status of this hole card.
 
         :return: True if this hole card is exposed, False otherwise.
         """
-        return self.__status
+        return self._status
 
     def show(self):
-        """Returns the shown version of this hole card.
+        """Return the shown version of this hole card.
 
         The operation is not done in-place.
 
@@ -146,7 +149,7 @@ class HoleCard(Card):
 
 
 def parse_cards(cards):
-    """Parses the string of card representations.
+    """Parse the string of card representations.
 
     :param cards: The string of card representations.
     :return: The parsed cards.
@@ -156,7 +159,7 @@ def parse_cards(cards):
 
 
 def parse_card(card):
-    """Parses the string of the card representation.
+    """Parse the string of the card representation.
 
     :param card: The string of the card representation.
     :return: The parsed card.
@@ -173,7 +176,7 @@ def parse_card(card):
 
 
 def rainbow(cards):
-    """Checks if all cards have a rainbow texture.
+    """Check if all cards have a rainbow texture.
 
     Cards have a rainbow texture when their suits are all unique to each
     other.
@@ -185,7 +188,7 @@ def rainbow(cards):
 
 
 def suited(cards):
-    """Checks if all cards are of the same suit.
+    """Check if all cards are of the same suit.
 
     :param cards: The cards to check.
     :return: True if the cards are suited, else False.

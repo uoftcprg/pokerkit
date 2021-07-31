@@ -11,7 +11,7 @@ from pokertools.decks import Deck
 
 
 class PokerGame(SequentialGame):
-    """PokerGame is the class for poker games.
+    """The class for poker games.
 
     When a PokerGame instance is created, its deck, evaluator, limit,
     and streets are also created through the invocations of
@@ -30,16 +30,8 @@ class PokerGame(SequentialGame):
 
     class _SidePot:
         def __init__(self, players, amount):
-            self.__players = tuple(players)
-            self.__amount = amount
-
-        @property
-        def players(self):
-            return self.__players
-
-        @property
-        def amount(self):
-            return self.__amount
+            self.players = tuple(players)
+            self.amount = amount
 
     @classmethod
     def _allocate(cls, amount, count):
@@ -57,13 +49,13 @@ class PokerGame(SequentialGame):
             PokerPlayer(self) for _ in range(len(starting_stacks))
         ))
 
-        self.__limit = limit_type(self)
-        self.__variant = variant_type(self)
-        self.__stakes = stakes
-        self.__starting_stacks = tuple(starting_stacks)
+        self._limit = limit_type(self)
+        self._variant = variant_type(self)
+        self._stakes = stakes
+        self._starting_stacks = tuple(starting_stacks)
 
-        self.__stages = self.variant.create_stages()
-        self.__evaluators = self.variant.create_evaluators()
+        self._stages = self.variant.create_stages()
+        self._evaluators = self.variant.create_evaluators()
 
         self._deck = self.variant.create_deck()
         self._muck = Deck()
@@ -81,55 +73,55 @@ class PokerGame(SequentialGame):
 
     @property
     def limit(self):
-        """Returns the limit of this poker game.
+        """Return the limit of this poker game.
 
         :return: The limit of this poker game.
         """
-        return self.__limit
+        return self._limit
 
     @property
     def variant(self):
-        """Returns the variant of this poker game.
+        """Return the variant of this poker game.
 
         :return: The variant of this poker game.
         """
-        return self.__variant
+        return self._variant
 
     @property
     def stakes(self):
-        """Returns the stakes of this poker game.
+        """Return the stakes of this poker game.
 
         :return: The stakes of this poker game.
         """
-        return self.__stakes
+        return self._stakes
 
     @property
     def starting_stacks(self):
-        """Returns the starting stacks of this poker game.
+        """Return the starting stacks of this poker game.
 
         :return: The starting stacks of this poker game.
         """
-        return self.__starting_stacks
+        return self._starting_stacks
 
     @property
     def stages(self):
-        """Returns the stages of this poker game.
+        """Return the stages of this poker game.
 
         :return: The stages of this poker game.
         """
-        return self.__stages
+        return self._stages
 
     @property
     def evaluators(self):
-        """Returns the evaluators of this poker game.
+        """Return the evaluators of this poker game.
 
         :return: The evaluators of this poker game.
         """
-        return self.__evaluators
+        return self._evaluators
 
     @property
     def deck(self):
-        """Returns the deck of this poker game.
+        """Return the deck of this poker game.
 
         :return: The deck of this poker game.
         """
@@ -137,7 +129,7 @@ class PokerGame(SequentialGame):
 
     @property
     def ante(self):
-        """Returns the ante of this poker game.
+        """Return the ante of this poker game.
 
         :return: The ante of this poker game.
         """
@@ -145,7 +137,7 @@ class PokerGame(SequentialGame):
 
     @property
     def blinds(self):
-        """Returns the blinds of this poker game.
+        """Return the blinds of this poker game.
 
         This frozen dictionary includes straddles and forced bets.
 
@@ -155,7 +147,7 @@ class PokerGame(SequentialGame):
 
     @property
     def small_bet(self):
-        """Returns the small bet of this poker game.
+        """Return the small bet of this poker game.
 
         :return: The small bet of this poker game.
         """
@@ -163,7 +155,7 @@ class PokerGame(SequentialGame):
 
     @property
     def big_bet(self):
-        """Returns the big bet of this poker game.
+        """Return the big bet of this poker game.
 
         :return: The big bet of this poker game.
         """
@@ -171,7 +163,7 @@ class PokerGame(SequentialGame):
 
     @property
     def muck(self):
-        """Returns the muck of this poker game.
+        """Return the muck of this poker game.
 
         :return: The muck of this poker game.
         """
@@ -179,7 +171,7 @@ class PokerGame(SequentialGame):
 
     @property
     def pot(self):
-        """Returns the pot of this poker game.
+        """Return the pot of this poker game.
 
         :return: The pot of this poker game.
         """
@@ -187,7 +179,7 @@ class PokerGame(SequentialGame):
 
     @property
     def board(self):
-        """Returns the board of this poker game.
+        """Return the board of this poker game.
 
         The board contains the public cards in a poker game. They can be
         combined with individual player's hole cards to create a hand.
@@ -198,7 +190,7 @@ class PokerGame(SequentialGame):
 
     @property
     def stage(self):
-        """Returns the stage of this poker game.
+        """Return the stage of this poker game.
 
         :return: The stage of this poker game.
         """
@@ -206,11 +198,12 @@ class PokerGame(SequentialGame):
 
     @property
     def side_pots(self):
-        """Returns the side pots of this poker game.
+        """Return the side pots of this poker game.
 
         :return: The side pots of this poker game.
         """
-        return map(self._SidePot.amount.fget, self._side_pots)
+        for side_pot in self._side_pots:
+            yield side_pot.amount
 
     @property
     def _side_pots(self):
@@ -243,7 +236,7 @@ class PokerGame(SequentialGame):
         return statuses
 
     def parse(self, *commands):
-        """Parses the commands as actions and applies them this poker
+        """Parse the commands as actions and applies them this poker
         game.
 
         :param commands: The commands to parse as actions.
@@ -370,14 +363,14 @@ class PokerGame(SequentialGame):
 
 
 class PokerNature(SequentialActor):
-    """PokerNature is the class for poker natures."""
+    """The class for poker natures."""
 
     def __repr__(self):
         return 'PokerNature'
 
     @property
     def deal_hole_player(self):
-        """Returns the next player that can be dealt hole cards.
+        """Return the next player that can be dealt hole cards.
 
         :return: The player that can be dealt hole cards.
         """
@@ -388,7 +381,7 @@ class PokerNature(SequentialActor):
 
     @property
     def deal_hole_count(self):
-        """Returns the number of hole cards that can be dealt.
+        """Return the number of hole cards that can be dealt.
 
         :return: The number of cards to deal to the player hole.
         """
@@ -399,7 +392,7 @@ class PokerNature(SequentialActor):
 
     @property
     def deal_board_count(self):
-        """Returns the number of board cards that can be dealt.
+        """Return the number of board cards that can be dealt.
 
         :return: The number of cards to deal to the board.
         """
@@ -409,8 +402,7 @@ class PokerNature(SequentialActor):
         return self._get_board_deal_action().deal_count
 
     def deal_hole(self, cards=None):
-        """Deals the optionally supplied hole cards to the next player
-        to be dealt hole cards.
+        """Deal the optionally supplied hole cards to the next player.
 
         If the cards are not supplied, they are randomly drawn from the
         deck.
@@ -421,8 +413,8 @@ class PokerNature(SequentialActor):
         self._get_hole_deal_action(cards).act()
 
     def can_deal_hole(self, cards=None):
-        """Determines if the optionally specified hole cards can be
-        dealt to the next player to be dealt hole cards.
+        """Determine if the optionally specified hole cards can be dealt
+        to the next player.
 
         If the cards are not supplied, they are randomly drawn from the
         deck.
@@ -433,7 +425,7 @@ class PokerNature(SequentialActor):
         return self._get_hole_deal_action(cards).can_act()
 
     def deal_board(self, cards=None):
-        """Deals the optionally specified cards to the board.
+        """Deal the optionally specified cards to the board.
 
         If none is given as cards, sample cards are randomly selected
         from the deck.
@@ -444,7 +436,8 @@ class PokerNature(SequentialActor):
         self._get_board_deal_action(cards).act()
 
     def can_deal_board(self, cards=None):
-        """Determines if cards can be dealt to the board.
+        """Determine if the optionally specified cards can be dealt to
+        the board.
 
         If none is given as cards, sample cards are assumed to be
         randomly selected from the deck.
@@ -466,7 +459,7 @@ class PokerNature(SequentialActor):
 
 
 class PokerPlayer(SequentialActor):
-    """PokerPlayer is the class for poker players.
+    """The class for poker players.
 
     :param game: The game of this poker player.
     """
@@ -489,7 +482,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def blind(self):
-        """Returns the blind of this poker player.
+        """Return the blind of this poker player.
 
         :return: The blind of this poker player.
         """
@@ -509,7 +502,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def total(self):
-        """Returns the sum of the bet and the stack of this poker
+        """Return the sum of the bet and the stack of this poker
         player.
 
         :return: The sum of the bet and the stack of this poker player.
@@ -518,7 +511,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def effective_stack(self):
-        """Returns the effective stack of this poker player.
+        """Return the effective stack of this poker player.
 
         The effective stacks are maximum amount that the poker player
         can lose in a current poker game state.
@@ -536,7 +529,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def payoff(self):
-        """Returns the payoff of this poker player.
+        """Return the payoff of this poker player.
 
         Payoff is the amount this poker player has made/lost. If this
         poker player made money, this quantity is positive, and vice
@@ -548,7 +541,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def hands(self):
-        """Returns the hands of this poker player.
+        """Return the hands of this poker player.
 
         The hands are arranged in the order of evaluators of the
         associated poker game. Usually, poker games only have one
@@ -563,7 +556,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def check_call_amount(self):
-        """Returns the check/call amount.
+        """Return the check/call amount.
 
         If the player checks, 0 is returned.
 
@@ -576,7 +569,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def bet_raise_min_amount(self):
-        """Returns the minimum bet/raise amount.
+        """Return the minimum bet/raise amount.
 
         The minimum bet/raise amount is set by the limit of the poker
         game.
@@ -590,7 +583,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def bet_raise_max_amount(self):
-        """Returns the maximum bet/raise amount.
+        """Return the maximum bet/raise amount.
 
         The maximum bet/raise amount is set by the limit of the poker
         game.
@@ -604,7 +597,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def bet_raise_pot_amount(self):
-        """Returns the pot bet/raise amount.
+        """Return the pot bet/raise amount.
 
         The pot bet/raise amount is calculated using the outstanding
         bets and the pot amount. It can be obtained with the following
@@ -623,7 +616,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def starting_stack(self):
-        """Returns the starting stack of this poker player.
+        """Return the starting stack of this poker player.
 
         :return: The starting stack of this poker player.
         """
@@ -631,7 +624,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def bet(self):
-        """Returns the bet of this poker player.
+        """Return the bet of this poker player.
 
         :return: The bet of this poker player.
         """
@@ -639,7 +632,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def stack(self):
-        """Returns the stack of this poker player.
+        """Return the stack of this poker player.
 
         :return: The stack of this poker player.
         """
@@ -647,7 +640,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def hole(self):
-        """Returns the hole cards of this poker player.
+        """Return the hole cards of this poker player.
 
         :return: The hole cards of this poker player.
         """
@@ -663,7 +656,7 @@ class PokerPlayer(SequentialActor):
 
     @property
     def seen(self):
-        """Returns the cards that this poker player have had before in
+        """Return the cards that this poker player have had before in
         his/her hole.
 
         :return: The seen cards of this poker player.
@@ -679,7 +672,7 @@ class PokerPlayer(SequentialActor):
         return self.starting_stack - self.stack
 
     def is_active(self):
-        """Returns whether or not the player is active.
+        """Return whether or not the player is active.
 
         The player is active if he/she is in a hand.
 
@@ -688,7 +681,7 @@ class PokerPlayer(SequentialActor):
         return not self.is_mucked()
 
     def is_mucked(self):
-        """Returns whether or not the player has mucked his/her hand.
+        """Return whether or not the player has mucked his/her hand.
 
         :return: True if this poker player has mucked his/her hand, else
                  False.
@@ -696,7 +689,7 @@ class PokerPlayer(SequentialActor):
         return self._status is False
 
     def is_shown(self):
-        """Returns whether or not the player has shown his/her hand.
+        """Return whether or not the player has shown his/her hand.
 
         :return: True if this poker player has shown his/her hand, else
                  False.
@@ -704,7 +697,7 @@ class PokerPlayer(SequentialActor):
         return self._status is True
 
     def is_showdown_necessary(self):
-        """Returns whether or not showdown is necessary to win the pot.
+        """Return whether or not showdown is necessary to win the pot.
 
         If any hand that beats this poker player's hand is already
         revealed, then the showdown would not be necessary.
@@ -717,35 +710,35 @@ class PokerPlayer(SequentialActor):
         return self._get_showdown_action().is_necessary()
 
     def fold(self):
-        """Folds the poker player's hand.
+        """Fold the poker player's hand.
 
         :return: None.
         """
         self._get_fold_action().act()
 
     def can_fold(self):
-        """Returns whether or not the player can fold his/her hand.
+        """Return whether or not the player can fold his/her hand.
 
         :return: True if this poker player can fold, else False.
         """
         return self._get_fold_action().can_act()
 
     def check_call(self):
-        """Checks or calls the opponent's bet.
+        """Check or call the opponent's bet.
 
         :return: None.
         """
         self._get_check_call_action().act()
 
     def can_check_call(self):
-        """Returns whether or not the player can check/call.
+        """Return whether or not the player can check/call.
 
         :return: True if this poker player can check/call, else False.
         """
         return self._get_check_call_action().can_act()
 
     def bet_raise(self, amount=None):
-        """Bets or raises to the optional amount.
+        """Bet or raise to the optional amount.
 
         If no amount is specified, this poker player will min-raise.
 
@@ -755,7 +748,7 @@ class PokerPlayer(SequentialActor):
         self._get_bet_raise_action(amount).act()
 
     def can_bet_raise(self, amount=None):
-        """Returns whether or not the player can bet/raise to the
+        """Return whether or not the player can bet/raise to the
         optionally given bet amount.
 
         If no amount is specified, this poker player is assumed to
@@ -767,8 +760,8 @@ class PokerPlayer(SequentialActor):
         return self._get_bet_raise_action(amount).can_act()
 
     def discard_draw(self, discarded_cards=(), drawn_cards=None):
-        """Discards this poker player's optionally specified hole cards
-        and draws the corresponding optionally given cards.
+        """Discard this poker player's optionally specified hole cards
+        and draw the corresponding optionally given cards.
 
         If discarded cards are not specified, the poker player performs
         a stand pat. If the drawn cards are not specified, random cards
@@ -784,7 +777,7 @@ class PokerPlayer(SequentialActor):
         self._get_discard_draw_action(discarded_cards, drawn_cards).act()
 
     def can_discard_draw(self, discarded_cards=(), drawn_cards=None):
-        """Returns whether or not this poker player can discard and
+        """Return whether or not this poker player can discard and
         draw.
 
         If discarded cards are not specified, the poker player is
@@ -799,11 +792,12 @@ class PokerPlayer(SequentialActor):
         :return: True if this poker player can discard and draw, else
                  False.
         """
-        return self._get_discard_draw_action(discarded_cards,
-                                             drawn_cards).can_act()
+        return self._get_discard_draw_action(
+            discarded_cards, drawn_cards,
+        ).can_act()
 
     def showdown(self, forced=None):
-        """Showdowns this poker player's hand if necessary to win the
+        """Showdown this poker player's hand if necessary to win the
         pot or forced.
 
         if forced is not supplied, the showdown is forced if necessary
@@ -817,7 +811,7 @@ class PokerPlayer(SequentialActor):
         self._get_showdown_action(forced).act()
 
     def can_showdown(self, forced=None):
-        """Returns whether or not this poker player can showdown.
+        """Return whether or not this poker player can showdown.
 
         if forced is not supplied, the showdown is assumed to be forced
         if necessary to win the pot. This is the case when there is no

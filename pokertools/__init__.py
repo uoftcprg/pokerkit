@@ -1,6 +1,7 @@
 """pokertools is the top-level module for the PokerTools package. All
 poker game tools are imported here.
 """
+
 __all__ = (
     '__version__',
 
@@ -29,7 +30,7 @@ __all__ = (
     'TexasHoldEmVariant', 'TripleDrawLowball27Variant', 'TripleDrawVariant',
     'Variant',
 )
-__version__ = '0.0.3.dev50'
+__version__ = '0.0.3.dev51'
 
 from pokertools.cards import (
     Card, HoleCard, Rank, Ranks, Suit, parse_card, parse_cards, rainbow,

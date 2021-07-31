@@ -1,6 +1,4 @@
 from abc import ABC
-from functools import partial
-from operator import eq
 
 from auxiliary import rotate
 
@@ -8,38 +6,38 @@ from pokertools.game import PokerPlayer
 
 
 class Stage(ABC):
-    """Stage is the abstract base class for all stages.
+    """The abstract base class for all stages.
 
     :param game: The poker game that this stage belongs in.
     """
 
     def __init__(self, game):
-        self.__game = game
+        self._game = game
 
     @property
     def game(self):
-        """Returns the game of this stage.
+        """Return the game of this stage.
 
         :return: The game of this stage.
         """
-        return self.__game
+        return self._game
 
     def is_dealing_stage(self):
-        """Returns whether or not this stage is a dealing stage.
+        """Return whether or not this stage is a dealing stage.
 
         :return: True if this stage is a dealing stage, else False.
         """
         return isinstance(self, DealingStage)
 
     def is_hole_dealing_stage(self):
-        """Returns whether or not this stage is a hole dealing stage.
+        """Return whether or not this stage is a hole dealing stage.
 
         :return: True if this stage is a hole dealing stage, else False.
         """
         return isinstance(self, HoleDealingStage)
 
     def is_board_dealing_stage(self):
-        """Returns whether or not this stage is a board dealing stage.
+        """Return whether or not this stage is a board dealing stage.
 
         :return: True if this stage is a board dealing stage, else
                  False.
@@ -47,22 +45,21 @@ class Stage(ABC):
         return isinstance(self, BoardDealingStage)
 
     def is_queued_stage(self):
-        """Returns whether or not this stage is a queued stage.
+        """Return whether or not this stage is a queued stage.
 
         :return: True if this stage is a queued stage, else False.
         """
         return isinstance(self, QueuedStage)
 
     def is_betting_stage(self):
-        """Returns whether or not this stage is a betting stage.
+        """Return whether or not this stage is a betting stage.
 
         :return: True if this stage is a betting stage, else False.
         """
         return isinstance(self, BettingStage)
 
     def is_discard_draw_stage(self):
-        """Returns whether or not this stage is a discard and draw
-        stage.
+        """Return whether or not this stage is a discard and draw stage.
 
         :return: True if this stage is a discard and draw stage, else
                  False.
@@ -70,7 +67,7 @@ class Stage(ABC):
         return isinstance(self, DiscardDrawStage)
 
     def is_showdown_stage(self):
-        """Returns whether or not this stage is a showdown stage.
+        """Return whether or not this stage is a showdown stage.
 
         :return: True if this stage is a showdown stage, else False.
         """
@@ -87,7 +84,7 @@ class Stage(ABC):
 
 
 class DealingStage(Stage, ABC):
-    """DealingStage is the class for dealing stages.
+    """The class for dealing stages.
 
     :param deal_count: The number of cards to be dealt in this stage.
     """
@@ -95,11 +92,11 @@ class DealingStage(Stage, ABC):
     def __init__(self, deal_count, game):
         super().__init__(game)
 
-        self.__deal_count = deal_count
+        self._deal_count = deal_count
 
     @property
     def deal_target(self):
-        """Returns the target number of cards to be dealt by the end of
+        """Return the target number of cards to be dealt by the end of
         this stage.
 
         :return: The target number of cards to be dealt by the end of
@@ -115,11 +112,11 @@ class DealingStage(Stage, ABC):
 
     @property
     def deal_count(self):
-        """Returns the number of cards to be dealt in this stage.
+        """Return the number of cards to be dealt in this stage.
 
         :return: The number of cards to be dealt in this stage.
         """
-        return self.__deal_count
+        return self._deal_count
 
     def _open(self):
         super()._open()
@@ -128,7 +125,7 @@ class DealingStage(Stage, ABC):
 
 
 class HoleDealingStage(DealingStage):
-    """HoleDealingStage is the class for hole card dealing stages.
+    """The class for hole card dealing stages.
 
     :param status: The status of the hole card being dealt. True if the
                    dealing is made face-up, False otherwise.
@@ -138,11 +135,11 @@ class HoleDealingStage(DealingStage):
     def __init__(self, status, deal_count, game):
         super().__init__(deal_count, game)
 
-        self.__status = status
+        self._status = status
 
     @property
     def status(self):
-        """Returns the status of the hole card being dealt in this hole
+        """Return the status of the hole card being dealt in this hole
         dealing stage.
 
         True is returned if the dealing is made face-up. Otherwise,
@@ -150,27 +147,29 @@ class HoleDealingStage(DealingStage):
 
         :return: The status of the hole card being dealt.
         """
-        return self.__status
+        return self._status
 
     def _is_done(self):
-        return super()._is_done() or all(map(
-            partial(eq, self.deal_target),
-            map(len, map(PokerPlayer.hole.fget, filter(
-                PokerPlayer.is_active, self.game.players,
-            ))),
-        ))
+        if super()._is_done():
+            return True
+
+        for player in filter(PokerPlayer.is_active, self.game.players):
+            if len(player.hole) != self.deal_target:
+                return False
+
+        return True
 
 
 class BoardDealingStage(DealingStage):
-    """BoardDealingStage is the class for board card dealing stages."""
+    """The class for board card dealing stages."""
 
     def _is_done(self):
         return super()._is_done() or len(self.game.board) == self.deal_target
 
 
 class QueuedStage(Stage, ABC):
-    """QueuedStage is the abstract base class for all stages where
-    players act in queued order.
+    """The abstract base class for all stages where players act in
+    queued order.
     """
 
     def _is_done(self):
@@ -185,7 +184,7 @@ class QueuedStage(Stage, ABC):
 
 
 class BettingStage(QueuedStage):
-    """BettingStage is the class for betting stages.
+    """The class for betting stages.
 
     :param big: True if this betting stage's min-raise is the big bet,
                 else False. (Only relevant in fixed-limit games)
@@ -194,11 +193,11 @@ class BettingStage(QueuedStage):
     def __init__(self, big, game):
         super().__init__(game)
 
-        self.__big = big
+        self._big = big
 
     @property
     def initial_bet_amount(self):
-        """Returns the initial bet amount of this betting stage.
+        """Return the initial bet amount of this betting stage.
 
         The initial bet amount depends on the maximum value of the
         forced bets and whether or not this betting stage is a big
@@ -212,12 +211,12 @@ class BettingStage(QueuedStage):
             return self.game.small_bet
 
     def is_big(self):
-        """Returns whether or not this betting stage is a big betting
+        """Return whether or not this betting stage is a big betting
         stage.
 
         :return: True if this betting stage is big, else False.
         """
-        return self.__big
+        return self._big
 
     def _is_done(self):
         return super()._is_done() or self.game._is_all_in()
@@ -256,7 +255,7 @@ class BettingStage(QueuedStage):
 
 
 class DiscardDrawStage(QueuedStage):
-    """DiscardDrawStage is the class for discard and draw stages."""
+    """The class for discard and draw stages."""
 
     def _open(self):
         super()._open()
@@ -267,7 +266,7 @@ class DiscardDrawStage(QueuedStage):
 
 
 class ShowdownStage(QueuedStage):
-    """ShowdownStage is the class for showdown stages."""
+    """The class for showdown stages."""
 
     def _is_done(self):
         return super()._is_done() or (

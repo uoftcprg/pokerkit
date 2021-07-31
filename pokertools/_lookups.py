@@ -154,7 +154,7 @@ def straights(ranks, count):
 
 def multiples(ranks, frequencies):
     if not frequencies:
-        return 1,
+        return (1,)
 
     keys = []
     count = max(frequencies)

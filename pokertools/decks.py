@@ -6,7 +6,7 @@ from pokertools.cards import Card, Ranks, Suit
 
 
 class Deck(list):
-    """Deck is the class for decks.
+    """The class for decks.
 
     :param cards: The cards in this deck, defaults to an empty tuple.
     """
@@ -17,7 +17,7 @@ class Deck(list):
         shuffle(self)
 
     def draw(self, cards):
-        """Draws the number of cards or the specified cards from this
+        """Draw the number of cards or the specified cards from this
         deck.
 
         :param cards: The number of cards or the specified cards to be
@@ -39,14 +39,14 @@ class Deck(list):
 
 
 class StandardDeck(Deck):
-    """StandardDeck is the class for standard decks."""
+    """The class for standard decks."""
 
     def __init__(self):
         super().__init__(starmap(Card, product(Ranks.STANDARD.value, Suit)))
 
 
 class ShortDeck(Deck):
-    """ShortDeck is the class for short decks.
+    """The class for short decks.
 
     The minimum rank of cards in short decks is 6.
     """

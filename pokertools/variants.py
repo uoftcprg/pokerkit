@@ -13,7 +13,7 @@ from pokertools.stages import (
 
 
 class Variant(ABC):
-    """Variant is the abstract base class for all poker variants.
+    """The abstract base class for all poker variants.
 
     Variants contain defines various information about their types of
     poker games.
@@ -22,19 +22,19 @@ class Variant(ABC):
     """
 
     def __init__(self, game):
-        self.__game = game
+        self._game = game
 
     @property
     def game(self):
-        """Returns the game of this variant.
+        """Return the game of this variant.
 
         :return: The game of this variant.
         """
-        return self.__game
+        return self._game
 
     @abstractmethod
     def create_stages(self):
-        """Returns the stages of the poker game defined by this poker
+        """Return the stages of the poker game defined by this poker
         variant.
 
         :return: The stages of this poker variant.
@@ -43,8 +43,8 @@ class Variant(ABC):
 
     @abstractmethod
     def create_evaluators(self):
-        """Returns the evaluators of the poker game defined by this
-        poker variant.
+        """Return the evaluators of the poker game defined by this poker
+        variant.
 
         :return: The evaluators of this poker variant.
         """
@@ -52,7 +52,7 @@ class Variant(ABC):
 
     @abstractmethod
     def create_deck(self):
-        """Creates a deck of the poker game defined by this poker
+        """Create a deck of the poker game defined by this poker
         variant.
 
         :return: The created deck of this poker variant.
@@ -61,14 +61,14 @@ class Variant(ABC):
 
 
 class StaticHoleVariantMixin(Variant, ABC):
-    """StaticHoleVariantMixin is the mixin for all game variants with a
-    static number of hole cards.
+    """The mixin for all game variants with a static number of hole
+    cards.
     """
 
     @property
     @abstractmethod
     def hole_card_count(self):
-        """Returns the number of hole cards belonging to each player.
+        """Return the number of hole cards belonging to each player.
 
         :return: The number of hole cards belonging to each player.
         """
@@ -76,9 +76,7 @@ class StaticHoleVariantMixin(Variant, ABC):
 
 
 class HoldEmVariant(StaticHoleVariantMixin, Variant, ABC):
-    """HoldEmVariant is the abstract base class for all Hold'em game
-    variants.
-    """
+    """The abstract base class for all Hold'em game variants."""
 
     def create_stages(self):
         return (
@@ -95,37 +93,35 @@ class HoldEmVariant(StaticHoleVariantMixin, Variant, ABC):
 
 
 class TexasHoldEmVariant(HoldEmVariant):
-    """TexasHoldEmVariant is the class for Texas Hold'em game variants."""
+    """The class for Texas Hold'em game variants."""
 
     @property
     def hole_card_count(self):
         return 2
 
     def create_evaluators(self):
-        return StandardEvaluator(),
+        return (StandardEvaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class OmahaHoldEmVariant(HoldEmVariant):
-    """OmahaHoldEmVariant is the class for Omaha Hold'em game variants."""
+    """The class for Omaha Hold'em game variants."""
 
     @property
     def hole_card_count(self):
         return 4
 
     def create_evaluators(self):
-        return OmahaEvaluator(),
+        return (OmahaEvaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class FiveCardOmahaHoldEmVariant(OmahaHoldEmVariant):
-    """FiveCardOmahaHoldEmVariant is the class for 5-Card Omaha Hold'em
-    game variants.
-    """
+    """The class for 5-Card Omaha Hold'em game variants."""
 
     @property
     def hole_card_count(self):
@@ -133,9 +129,7 @@ class FiveCardOmahaHoldEmVariant(OmahaHoldEmVariant):
 
 
 class SixCardOmahaHoldEmVariant(OmahaHoldEmVariant):
-    """SixCardOmahaHoldEmVariant is the class for 6-Card Omaha Hold'em
-    game variants.
-    """
+    """The class for 6-Card Omaha Hold'em game variants."""
 
     @property
     def hole_card_count(self):
@@ -143,46 +137,40 @@ class SixCardOmahaHoldEmVariant(OmahaHoldEmVariant):
 
 
 class GreekHoldEmVariant(HoldEmVariant):
-    """GreekHoldEmVariant is the class for Greek Hold'em game variants."""
+    """The class for Greek Hold'em game variants."""
 
     @property
     def hole_card_count(self):
         return 2
 
     def create_evaluators(self):
-        return GreekEvaluator(),
+        return (GreekEvaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class ShortDeckHoldEmVariant(HoldEmVariant):
-    """ShortDeckHoldEmVariant is the class for Short-deck Hold'em game
-    variants.
-    """
+    """The class for Short-deck Hold'em game variants."""
 
     @property
     def hole_card_count(self):
         return 2
 
     def create_evaluators(self):
-        return ShortDeckEvaluator(),
+        return (ShortDeckEvaluator(),)
 
     def create_deck(self):
         return ShortDeck()
 
 
 class DrawVariant(StaticHoleVariantMixin, Variant, ABC):
-    """DrawVariant is the abstract base class for all draw game
-    variants.
-    """
+    """The abstract base class for all draw game variants."""
     ...
 
 
 class SingleDrawVariant(DrawVariant, ABC):
-    """SingleDrawVariant is the abstract base class for all single draw
-    game variants.
-    """
+    """The abstract base class for all single draw game variants."""
 
     def create_stages(self):
         return (
@@ -195,9 +183,7 @@ class SingleDrawVariant(DrawVariant, ABC):
 
 
 class TripleDrawVariant(DrawVariant, ABC):
-    """TripleDrawVariant is the abstract base class for all triple draw
-    game variants.
-    """
+    """The abstract base class for all triple draw game variants."""
 
     def create_stages(self):
         return (
@@ -214,69 +200,63 @@ class TripleDrawVariant(DrawVariant, ABC):
 
 
 class FiveCardDrawVariant(SingleDrawVariant):
-    """FiveCardDrawVariant is the class for Five-card Draw game
-    variants.
-    """
+    """The class for Five-card Draw game variants."""
 
     @property
     def hole_card_count(self):
         return 5
 
     def create_evaluators(self):
-        return StandardEvaluator(),
+        return (StandardEvaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class BadugiVariant(TripleDrawVariant):
-    """BadugiVariant is the class for Badugi game variants."""
+    """The class for Badugi game variants."""
 
     @property
     def hole_card_count(self):
         return 4
 
     def create_evaluators(self):
-        return BadugiEvaluator(),
+        return (BadugiEvaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class SingleDrawLowball27Variant(SingleDrawVariant):
-    """SingleDrawLowball27Variant is the class for 2-7 Single Draw
-    Lowball game variants.
-    """
+    """The class for 2-7 Single Draw Lowball game variants."""
 
     @property
     def hole_card_count(self):
         return 5
 
     def create_evaluators(self):
-        return Lowball27Evaluator(),
+        return (Lowball27Evaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class TripleDrawLowball27Variant(TripleDrawVariant):
-    """TripleDrawLowball27Variant is the class for 2-7 Triple Draw
-    Lowball game variants.
-    """
+    """The class for 2-7 Triple Draw Lowball game variants."""
 
     @property
     def hole_card_count(self):
         return 5
 
     def create_evaluators(self):
-        return Lowball27Evaluator(),
+        return (Lowball27Evaluator(),)
 
     def create_deck(self):
         return StandardDeck()
 
 
 class KuhnPokerVariant(Variant):
-    """KuhnPokerVariant is the class for Kuhn Poker game variants."""
+    """The class for Kuhn Poker game variants."""
 
     def create_stages(self):
         return (
@@ -286,7 +266,7 @@ class KuhnPokerVariant(Variant):
         )
 
     def create_evaluators(self):
-        return RankEvaluator(),
+        return (RankEvaluator(),)
 
     def create_deck(self):
         return Deck((

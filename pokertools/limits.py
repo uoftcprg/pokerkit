@@ -6,24 +6,27 @@ from pokertools.game import PokerPlayer
 
 
 class Limit(ABC):
-    """Limit is the abstract base class for all limits."""
+    """The abstract base class for all limits."""
 
     def __init__(self, game):
-        self.__game = game
+        self._game = game
 
     @property
     def game(self):
-        """Returns the game of this limit.
+        """Return the game of this limit.
 
         :return: The game of this limit.
         """
-        return self.__game
+        return self._game
 
     @property
     def _min_amount(self):
-        return min(max(map(
-            PokerPlayer.bet.fget, self.game.players,
-        )) + self.game._max_delta, self.game.actor.total)
+        max_bet = 0
+
+        for player in self.game.players:
+            max_bet = max(player.bet)
+
+        return min(max_bet + self.game._max_delta, self.game.actor.total)
 
     @property
     def _pot_amount(self):
@@ -44,21 +47,21 @@ class Limit(ABC):
     def _max_count(self): ...
 
     def is_fixed_limit(self):
-        """Returns whether or not this limit is a fixed limit.
+        """Return whether or not this limit is a fixed limit.
 
         :return: True if this limit is a fixed limit, else False.
         """
         return isinstance(self, FixedLimit)
 
     def is_pot_limit(self):
-        """Returns whether or not this limit is a pot limit.
+        """Return whether or not this limit is a pot limit.
 
         :return: True if this limit is a pot limit, else False.
         """
         return isinstance(self, PotLimit)
 
     def is_no_limit(self):
-        """Returns whether or not this limit is a no limit.
+        """Return whether or not this limit is a no limit.
 
         :return: True if this limit is a no limit, else False.
         """
@@ -66,7 +69,7 @@ class Limit(ABC):
 
 
 class FixedLimit(Limit):
-    """FixedLimit is the class for fixed-limits."""
+    """The class for fixed-limits."""
 
     @property
     def _max_amount(self):
@@ -78,7 +81,7 @@ class FixedLimit(Limit):
 
 
 class PotLimit(Limit):
-    """PotLimit is the class for pot-limits."""
+    """The class for pot-limits."""
 
     @property
     def _max_amount(self):
@@ -92,7 +95,7 @@ class PotLimit(Limit):
 
 
 class NoLimit(Limit):
-    """NoLimit is the class for no-limits."""
+    """The class for no-limits."""
 
     @property
     def _max_amount(self):

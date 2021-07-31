@@ -5,7 +5,7 @@ from itertools import chain, combinations
 
 from auxiliary import reverse_args
 
-from pokertools.cards import Card, Rank
+from pokertools.cards import Card
 from pokertools.hands import (
     BadugiHand, LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand,
     StandardHand,
@@ -18,7 +18,7 @@ class Evaluator(ABC):
     @classmethod
     @abstractmethod
     def evaluate(cls, hole_cards, board_cards):
-        """Evaluates the hand of the combinations of the hole cards and
+        """Evaluate the hand of the combinations of the hole cards and
         the board cards.
 
         :param hole_cards: The hole cards.
@@ -30,7 +30,7 @@ class Evaluator(ABC):
 
 
 class StandardEvaluator(Evaluator):
-    """StandardEvaluator is the class for standard evaluators."""
+    """The class for standard evaluators."""
 
     _hand_type = StandardHand
 
@@ -42,7 +42,7 @@ class StandardEvaluator(Evaluator):
 
 
 class GreekEvaluator(StandardEvaluator):
-    """GreekEvaluator is the class for Greek evaluators."""
+    """The class for Greek evaluators."""
 
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
@@ -55,7 +55,7 @@ class GreekEvaluator(StandardEvaluator):
 
 
 class OmahaEvaluator(GreekEvaluator):
-    """OmahaEvaluator is the class for Omaha evaluators."""
+    """The class for Omaha evaluators."""
 
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
@@ -69,45 +69,44 @@ class OmahaEvaluator(GreekEvaluator):
 
 
 class ShortDeckEvaluator(StandardEvaluator):
-    """ShortDeckEvaluator is the class for Short-deck evaluators."""
+    """The class for Short-deck evaluators."""
 
     _hand_type = ShortDeckHand
 
 
 class Lowball27Evaluator(StandardEvaluator):
-    """Lowball27Evaluator is the class for Deuce-to-seven Lowball
-    evaluators.
-    """
+    """The class for Deuce-to-seven Lowball evaluators."""
 
     _hand_type = Lowball27Hand
 
 
 class LowballA5Evaluator(StandardEvaluator):
-    """LowballA5Evaluator is the class for Ace-to-five Lowball
-    evaluators.
-    """
+    """The class for Ace-to-five Lowball evaluators."""
 
     _hand_type = LowballA5Hand
 
 
 class BadugiEvaluator(Evaluator):
-    """BadugiEvaluator is the class for Badugi evaluators."""
+    """The class for Badugi evaluators."""
 
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
-        return max(map(BadugiHand, filter(
-            BadugiHand._is_valid, chain.from_iterable(map(
-                partial(combinations, tuple(chain(hole_cards, board_cards))),
-                range(1, 5)),
-            ),
-        )))
+        cards = tuple(chain(hole_cards, board_cards))
+        hands = []
+
+        for count in range(1, 5):
+            for combination in combinations(cards, count):
+                if BadugiHand._is_valid(combination):
+                    hands.append(BadugiHand(combination))
+
+        return max(hands)
 
 
 class RankEvaluator(Evaluator):
-    """RankEvaluator is the class for rank evaluators."""
+    """The class for rank evaluators."""
 
     @classmethod
     def evaluate(cls, hole_cards, board_cards):
-        return LowIndexedHand(max(map(Rank.index.fget, map(
-            Card.rank.fget, chain(hole_cards, board_cards),
-        ))))
+        return LowIndexedHand(max(map(Card.rank.fget, chain(
+            hole_cards, board_cards,
+        ))).index)
