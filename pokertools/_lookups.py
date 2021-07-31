@@ -10,15 +10,9 @@ PRIMES = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
 
 class Lookup(ABC):
-    def __init__(self):
-        self.populate()
-
     @property
     @abstractmethod
     def index_count(self): ...
-
-    @abstractmethod
-    def populate(self): ...
 
     @abstractmethod
     def get_index(self, cards): ...
@@ -26,9 +20,9 @@ class Lookup(ABC):
 
 class UnsuitedLookup(Lookup, ABC):
     def __init__(self):
-        self.unsuited = {}
-
         super().__init__()
+
+        self.unsuited = {}
 
     @property
     def index_count(self):
@@ -46,9 +40,9 @@ class UnsuitedLookup(Lookup, ABC):
 
 class SuitedLookup(UnsuitedLookup, ABC):
     def __init__(self):
-        self.suited = {}
-
         super().__init__()
+
+        self.suited = {}
 
     @property
     def index_count(self):
@@ -70,7 +64,9 @@ class SuitedLookup(UnsuitedLookup, ABC):
 
 
 class LowballA5Lookup(UnsuitedLookup):
-    def populate(self):
+    def __init__(self):
+        super().__init__()
+
         for key in chain(
                 multiples(Ranks.ACE_LOW.value, {4: 1, 1: 1}),
                 multiples(Ranks.ACE_LOW.value, {3: 1, 2: 1}),
@@ -83,14 +79,18 @@ class LowballA5Lookup(UnsuitedLookup):
 
 
 class BadugiLookup(UnsuitedLookup):
-    def populate(self):
+    def __init__(self):
+        super().__init__()
+
         for n in range(1, 5):
             for key in multiples(Ranks.ACE_LOW.value, {1: n}):
                 self.unsuited[key] = self.index_count
 
 
 class StandardLookup(SuitedLookup):
-    def populate(self):
+    def __init__(self):
+        super().__init__()
+
         for key in straights(Ranks.STANDARD.value, 5):
             if key not in self.suited:
                 self.suited[key] = self.index_count
@@ -118,7 +118,9 @@ class StandardLookup(SuitedLookup):
 
 
 class ShortDeckLookup(SuitedLookup):
-    def populate(self):
+    def __init__(self):
+        super().__init__()
+
         for key in straights(Ranks.SHORT_DECK.value, 5):
             if key not in self.suited:
                 self.suited[key] = self.index_count

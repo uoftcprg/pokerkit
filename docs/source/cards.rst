@@ -107,7 +107,7 @@ functions that help circumvent this.
    from pokertools import *
 
    # Create an iterable of cards.
-   print(parse_cards('4h4s4cAs'))  # <map object at 0x0123456789ABCDEF>
+   print(parse_cards('4h4s4cAs'))  # <map object at 0x...>
    print(list(parse_cards('4h4s4cAs')))  # [4h, 4s, 4c, As]
    print(tuple(parse_cards('4h4s4cAs')))  # (4h, 4s, 4c, As)
 
