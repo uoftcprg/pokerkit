@@ -3,7 +3,7 @@ from itertools import starmap
 from numbers import Integral
 from operator import gt
 
-from auxiliary import maxima, reverse_args
+from auxiliary import SequenceView, maxima, reverse_args
 from gameframe.sequential import SequentialActor, SequentialGame
 
 from pokertools.cards import HoleCard, parse_cards
@@ -125,7 +125,7 @@ class PokerGame(SequentialGame):
 
         :return: The deck of this poker game.
         """
-        return tuple(self._deck)
+        return SequenceView(self._deck)
 
     @property
     def ante(self):
@@ -167,7 +167,7 @@ class PokerGame(SequentialGame):
 
         :return: The muck of this poker game.
         """
-        return tuple(self._muck)
+        return SequenceView(self._muck)
 
     @property
     def pot(self):
@@ -186,7 +186,7 @@ class PokerGame(SequentialGame):
 
         :return: The board of this poker game.
         """
-        return tuple(self._board)
+        return SequenceView(self._board)
 
     @property
     def stage(self):
@@ -649,10 +649,9 @@ class PokerPlayer(SequentialActor):
         elif self.is_shown():
             return tuple(map(HoleCard.show, self._hole))
 
-        return tuple(
-            starmap(HoleCard, zip(
-                self.game._hole_card_statuses, self._hole,
-            )))
+        return tuple(starmap(HoleCard, zip(
+            self.game._hole_card_statuses, self._hole,
+        )))
 
     @property
     def seen(self):
@@ -661,7 +660,7 @@ class PokerPlayer(SequentialActor):
 
         :return: The seen cards of this poker player.
         """
-        return tuple(self._seen)
+        return SequenceView(self._seen)
 
     @property
     def _put(self):
