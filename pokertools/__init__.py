@@ -30,7 +30,7 @@ __all__ = (
     'TexasHoldEmVariant', 'TripleDrawLowball27Variant', 'TripleDrawVariant',
     'Variant',
 )
-__version__ = '0.0.3.dev53'
+__version__ = '0.0.3.dev54'
 
 from pokertools.cards import (
     Card, HoleCard, Rank, Ranks, Suit, parse_card, parse_cards, rainbow,
