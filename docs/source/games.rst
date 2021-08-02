@@ -4,24 +4,24 @@ Interacting with Poker Games
 PokerTools offer a wide selection of pre-configured poker game variants.
 The list of those are as follows:
 
-- Fixed-Limit Texas Hold'em: :const:`pokertools.games.FixedLimitTexasHoldEm`
-- No-Limit Texas Hold'em: :const:`pokertools.games.NoLimitTexasHoldEm`
-- Pot-Limit Omaha Hold'em: :const:`pokertools.games.PotLimitOmahaHoldEm`
-- Fixed-Limit 5-Card Omaha Hold'em: :const:`pokertools.games.FixedLimitFiveCardOmahaHoldEm`
-- Pot-Limit 5-Card Omaha Hold'em: :const:`pokertools.games.PotLimitFiveCardOmahaHoldEm`
-- Pot-Limit 6-Card Omaha Hold'em: :const:`pokertools.games.PotLimitSixCardOmahaHoldEm`
-- Fixed-Limit Greek Hold'em: :const:`pokertools.games.FixedLimitGreekHoldEm`
-- Pot-Limit Greek Hold'em: :const:`pokertools.games.PotLimitGreekHoldEm`
-- No-Limit Greek Hold'em: :const:`pokertools.games.NoLimitGreekHoldEm`
-- No-Limit Short-Deck Hold'em: :const:`pokertools.games.NoLimitShortDeckHoldEm`
-- Fixed-Limit 5-Card Draw: :const:`pokertools.games.FixedLimitFiveCardDraw`
-- Pot-Limit 5-Card Draw: :const:`pokertools.games.PotLimitFiveCardDraw`
-- No-Limit 5-Card Draw: :const:`pokertools.games.NoLimitFiveCardDraw`
-- Fixed-Limit Badugi: :const:`pokertools.games.FixedLimitBadugi`
-- No-Limit 2-to-7 Single Draw Lowball: :const:`pokertools.games.NoLimitSingleDrawLowball27`
-- Fixed-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.FixedLimitTripleDrawLowball27`
-- Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.games.PotLimitTripleDrawLowball27`
-- Fixed-Limit Kuhn Poker: :const:`pokertools.games.KuhnPoker`
+- Fixed-Limit Texas Hold'em: :const:`pokertools.factories.FixedLimitTexasHoldEm`
+- No-Limit Texas Hold'em: :const:`pokertools.factories.NoLimitTexasHoldEm`
+- Pot-Limit Omaha Hold'em: :const:`pokertools.factories.PotLimitOmahaHoldEm`
+- Fixed-Limit 5-Card Omaha Hold'em: :const:`pokertools.factories.FixedLimitFiveCardOmahaHoldEm`
+- Pot-Limit 5-Card Omaha Hold'em: :const:`pokertools.factories.PotLimitFiveCardOmahaHoldEm`
+- Pot-Limit 6-Card Omaha Hold'em: :const:`pokertools.factories.PotLimitSixCardOmahaHoldEm`
+- Fixed-Limit Greek Hold'em: :const:`pokertools.factories.FixedLimitGreekHoldEm`
+- Pot-Limit Greek Hold'em: :const:`pokertools.factories.PotLimitGreekHoldEm`
+- No-Limit Greek Hold'em: :const:`pokertools.factories.NoLimitGreekHoldEm`
+- No-Limit Short-Deck Hold'em: :const:`pokertools.factories.NoLimitShortDeckHoldEm`
+- Fixed-Limit 5-Card Draw: :const:`pokertools.factories.FixedLimitFiveCardDraw`
+- Pot-Limit 5-Card Draw: :const:`pokertools.factories.PotLimitFiveCardDraw`
+- No-Limit 5-Card Draw: :const:`pokertools.factories.NoLimitFiveCardDraw`
+- Fixed-Limit Badugi: :const:`pokertools.factories.FixedLimitBadugi`
+- No-Limit 2-to-7 Single Draw Lowball: :const:`pokertools.factories.NoLimitSingleDrawLowball27`
+- Fixed-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.factories.FixedLimitTripleDrawLowball27`
+- Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.factories.PotLimitTripleDrawLowball27`
+- Fixed-Limit Kuhn Poker: :const:`pokertools.factories.KuhnPoker`
 
 Creating Pre-configured Poker Games
 -----------------------------------

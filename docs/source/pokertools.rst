@@ -91,10 +91,10 @@ pokertools.stakes module
    :undoc-members:
    :show-inheritance:
 
-pokertools.games module
+pokertools.factories module
 -----------------------
 
-.. automodule:: pokertools.games
+.. automodule:: pokertools.factories
    :members:
    :undoc-members:
    :show-inheritance:
