@@ -107,7 +107,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                         end = max(len(player.hole) - len(cards), 0)
                         assert not player.can_discard_draw(
                             player.hole,
-                            tuple(cards) + (game.deck + game.muck)[:end],
+                            chain(cards, (game.deck + game.muck)[:end]),
                         )
                 else:
                     population = game.deck
@@ -116,7 +116,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                         end = max(len(player.hole) - len(game.muck), 0)
                         assert not player.can_discard_draw(
                             player.hole,
-                            game.muck + game.deck[:end],
+                            chain(game.muck, game.deck[:end]),
                         )
 
                 assert player.can_discard_draw(player.hole, sample(
@@ -126,7 +126,8 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                 assert not player.can_discard_draw(player.hole)
 
                 if len(game.deck) < len(player.hole):
-                    population = set(game.deck + game.muck) - set(player.seen)
+                    population = set(chain(game.deck, game.muck)) \
+                                 - set(player.seen)
                 else:
                     population = game.deck
 
