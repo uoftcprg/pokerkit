@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from functools import partial
 from operator import gt, truth
 
-from auxiliary import FrozenDict
+from auxiliary import MappingView
 
 
 class Stakes:
@@ -27,7 +27,7 @@ class Stakes:
         if not isinstance(blinds, Mapping):
             blinds = enumerate(blinds)
 
-        self._blinds = FrozenDict(blinds)
+        self._blinds = dict(blinds)
 
         max_value = max(self.ante, max(self.blinds.values(), default=0))
 
@@ -60,7 +60,7 @@ class Stakes:
 
         :return: The blinds of this poker game.
         """
-        return self._blinds
+        return MappingView(self._blinds)
 
     @property
     def small_bet(self):
