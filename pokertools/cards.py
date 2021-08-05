@@ -118,7 +118,8 @@ class Card(SupportsLessThan, Hashable):
 class HoleCard(Card):
     """The class for hole cards.
 
-    :param status: True if this hole card is exposed, False otherwise.
+    :param status: ``True`` if this hole card is exposed, ``False``
+                   otherwise.
     :param card: The card value.
     """
 
@@ -134,7 +135,8 @@ class HoleCard(Card):
     def status(self):
         """Return the status of this hole card.
 
-        :return: True if this hole card is exposed, False otherwise.
+        :return: ``True`` if this hole card is exposed, ``False``
+                 otherwise.
         """
         return self._status
 
@@ -182,7 +184,8 @@ def rainbow(cards):
     other.
 
     :param cards: The cards to check.
-    :return: True if the cards have a rainbow texture, else False.
+    :return: ``True`` if the cards have a rainbow texture, else
+             ``False``.
     """
     return distinct(map(Card.suit.fget, cards))
 
@@ -191,6 +194,6 @@ def suited(cards):
     """Check if all cards are of the same suit.
 
     :param cards: The cards to check.
-    :return: True if the cards are suited, else False.
+    :return: ``True`` if the cards are suited, else ``False``.
     """
     return const(map(Card.suit.fget, cards))

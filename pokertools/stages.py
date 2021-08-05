@@ -25,51 +25,54 @@ class Stage(ABC):
     def is_dealing_stage(self):
         """Return whether or not this stage is a dealing stage.
 
-        :return: True if this stage is a dealing stage, else False.
+        :return: ``True`` if this stage is a dealing stage, else False.
         """
         return isinstance(self, DealingStage)
 
     def is_hole_dealing_stage(self):
         """Return whether or not this stage is a hole dealing stage.
 
-        :return: True if this stage is a hole dealing stage, else False.
+        :return: ``True`` if this stage is a hole dealing stage, else False.
         """
         return isinstance(self, HoleDealingStage)
 
     def is_board_dealing_stage(self):
         """Return whether or not this stage is a board dealing stage.
 
-        :return: True if this stage is a board dealing stage, else
-                 False.
+        :return: ``True`` if this stage is a board dealing stage, else
+                 ``False``.
         """
         return isinstance(self, BoardDealingStage)
 
     def is_queued_stage(self):
         """Return whether or not this stage is a queued stage.
 
-        :return: True if this stage is a queued stage, else False.
+        :return: ``True`` if this stage is a queued stage, else
+                 ``False``.
         """
         return isinstance(self, QueuedStage)
 
     def is_betting_stage(self):
         """Return whether or not this stage is a betting stage.
 
-        :return: True if this stage is a betting stage, else False.
+        :return: ``True`` if this stage is a betting stage, else
+                 ``False``.
         """
         return isinstance(self, BettingStage)
 
     def is_discard_draw_stage(self):
         """Return whether or not this stage is a discard and draw stage.
 
-        :return: True if this stage is a discard and draw stage, else
-                 False.
+        :return: ``True`` if this stage is a discard and draw stage, else
+                 ``False``.
         """
         return isinstance(self, DiscardDrawStage)
 
     def is_showdown_stage(self):
         """Return whether or not this stage is a showdown stage.
 
-        :return: True if this stage is a showdown stage, else False.
+        :return: ``True`` if this stage is a showdown stage, else
+                 ``False``.
         """
         return isinstance(self, ShowdownStage)
 
@@ -127,8 +130,8 @@ class DealingStage(Stage, ABC):
 class HoleDealingStage(DealingStage):
     """The class for hole card dealing stages.
 
-    :param status: The status of the hole card being dealt. True if the
-                   dealing is made face-up, False otherwise.
+    :param status: The status of the hole card being dealt. ``True`` if
+                   the dealing is made face-up, ``False`` otherwise.
     :param deal_count: The number of hole cards to deal.
     """
 
@@ -142,8 +145,8 @@ class HoleDealingStage(DealingStage):
         """Return the status of the hole card being dealt in this hole
         dealing stage.
 
-        True is returned if the dealing is made face-up. Otherwise,
-        False is returned.
+        ``True`` is returned if the dealing is made face-up. Otherwise,
+        ``False`` is returned.
 
         :return: The status of the hole card being dealt.
         """
@@ -186,8 +189,9 @@ class QueuedStage(Stage, ABC):
 class BettingStage(QueuedStage):
     """The class for betting stages.
 
-    :param big: True if this betting stage's min-raise is the big bet,
-                else False. (Only relevant in fixed-limit games)
+    :param big: ``True`` if this betting stage's min-raise is the big
+                bet, else ``False``. (Only relevant in fixed-limit
+                games)
     """
 
     def __init__(self, big, game):
@@ -214,7 +218,7 @@ class BettingStage(QueuedStage):
         """Return whether or not this betting stage is a big betting
         stage.
 
-        :return: True if this betting stage is big, else False.
+        :return: ``True`` if this betting stage is big, else ``False``.
         """
         return self._big
 

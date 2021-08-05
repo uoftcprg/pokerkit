@@ -408,7 +408,7 @@ class PokerNature(SequentialActor):
         deck.
 
         :param cards: The optional hole cards to be dealt.
-        :return: None.
+        :return: ``None``.
         """
         self._get_hole_deal_action(cards).act()
 
@@ -420,18 +420,18 @@ class PokerNature(SequentialActor):
         deck.
 
         :param cards: The optional hole cards to be dealt.
-        :return: True if the hole can be dealt, else False.
+        :return: ``True`` if the hole can be dealt, else ``False``.
         """
         return self._get_hole_deal_action(cards).can_act()
 
     def deal_board(self, cards=None):
         """Deal the optionally specified cards to the board.
 
-        If none is given as cards, sample cards are randomly selected
-        from the deck.
+        If ``None`` is given as cards, sample cards are randomly
+        selected from the deck.
 
         :param cards: The optional cards to be dealt.
-        :return: None.
+        :return: ``None``.
         """
         self._get_board_deal_action(cards).act()
 
@@ -439,11 +439,11 @@ class PokerNature(SequentialActor):
         """Determine if the optionally specified cards can be dealt to
         the board.
 
-        If none is given as cards, sample cards are assumed to be
+        If ``None`` is given as cards, sample cards are assumed to be
         randomly selected from the deck.
 
         :param cards: The optional cards to be dealt.
-        :return: True if the board can be dealt, else False.
+        :return: ``True`` if the board can be dealt, else ``False``.
         """
         return self._get_board_deal_action(cards).can_act()
 
@@ -675,23 +675,24 @@ class PokerPlayer(SequentialActor):
 
         The player is active if he/she is in a hand.
 
-        :return: True if this poker player is active, else False.
+        :return: ``True`` if this poker player is active, else
+                 ``False``.
         """
         return not self.is_mucked()
 
     def is_mucked(self):
         """Return whether or not the player has mucked his/her hand.
 
-        :return: True if this poker player has mucked his/her hand, else
-                 False.
+        :return: ``True`` if this poker player has mucked his/her hand,
+                 else ``False``.
         """
         return self._status is False
 
     def is_shown(self):
         """Return whether or not the player has shown his/her hand.
 
-        :return: True if this poker player has shown his/her hand, else
-                 False.
+        :return: ``True`` if this poker player has shown his/her hand,
+                 else ``False``.
         """
         return self._status is True
 
@@ -701,7 +702,7 @@ class PokerPlayer(SequentialActor):
         If any hand that beats this poker player's hand is already
         revealed, then the showdown would not be necessary.
 
-        :return: True if the showdown is necessary, else False.
+        :return: ``True`` if the showdown is necessary, else ``False``.
         """
         if not self.can_showdown():
             raise ValueError('cannot showdown')
@@ -711,28 +712,29 @@ class PokerPlayer(SequentialActor):
     def fold(self):
         """Fold the poker player's hand.
 
-        :return: None.
+        :return: ``None``.
         """
         self._get_fold_action().act()
 
     def can_fold(self):
         """Return whether or not the player can fold his/her hand.
 
-        :return: True if this poker player can fold, else False.
+        :return: ``True`` if this poker player can fold, else ``False``.
         """
         return self._get_fold_action().can_act()
 
     def check_call(self):
         """Check or call the opponent's bet.
 
-        :return: None.
+        :return: ``None``.
         """
         self._get_check_call_action().act()
 
     def can_check_call(self):
         """Return whether or not the player can check/call.
 
-        :return: True if this poker player can check/call, else False.
+        :return: ``True`` if this poker player can check/call, else
+                 ``False``.
         """
         return self._get_check_call_action().can_act()
 
@@ -742,7 +744,7 @@ class PokerPlayer(SequentialActor):
         If no amount is specified, this poker player will min-raise.
 
         :param amount: The optional amount to bet/raise.
-        :return: None.
+        :return: ``None``.
         """
         self._get_bet_raise_action(amount).act()
 
@@ -754,7 +756,8 @@ class PokerPlayer(SequentialActor):
         min-raise.
 
         :param amount: The optional amount to bet/raise.
-        :return: True if this poker player can bet/raise, else False.
+        :return: ``True`` if this poker player can bet/raise, else
+                 ``False``.
         """
         return self._get_bet_raise_action(amount).can_act()
 
@@ -769,9 +772,9 @@ class PokerPlayer(SequentialActor):
         If drawn cards is specified, so must the discarded cards.
 
         :param discarded_cards: The optional cards to discard. Defaults
-                                to empty tuple (stand pat).
+                                to an empty ``tuple`` (stand pat).
         :param drawn_cards: The optional cards to draw.
-        :return: None.
+        :return: ``None``.
         """
         self._get_discard_draw_action(discarded_cards, drawn_cards).act()
 
@@ -788,8 +791,8 @@ class PokerPlayer(SequentialActor):
         :param discarded_cards: The cards to discard. Defaults to empty
                                 tuple (stand pat).
         :param drawn_cards: The optional cards to draw.
-        :return: True if this poker player can discard and draw, else
-                 False.
+        :return: ``True`` if this poker player can discard and draw,
+                 else ``False``.
         """
         return self._get_discard_draw_action(
             discarded_cards, drawn_cards,
@@ -803,9 +806,9 @@ class PokerPlayer(SequentialActor):
         to win the pot. This is the case when there is no face-up hand
         on the board that beats your hand.
 
-        :param forced: True to force showdown, False to force muck.
-                       Defaults to None.
-        :return: None.
+        :param forced: ``True`` to force showdown, ``False`` to force
+                       muck. Defaults to ``None``.
+        :return: ``None``.
         """
         self._get_showdown_action(forced).act()
 
@@ -816,9 +819,10 @@ class PokerPlayer(SequentialActor):
         if necessary to win the pot. This is the case when there is no
         face-up hand on the board that beats your hand.
 
-        :param forced: True to force showdown, False to force muck.
-                       Defaults to None.
-        :return: True if this poker player can showdown, else False.
+        :param forced: ``True`` to force showdown, ``False`` to force
+                       muck. Defaults to ``None``.
+        :return: ``True`` if this poker player can showdown, else
+                 ``False``.
         """
         return self._get_showdown_action(forced).can_act()
 
