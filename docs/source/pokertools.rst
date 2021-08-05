@@ -76,7 +76,7 @@ pokertools.stages module
    :show-inheritance:
 
 pokertools.variants module
------------------------------
+--------------------------
 
 .. automodule:: pokertools.variants
    :members:
@@ -92,9 +92,17 @@ pokertools.stakes module
    :show-inheritance:
 
 pokertools.factories module
------------------------
+---------------------------
 
 .. automodule:: pokertools.factories
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pokertools.ranges module
+------------------------
+
+.. automodule:: pokertools.ranges
    :members:
    :undoc-members:
    :show-inheritance:
