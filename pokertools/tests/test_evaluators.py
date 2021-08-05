@@ -3,8 +3,7 @@ from unittest import TestCase, main
 from pokertools import (
     BadugiEvaluator, BadugiHand, GreekEvaluator, LowIndexedHand,
     Lowball27Evaluator, Lowball27Hand, LowballA5Evaluator, LowballA5Hand,
-    OmahaEvaluator, Rank, RankEvaluator, ShortDeckEvaluator,
-    ShortDeckHand,
+    OmahaEvaluator, Rank, RankEvaluator, ShortDeckEvaluator, ShortDeckHand,
     StandardEvaluator, StandardHand, parse_cards,
 )
 
