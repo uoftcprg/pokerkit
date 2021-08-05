@@ -20,7 +20,7 @@ __all__ = (
     'PotLimitTripleDrawLowball27', 'PokerGame', 'PokerNature', 'PokerPlayer',
     'BadugiHand', 'Hand', 'HighIndexedHand', 'IndexedHand', 'LookupHandMixin',
     'LowIndexedHand', 'Lowball27Hand', 'LowballA5Hand', 'ShortDeckHand',
-    'StandardHand', 'FixedLimit', 'Limit', 'NoLimit', 'PotLimit',
+    'StandardHand', 'FixedLimit', 'Limit', 'NoLimit', 'PotLimit', 'Range',
     'BettingStage', 'BoardDealingStage', 'DealingStage', 'DiscardDrawStage',
     'HoleDealingStage', 'QueuedStage', 'ShowdownStage', 'Stage', 'Stakes',
     'BadugiVariant', 'DrawVariant', 'FiveCardDrawVariant',
@@ -31,7 +31,7 @@ __all__ = (
     'TexasHoldEmVariant', 'TripleDrawLowball27Variant', 'TripleDrawVariant',
     'Variant',
 )
-__version__ = '0.0.3.dev56'
+__version__ = '0.0.3.dev57'
 
 from pokertools.cards import (
     Card, HoleCard, Rank, Ranks, Suit, parse_card, parse_cards, rainbow,
@@ -58,6 +58,7 @@ from pokertools.hands import (
     LowIndexedHand, Lowball27Hand, LowballA5Hand, ShortDeckHand, StandardHand,
 )
 from pokertools.limits import FixedLimit, Limit, NoLimit, PotLimit
+from pokertools.ranges import Range
 from pokertools.stages import (
     BettingStage, BoardDealingStage, DealingStage, DiscardDrawStage,
     HoleDealingStage, QueuedStage, ShowdownStage, Stage,

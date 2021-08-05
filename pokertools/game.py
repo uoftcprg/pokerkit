@@ -826,7 +826,7 @@ class PokerPlayer(SequentialActor):
         return self.is_active() and self._lost < self.effective_stack
 
     def _get_hand(self, evaluator):
-        return evaluator.evaluate(self.hole, self.game.board)
+        return evaluator.evaluate_hand(self.hole, self.game.board)
 
     def _get_fold_action(self):
         from pokertools._actions import FoldAction

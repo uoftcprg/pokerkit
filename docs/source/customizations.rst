@@ -23,8 +23,8 @@ Custom Hand Evaluations
 -----------------------
 
 Extending evaluators is easy. You just have to override the
-:meth:`pokertools.evaluators.Evaluator.evaluate` method. If you want to
-use the existing hand facilities, you may subclass
+:meth:`pokertools.evaluators.Evaluator.evaluate_hand` method. If you
+want to use the existing hand facilities, you may subclass
 :class:`pokertools.hands.LowIndexedHand` or
 :class:`pokertools.hands.HighIndexedHand`. In those classes, the order
 of hands is denoted by an :attr:`pokertools.hands.IndexedHand.index`

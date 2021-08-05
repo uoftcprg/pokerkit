@@ -73,9 +73,10 @@ Evaluators are used for the aforesaid purpose not covered by the hands.
 Using Evaluators
 ----------------
 
-Evaluators offer the :meth:`pokertools.evaluators.Evaluator.evaluate`
-method for hand evaluations. The method requires 2 arguments to be
-passed -- the hole cards of the player and the board cards of the game.
+Evaluators offer the
+:meth:`pokertools.evaluators.Evaluator.evaluate_hand` method for hand
+evaluations. The method requires 2 arguments to be passed -- the hole
+cards of the player and the board cards of the game.
 
 .. code-block:: python
 
@@ -85,14 +86,22 @@ passed -- the hole cards of the player and the board cards of the game.
    evaluator = StandardEvaluator()
 
    # Evaluate hands.
-   x = evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKdKh'))
-   y = evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJsTs'))
+   x = evaluator.evaluate_hand(
+       parse_cards('AcAd'), parse_cards('AhAsKcKdKh'),
+   )
+   y = evaluator.evaluate_hand(
+       parse_cards('AcKs'), parse_cards('AhAsQsJsTs'),
+   )
 
    print(x < y)  # True
 
    # Evaluate hands.
-   x = evaluator.evaluate(parse_cards('AcAd'), parse_cards('AhAsKcKd'))
-   y = evaluator.evaluate(parse_cards('AcKs'), parse_cards('AhAsQsJs'))
+   x = evaluator.evaluate_hand(
+       parse_cards('AcAd'), parse_cards('AhAsKcKd'),
+   )
+   y = evaluator.evaluate_hand(
+       parse_cards('AcKs'), parse_cards('AhAsQsJs'),
+   )
 
    print(x < y)  # False
 
@@ -103,11 +112,13 @@ the hole or the board, you can just call the method as below.
 
    from pokertools import *
 
-   hand = StandardEvaluator.evaluate(parse_cards('AcKsAhAsQsJsTs'), ())
+   hand = StandardEvaluator.evaluate_hand(
+       parse_cards('AcKsAhAsQsJsTs'), (),
+   )
 
-The :meth:`pokertools.evaluators.Evaluator.evaluate` method is actually
-a class method, so you can directly call the method from the class
-itself without creating an evaluator instance.
+The :meth:`pokertools.evaluators.Evaluator.evaluate_hand` method is
+actually a class method, so you can directly call the method from the
+class itself without creating an evaluator instance.
 
 The above work-around does not work for some types of evaluators like
 Greek or Omaha evaluators, as the separation between the hole cards and
