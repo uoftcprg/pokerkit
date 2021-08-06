@@ -128,40 +128,6 @@ class PokerGame(SequentialGame):
         return SequenceView(self._deck)
 
     @property
-    def ante(self):
-        """Return the ante of this poker game.
-
-        :return: The ante of this poker game.
-        """
-        return self.stakes.ante
-
-    @property
-    def blinds(self):
-        """Return the blinds of this poker game.
-
-        This frozen dictionary includes straddles and forced bets.
-
-        :return: The blinds of this poker game.
-        """
-        return self.stakes.blinds
-
-    @property
-    def small_bet(self):
-        """Return the small bet of this poker game.
-
-        :return: The small bet of this poker game.
-        """
-        return self.stakes.small_bet
-
-    @property
-    def big_bet(self):
-        """Return the big bet of this poker game.
-
-        :return: The big bet of this poker game.
-        """
-        return self.stakes.big_bet
-
-    @property
     def muck(self):
         """Return the muck of this poker game.
 
@@ -283,14 +249,14 @@ class PokerGame(SequentialGame):
     def _verify(self):
         if len(self.starting_stacks) < 2:
             raise ValueError('less than 2 players')
-        elif len(self.blinds) > len(self.starting_stacks):
+        elif len(self.stakes.blinds) > len(self.starting_stacks):
             raise ValueError('more blinds than players')
         elif any(map(partial(gt, 0), self.starting_stacks)):
             raise ValueError('negative starting stack values')
 
     def _setup(self):
         for player in self.players:
-            ante = min(self.ante, player.starting_stack)
+            ante = min(self.stakes.ante, player.starting_stack)
             blind = max(min(player.blind, player.starting_stack - ante), 0)
             stack = player.starting_stack
 
@@ -489,7 +455,7 @@ class PokerPlayer(SequentialActor):
         index = not self.index if len(self.game.players) == 2 else self.index
         values = []
 
-        for key, value in self.game.blinds.items():
+        for key, value in self.game.stakes.blinds.items():
             if key % len(self.game.players) == index:
                 values.append(value)
 

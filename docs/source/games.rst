@@ -163,14 +163,6 @@ change the game state.
    game.evaluators
    # The deck of the game.
    game.deck
-   # The ante of the game.
-   game.ante
-   # The blinds of the game.
-   game.blinds
-   # The small_bet of the game.
-   game.small_bet
-   # The big_bet of the game.
-   game.big_bet
    # The muck of the game.
    game.muck
    # The pot of the game.
