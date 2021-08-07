@@ -238,7 +238,7 @@ class DiscardDrawAction(PokerAction):
     def apply(self):
         if self.drawn_cards is None:
             self.drawn_cards = sample(
-                set(self.population) - set(self.actor.seen),
+                tuple(set(self.population) - set(self.actor.seen)),
                 len(self.discarded_cards),
             )
 

@@ -121,7 +121,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                         )
 
                 assert player.can_discard_draw(player.hole, sample(
-                    population, len(player.hole),
+                    tuple(population), len(player.hole),
                 ))
             else:
                 assert not player.can_discard_draw(player.hole)
@@ -133,7 +133,7 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
                     population = game.deck
 
                 assert not player.can_discard_draw(player.hole, sample(
-                    population, len(player.hole),
+                    tuple(population), len(player.hole),
                 ))
 
             if player.can_showdown():
