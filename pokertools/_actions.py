@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import partial
-from operator import is_not
+from operator import contains, is_not
 from random import sample
 
 from auxiliary import distinct, rotate
@@ -34,7 +34,9 @@ class DealingAction(PokerAction, ABC):
             raise GameFrameError('not a dealing stage')
 
         if self.cards is not None:
-            if not all(map(self.actor.game.deck.__contains__, self.cards)):
+            if not all(map(
+                    partial(contains, self.actor.game.deck), self.cards,
+            )):
                 raise GameFrameError('some or one cards not in deck')
             elif not distinct(self.cards):
                 raise GameFrameError('duplicates in cards')
@@ -219,16 +221,22 @@ class DiscardDrawAction(PokerAction):
 
         if not self.actor.game.stage.is_discard_draw_stage():
             raise GameFrameError('not a draw round')
-        elif not all(map(self.actor.hole.__contains__, self.discarded_cards)):
+        elif not all(map(
+                partial(contains, self.actor.hole), self.discarded_cards,
+        )):
             raise GameFrameError('hole cards not in actor hole')
 
         if self.drawn_cards is None:
             if not distinct(self.discarded_cards):
                 raise GameFrameError('duplicates in cards')
         else:
-            if not all(map(self.population.__contains__, self.drawn_cards)):
+            if not all(map(
+                    partial(contains, self.population), self.drawn_cards,
+            )):
                 raise GameFrameError('cards not in deck or muck if not enough')
-            elif any(map(self.actor.seen.__contains__, self.drawn_cards)):
+            elif any(map(
+                    partial(contains, self.actor.seen), self.drawn_cards,
+            )):
                 raise GameFrameError('drawing card previously seen')
             elif not distinct(self.discarded_cards + self.drawn_cards):
                 raise GameFrameError('duplicates in cards')
@@ -243,10 +251,10 @@ class DiscardDrawAction(PokerAction):
             )
 
         self.actor.game._deck.draw(filter(
-            self.actor.game.deck.__contains__, self.drawn_cards,
+            partial(contains, self.actor.game.deck), self.drawn_cards,
         ))
         self.actor.game._muck.draw(filter(
-            self.actor.game.muck.__contains__, self.drawn_cards,
+            partial(contains, self.actor.game.muck), self.drawn_cards,
         ))
         self.actor.game._muck.extend(self.discarded_cards)
         self.actor._seen.extend(self.drawn_cards)
