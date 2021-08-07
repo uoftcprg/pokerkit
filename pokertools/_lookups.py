@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
+from functools import partial
 from itertools import chain, combinations, filterfalse
+from operator import contains, itemgetter
 
 from auxiliary import prod, window
 
@@ -166,7 +168,8 @@ def multiples(ranks, frequencies):
         key = mask(samples) ** count
 
         for sub_key in multiples(
-                tuple(filterfalse(samples.__contains__, ranks)), frequencies,
+                tuple(filterfalse(partial(contains, samples), ranks)),
+                frequencies,
         ):
             keys.append(key * sub_key)
 
@@ -176,4 +179,4 @@ def multiples(ranks, frequencies):
 
 
 def mask(ranks):
-    return prod(map(PRIMES.__getitem__, map(Rank.index.fget, ranks)))
+    return prod(map(itemgetter(PRIMES), map(Rank.index.fget, ranks)))

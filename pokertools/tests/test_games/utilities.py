@@ -83,7 +83,8 @@ class PokerTestCaseMixin(GameFrameTestCaseMixin, ABC):
         for player in game.players:
             if player.can_fold():
                 assert player.bet < max(
-                    map(PokerPlayer.bet.fget, game.players))
+                    map(PokerPlayer.bet.fget, game.players)
+                )
 
             if player.can_bet_raise():
                 assert player.can_bet_raise(player.bet_raise_min_amount)

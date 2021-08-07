@@ -443,8 +443,8 @@ class PokerPlayer(SequentialActor):
         if self.is_mucked():
             return f'PokerPlayer({self.bet}, {self.stack})'
 
-        return f'PokerPlayer({self.bet}, {self.stack}, ' + ''.join(
-            map(str, self.hole)) + ')'
+        return f'PokerPlayer({self.bet}, {self.stack}, ' \
+               + ''.join(map(str, self.hole)) + ')'
 
     @property
     def blind(self):
@@ -485,13 +485,16 @@ class PokerPlayer(SequentialActor):
         :return: The effective stack of this poker player.
         """
         active_players = tuple(
-            filter(PokerPlayer.is_active, self.game.players))
+            filter(PokerPlayer.is_active, self.game.players)
+        )
 
         if self.is_mucked() or len(active_players) < 2:
             return 0
 
-        return min(self.starting_stack, sorted(
-            map(PokerPlayer.starting_stack.fget, active_players))[-2])
+        return min(
+            self.starting_stack,
+            sorted(map(PokerPlayer.starting_stack.fget, active_players))[-2],
+        )
 
     @property
     def payoff(self):
