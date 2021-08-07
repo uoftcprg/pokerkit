@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from functools import partial
 from itertools import chain, combinations, filterfalse
-from operator import contains, itemgetter
+from operator import contains, getitem
 
 from auxiliary import prod, window
 
@@ -179,4 +179,4 @@ def multiples(ranks, frequencies):
 
 
 def mask(ranks):
-    return prod(map(itemgetter(PRIMES), map(Rank.index.fget, ranks)))
+    return prod(map(partial(getitem, PRIMES), map(Rank.index.fget, ranks)))
