@@ -4,7 +4,7 @@ from functools import partial
 from itertools import chain, combinations, filterfalse
 from operator import contains, getitem
 
-from auxiliary import prod, window
+from auxiliary import prod, windowed
 
 from pokertools.cards import Card, Rank, Ranks, suited
 
@@ -150,7 +150,7 @@ class ShortDeckLookup(SuitedLookup):
 def straights(ranks, count):
     keys = [PRIMES[ranks[-1].index] * mask(ranks[:count - 1])]
 
-    for straight in window(ranks, count):
+    for straight in windowed(ranks, count):
         keys.append(mask(straight))
 
     return reversed(keys)

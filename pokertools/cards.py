@@ -2,7 +2,7 @@ from collections.abc import Hashable
 from enum import Enum, unique
 from functools import total_ordering
 
-from auxiliary import IndexedEnum, SupportsLessThan, chunk, const, distinct
+from auxiliary import IndexedEnum, SupportsLessThan, chunked, const, distinct
 
 
 @unique
@@ -157,7 +157,7 @@ def parse_cards(cards):
     :return: The parsed cards.
     :raises ValueError: If any card-representation is invalid.
     """
-    return map(parse_card, chunk(cards, 2))
+    return map(parse_card, chunked(cards, 2))
 
 
 def parse_card(card):

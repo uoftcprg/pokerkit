@@ -3,7 +3,7 @@ from functools import partial
 from operator import contains, is_not
 from random import sample
 
-from auxiliary import distinct, rotate
+from auxiliary import distinct, rotated
 from gameframe.exceptions import GameFrameError
 from gameframe.sequential import _SequentialAction
 
@@ -190,7 +190,7 @@ class BetRaiseAction(BettingAction):
         self.actor._stack -= self.amount - self.actor.bet
         self.actor._bet = self.amount
 
-        players = list(filter(PokerPlayer._is_relevant, rotate(
+        players = list(filter(PokerPlayer._is_relevant, rotated(
             self.actor.game.players, self.actor.index,
         )))
 

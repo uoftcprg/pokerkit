@@ -1,6 +1,6 @@
 from itertools import chain, islice, product, starmap
 
-from auxiliary import chunk
+from auxiliary import chunked
 
 from pokertools.cards import Card, Rank, Suit
 
@@ -48,7 +48,7 @@ class Range(set):
         elif len(pattern) % 2 == 0:
             previous = [frozenset()]
 
-            for card_str in chunk(pattern, 2):
+            for card_str in chunked(pattern, 2):
                 rank_str, suit_str = card_str
                 ranks = Rank if rank_str == '?' else (Rank(rank_str),)
                 suits = Suit if suit_str == '?' else (Suit(suit_str),)

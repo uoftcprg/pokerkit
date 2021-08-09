@@ -1,6 +1,6 @@
 from abc import ABC
 
-from auxiliary import rotate
+from auxiliary import rotated
 
 from pokertools.game import PokerPlayer
 
@@ -239,7 +239,7 @@ class BettingStage(QueuedStage):
         else:
             opener = self.game._aggressor
 
-        self.game._actor, *self.game._queue = rotate(
+        self.game._actor, *self.game._queue = rotated(
             players, players.index(opener),
         )
         self.game._bet_raise_count = int(blinded)
@@ -282,5 +282,5 @@ class ShowdownStage(QueuedStage):
 
         self.game._actor, *self.game._queue = list(filter(
             PokerPlayer.is_active,
-            rotate(self.game.players, self.game._aggressor.index),
+            rotated(self.game.players, self.game._aggressor.index),
         ))
