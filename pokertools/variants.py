@@ -100,7 +100,7 @@ class TexasHoldEmVariant(HoldEmVariant):
         return 2
 
     def create_evaluators(self):
-        return (StandardEvaluator(),)
+        return StandardEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -114,7 +114,7 @@ class OmahaHoldEmVariant(HoldEmVariant):
         return 4
 
     def create_evaluators(self):
-        return (OmahaEvaluator(),)
+        return OmahaEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -144,7 +144,7 @@ class GreekHoldEmVariant(HoldEmVariant):
         return 2
 
     def create_evaluators(self):
-        return (GreekEvaluator(),)
+        return GreekEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -158,7 +158,7 @@ class ShortDeckHoldEmVariant(HoldEmVariant):
         return 2
 
     def create_evaluators(self):
-        return (ShortDeckEvaluator(),)
+        return ShortDeckEvaluator(),
 
     def create_deck(self):
         return ShortDeck()
@@ -207,7 +207,7 @@ class FiveCardDrawVariant(SingleDrawVariant):
         return 5
 
     def create_evaluators(self):
-        return (StandardEvaluator(),)
+        return StandardEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -221,7 +221,7 @@ class BadugiVariant(TripleDrawVariant):
         return 4
 
     def create_evaluators(self):
-        return (BadugiEvaluator(),)
+        return BadugiEvaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -235,7 +235,7 @@ class SingleDrawLowball27Variant(SingleDrawVariant):
         return 5
 
     def create_evaluators(self):
-        return (Lowball27Evaluator(),)
+        return Lowball27Evaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -249,7 +249,7 @@ class TripleDrawLowball27Variant(TripleDrawVariant):
         return 5
 
     def create_evaluators(self):
-        return (Lowball27Evaluator(),)
+        return Lowball27Evaluator(),
 
     def create_deck(self):
         return StandardDeck()
@@ -266,7 +266,7 @@ class KuhnPokerVariant(Variant):
         )
 
     def create_evaluators(self):
-        return (RankEvaluator(),)
+        return RankEvaluator(),
 
     def create_deck(self):
         return Deck((
