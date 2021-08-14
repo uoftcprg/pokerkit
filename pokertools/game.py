@@ -1,3 +1,4 @@
+from collections.abc import Sized
 from functools import partial
 from itertools import starmap
 from numbers import Integral
@@ -45,6 +46,9 @@ class PokerGame(SequentialGame):
         return amounts
 
     def __init__(self, limit_type, variant_type, stakes, starting_stacks):
+        if not isinstance(starting_stacks, Sized):
+            starting_stacks = tuple(starting_stacks)
+
         super().__init__(None, PokerNature(self), (
             PokerPlayer(self) for _ in range(len(starting_stacks))
         ))
