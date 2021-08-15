@@ -342,9 +342,9 @@ class PokerGame(SequentialGame):
             elif command == 's':
                 return self.actor._get_showdown_action()
             elif command == 's 0':
-                return self.actor._get_showdown_action(0)
+                return self.actor._get_showdown_action(False)
             elif command == 's 1':
-                return self.actor._get_showdown_action(1)
+                return self.actor._get_showdown_action(True)
 
             raise ValueError(f'invalid command \'{command}\'')
 
