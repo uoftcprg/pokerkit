@@ -10,7 +10,7 @@ class FixedLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 4), 5, 10), (100, 100),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'br', 'cc',
             'db AcAsKc',
@@ -23,7 +23,7 @@ class FixedLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (80, 120))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 4), 5, 10), (100, 100),
-        ).parse(
+        ).act(
             'dh AhAd', 'dh QdQh',
             'br', 'cc',
             'db AcAsKc',
@@ -36,7 +36,7 @@ class FixedLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, False), (110, 90))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 4), 5, 10), (100, 100),
-        ).parse(
+        ).act(
             'dh AhAd', 'dh QdQh',
             'cc', 'cc',
             'db AcAsKc',
@@ -49,7 +49,7 @@ class FixedLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (115, 85))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 4), 5, 10), (100, 100),
-        ).parse(
+        ).act(
             'dh AhAd', 'dh QdQh',
             'br', 'cc',
             'db AcAsKc',
@@ -68,7 +68,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'br 6', 'br 199', 'cc',
             'db AcAsKc',
@@ -77,7 +77,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (100, 200))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'br 99', 'cc',
             'db AcAsKc',
@@ -86,7 +86,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (100, 200))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'br 6', 'cc',
             'db AcAsKc',
@@ -99,7 +99,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (193, 107))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'cc', 'cc',
             'db AcAsKc',
@@ -112,7 +112,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (197, 103))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'br 4', 'cc',
             'db AcAsKc',
@@ -120,7 +120,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (None, False), (205, 95))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (0, 0),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'db AcAsKc',
             'db Qs',
@@ -128,7 +128,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (0, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (1, 0),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'db AcAsKc',
             'db Qs',
@@ -136,7 +136,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (1, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (0, 1),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'db AcAsKc',
             'db Qs',
@@ -144,7 +144,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (0, 1))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (2, 1),
-        ).parse(
+        ).act(
             'dh QdQh',
             'dh AhAd',
             'db AcAsKc',
@@ -153,7 +153,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True), (1, 2))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (50, 1),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd',
             'db AcAsKc',
             'db Qs',
@@ -162,7 +162,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(500, (1000, 2000)), (1125600, 2000000, 553500),
-        ).parse(
+        ).act(
             'dh Ac2d', 'dh 5h7s', 'dh 7h6h',
             'br 7000', 'br 23000', 'f', 'cc',
             'db Jc3d5c',
@@ -173,7 +173,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, False, True), (572100, 1997500, 1109500))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (100, 100, 100),
-        ).parse(
+        ).act(
             'dh AhTh', 'dh AsTs', 'dh AcTc', 'br 6', 'f', 'cc',
             'db 2h3h4h', 'cc', 'cc',
             'db 4s', 'br 93', 'cc',
@@ -182,7 +182,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 299', 'cc', 'cc', 'cc',
             'db AcAsKc',
@@ -191,7 +191,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, True, True), (300, 400, 100, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'f', 'br 6', 'cc', 'cc',
             'db AcAsKc',
@@ -204,7 +204,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, False, False), (193, 115, 299, 193))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'f', 'br 6', 'cc', 'cc',
             'db AcAsKc',
@@ -217,7 +217,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (False, True, False, False), (123, 195, 299, 183))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 6', 'cc', 'cc', 'cc',
             'db AcAsKc',
@@ -230,7 +230,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, False, False), (100, 400, 200, 100))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 6', 'cc', 'cc', 'cc',
             'db AcAsKc',
@@ -243,7 +243,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, False, False), (200, 400, 150, 50))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'f', 'br 199', 'cc', 'cc',
             'db AcAsKc',
@@ -252,7 +252,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, False, True), (200, 301, 299, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (100,) * 4,
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 99', 'cc', 'cc', 'cc',
             'db AcAsKc',
@@ -262,7 +262,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (0, 0, 0, 0),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'db AcAsKc',
             'db Qs',
@@ -270,7 +270,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, True, True), (0, 0, 0, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (1, 1, 5, 5),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 4', 'cc',
             'db AcAsKc',
@@ -279,7 +279,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, True, True), (0, 4, 8, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (7, 0, 9, 7),
-        ).parse(
+        ).act(
             'dh 4h8s', 'dh AsQs', 'dh Ac8d', 'dh AhQh',
             'f', 'f',
             'db Ad3s2h',
@@ -288,7 +288,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, False, False), (9, 0, 8, 6))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (1, 17, 0, 1),
-        ).parse(
+        ).act(
             'dh 3d6c', 'dh 8sAh', 'dh Ad8c', 'dh KcQs',
             'db 4c7h5s',
             'db Ts',
@@ -296,7 +296,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ), (True, True, True, True), (3, 16, 0, 0))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (2, 16, 0, 1),
-        ).parse(
+        ).act(
             'dh AcKs', 'dh 8h2c', 'dh 6h6c', 'dh 2dTd',
             'db 8d5c4d',
             'db Qh',
@@ -305,7 +305,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'dh JcJh', 'dh TsTh',
             'cc', 'cc', 'cc', 'br 149', 'cc', 'cc', 'cc', 'cc', 'cc',
             'db AcAsKc',
@@ -320,7 +320,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'dh JcJh', 'dh TsTh',
             'br 50', 'f', 'f', 'f', 'f', 'f',
         ), (False, False, None, False, False, False), (
@@ -328,7 +328,7 @@ class NoLimitTexasHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 100, 300, 200, 200, 150),
-        ).parse(
+        ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'dh TsTh', 'dh JcTc',
             'br 50', 'br 199', 'cc', 'cc', 'cc', 'cc', 'f',
             'db AcAsKc',

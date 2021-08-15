@@ -10,7 +10,7 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2)), (200, 200),
-        ).parse(
+        ).act(
             'dh 2s3h4s6d7d', 'dh 2h3c4d7c8d',
             'br 6', 'br 12', 'br 18', 'br 36', 'br 72', 'cc',
             'dd', 'dd 8d 5c',
@@ -19,14 +19,14 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 200, 100),
-        ).parse(
+        ).act(
             'dh 2s3h4s6d7d', 'dh 2h3c4d7c8d', 'dh 2d3d4c5d7h',
             'br 6', 'br 18', 'br 54', 'br 99', 'br 199', 'cc',
             'dd', 'dd', 'dd',
         ), (True, True, True), (200, 0, 300))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(15, (15, 30)), (1015, 2530, 1955),
-        ).parse(
+        ).act(
             'dh AsTc9c6h3s', 'dh 9dThJsQsKs', 'dh 4s4d4c3h3c',
             'br 100', 'br 300', 'f', 'cc',
             'dd As 5h', 'dd',
@@ -35,7 +35,7 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (1, 2)), (200, 200, 100, 150),
-        ).parse(
+        ).act(
             'dh 2s3h4s6d7d', 'dh 2h3c4d7c8d', 'dh 2d3d4c5d7h', 'dh KcKdKhKsQc',
             'br 6', 'f', 'cc', 'cc',
             'dd 6d 9c', 'dd 8d 8c', 'dd',
@@ -44,7 +44,7 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
         ), (False, False, True, False), (163, 163, 175, 149))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(8750, (10000, 25000)), (1180000, 1065000, 870000, 2345000),
-        ).parse(
+        ).act(
             'dh As6h6d2h2d', 'dh KhTs6c5d4c', 'dh AhKsQhJhTh', 'dh AdKcQcJcTc',
             'f', 'f', 'br 100000', 'cc',
             'dd', 'dd Kh 4h',
@@ -54,7 +54,7 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2, 4)), (50, 2, 100, 150, 100, 100),
-        ).parse(
+        ).act(
             'dh AcAdAhAsJc', 'dh 2h3c4d7c8d', 'dh 2d3d4c5d7h', 'dh KcKdKhKsJd',
             'dh QcQdQhQsJh',
             'dh 7s8c9cTcJs',
@@ -66,7 +66,7 @@ class NoLimitSingleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2, 4)), (50, 2, 100, 150, 100, 100, 1, 1, 1),
-        ).parse(
+        ).act(
             'dh AcAdAhAsJc', 'dh 2h3c4d7c8d', 'dh 2d3d4c5d7h', 'dh KcKdKhKsJd',
             'dh QcQdQhQsJh',
             'dh 7s8c9cTcJs', 'dh', 'dh', 'dh',

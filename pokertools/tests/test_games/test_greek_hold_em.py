@@ -12,7 +12,7 @@ class FixedLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 5), small_bet=10), (100, 100),
-        ).parse(
+        ).act(
             'dh AhAc', 'dh AsKs',
             'br', 'cc',
             'db KcQdJh',
@@ -31,7 +31,7 @@ class PotLimitGreekHoldEmTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 5), small_bet=10), (100, 100),
-        ).parse(
+        ).act(
             'dh AhAc', 'dh AsKs',
             'br', 'cc',
             'db KcQdJh',
@@ -52,7 +52,7 @@ class NoLimitGreekHoldEmTestCase(PotLimitGreekHoldEmTestCase, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, (2, 5)), (100, 100),
-        ).parse(
+        ).act(
             'dh AhAc', 'dh AsKs',
             'br', 'cc',
             'db KcQdJh',

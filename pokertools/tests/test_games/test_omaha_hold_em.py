@@ -10,7 +10,7 @@ class PotLimitOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (50000, 100000)), (125945025, 67847350),
-        ).parse(
+        ).act(
             'dh Ah3sKsKh', 'dh 6d9s7d8h',
             'br 300000', 'br 900000', 'br 2700000', 'br 8100000', 'cc',
             'db 4s5c2h',

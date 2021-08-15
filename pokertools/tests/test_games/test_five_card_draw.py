@@ -12,7 +12,7 @@ class FixedLimitFiveCardDrawTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (5, 10)), (1000, 1000, 1000, 1000),
-        ).parse(
+        ).act(
             'dh AsAdAcAhKd', 'dh 4s4d4c5h5d', 'dh 2s2d2c3h3d', 'dh Th8h9cJsQd',
             'cc', 'cc', 'f', 'cc',
             'dd 4c4d4s 5c5sKc', 'dd 3h3d 2hQs', 'dd',
@@ -27,7 +27,7 @@ class PotLimitFiveCardDrawTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (5, 10)), (1000, 1000, 1000, 1000),
-        ).parse(
+        ).act(
             'dh AsAdAcAhKd', 'dh 4s4d4c5h5d', 'dh 2s2d2c3h3d', 'dh Th8h9cJsQd',
             'cc', 'cc', 'f', 'cc',
             'dd 4c4d4s 5c5sKc', 'dd 3h3d 2hQs', 'dd',
@@ -44,7 +44,7 @@ class NoLimitFiveCardDrawTestCase(PotLimitFiveCardDrawTestCase, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (5, 10)), (1000, 1000, 1000, 1000),
-        ).parse(
+        ).act(
             'dh AsAdAcAhKd', 'dh 4s4d4c5h5d', 'dh 2s2d2c3h3d', 'dh Th8h9cJsQd',
             'cc', 'cc', 'f', 'cc',
             'dd 4c4d4s 5c5sKc', 'dd 3h3d 2hQs', 'dd',
@@ -53,7 +53,7 @@ class NoLimitFiveCardDrawTestCase(PotLimitFiveCardDrawTestCase, TestCase):
         ), (False, True, False, False), (995, 1225, 890, 890))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(1, ()), (100, 100, 100, 100),
-        ).parse(
+        ).act(
             'dh 8cKdJd2h5d', 'dh JsAd3d4d7c', 'dh 2c5sTsQsAs', 'dh AcAh8s9c3s',
             'br 5', 'f', 'cc', 'cc',
             'dd Jd2h5d Jc6s7d', 'dd 2c Ks', 'dd 8s9c3s KhKcTh',

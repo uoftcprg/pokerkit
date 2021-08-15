@@ -12,7 +12,7 @@ class FixedLimitTripleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (75, 150)), (1180, 4340, 5910, 10765),
-        ).parse(
+        ).act(
             'dh 7h6c4c3d2c', 'dh JsJcJdJhTs', 'dh KsKcKdKhTh', 'dh AsQs6s5c3c',
             'f', 'br', 'br', 'f', 'cc',
             'dd', 'dd AsQs 2hQh',
@@ -30,7 +30,7 @@ class PotLimitTripleDrawLowball27TestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (75, 150)), (1180, 4340, 5910, 10765),
-        ).parse(
+        ).act(
             'dh 7h6c4c3d2c', 'dh JsJcJdJhTs', 'dh KsKcKdKhTh', 'dh AsQs6s5c3c',
             'f', 'br 300', 'br 450', 'f', 'cc',
             'dd', 'dd AsQs 2hQh',

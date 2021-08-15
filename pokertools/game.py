@@ -205,50 +205,33 @@ class PokerGame(SequentialGame):
 
         return statuses
 
-    def parse(self, *commands):
-        """Parse the commands as actions and applies them this poker
+    def act(self, *commands):
+        """Parse the commands as actions and applies them to this poker
         game.
 
         :param commands: The commands to parse as actions.
         :return: This game.
         """
         for command in commands:
-            if command == 'dh':
-                self.actor.deal_hole()
-            elif command.startswith('dh '):
-                self.actor.deal_hole(parse_cards(command[3:]))
-            elif command == 'db':
-                self.actor.deal_board()
-            elif command.startswith('db '):
-                self.actor.deal_board(parse_cards(command[3:]))
-            elif command == 'f':
-                self.actor.fold()
-            elif command == 'cc':
-                self.actor.check_call()
-            elif command == 'br':
-                self.actor.bet_raise()
-            elif command.startswith('br '):
-                self.actor.bet_raise(int(command[3:]))
-            elif command == 'dd':
-                self.actor.discard_draw()
-            elif command.startswith('dd ') and len(command.split()) == 2:
-                _, discarded_cards = command.split()
-                self.actor.discard_draw(parse_cards(discarded_cards))
-            elif command.startswith('dd ') and len(command.split()) == 3:
-                _, discarded_cards, drawn_cards = command.split()
-                self.actor.discard_draw(
-                    parse_cards(discarded_cards), parse_cards(drawn_cards),
-                )
-            elif command == 's':
-                self.actor.showdown()
-            elif command == 's 0':
-                self.actor.showdown(False)
-            elif command == 's 1':
-                self.actor.showdown(True)
-            else:
-                raise ValueError(f'invalid command \'{command}\'')
+            self._parse(command).act()
 
         return self
+
+    def can_act(self, command):
+        """Parse the command as an action and verify if it is valid.
+
+        :param command: The command to parse as an action.
+        :return: True if the parsed command is valid, else False.
+        """
+        return self._parse(command).can_act()
+
+    def _is_all_in(self):
+        return not self._is_folded() and not any(map(
+            PokerPlayer._is_relevant, self.players,
+        ))
+
+    def _is_folded(self):
+        return sum(map(PokerPlayer.is_active, self.players)) == 1
 
     def _verify(self):
         if len(self.starting_stacks) < 2:
@@ -323,13 +306,47 @@ class PokerGame(SequentialGame):
             player._stack += player.bet - bet
             player._bet = 0
 
-    def _is_all_in(self):
-        return not self._is_folded() and not any(map(
-            PokerPlayer._is_relevant, self.players,
-        ))
+    def _parse(self, *commands):
+        for command in commands:
+            if command == 'dh':
+                return self.actor._get_hole_deal_action()
+            elif command.startswith('dh '):
+                _, cards = command.split()
+                return self.actor._get_hole_deal_action(parse_cards(cards))
+            elif command == 'db':
+                return self.actor._get_board_deal_action()
+            elif command.startswith('db '):
+                _, cards = command.split()
+                return self.actor._get_board_deal_action(parse_cards(cards))
+            elif command == 'f':
+                return self.actor._get_fold_action()
+            elif command == 'cc':
+                return self.actor._get_check_call_action()
+            elif command == 'br':
+                return self.actor._get_bet_raise_action()
+            elif command.startswith('br '):
+                _, amount = command.split()
+                return self.actor._get_bet_raise_action(int(amount))
+            elif command == 'dd':
+                return self.actor._get_discard_draw_action()
+            elif command.startswith('dd ') and len(command.split()) == 2:
+                _, discarded_cards = command.split()
+                return self.actor._get_discard_draw_action(
+                    parse_cards(discarded_cards),
+                )
+            elif command.startswith('dd ') and len(command.split()) == 3:
+                _, discarded_cards, drawn_cards = command.split()
+                return self.actor._get_discard_draw_action(
+                    parse_cards(discarded_cards), parse_cards(drawn_cards),
+                )
+            elif command == 's':
+                return self.actor._get_showdown_action()
+            elif command == 's 0':
+                return self.actor._get_showdown_action(0)
+            elif command == 's 1':
+                return self.actor._get_showdown_action(1)
 
-    def _is_folded(self):
-        return sum(map(PokerPlayer.is_active, self.players)) == 1
+            raise ValueError(f'invalid command \'{command}\'')
 
 
 class PokerNature(SequentialActor):

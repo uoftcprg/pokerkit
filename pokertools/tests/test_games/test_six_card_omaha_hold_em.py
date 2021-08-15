@@ -10,7 +10,7 @@ class PotLimitSixCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
     def test_hands(self):
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2)), (200, 200),
-        ).parse(
+        ).act(
             'dh AcKcQcJcTc2c', 'dh AsKsQsJsTs2s',
             'br 6', 'br 18', 'cc',
             'db 9s8s7s',
@@ -24,7 +24,7 @@ class PotLimitSixCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
 
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2, 4, 8)), (500,) * 6,
-        ).parse(
+        ).act(
             'dh', 'dh', 'dh', 'dh', 'dh', 'dh',
             'br 25', 'f', 'f', 'cc', 'cc', 'cc',
             'db',
@@ -38,7 +38,7 @@ class PotLimitSixCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2, 0, 2)), (200,) * 6,
-        ).parse(
+        ).act(
             'dh', 'dh', 'dh', 'dh', 'dh', 'dh',
             'br 9', 'f', 'f', 'br 25', 'cc', 'cc', 'cc',
             'db',
@@ -50,7 +50,7 @@ class PotLimitSixCardOmahaHoldEmTestCase(PokerTestCaseMixin, TestCase):
         ))
         self.assert_terminal_poker_game(self.GAME_TYPE(
             Stakes(0, (1, 2, 2, 0, 2)), (200,) * 6,
-        ).parse(
+        ).act(
             'dh', 'dh', 'dh', 'dh', 'dh', 'dh',
             'cc', 'cc', 'cc', 'br 9', 'br 25', 'f', 'f', 'cc', 'cc', 'cc',
             'db',
