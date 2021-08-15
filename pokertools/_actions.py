@@ -26,8 +26,8 @@ class DealingAction(PokerAction, ABC):
     def deal_count(self):
         return self.game.stage.deal_count
 
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if not self.game.stage.is_dealing_stage():
             raise ValueError('not a dealing stage')
@@ -40,8 +40,8 @@ class DealingAction(PokerAction, ABC):
             elif len(self.cards) != self.deal_count:
                 raise ValueError(f'number of deals not {self.deal_count}.')
 
-    def apply(self):
-        super().apply()
+    def _apply(self):
+        super()._apply()
 
         if self.cards is None:
             self.cards = sample(self.game.deck, self.deal_count)
@@ -49,10 +49,10 @@ class DealingAction(PokerAction, ABC):
             self.cards = self.cards
 
         self.game._deck.draw(self.cards)
-        self.deal()
+        self._deal()
 
     @abstractmethod
-    def deal(self):
+    def _deal(self):
         ...
 
 
@@ -63,62 +63,62 @@ class HoleDealingAction(DealingAction):
 
     def can_deal(self, player):
         try:
-            self.verify_player(player)
+            self._verify_player(player)
         except ValueError:
             return False
 
         return True
 
-    def verify_player(self, player):
+    def _verify_player(self, player):
         if player.is_mucked():
             raise ValueError('deal to mucked player')
         elif len(player.hole) >= self.game.stage.deal_target:
             raise ValueError('player already dealt')
 
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if not self.game.stage.is_hole_dealing_stage():
             raise ValueError('not a hole dealing stage')
 
-        self.verify_player(self.deal_player)
+        self._verify_player(self.deal_player)
 
-    def deal(self):
+    def _deal(self):
         player = self.deal_player
         player._hole.extend(self.cards)
         player._seen.extend(self.cards)
 
 
 class BoardDealingAction(DealingAction):
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if not self.game.stage.is_board_dealing_stage():
             raise ValueError('not a board dealing stage')
         elif len(self.game.board) >= self.game.stage.deal_target:
             raise ValueError('board already dealt')
 
-    def deal(self):
+    def _deal(self):
         self.game._board.extend(self.cards)
 
 
 class BettingAction(PokerAction, ABC):
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if not self.game.stage.is_betting_stage():
             raise ValueError('not a betting round')
 
 
 class FoldAction(BettingAction):
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if self.actor.bet >= max(map(PokerPlayer.bet.fget, self.game.players)):
             raise ValueError('redundant fold')
 
-    def apply(self):
-        super().apply()
+    def _apply(self):
+        super()._apply()
 
         self.actor._status = False
 
@@ -131,8 +131,8 @@ class CheckCallAction(BettingAction):
             self.actor.stack,
         )
 
-    def apply(self):
-        super().apply()
+    def _apply(self):
+        super()._apply()
 
         amount = self.amount
 
@@ -158,8 +158,8 @@ class BetRaiseAction(BettingAction):
     def pot_amount(self):
         return self.game.limit._pot_amount
 
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if self.actor.total <= max(map(
                 PokerPlayer.bet.fget, self.game.players,
@@ -178,8 +178,8 @@ class BetRaiseAction(BettingAction):
             elif self.amount > self.max_amount:
                 raise ValueError('amount above max-bet/raise')
 
-    def apply(self):
-        super().apply()
+    def _apply(self):
+        super()._apply()
 
         if self.amount is None:
             self.amount = self.min_amount
@@ -220,8 +220,8 @@ class DiscardDrawAction(PokerAction):
 
         return population
 
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if not self.game.stage.is_discard_draw_stage():
             raise ValueError('not a draw round')
@@ -247,8 +247,8 @@ class DiscardDrawAction(PokerAction):
             elif len(self.discarded_cards) != len(self.drawn_cards):
                 raise ValueError('cannot match discarded cards with draws')
 
-    def apply(self):
-        super().apply()
+    def _apply(self):
+        super()._apply()
 
         if self.drawn_cards is None:
             self.drawn_cards = sample(
@@ -290,14 +290,14 @@ class ShowdownAction(PokerAction):
 
         return any(staked)
 
-    def verify(self):
-        super().verify()
+    def _verify(self):
+        super()._verify()
 
         if not self.game.stage.is_showdown_stage():
             raise ValueError('not in showdown')
 
-    def apply(self):
-        super().apply()
+    def _apply(self):
+        super()._apply()
 
         if self.forced is None:
             self.forced = self.is_necessary()
