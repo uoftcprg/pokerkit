@@ -326,7 +326,7 @@ Parsing Poker Actions
 
 Interacting with poker games by calling functions are good enough for
 most, but can be cumbersome and take many lines. There exists
-:meth:`pokertools.game.PokerGame.parse` which allow you to parse
+:meth:`pokertools.game.PokerGame.act` which allow you to parse
 commands and apply them to the game. Example usages are shown in the
 later section.
 

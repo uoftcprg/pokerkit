@@ -196,7 +196,7 @@ Xuan vs Phua
 
 This shows the 800K dollar No-Limit Short-Deck Hold'em pot played
 between Xuan and Phua. This time, the
-:meth:`pokertools.game.PokerGame.parse` method will be used to replace
+:meth:`pokertools.game.PokerGame.act` method will be used to replace
 function calls with commands parses for applying actions.
 
 Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
@@ -210,7 +210,7 @@ Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
        (495000, 232000, 362000, 403000, 301000, 204000),
    )
 
-   game.parse(
+   game.act(
        # Pre-flop
        'dh Th8h', 'dh QsJd', 'dh QhQd', 'dh 8d7c', 'dh KhKs', 'dh 8c7h',
        'cc', 'cc', 'br 35000', 'f', 'br 298000', 'f', 'f', 'f', 'cc',
@@ -257,7 +257,7 @@ Video: `<https://www.youtube.com/watch?v=pChCqb2FNxY>`_
        Stakes(0, (75000, 150000)), (1180000, 4340000, 5910000, 10765000),
    )
 
-   game.parse(
+   game.act(
        'dh 7h6c4c3d2c', 'dh JsJcJdJhTs', 'dh KsKcKdKhTh', 'dh AsQs6s5c3c',
        'f', 'br 300000', 'br 450000', 'f', 'cc',
 
