@@ -1,7 +1,5 @@
 from unittest import TestCase, main
 
-from gameframe.exceptions import GameFrameError
-
 from pokertools import (
     FixedLimitTexasHoldEm, NoLimitTexasHoldEm, PotLimitOmahaHoldEm,
     PotLimitTripleDrawLowball27, Stakes, parse_cards,
@@ -10,7 +8,7 @@ from pokertools import (
 
 class GameTestCase(TestCase):
     def test_betting_action_when_not_betting_stage(self):
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -22,7 +20,7 @@ class GameTestCase(TestCase):
             'db Qc',
             'cc', 'br 2', 'cc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -34,7 +32,7 @@ class GameTestCase(TestCase):
             'db Qc',
             'cc', 'cc',
         ).parse, 'cc')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -47,7 +45,7 @@ class GameTestCase(TestCase):
             'cc', 'br 2', 'br 4', 'cc'
         ).parse, 'br 100')
 
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -59,7 +57,7 @@ class GameTestCase(TestCase):
             'db Qc',
             'cc', 'cc', 'cc', 'br 2', 'cc', 'cc', 'cc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -71,7 +69,7 @@ class GameTestCase(TestCase):
             'db Qc',
             'cc', 'cc', 'cc', 'cc',
         ).parse, 'cc')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -85,20 +83,20 @@ class GameTestCase(TestCase):
         ).parse, 'br 8')
 
     def test_fold_when_redundant(self):
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
             'cc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
             'cc', 'cc',
             'db AcAsKc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -107,7 +105,7 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qs',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -118,20 +116,20 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'cc', 'cc', 'cc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 6', 'f', 'f', 'cc',
             'db AcAsKc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -141,7 +139,7 @@ class GameTestCase(TestCase):
             'db Qs',
             'cc', 'cc', 'cc',
         ).parse, 'f')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -155,13 +153,13 @@ class GameTestCase(TestCase):
         ).parse, 'f')
 
     def test_bet_raise_when_covered(self):
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
             'br 6', 'br 199',
         ).parse, 'br 100')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -169,7 +167,7 @@ class GameTestCase(TestCase):
             'db AcAsKc',
             'cc', 'br 50', 'br 193',
         ).parse, 'br 93')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -179,7 +177,7 @@ class GameTestCase(TestCase):
             'db Qs',
             'br 195',
         ).parse, 'br 95')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -192,25 +190,25 @@ class GameTestCase(TestCase):
             'br 93',
         ).parse, 'br 93')
 
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'br 299', 'cc', 'cc',
         ).parse, 'br 99')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'f', 'f', 'cc', 'cc',
             'db AcAsKc', 'br 197',
         ).parse, 'br 50')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'cc', 'cc', 'cc', 'cc',
             'db AcAsKc', 'cc', 'cc', 'cc', 'cc',
             'db Qs', 'br 197', 'cc', 'cc',
         ).parse, 'br 197')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'br 6', 'cc', 'cc',
@@ -221,13 +219,13 @@ class GameTestCase(TestCase):
         ).parse, 'br 193')
 
     def test_bet_raise_when_irrelevant(self):
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
             'br 99',
         ).parse, 'br 197')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -235,7 +233,7 @@ class GameTestCase(TestCase):
             'db AcAsKc',
             'cc', 'br 93',
         ).parse, 'br 193')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -245,7 +243,7 @@ class GameTestCase(TestCase):
             'db Qs',
             'cc', 'br 95',
         ).parse, 'br 195')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -258,7 +256,7 @@ class GameTestCase(TestCase):
             'cc', 'br 93',
         ).parse, 'br 193')
 
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -266,7 +264,7 @@ class GameTestCase(TestCase):
             'br 199',
             'cc',
         ).parse, 'br 299')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -274,7 +272,7 @@ class GameTestCase(TestCase):
             'db AcAsKc',
             'br 93',
         ).parse, 'br 193')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -284,7 +282,7 @@ class GameTestCase(TestCase):
             'db Qs',
             'br 197', 'cc',
         ).parse, 'br 297')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -298,19 +296,19 @@ class GameTestCase(TestCase):
         ).parse, 'br 267')
 
     def test_bet_raise_with_invalid_amount(self):
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
             'br 6',
         ).parse, 'br 9')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
             'br 6',
         ).parse, 'br 1000')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -318,7 +316,7 @@ class GameTestCase(TestCase):
             'db AcAsKc',
             'br 12', 'br 24',
         ).parse, 'br 30')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -328,7 +326,7 @@ class GameTestCase(TestCase):
             'db Qs',
             'br 4', 'br 8',
         ).parse, 'br 10')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).parse(
             'dh QdQh', 'dh AhAd',
@@ -340,13 +338,13 @@ class GameTestCase(TestCase):
             'db Qc',
         ).parse, 'br 1')
 
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'f', 'cc', 'br 98', 'br 99',
         ).parse, 'br 100')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -354,7 +352,7 @@ class GameTestCase(TestCase):
             'db AcAsKc',
             'br 2', 'br 4', 'br 6', 'br 8', 'cc',
         ).parse, 'br 9')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -364,7 +362,7 @@ class GameTestCase(TestCase):
             'db Qs',
             'br 96', 'br 97',
         ).parse, 'br 98')
-        self.assertRaises(GameFrameError, NoLimitTexasHoldEm(
+        self.assertRaises(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).parse(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -470,14 +468,14 @@ class GameTestCase(TestCase):
         for _ in range(100):
             game.actor.bet_raise()
 
-        self.assertRaises(GameFrameError, game.actor.bet_raise)
+        self.assertRaises(ValueError, game.actor.bet_raise)
 
         game = PotLimitOmahaHoldEm(Stakes(1, ()), (101, 101)).parse('dh', 'dh')
 
         for _ in range(100):
             game.actor.bet_raise()
 
-        self.assertRaises(GameFrameError, game.actor.bet_raise)
+        self.assertRaises(ValueError, game.actor.bet_raise)
 
         game = FixedLimitTexasHoldEm(Stakes(1, (1, 2)), (101, 101)).parse(
             'dh', 'dh',
@@ -486,7 +484,7 @@ class GameTestCase(TestCase):
         for _ in range(3):
             game.actor.bet_raise()
 
-        self.assertRaises(GameFrameError, game.actor.bet_raise)
+        self.assertRaises(ValueError, game.actor.bet_raise)
         game.actor.check_call()
 
         for _ in range(3):
@@ -495,7 +493,7 @@ class GameTestCase(TestCase):
             for _ in range(4):
                 game.actor.bet_raise()
 
-            self.assertRaises(GameFrameError, game.actor.bet_raise)
+            self.assertRaises(ValueError, game.actor.bet_raise)
             game.actor.check_call()
 
     def test_bet_raise_amounts(self):
