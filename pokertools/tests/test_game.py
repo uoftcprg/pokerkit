@@ -8,7 +8,7 @@ from pokertools import (
 
 class GameTestCase(TestCase):
     def test_betting_action_when_not_betting_stage(self):
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -19,8 +19,8 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'cc', 'br 2', 'cc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -31,8 +31,8 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'cc', 'cc',
-        ).act, 'cc')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -43,9 +43,9 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'cc', 'br 2', 'br 4', 'cc'
-        ).act, 'br 100')
+        ).can_act())
 
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -56,8 +56,8 @@ class GameTestCase(TestCase):
             'cc', 'cc', 'cc', 'cc',
             'db Qc',
             'cc', 'cc', 'cc', 'br 2', 'cc', 'cc', 'cc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -68,8 +68,8 @@ class GameTestCase(TestCase):
             'cc', 'cc', 'cc', 'cc',
             'db Qc',
             'cc', 'cc', 'cc', 'cc',
-        ).act, 'cc')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -80,23 +80,23 @@ class GameTestCase(TestCase):
             'cc', 'cc', 'cc', 'cc',
             'db Qc',
             'cc', 'cc', 'cc', 'br 2', 'br 4', 'br 6', 'cc', 'cc', 'cc',
-        ).act, 'br 8')
+        ).can_act())
 
     def test_fold_when_redundant(self):
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'cc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'cc', 'cc',
             'db AcAsKc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -104,8 +104,8 @@ class GameTestCase(TestCase):
             'db AcAsKc',
             'cc', 'cc',
             'db Qs',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -115,21 +115,21 @@ class GameTestCase(TestCase):
             'db Qs',
             'cc', 'cc',
             'db Qc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'cc', 'cc', 'cc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'br 6', 'f', 'f', 'cc',
             'db AcAsKc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -138,8 +138,8 @@ class GameTestCase(TestCase):
             'cc', 'cc', 'cc', 'cc',
             'db Qs',
             'cc', 'cc', 'cc',
-        ).act, 'f')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -150,24 +150,24 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'cc',
-        ).act, 'f')
+        ).can_act())
 
     def test_bet_raise_when_covered(self):
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 6', 'br 199',
-        ).act, 'br 100')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 6', 'cc',
             'db AcAsKc',
             'cc', 'br 50', 'br 193',
-        ).act, 'br 93')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -176,8 +176,8 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qs',
             'br 195',
-        ).act, 'br 95')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -188,27 +188,27 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'br 93',
-        ).act, 'br 93')
+        ).can_act())
 
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'br 299', 'cc', 'cc',
-        ).act, 'br 99')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'f', 'f', 'cc', 'cc',
             'db AcAsKc', 'br 197',
-        ).act, 'br 50')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'cc', 'cc', 'cc', 'cc',
             'db AcAsKc', 'cc', 'cc', 'cc', 'cc',
             'db Qs', 'br 197', 'cc', 'cc',
-        ).act, 'br 197')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd', 'br 6', 'cc', 'cc',
@@ -216,24 +216,24 @@ class GameTestCase(TestCase):
             'db AcAsKc', 'cc', 'cc', 'cc', 'cc',
             'db Qs', 'cc', 'cc', 'cc', 'cc',
             'db Qc', 'cc', 'cc', 'br 293',
-        ).act, 'br 193')
+        ).can_act())
 
     def test_bet_raise_when_irrelevant(self):
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 99',
-        ).act, 'br 197')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 6', 'cc',
             'db AcAsKc',
             'cc', 'br 93',
-        ).act, 'br 193')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -242,8 +242,8 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qs',
             'cc', 'br 95',
-        ).act, 'br 195')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -254,25 +254,25 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'cc', 'br 93',
-        ).act, 'br 193')
+        ).can_act())
 
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'cc', 'cc', 'cc', 'br 99', 'cc',
             'br 199',
             'cc',
-        ).act, 'br 299')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'f', 'br 6', 'f', 'cc',
             'db AcAsKc',
             'br 93',
-        ).act, 'br 193')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -281,8 +281,8 @@ class GameTestCase(TestCase):
             'cc', 'cc', 'cc',
             'db Qs',
             'br 197', 'cc',
-        ).act, 'br 297')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -293,30 +293,30 @@ class GameTestCase(TestCase):
             'br 10', 'br 20', 'cc',
             'db Qc',
             'br 67',
-        ).act, 'br 267')
+        ).can_act())
 
     def test_bet_raise_with_invalid_amount(self):
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 6',
-        ).act, 'br 9')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 6',
-        ).act, 'br 1000')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
             'br 6', 'cc',
             'db AcAsKc',
             'br 12', 'br 24',
-        ).act, 'br 30')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -325,8 +325,8 @@ class GameTestCase(TestCase):
             'br 4', 'cc',
             'db Qs',
             'br 4', 'br 8',
-        ).act, 'br 10')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100),
         ).act(
             'dh QdQh', 'dh AhAd',
@@ -336,23 +336,23 @@ class GameTestCase(TestCase):
             'db Qs',
             'cc', 'cc',
             'db Qc',
-        ).act, 'br 1')
+        ).can_act())
 
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'f', 'cc', 'br 98', 'br 99',
-        ).act, 'br 100')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
             'cc', 'cc', 'cc', 'cc',
             'db AcAsKc',
             'br 2', 'br 4', 'br 6', 'br 8', 'cc',
-        ).act, 'br 9')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -361,8 +361,8 @@ class GameTestCase(TestCase):
             'cc', 'cc', 'cc', 'cc',
             'db Qs',
             'br 96', 'br 97',
-        ).act, 'br 98')
-        self.assertRaises(ValueError, NoLimitTexasHoldEm(
+        ).can_act())
+        self.assertFalse(ValueError, NoLimitTexasHoldEm(
             Stakes(1, (1, 2)), (200, 100, 300, 200),
         ).act(
             'dh QdQh', 'dh AhAd', 'dh KsKh', 'dh JsJd',
@@ -373,7 +373,7 @@ class GameTestCase(TestCase):
             'cc', 'cc',
             'db Qc',
             'br 50',
-        ).act, 'br 55')
+        ).can_act())
 
     def test_showdown_opener(self):
         self.assertEqual(NoLimitTexasHoldEm(
@@ -468,14 +468,14 @@ class GameTestCase(TestCase):
         for _ in range(100):
             game.actor.bet_raise()
 
-        self.assertRaises(ValueError, game.actor.bet_raise)
+        self.assertFalse(game.actor.can_bet_raise())
 
         game = PotLimitOmahaHoldEm(Stakes(1, ()), (101, 101)).act('dh', 'dh')
 
         for _ in range(100):
             game.actor.bet_raise()
 
-        self.assertRaises(ValueError, game.actor.bet_raise)
+        self.assertFalse(game.actor.can_bet_raise())
 
         game = FixedLimitTexasHoldEm(Stakes(1, (1, 2)), (101, 101)).act(
             'dh', 'dh',
@@ -484,7 +484,7 @@ class GameTestCase(TestCase):
         for _ in range(3):
             game.actor.bet_raise()
 
-        self.assertRaises(ValueError, game.actor.bet_raise)
+        self.assertFalse(game.actor.can_bet_raise())
         game.actor.check_call()
 
         for _ in range(3):
@@ -493,7 +493,7 @@ class GameTestCase(TestCase):
             for _ in range(4):
                 game.actor.bet_raise()
 
-            self.assertRaises(ValueError, game.actor.bet_raise)
+            self.assertFalse(game.actor.can_bet_raise())
             game.actor.check_call()
 
     def test_bet_raise_amounts(self):
