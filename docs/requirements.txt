@@ -1,4 +1,5 @@
 auxiliary
+flake8
 krieg
 sphinx
 sphinx-rtd-theme
