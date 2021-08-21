@@ -1,5 +1,5 @@
 PokerFace
-==========
+=========
 
 PokerFace is a Python package for various poker tools.
 
