@@ -1,45 +1,45 @@
 Creating Cards and Hole Cards
 =============================
 
-The :mod:`pokertools.cards` module contains various data types related
-to cards and their components, along with various functions for bulk
+The :mod:`pokerface.cards` module contains various data types related to
+cards and their components, along with various functions for bulk
 creations and queries.
 
 Basic Data Types
 ----------------
 
-Cards are of type :class:`pokertools.cards.Card` and they contain
-information about the card's :attr:`pokertools.cards.Card.rank` and
-:attr:`pokertools.cards.Card.suit`. For hole cards, there is an extra
-attribute called :class:`pokertools.cards.HoleCard.status`, denoting
+Cards are of type :class:`pokerface.cards.Card` and they contain
+information about the card's :attr:`pokerface.cards.Card.rank` and
+:attr:`pokerface.cards.Card.suit`. For hole cards, there is an extra
+attribute called :class:`pokerface.cards.HoleCard.status`, denoting
 whether if the hole card is face down or up.
 
 Ranks and Suits are enumerations with the following members:
 
-- Rank: :class:`pokertools.cards.Rank`
-   - Two: :attr:`pokertools.cards.Rank.TWO`
-   - Three: :attr:`pokertools.cards.Rank.THREE`
+- Rank: :class:`pokerface.cards.Rank`
+   - Two: :attr:`pokerface.cards.Rank.TWO`
+   - Three: :attr:`pokerface.cards.Rank.THREE`
    - ... (skipped)
-   - Queen: :attr:`pokertools.cards.Rank.QUEEN`
-   - King: :attr:`pokertools.cards.Rank.KING`
-   - Ace: :attr:`pokertools.cards.Rank.ACE`
-- Suit: :class:`pokertools.cards.Suit`
-   - Club: :attr:`pokertools.cards.Suit.CLUB`
-   - Diamond: :attr:`pokertools.cards.Suit.DIAMOND`
-   - Heart: :attr:`pokertools.cards.Suit.HEART`
-   - Spade: :attr:`pokertools.cards.Suit.SPADE`
+   - Queen: :attr:`pokerface.cards.Rank.QUEEN`
+   - King: :attr:`pokerface.cards.Rank.KING`
+   - Ace: :attr:`pokerface.cards.Rank.ACE`
+- Suit: :class:`pokerface.cards.Suit`
+   - Club: :attr:`pokerface.cards.Suit.CLUB`
+   - Diamond: :attr:`pokerface.cards.Suit.DIAMOND`
+   - Heart: :attr:`pokerface.cards.Suit.HEART`
+   - Spade: :attr:`pokerface.cards.Suit.SPADE`
 
 Above member variables contain single character representations of
 themselves as their values.
 
 Some games define different orders of ranks. So, there exists
-:class:`pokertools.cards.Ranks` enumeration class for various rank order
+:class:`pokerface.cards.Ranks` enumeration class for various rank order
 formats.
 
-- Ranks: :class:`pokertools.cards.Ranks`
-   - Standard Ranks: :attr:`pokertools.cards.Ranks.STANDARD`
-   - Short Deck Ranks: :attr:`pokertools.cards.Ranks.SHORT_DECK`
-   - Ace Low Ranks: :attr:`pokertools.cards.Ranks.ACE_LOW`
+- Ranks: :class:`pokerface.cards.Ranks`
+   - Standard Ranks: :attr:`pokerface.cards.Ranks.STANDARD`
+   - Short Deck Ranks: :attr:`pokerface.cards.Ranks.SHORT_DECK`
+   - Ace Low Ranks: :attr:`pokerface.cards.Ranks.ACE_LOW`
 
 While the rank ordering is not so relevant when creating cards, they
 play a role in the creations of decks and lookup tables for hand
@@ -48,13 +48,13 @@ evaluations.
 Creating Card Instances
 -----------------------
 
-Cards and hole cards are of type :class:`pokertools.cards.Card` and
-:class:`pokertools.cards.HoleCard`. Creating cards are very simple, as
+Cards and hole cards are of type :class:`pokerface.cards.Card` and
+:class:`pokerface.cards.HoleCard`. Creating cards are very simple, as
 demonstrated below.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create cards.
    print(Card(Rank.FOUR, Suit.HEART))  # 4h
@@ -78,7 +78,7 @@ The card data can be accessed as below.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a card.
    card = parse_card('4h')
@@ -104,7 +104,7 @@ functions that help circumvent this.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create an iterable of cards.
    print(parse_cards('4h4s4cAs'))  # <map object at 0x...>
@@ -124,7 +124,7 @@ below for demonstrations on how to use them.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Query cards.
    print(suited(parse_cards('4h4s4cAs')))  # False

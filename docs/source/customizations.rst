@@ -1,7 +1,7 @@
 Customizing Poker Games
 =======================
 
-The PokerTools package allow extensive customization in the games. Under
+The PokerFace package allow extensive customization in the games. Under
 the hood, poker games in this package just combines multiple components
 from limits, variants, decks, evaluators, stages, stakes, and starting
 stacks to setup the rules of poker during the game creation.
@@ -16,19 +16,19 @@ Custom Decks
 ------------
 
 If you want to create your own deck, you can just subclass the base
-:class:`pokertools.decks.Deck` class and pass desired cards to
+:class:`pokerface.decks.Deck` class and pass desired cards to
 ``super().__init__(cards)`` constructor.
 
 Custom Hand Evaluations
 -----------------------
 
 Extending evaluators is easy. You just have to override the
-:meth:`pokertools.evaluators.Evaluator.evaluate_hand` method. If you
-want to use the existing hand facilities, you may subclass
-:class:`pokertools.hands.LowIndexedHand` or
-:class:`pokertools.hands.HighIndexedHand`. In those classes, the order
-of hands is denoted by an :attr:`pokertools.hands.IndexedHand.index`
-which is passed onto their constructor during the initialization.
+:meth:`pokerface.evaluators.Evaluator.evaluate_hand` method. If you want
+to use the existing hand facilities, you may subclass
+:class:`pokerface.hands.LowIndexedHand` or
+:class:`pokerface.hands.HighIndexedHand`. In those classes, the order of
+hands is denoted by an :attr:`pokerface.hands.IndexedHand.index` which
+is passed onto their constructor during the initialization.
 
 Custom Games
 ------------
@@ -44,29 +44,29 @@ Poker Limits
 Limits dictate the betting amounts in the game (min-bets, max-bets, and
 maximum number of bets and raises in a street).
 
-Three limits are pre-configured in PokerTools. These are:
+Three limits are pre-configured in PokerFace. These are:
 
-- Fixed-Limit: :class:`pokertools.limits.FixedLimit`
-- Pot-Limit: :class:`pokertools.limits.PotLimit`
-- No-Limit: :class:`pokertools.limits.NoLimit`
+- Fixed-Limit: :class:`pokerface.limits.FixedLimit`
+- Pot-Limit: :class:`pokerface.limits.PotLimit`
+- No-Limit: :class:`pokerface.limits.NoLimit`
 
 These can be imported as below.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    limit = FixedLimit
    limit = PotLimit
    limit = NoLimit
 
-In PokerTools, Fixed limit caps the number of bets and raises to 4 per
+In PokerFace, Fixed limit caps the number of bets and raises to 4 per
 street. If this is unsatisfactory, you can subclass the fixed limit
 class and override corresponding methods, as shown.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    class CustomFixedLimit(FixedLimit):
        @property
@@ -79,7 +79,7 @@ the abstract base class for all limits.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
 
    class CustomLimit(Limit):
@@ -98,23 +98,23 @@ the abstract base class for all limits.
 Poker Stages
 ------------
 
-Stages are the most important parameters for poker games in PokerTools.
+Stages are the most important parameters for poker games in PokerFace.
 It defines how the game behaves.
 
-There are different types of stages in PokerTools.
+There are different types of stages in PokerFace.
 
-- Hole-card dealing stage: :class:`pokertools.stages.HoleDealingStage`
-- Board-card dealing stage: :class:`pokertools.stages.BoardDealingStage`
-- Betting stage: :class:`pokertools.stages.BettingStage`
-- Discard-Draw stage: :class:`pokertools.stages.DiscardDrawStage`
-- Showdown stage: :class:`pokertools.stages.ShowdownStage`
+- Hole-card dealing stage: :class:`pokerface.stages.HoleDealingStage`
+- Board-card dealing stage: :class:`pokerface.stages.BoardDealingStage`
+- Betting stage: :class:`pokerface.stages.BettingStage`
+- Discard-Draw stage: :class:`pokerface.stages.DiscardDrawStage`
+- Showdown stage: :class:`pokerface.stages.ShowdownStage`
 
 By creating stages in good order, you can define pretty much any game in
 Poker. Below are some examples of stages.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
 
    def create_texas_hold_em_stages(game):
@@ -152,7 +152,7 @@ evaluators, and, of course, stages.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
 
    class TexasHoldEmVariant(Variant):
@@ -186,7 +186,7 @@ bets. It is a very simple class.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create examples of stakes.
    stakes = (
@@ -213,7 +213,7 @@ stacks of the players.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a 6-Max No-Limit Texas Hold'em game.
    nlt = PokerGame(NoLimit, TexasHoldEmVariant, Stakes(1, (1, 2)), (200,) * 6)
@@ -223,5 +223,5 @@ stacks of the players.
        PotLimit, OmahaHoldEmVariant, Stakes(0, (10, 20)), (2000, 3000),
    )
 
-Of course, PokerTools provide pre-configured poker games that allow
+Of course, PokerFace provide pre-configured poker games that allow
 simpler approach than the ones taken in the above code.

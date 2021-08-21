@@ -1,9 +1,9 @@
-PokerTools
+PokerFace
 ==========
 
-PokerTools is a Python package for various poker tools.
+PokerFace is a Python package for various poker tools.
 
-The following features are present in PokerTools...
+The following features are present in PokerFace...
 
 - Types for cards and their components and related helper functions
    - Rank
@@ -54,7 +54,7 @@ The following features are present in PokerTools...
       - Fixed-Limit Kuhn Poker
 
 The full documentation is available at
-`Read the Docs <https://pokertools.readthedocs.io/>`_.
+`Read the Docs <https://pokerface.readthedocs.io/>`_.
 
 License
 -------

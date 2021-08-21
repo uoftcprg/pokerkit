@@ -1,19 +1,18 @@
-Sample Hands with PokerTools
-============================
+Sample Hands with PokerFace
+===========================
 
 Using the attributes, properties, and methods shown in the previous
-section, you have all the knowledge you need to play games on
-PokerTools.
+section, you have all the knowledge you need to play games on PokerFace.
 
 Example Hand with Showdown
 --------------------------
 
 This is a sample hand that serves as a good introduction to the
-PokerTools package.
+PokerFace package.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    game = NoLimitTexasHoldEm(Stakes(0, (1, 2)), (200, 200, 200))
    sb, bb, btn = game.players
@@ -84,7 +83,7 @@ Video: `<https://www.youtube.com/watch?v=GnxFohpljqM>`_
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    game = NoLimitTexasHoldEm(
        Stakes(500, (1000, 2000)), (1125600, 2000000, 553500),
@@ -147,7 +146,7 @@ Video: `<https://www.youtube.com/watch?v=UMBm66Id2AA>`_
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    game = PotLimitOmahaHoldEm(
        Stakes(0, (50000, 100000)), (125945025, 67847350),
@@ -196,14 +195,14 @@ Xuan vs Phua
 
 This shows the 800K dollar No-Limit Short-Deck Hold'em pot played
 between Xuan and Phua. This time, the
-:meth:`pokertools.game.PokerGame.act` method will be used to replace
+:meth:`pokerface.game.PokerGame.act` method will be used to replace
 function calls with commands parses for applying actions.
 
 Video: `<https://www.youtube.com/watch?v=QlgCcphLjaQ>`_
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    game = NoLimitShortDeckHoldEm(
        Stakes(3000, {5: 3000}),
@@ -251,7 +250,7 @@ Video: `<https://www.youtube.com/watch?v=pChCqb2FNxY>`_
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    game = FixedLimitTripleDrawLowball27(
        Stakes(0, (75000, 150000)), (1180000, 4340000, 5910000, 10765000),

@@ -15,16 +15,16 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../..'))
 
-pokertools = __import__('pokertools')
+pokerface = __import__('pokerface')
 
 # -- Project information -----------------------------------------------------
 
-project = 'pokertools'
+project = 'pokerface'
 copyright = '2021, Juho Kim'
 author = 'Juho Kim'
 
 # The full version, including alpha/beta/rc tags
-release = pokertools.__version__
+release = pokerface.__version__
 
 # -- General configuration ---------------------------------------------------
 

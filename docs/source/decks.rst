@@ -1,16 +1,16 @@
 Using Decks
 ===========
 
-Decks, in PokerTools, can be thought of as a list of card instances. All
+Decks, in PokerFace, can be thought of as a list of card instances. All
 deck subclasses inherit from the base class
-:class:`pokertools.decks.Deck`. They are all shuffled upon creation.
+:class:`pokerface.decks.Deck`. They are all shuffled upon creation.
 Allowing you to use them right after creation without shuffling them
 first.
 
 Currently, there are two types of decks:
 
-- Standard Deck: :class:`pokertools.decks.StandardDeck`
-- Short Deck: :class:`pokertools.decks.ShortDeck`
+- Standard Deck: :class:`pokerface.decks.StandardDeck`
+- Short Deck: :class:`pokerface.decks.ShortDeck`
 
 Standard decks are 52 card decks that are most commonly used. Short
 decks are 36 card decks that do not have cards with ranks below 6.
@@ -22,7 +22,7 @@ The following code demonstrates creating decks.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a standard deck
    standard_deck = StandardDeck()
@@ -38,12 +38,12 @@ Remember that all decks are shuffled upon creation.
 Deck operations
 ---------------
 
-The method :meth:`pokertools.decks.Deck.draw` allow you to draw cards
+The method :meth:`pokerface.decks.Deck.draw` allow you to draw cards
 from decks.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a shuffled standard deck (52 cards).
    deck = StandardDeck()
@@ -63,12 +63,12 @@ from decks.
    print(len(deck))  # 43
    print(deck)  # [7d, 3s, Ac, Qh, ..., 7c, Td]
 
-As :class:`pokertools.decks.Deck` is a subclass of ``list``, it also has
+As :class:`pokerface.decks.Deck` is a subclass of ``list``, it also has
 all the methods defined in lists.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a shuffled standard deck (52 cards)
    deck = StandardDeck()
@@ -82,7 +82,7 @@ do what's done below:
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    deck = StandardDeck()
 

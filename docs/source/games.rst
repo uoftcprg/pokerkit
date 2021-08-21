@@ -1,27 +1,27 @@
 Interacting with Poker Games
 ============================
 
-PokerTools offer a wide selection of pre-configured poker game variants.
+PokerFace offer a wide selection of pre-configured poker game variants.
 The list of those are as follows:
 
-- Fixed-Limit Texas Hold'em: :const:`pokertools.factories.FixedLimitTexasHoldEm`
-- No-Limit Texas Hold'em: :const:`pokertools.factories.NoLimitTexasHoldEm`
-- Pot-Limit Omaha Hold'em: :const:`pokertools.factories.PotLimitOmahaHoldEm`
-- Fixed-Limit 5-Card Omaha Hold'em: :const:`pokertools.factories.FixedLimitFiveCardOmahaHoldEm`
-- Pot-Limit 5-Card Omaha Hold'em: :const:`pokertools.factories.PotLimitFiveCardOmahaHoldEm`
-- Pot-Limit 6-Card Omaha Hold'em: :const:`pokertools.factories.PotLimitSixCardOmahaHoldEm`
-- Fixed-Limit Greek Hold'em: :const:`pokertools.factories.FixedLimitGreekHoldEm`
-- Pot-Limit Greek Hold'em: :const:`pokertools.factories.PotLimitGreekHoldEm`
-- No-Limit Greek Hold'em: :const:`pokertools.factories.NoLimitGreekHoldEm`
-- No-Limit Short-Deck Hold'em: :const:`pokertools.factories.NoLimitShortDeckHoldEm`
-- Fixed-Limit 5-Card Draw: :const:`pokertools.factories.FixedLimitFiveCardDraw`
-- Pot-Limit 5-Card Draw: :const:`pokertools.factories.PotLimitFiveCardDraw`
-- No-Limit 5-Card Draw: :const:`pokertools.factories.NoLimitFiveCardDraw`
-- Fixed-Limit Badugi: :const:`pokertools.factories.FixedLimitBadugi`
-- No-Limit 2-to-7 Single Draw Lowball: :const:`pokertools.factories.NoLimitSingleDrawLowball27`
-- Fixed-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.factories.FixedLimitTripleDrawLowball27`
-- Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokertools.factories.PotLimitTripleDrawLowball27`
-- Fixed-Limit Kuhn Poker: :const:`pokertools.factories.KuhnPoker`
+- Fixed-Limit Texas Hold'em: :const:`pokerface.factories.FixedLimitTexasHoldEm`
+- No-Limit Texas Hold'em: :const:`pokerface.factories.NoLimitTexasHoldEm`
+- Pot-Limit Omaha Hold'em: :const:`pokerface.factories.PotLimitOmahaHoldEm`
+- Fixed-Limit 5-Card Omaha Hold'em: :const:`pokerface.factories.FixedLimitFiveCardOmahaHoldEm`
+- Pot-Limit 5-Card Omaha Hold'em: :const:`pokerface.factories.PotLimitFiveCardOmahaHoldEm`
+- Pot-Limit 6-Card Omaha Hold'em: :const:`pokerface.factories.PotLimitSixCardOmahaHoldEm`
+- Fixed-Limit Greek Hold'em: :const:`pokerface.factories.FixedLimitGreekHoldEm`
+- Pot-Limit Greek Hold'em: :const:`pokerface.factories.PotLimitGreekHoldEm`
+- No-Limit Greek Hold'em: :const:`pokerface.factories.NoLimitGreekHoldEm`
+- No-Limit Short-Deck Hold'em: :const:`pokerface.factories.NoLimitShortDeckHoldEm`
+- Fixed-Limit 5-Card Draw: :const:`pokerface.factories.FixedLimitFiveCardDraw`
+- Pot-Limit 5-Card Draw: :const:`pokerface.factories.PotLimitFiveCardDraw`
+- No-Limit 5-Card Draw: :const:`pokerface.factories.NoLimitFiveCardDraw`
+- Fixed-Limit Badugi: :const:`pokerface.factories.FixedLimitBadugi`
+- No-Limit 2-to-7 Single Draw Lowball: :const:`pokerface.factories.NoLimitSingleDrawLowball27`
+- Fixed-Limit 2-to-7 Triple Draw Lowball: :const:`pokerface.factories.FixedLimitTripleDrawLowball27`
+- Pot-Limit 2-to-7 Triple Draw Lowball: :const:`pokerface.factories.PotLimitTripleDrawLowball27`
+- Fixed-Limit Kuhn Poker: :const:`pokerface.factories.KuhnPoker`
 
 Creating Pre-configured Poker Games
 -----------------------------------
@@ -30,7 +30,7 @@ Creating pre-configured poker games are very simple.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Stakes with an ante of 1, a small blind of 1, and a big blind of 2.
    stakes = Stakes(1, (1, 2))
@@ -97,7 +97,7 @@ shown below.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # An ante of 1.
    ante = 1
@@ -133,7 +133,7 @@ change the game state.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a no-limit Texas hold'em game.
    game = NoLimitTexasHoldEm(Stakes(0, (1, 2)), (200, 200, 200))
@@ -277,11 +277,11 @@ Taking Actions in Poker Games
 -----------------------------
 
 The below demonstrates all possible actions that can be taken in
-PokerTools. Calling these methods will change the game state.
+PokerFace. Calling these methods will change the game state.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *
 
    # Create a no-limit Texas Hold'em game.
    game = NoLimitTexasHoldEm(Stakes(0, (1, 2)), (200, 200, 200))
@@ -326,9 +326,9 @@ Parsing Poker Actions
 
 Interacting with poker games by calling functions are good enough for
 most, but can be cumbersome and take many lines. There exists
-:meth:`pokertools.game.PokerGame.act` which allow you to parse
-commands and apply them to the game. Example usages are shown in the
-later section.
+:meth:`pokerface.game.PokerGame.act` which allow you to parse commands
+and apply them to the game. Example usages are shown in the later
+section.
 
 Custom Games
 ------------

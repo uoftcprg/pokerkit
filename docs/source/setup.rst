@@ -1,23 +1,23 @@
 Setting up
 ==========
 
-To use PokerTools, you should set up the PokerTools environment.
+To use PokerFace, you should set up the PokerFace environment.
 
 Installation
 ------------
 
-PokerTools can be installed by typing the following in terminal:
+PokerFace can be installed by typing the following in terminal:
 
 .. code-block:: console
 
-   pip install pokertools
+   pip install pokerface
 
 Importing
 ---------
 
-In order to use the PokerTools package in your project, you must first
+In order to use the PokerFace package in your project, you must first
 import it.
 
 .. code-block:: python
 
-   from pokertools import *
+   from pokerface import *

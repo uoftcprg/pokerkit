@@ -1,5 +1,5 @@
 auxiliary
-gameframe
+krieg
 sphinx
 sphinx-rtd-theme
 twine
