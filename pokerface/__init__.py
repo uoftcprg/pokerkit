@@ -31,7 +31,7 @@ __all__ = (
     'TexasHoldEmVariant', 'TripleDrawLowball27Variant', 'TripleDrawVariant',
     'Variant',
 )
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 from pokerface.cards import (
     Card, HoleCard, Rank, Ranks, Suit, parse_card, parse_cards, rainbow,
