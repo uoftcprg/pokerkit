@@ -12,6 +12,7 @@
 #
 import os
 import sys
+from datetime import date
 
 sys.path.insert(0, os.path.abspath('../..'))
 
@@ -20,7 +21,7 @@ pokerface = __import__('pokerface')
 # -- Project information -----------------------------------------------------
 
 project = 'pokerface'
-copyright = '2021, Juho Kim'
+copyright = f'{date.today().year}, Juho Kim'
 author = 'Juho Kim'
 
 # The full version, including alpha/beta/rc tags
