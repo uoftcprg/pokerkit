@@ -49,9 +49,10 @@ class PokerGame(SequentialGame):
         if not isinstance(starting_stacks, Sized):
             starting_stacks = tuple(starting_stacks)
 
-        super().__init__(None, PokerNature(self), (
-            PokerPlayer(self) for _ in range(len(starting_stacks))
-        ))
+        nature = PokerNature(self)
+        players = (PokerPlayer(self) for _ in range(len(starting_stacks)))
+
+        super().__init__(nature, players, nature)
 
         self._limit = limit_type(self)
         self._variant = variant_type(self)
@@ -437,12 +438,12 @@ class PokerNature(SequentialActor):
     def _get_hole_deal_action(self, cards=None):
         from pokerface._actions import HoleDealingAction
 
-        return HoleDealingAction(cards, self)
+        return HoleDealingAction(self, cards)
 
     def _get_board_deal_action(self, cards=None):
         from pokerface._actions import BoardDealingAction
 
-        return BoardDealingAction(cards, self)
+        return BoardDealingAction(self, cards)
 
 
 class PokerPlayer(SequentialActor):
@@ -835,14 +836,14 @@ class PokerPlayer(SequentialActor):
     def _get_bet_raise_action(self, amount=None):
         from pokerface._actions import BetRaiseAction
 
-        return BetRaiseAction(amount, self)
+        return BetRaiseAction(self, amount)
 
     def _get_discard_draw_action(self, discarded_cards=(), drawn_cards=None):
         from pokerface._actions import DiscardDrawAction
 
-        return DiscardDrawAction(discarded_cards, drawn_cards, self)
+        return DiscardDrawAction(self, discarded_cards, drawn_cards)
 
     def _get_showdown_action(self, forced=None):
         from pokerface._actions import ShowdownAction
 
-        return ShowdownAction(forced, self)
+        return ShowdownAction(self, forced)

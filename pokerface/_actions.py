@@ -4,12 +4,12 @@ from operator import contains, is_not
 from random import sample
 
 from auxiliary import distinct, rotated
-from krieg.sequential import _SequentialAction
+from krieg.sequential import SequentialAction
 
 from pokerface.game import PokerPlayer
 
 
-class PokerAction(_SequentialAction, ABC):
+class PokerAction(SequentialAction, ABC):
     def act(self):
         super().act()
 
@@ -17,7 +17,7 @@ class PokerAction(_SequentialAction, ABC):
 
 
 class DealingAction(PokerAction, ABC):
-    def __init__(self, cards, actor):
+    def __init__(self, actor, cards):
         super().__init__(actor)
 
         self.cards = None if cards is None else tuple(cards)
@@ -141,7 +141,7 @@ class CheckCallAction(BettingAction):
 
 
 class BetRaiseAction(BettingAction):
-    def __init__(self, amount, actor):
+    def __init__(self, actor, amount):
         super().__init__(actor)
 
         self.amount = amount
@@ -205,7 +205,7 @@ class BetRaiseAction(BettingAction):
 
 
 class DiscardDrawAction(PokerAction):
-    def __init__(self, discarded_cards, drawn_cards, actor):
+    def __init__(self, actor, discarded_cards, drawn_cards):
         super().__init__(actor)
 
         self.discarded_cards = tuple(discarded_cards)
@@ -273,7 +273,7 @@ class DiscardDrawAction(PokerAction):
 
 
 class ShowdownAction(PokerAction):
-    def __init__(self, forced, actor):
+    def __init__(self, actor, forced):
         super().__init__(actor)
 
         self.forced = forced
