@@ -1,0 +1,5 @@
+flake8
+sphinx
+sphinx-rtd-theme
+twine
+wheel
