@@ -1,0 +1,5 @@
+build~=0.10.0
+flake8~=6.0.0
+mypy~=1.4.1
+Sphinx~=7.0.1
+twine~=4.0.2
