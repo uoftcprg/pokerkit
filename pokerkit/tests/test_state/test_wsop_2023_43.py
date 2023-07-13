@@ -1,0 +1,2832 @@
+""":mod:`pokerkit.tests.test_wsop.test_2023_43` implements unit tests
+for :mod:`pokerkit.state` with hands played on 2023 World Series of
+Poker Event #43: $50000 Poker Players Championship.
+
+https://www.pokergo.com/videos/6e5e4f34-9857-458c-b61e-d478ad29dbd6
+"""
+
+from collections import deque
+from unittest import TestCase, main
+
+from pokerkit.game import Game
+from pokerkit.utilities import Card
+
+
+class StateTestCase(TestCase):
+    def test_00_02_07(self) -> None:
+        state = Game.create_no_limit_texas_holdem(
+            (0, 120000, 0, 0, 0),
+            (40000, 80000, 0, 0, 0),
+            80000,
+            (7380000, 2500000, 5110000, 10170000, 4545000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '7s Js Td 6d Qh',
+                '4s 8h 8c 5h 7h',
+                '3c JcTs2d',
+                '3d As',
+                '3h Qs',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 240000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to(170000)
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 500000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(140000)
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 780000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(325000)
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1430000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(600000)
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2630000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.kill_hand()
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7340000, 3775000, 5110000, 8935000, 4545000],
+        )
+
+    def test_00_08_38(self) -> None:
+        state = Game.create_no_limit_texas_holdem(
+            (0, 120000, 0, 0, 0),
+            (40000, 80000, 0, 0, 0),
+            80000,
+            (3775000, 5110000, 8935000, 4545000, 7340000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Th Qs Ac Qc As',
+                '5d 4s 5h Js Qh',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 240000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to(170000)
+        state.fold()
+        state.check_or_call()
+        state.fold()
+        state.complete_bet_or_raise_to(875000)
+        state.fold()
+        state.complete_bet_or_raise_to(4990000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 6195000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [3735000, 4115000, 8765000, 4545000, 8545000],
+        )
+
+    def test_00_15_36(self) -> None:
+        state = Game.create_no_limit_texas_holdem(
+            (0, 150000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (4100000, 8775000, 4550000, 8525000, 3750000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Qd Ts 4c 7s Qc',
+                '8s 2d 3s 5h Tc',
+                '2c Th8c5d',
+                '2h 9d',
+                '2s Jd',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to(200000)
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 600000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(175000)
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 950000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 950000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to(225000)
+        state.complete_bet_or_raise_to(700000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1875000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4050000, 8025000, 4550000, 8525000, 4550000],
+        )
+
+    def test_00_18_39(self) -> None:
+        state = Game.create_no_limit_texas_holdem(
+            (0, 150000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (8025000, 4550000, 8525000, 4550000, 4050000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Qd 5h Jc 9h Jd',
+                '8s 3s 7c 4d 6s',
+                'Tc 2s5s2d',
+                'Td As',
+                'Th Qs',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 350000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(175000)
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 700000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(300000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1000000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7750000, 4825000, 8525000, 4550000, 4050000],
+        )
+
+    def test_00_22_43(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (4050000, 7750000, 4825000, 8525000, 4550000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Td Kd As 8c Kc',
+                '   3c 3h 8d 5s 8s',
+                '   4d 4c 5c Qc 3s',
+                '2c          6d 9s',
+                '2d          Ah Ad',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 650000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 650000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1050000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4000000, 7700000, 4775000, 8275000, 4950000],
+        )
+
+    def test_00_25_05(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (4000000, 7700000, 4775000, 8275000, 4950000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Qd Ts 7c Th 8h',
+                '   Js 9s 3s 4d 2h',
+                '   Ac 8c 6d Jh Qs',
+                '2c Kc 4c         ',
+                '2s 5s 7h         ',
+                '3c 2d 6c         ',
+                '3d Ad Qc         ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1100000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1500000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3100000)
+
+        # Seventh Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3900000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2150000, 9750000, 4675000, 8225000, 4900000],
+        )
+
+    def test_00_29_03(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (2150000, 9750000, 4675000, 8225000, 4900000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   8d 9s Kd Ah Th',
+                '   2d 3c 2s Jd Qs',
+                '   8h 7s 3s 6c 5s',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 500000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2400000, 9700000, 4575000, 8175000, 4850000],
+        )
+
+    def test_00_30_52(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (2400000, 9700000, 4575000, 8175000, 4850000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Qh 8s 7d 6h Qc',
+                '   6c 5d 4d 3d 6d',
+                '   Jd 3c Ts Td Th',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 500000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2650000, 9600000, 4525000, 8125000, 4800000],
+        )
+
+    def test_00_32_02(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (2650000, 9600000, 4525000, 8125000, 4800000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Qd 9d Kc Qh Kh',
+                '   7d 5c 7c Td 6d',
+                '   5h 8d 6h Jd 2h',
+                '2c    9h    Qs   ',
+                '2d    3h    6s   ',
+                '2s    7h    3c   ',
+                '3d    5s    7s   ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1100000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1500000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Seventh Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3100000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.kill_hand()
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2600000, 11250000, 4475000, 6675000, 4700000],
+        )
+
+    def test_00_34_43(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (2600000, 11250000, 4475000, 6675000, 4700000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   5d 7h Js Ts Qc',
+                '   2s 3s 6d 8s 9c',
+                '   Ad 4h 9d Qh 9s',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 500000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2550000, 11150000, 4425000, 6925000, 4650000],
+        )
+
+    def test_00_35_59(self) -> None:
+        state = Game.create_fixed_limit_seven_card_stud(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (2550000, 11150000, 4425000, 6925000, 4650000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Qh Js 9d Qs Qd',
+                '   Tc Jc 8h Ts 3c',
+                '   Th 2c 8c 4s 8d',
+                '2d 6c 4h         ',
+                '2h Kc 7h         ',
+                '2s Ah 6h         ',
+                '3d 6d 9c         ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1850000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2250000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3050000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3850000)
+
+        # Seventh Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 3850000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4750000, 9500000, 4175000, 6675000, 4600000],
+        )
+
+    def test_00_41_13(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (4175000, 6675000, 4600000, 4750000, 9500000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '8d Jd As Kc Ad',
+                '7d 9s 8c Td Ts',
+                '5d 9d 7s 7c 3d',
+                '4d 6s 5h 5c 2s',
+                '2c 3s7hKs',
+                '2d 8s',
+                '2h Ah',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1300000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2100000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2900000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4075000, 5275000, 6100000, 4750000, 9500000],
+        )
+
+    def test_00_43_47(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (5275000, 6100000, 4750000, 9500000, 4075000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Ad 9h Js Ac Kd',
+                'Qc 8h Ts 9c Qd',
+                'Jd 7c 8d 7h 8c',
+                '2c 4d 5c 3s 4s',
+                '2d 2hKh9s',
+                '2s Tc',
+                '3c As',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1400000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1800000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2600000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3400000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7075000, 5900000, 4750000, 7900000, 4075000],
+        )
+
+    def test_00_46_43(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (5900000, 4750000, 7900000, 4075000, 7075000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Kc Kd Ad Th Jd',
+                'Jh Qh Js 9s 9h',
+                '6h 8d Td 8h 9c',
+                '3s 3h 6s 3d 6d',
+                '2c Ah9d6c',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 900000)
+        state.collect_bets()
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1100000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [5800000, 4350000, 8400000, 4075000, 7075000],
+        )
+
+    def test_00_48_29(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (4350000, 8400000, 4075000, 7075000, 5800000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '5s As Kc Ah 9d',
+                '5d Qd 7d Kh 6h',
+                '4s 4d 5h Qs 6d',
+                '3c 2s 3h 2c 5c',
+                '2d 7h4c8c',
+                '2h Jd',
+                '3d 9h',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1300000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2900000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3700000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4250000, 9375000, 4075000, 6200000, 5800000],
+        )
+
+    def test_00_51_22(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (9375000, 4075000, 6200000, 5800000, 4250000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Ac As Ah 7h 2c',
+                'Kd Qs Jh 7d 2d',
+                '5s Th 7s 4c 2h',
+                '3d 9c 6d 3s 2s',
+                '3c 6sQc7c',
+                '3h Jd',
+                '4d Jc',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1400000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 1400000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2200000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3000000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7975000, 3875000, 7800000, 5800000, 4250000],
+        )
+
+    def test_00_55_24(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (3875000, 7800000, 5800000, 4250000, 7975000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Jc Ad 5h As Ac',
+                '7c 8d 3s Ks Qs',
+                '6d 6s 3h 4s 8c',
+                '2h 3d 2d 2s 2c',
+                '3c KcAhJh',
+                '4c Kd',
+                '4d 8s',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3100000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3900000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [3775000, 7600000, 5400000, 6550000, 6375000],
+        )
+
+    def test_00_58_03(self) -> None:
+        state = Game.create_fixed_limit_omaha_holdem_high_low_eight_or_better(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (7600000, 5400000, 6550000, 6375000, 3775000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Js Ad 2c 6c As',
+                '9h Kc 2h 5c Th',
+                '7s Qc 2s 4d Td',
+                '6d 9c 3c 2d 4c',
+                '3d Qs5h9d',
+                '3h Ac',
+                '3s 8s',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1700000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2500000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 2500000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7500000, 5450000, 6550000, 6425000, 3775000],
+        )
+
+    def test_01_00_21(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (6550000, 6425000, 3775000, 7500000, 5450000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   7c 8s 3s Qc 9d',
+                '   3h 6s 2c 7h 8c',
+                '   Kc 5s 8h 2d 5c',
+                '2h    Jh 6c      ',
+                '2s    Js Ks      ',
+                '3d    Kd 3c      ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 700000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1100000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1900000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 2300000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [6450000, 5575000, 4825000, 7450000, 5400000],
+        )
+
+    def test_01_02_14(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (6450000, 5575000, 4825000, 7450000, 5400000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   5s Qs 8d Ks Qc',
+                '   4h 6s 4s 3s Tc',
+                '   Th 6d 8s Qd 7s',
+                '2c Ts       6c   ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.check_or_call()
+        state.fold()
+        state.fold()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 350000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 550000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [6700000, 5525000, 4775000, 7350000, 5350000],
+        )
+
+    def test_01_03_57(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (6700000, 5525000, 4775000, 7350000, 5350000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Qd 8h Jh 9h 6c',
+                '   2c 4h Jc 5c 2h',
+                '   Ad Td Qh 7h 4d',
+                '2d          5s Ah',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 700000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 900000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [6650000, 5475000, 4675000, 7100000, 5800000],
+        )
+
+    def test_01_06_16(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (6650000, 5475000, 4675000, 7100000, 5800000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Ks 9d Td Ad 8d',
+                '   9h 7d 6s 2h 2s',
+                '   8h 9s Js Th 5d',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 500000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [6600000, 5425000, 4575000, 7050000, 6050000],
+        )
+
+    def test_01_07_20(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (6600000, 5425000, 4575000, 7050000, 6050000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   6s As 4s Tc 5h',
+                '   3h 6h 3d 9c 4h',
+                '   Kh 3c 2d Kd Js',
+                '2c    Jc 8s      ',
+                '2h    Ah 3s      ',
+                '2s    7d 5s      ',
+                '4c    5d 6c      ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1100000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1500000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3100000)
+
+        # Seventh Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3900000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [6500000, 3575000, 6625000, 7000000, 6000000],
+        )
+
+    def test_01_10_31(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (6500000, 3575000, 6625000, 7000000, 6000000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   7s Ks 5h Jd 9h',
+                '   6d Jc 2h 3s 7c',
+                '   5c Td 6s Qd 4d',
+                '2c Ts    Ad    7h',
+                '2d Qh    6h      ',
+                '2s Kc    4c      ',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(3):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1300000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2100000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 2500000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [5650000, 3525000, 7875000, 6900000, 5750000],
+        )
+
+    def test_01_13_57(self) -> None:
+        state = Game.create_fixed_limit_razz(
+            (50000,) * 5,
+            50000,
+            200000,
+            400000,
+            (5650000, 3525000, 7875000, 6900000, 5750000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Kd Th 6c Ks 7s',
+                '   5c 8d 4c 6d 3c',
+                '   Jh Ah 7h 2c 5d',
+                '2d    Js Qh    3d',
+                '2h    7c 5s    As',
+                '3h       3s    Jc',
+                '4d       2s    4s',
+            ),
+        )
+
+        for i in state.player_indices:
+            state.post_ante(i)
+
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Third street
+
+        for _ in range(state.player_count * 3):
+            state.deal_hole()
+
+        state.post_bring_in()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.fold()
+        state.check_or_call()
+        state.fold()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Fourth street
+
+        state.burn_card()
+
+        for _ in range(3):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1500000)
+
+        # Fifth Street
+
+        state.burn_card()
+
+        for _ in range(3):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Sixth Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3100000)
+
+        # Seventh Street
+
+        state.burn_card()
+
+        for _ in range(2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3900000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.kill_hand()
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [5550000, 3075000, 10125000, 6850000, 4100000],
+        )
+
+    def test_01_18_22(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (4100000, 5550000, 3075000, 10125000, 6850000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Qh As Qc Kh Ah',
+                'Qd Jc Jh Td Ac',
+                'Tc 6d 8s 8d 7h',
+                '2h 5h 2c 3s 2d',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to(350000)
+        state.fold()
+        state.complete_bet_or_raise_to(1100000)
+        state.complete_bet_or_raise_to(3350000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 4600000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4050000, 4350000, 3075000, 10125000, 8100000],
+        )
+
+    def test_01_22_35(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (4350000, 3075000, 10125000, 8100000, 4050000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '2d Tc Ah Kd Ts',
+                '2s 5h Kc 9h 8s',
+                '3c 5d Qs 5s 6d',
+                '3d 2c Jh 2h 3h',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to(275000)
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 525000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4300000, 2875000, 10375000, 8100000, 4050000],
+        )
+
+    def test_01_25_08(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (2875000, 10375000, 8100000, 4050000, 4300000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Td Kc Qh Ac Jh',
+                '4c Js Qd Qc 7s',
+                '3d 8c Th 8s 7d',
+                '2c 5d 6d 4h 3s',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to(350000)
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 600000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2825000, 10175000, 8350000, 4050000, 4300000],
+        )
+
+    def test_01_26_14(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (10175000, 8350000, 4050000, 4300000, 2825000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Jd Ah Qs 8h Tc',
+                '7h Ks 6s 8d 9h',
+                '5c 4d 6d 3s 7d',
+                '2c 2s 5d 3d 2d',
+                '2h 6cJc4h',
+                '3c 9s',
+                '3h 7c',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to(300000)
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 750000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 750000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 750000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to(250000)
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1250000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.kill_hand()
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [10125000, 7700000, 4050000, 4300000, 3525000],
+        )
+
+    def test_01_29_49(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (7700000, 4050000, 4300000, 3525000, 10125000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Js Ad Kh 9h 9c',
+                'Th Ts Jc 6s 7s',
+                'Td Tc 7h 4s 5h',
+                '6d 8h 7d 4h 2h',
+                '2c 3c2dKc',
+                '2s Qh',
+                '3d 8c',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7750000, 4000000, 4300000, 3525000, 10125000],
+        )
+
+    def test_01_32_58(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (4000000, 4300000, 3525000, 10125000, 7750000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Tc Ac Jh Ad Qh',
+                '9h Jd 9c Qd 9d',
+                '4h 8c 8d 7h 8s',
+                '2c 4d 5s 2s 5d',
+                '2d As5h7d',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to(350000)
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 850000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(800000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1650000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [3950000, 3850000, 3525000, 10625000, 7750000],
+        )
+
+    def test_01_37_39(self) -> None:
+        state = Game.create_pot_limit_omaha_holdem(
+            (0, 100000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (3850000, 3525000, 10625000, 7750000, 3950000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Qs Ks Td Qh Ac',
+                '5d Jd 8h 6d Tc',
+                '3d 7c 8c 5s 9h',
+                '2h 3c 2s 4s 2d',
+                '2c 4h6h9c',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 250000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 4):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to(250000)
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 650000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to(375000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1025000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [3800000, 3175000, 10625000, 7750000, 4350000],
+        )
+
+    def test_01_39_18(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (3175000, 10625000, 7750000, 4350000, 3800000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Td Tc 6s 3h Jc',
+                '4c 9s 5h 3d 4d',
+                '2c Ts9d5d',
+                '2d Kc',
+                '2h Qh',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1700000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2500000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.total_pot_amount, 2500000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [3075000, 11925000, 7750000, 3150000, 3800000],
+        )
+
+    def test_01_42_31(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (11925000, 7750000, 3150000, 3800000, 3075000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Ks Td 2d 5c Qc',
+                'Kc 4d 2h 3h 9s',
+                '2s 9h2cJc',
+                '3c Jd',
+                '3d Tc',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1400000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1800000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2600000)
+
+        # River
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3400000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [13725000, 7550000, 3150000, 3800000, 1475000],
+        )
+
+    def test_01_44_49(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (7550000, 3150000, 3800000, 1475000, 13725000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Td Qs Ks 2d Jd',
+                '5c 9c Jc 2h 3c',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 700000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7450000, 2950000, 4100000, 1475000, 13725000],
+        )
+
+    def test_01_45_43(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (2950000, 4100000, 1475000, 13725000, 7450000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '8h 9d Kc Td Tc',
+                '4d 7c 8s 6h 7h',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 300000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2850000, 4200000, 1475000, 13725000, 7450000],
+        )
+
+    def test_01_46_42(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (4200000, 1475000, 13725000, 7450000, 2850000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '5s Ah 8c 5d 9s',
+                '2c Qh 6c 4s 7h',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 300000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4100000, 1575000, 13725000, 7450000, 2850000],
+        )
+
+    def test_01_47_38(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (1575000, 13725000, 7450000, 2850000, 4100000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Js Ah 7s 6c Qs',
+                '9c 7d 4c 4h 8s',
+                '2d 4s3c2c',
+                '2h 6d',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1300000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1700000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [1475000, 14425000, 7450000, 2850000, 3500000],
+        )
+
+    def test_01_51_27(self) -> None:
+        state = Game.create_fixed_limit_texas_holdem(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (14425000, 7450000, 2850000, 3500000, 1475000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                'Jd 8d Jh Ah Ts',
+                '3d 7s 5d 4h Td',
+                '2c AcQdKh',
+                '2d 6c',
+            ),
+        )
+
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-flop
+
+        for _ in range(state.player_count * 2):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1500000)
+
+        # Flop
+
+        state.burn_card()
+        state.deal_board()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
+
+        # Turn
+
+        state.burn_card()
+        state.deal_board()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 2700000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [14325000, 7250000, 2850000, 4800000, 475000],
+        )
+
+    def test_01_53_52(self) -> None:
+        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+            (0, 150000, 0, 0, 0),
+            (50000, 100000, 0, 0, 0),
+            100000,
+            (7250000, 2850000, 4800000, 475000, 14325000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Js Ah Qc Qd Ks',
+                '   Jc Ad 9h 8h Kc',
+                '   9s Ac 4h 5s Ts',
+                '   7h Jd 3s 4d 7s',
+                '   6s 9d 3h 3d 5c',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 300000)
+
+        # Pre-draw
+
+        for _ in range(state.player_count * 5):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to(200000)
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 500000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [7200000, 2600000, 4800000, 775000, 14325000],
+        )
+
+    def test_01_56_25(self) -> None:
+        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+            (0, 225000, 0, 0, 0),
+            (75000, 150000, 0, 0, 0),
+            150000,
+            (2600000, 4800000, 775000, 14325000, 7200000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   2d Qh Ah Kh Ad',
+                '   2h Jh 9s Qd Ts',
+                '   2s Jc 8s Js 7d',
+                '   3c 5c 8c 7h 4c',
+                '   3h 3s 2c 4h 3d',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 450000)
+
+        # Pre-draw
+
+        for _ in range(state.player_count * 5):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to(775000)
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1225000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [2525000, 4425000, 1225000, 14325000, 7200000],
+        )
+
+    def test_01_59_02(self) -> None:
+        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+            (0, 225000, 0, 0, 0),
+            (75000, 150000, 0, 0, 0),
+            150000,
+            (4425000, 1225000, 14325000, 7200000, 2525000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Kd 5s Ac Ts Ks',
+                '   Jh 5c 8h Th Kh',
+                '   Tc 4d 4s 9c 9s',
+                '   6s 3s 4h 7h 6h',
+                '   3c 3h 2h 7c 3d',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 450000)
+
+        # Pre-draw
+
+        for _ in range(state.player_count * 5):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to(1000000)
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 1375000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [4800000, 850000, 14325000, 7200000, 2525000],
+        )
+
+    def test_02_00_25(self) -> None:
+        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+            (0, 225000, 0, 0, 0),
+            (75000, 150000, 0, 0, 0),
+            150000,
+            (850000, 14325000, 7200000, 2525000, 4800000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Qs Qh Td Kd Qd',
+                '   Qc Jd 9s 9h Jc',
+                '   Js 5h 9c 8d Tc',
+                '   Ts 5c 4d 3c 6h',
+                '   2s 2c 3d 2d 4c',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 450000)
+
+        # Pre-draw
+
+        for _ in range(state.player_count * 5):
+            state.deal_hole()
+
+        state.fold()
+        state.complete_bet_or_raise_to(375000)
+        state.fold()
+        state.fold()
+        state.fold()
+        self.assertEqual(state.total_pot_amount, 825000)
+        state.collect_bets()
+
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [775000, 13950000, 7200000, 2975000, 4800000],
+        )
+
+    def test_02_01_50(self) -> None:
+        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+            (0, 225000, 0, 0, 0),
+            (75000, 150000, 0, 0, 0),
+            150000,
+            (13950000, 7200000, 2975000, 4800000, 775000),
+        )._state
+        state.deck = deque(
+            Card.parse(
+                '   Kd Js Kh Ah Ts',
+                '   Jh Jd Qc Ac 9s',
+                '   6c 8d Th Ks 9h',
+                '   5s 5h 8h 7c 4d',
+                '   4h 3h 2h 3c 2c',
+                '2d    Qh         ',
+                '      8c         ',
+                '               4s',
+            ),
+        )
+
+        state.post_ante(1)
+        state.collect_bets()
+        state.post_blind_or_straddle(0)
+        state.post_blind_or_straddle(1)
+        self.assertEqual(state.total_pot_amount, 450000)
+
+        # Pre-draw
+
+        for _ in range(state.player_count * 5):
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.complete_bet_or_raise_to(775000)
+        state.fold()
+        state.check_or_call()
+        state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1850000)
+
+        # Draw
+
+        state.burn_card()
+        state.discard_and_draw(list(Card.parse('JsJd')))
+        state.discard_and_draw(list(Card.parse('9h')))
+        self.assertEqual(state.total_pot_amount, 1850000)
+
+        state.kill_hand()
+        state.push_chips()
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(
+            state.stacks,
+            [13875000, 6200000, 2975000, 4800000, 1850000],
+        )
+
+    def test_02_04_37(self) -> None:
+        pass  # TODO
+
+
+if __name__ == '__main__':
+    main()
