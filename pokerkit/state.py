@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 from functools import partial
+from itertools import islice
 from operator import getitem
 
 from pokerkit.hands import Hand
@@ -264,8 +265,8 @@ class State:
     """The completion status."""
     actor_indices: deque[int] = field(default_factory=deque, init=False)
     """The actor indices."""
-    aggressor_index: int | None = field(default=None, init=False)
-    """The aggressor index."""
+    opener_index: int | None = field(default=None, init=False)
+    """The opener index."""
     bet_or_raise_amount: int = field(default=0, init=False)
     """The last bet/raise amount."""
     bet_or_raise_count: int | None = field(default=None, init=False)
@@ -338,6 +339,15 @@ class State:
         :return: The hand type indices.
         """
         return range(self.hand_type_count)
+
+    @property
+    def street_discard_and_draw_statuses(self) -> Iterator[bool]:
+        """Return the discard/draw statuses.
+
+        :return: The discard/draw statuses.
+        """
+        for street in self.streets:
+            yield street.dealing.discard_and_draw_status
 
     @property
     def player_count(self) -> int:
@@ -911,7 +921,7 @@ class State:
         assert not self.actor_indices
         assert self.street is not None
 
-        opener_index = None
+        self.opener_index = None
 
         match self.street.opening:
             case Opening.POSITION:
@@ -919,7 +929,7 @@ class State:
                     self.player_indices,
                     key=lambda i: (self.bets[i], i),
                 )
-                opener_index = (max_bet_index + 1) % self.player_count
+                self.opener_index = (max_bet_index + 1) % self.player_count
             case Opening.LOW_CARD:
                 min_up_cards = [
                     min_or_none(
@@ -927,7 +937,7 @@ class State:
                         key=partial(card_key, RankOrder.ROTATED),
                     ) for i in self.player_indices
                 ]
-                opener_index = min_up_cards.index(
+                self.opener_index = min_up_cards.index(
                     min_or_none(
                         min_up_cards,
                         key=partial(card_key, RankOrder.ROTATED),
@@ -940,7 +950,7 @@ class State:
                         key=partial(card_key, RankOrder.STANDARD),
                     ) for i in self.player_indices
                 ]
-                opener_index = max_up_cards.index(
+                self.opener_index = max_up_cards.index(
                     max_or_none(
                         max_up_cards,
                         key=partial(card_key, RankOrder.STANDARD),
@@ -952,18 +962,18 @@ class State:
                         self.get_up_cards(i),
                     ) for i in self.player_indices
                 ]
-                opener_index = entries.index(min_or_none(entries))
+                self.opener_index = entries.index(min_or_none(entries))
             case Opening.HIGH_HAND:
                 entries = [
                     self.__high_hand_opening_lookup.get_entry_or_none(
                         self.get_up_cards(i),
                     ) for i in self.player_indices
                 ]
-                opener_index = entries.index(max_or_none(entries))
+                self.opener_index = entries.index(max_or_none(entries))
             case _:
                 raise ValueError('unknown opening')
 
-        assert opener_index is not None
+        assert self.opener_index is not None
 
         self.bring_in_status = (
             self.street is self.streets[0]
@@ -972,13 +982,12 @@ class State:
         self.completion_status = self.bring_in_status
         self.actor_indices = deque(self.player_indices)
 
-        self.actor_indices.rotate(-opener_index)
+        self.actor_indices.rotate(-self.opener_index)
 
         for i in self.player_indices:
             if not self.statuses[i] or not self.stacks[i]:
                 self.actor_indices.remove(i)
 
-        self.aggressor_index = None
         self.bet_or_raise_amount = self.street.min_bet_or_raise_amount
         self.bet_or_raise_count = self.street.max_bet_or_raise_count
 
@@ -1130,7 +1139,7 @@ class State:
                 if i in self.actor_indices:
                     self.actor_indices.remove(i)
 
-        self.aggressor_index = actor_index
+        self.opener_index = actor_index
         self.bet_or_raise_amount = max(
             self.bet_or_raise_amount,
             bet_or_raise_amount,
@@ -1149,7 +1158,20 @@ class State:
 
         self.actor_indices.clear()
 
-        if sum(self.statuses) > 1:
+        show = False
+
+        assert self.street_index is not None
+
+        if (
+                sum(self.statuses) > 1
+                and not any(
+                    islice(
+                        self.street_discard_and_draw_statuses,
+                        self.street_index + 1,
+                        None,
+                    ),
+                )
+        ):
             count = 0
 
             for i in self.player_indices:
@@ -1157,9 +1179,15 @@ class State:
                     count += 1
 
             if count <= 1:
-                for i in self.player_indices:
-                    if self.statuses[i]:
-                        self._show_hole_cards(i)
+                show = True
+
+        if not all(self.stacks) and self.street_index == len(self.streets) - 1:
+            show = True
+
+        if show:
+            for i in self.player_indices:
+                if self.statuses[i]:
+                    self._show_hole_cards(i)
 
         self._begin_bet_collection()
 
@@ -1169,8 +1197,8 @@ class State:
         self.street_index = None
         self.actor_indices = deque(self.player_indices)
 
-        if self.aggressor_index is not None:
-            self.actor_indices.rotate(-self.aggressor_index)
+        if self.opener_index is not None:
+            self.actor_indices.rotate(-self.opener_index)
 
         for i in self.player_indices:
             if not self.statuses[i] or all(self.hole_card_statuses[i]):

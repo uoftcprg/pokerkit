@@ -38,8 +38,6 @@ __all__ = (
     'max_or_none',
     'min_or_none',
 )
-__author__ = 'Juho Kim'
-__version__ = '0.0.0.dev0'
 
 from pokerkit.game import Game
 from pokerkit.hands import (

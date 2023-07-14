@@ -12,8 +12,8 @@ setup(
     long_description=long_description,
     long_description_content_type='text/x-rst',
     url='https://github.com/uoftcprg/pokerkit',
-    author='Juho Kim',
-    author_email='juho-kim@outlook.com',
+    author='University of Toronto Computer Poker Research Group',
+    author_email='uoftcprg@outlook.com',
     license='AGPLv3',
     classifiers=[
         'Development Status :: 1 - Planning',
