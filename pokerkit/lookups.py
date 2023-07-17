@@ -268,7 +268,7 @@ class StandardLookup(Lookup):
     """The class for standard hand lookups.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`StandardHand` or its subclasses.
+    please subclasses of :cls:`Hand` that use this lookup.
 
     >>> lookup = StandardLookup()
     >>> e0 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
@@ -287,50 +287,50 @@ class StandardLookup(Lookup):
 
     def __post_init__(self) -> None:
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({1: 5}),
             (False,),
             Label.HIGH_CARD,
         )
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({2: 1, 1: 3}),
             (False,),
             Label.ONE_PAIR,
         )
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({2: 2, 1: 1}),
             (False,),
             Label.TWO_PAIR,
         )
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({3: 1, 1: 2}),
             (False,),
             Label.THREE_OF_A_KIND,
         )
-        self._add_straights(RankOrder.ROTATED, 5, (False,), Label.STRAIGHT)
+        self._add_straights(RankOrder.STANDARD, 5, (False,), Label.STRAIGHT)
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({1: 5}),
             (True,),
             Label.FLUSH,
         )
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({3: 1, 2: 1}),
             (False,),
             Label.FULL_HOUSE,
         )
         self._add_multisets(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             Counter({4: 1, 1: 1}),
             (False,),
             Label.FOUR_OF_A_KIND,
         )
         self._add_straights(
-            RankOrder.ROTATED,
+            RankOrder.STANDARD,
             5,
             (True,),
             Label.STRAIGHT_FLUSH,
@@ -419,16 +419,16 @@ class ShortDeckHoldemLookup(Lookup):
 
 
 @dataclass
-class LowEightOrBetterLookup(Lookup):
-    """The class for low eight or better hand lookups.
+class EightOrBetterLowLookup(Lookup):
+    """The class for eight or better low hand lookups.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`LowEightOrBetterHand`.
+    please use :cls:`EightOrBetterLowHand`.
     """
 
     def __post_init__(self) -> None:
         self._add_multisets(
-            RankOrder.LOW_EIGHT_OR_BETTER,
+            RankOrder.EIGHT_OR_BETTER_LOW,
             Counter({1: 5}),
             (False, True),
             Label.HIGH_CARD,
@@ -436,15 +436,15 @@ class LowEightOrBetterLookup(Lookup):
 
 
 @dataclass
-class AceToFiveLowballLookup(Lookup):
-    """The class for ace-to-five Lowball hand lookups.
+class RegularLowLookup(Lookup):
+    """The class for regular low hand lookups.
 
     Here, flushes are ignored.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`AceToFiveLowballHand`.
+    please use :cls:`RegularLowHand`.
 
-    >>> lookup = AceToFiveLowballLookup()
+    >>> lookup = RegularLowLookup()
     >>> e0 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
     >>> e1 = lookup.get_entry(Card.parse('AhAc6s6hTd'))
     >>> e2 = lookup.get_entry(Card.parse('3s4sQhTc'))
@@ -461,37 +461,37 @@ class AceToFiveLowballLookup(Lookup):
 
     def __post_init__(self) -> None:
         self._add_multisets(
-            RankOrder.STANDARD,
+            RankOrder.REGULAR,
             Counter({1: 5}),
             (False, True),
             Label.HIGH_CARD,
         )
         self._add_multisets(
-            RankOrder.STANDARD,
+            RankOrder.REGULAR,
             Counter({2: 1, 1: 3}),
             (False,),
             Label.ONE_PAIR,
         )
         self._add_multisets(
-            RankOrder.STANDARD,
+            RankOrder.REGULAR,
             Counter({2: 2, 1: 1}),
             (False,),
             Label.TWO_PAIR,
         )
         self._add_multisets(
-            RankOrder.STANDARD,
+            RankOrder.REGULAR,
             Counter({3: 1, 1: 2}),
             (False,),
             Label.THREE_OF_A_KIND,
         )
         self._add_multisets(
-            RankOrder.STANDARD,
+            RankOrder.REGULAR,
             Counter({3: 1, 2: 1}),
             (False,),
             Label.FULL_HOUSE,
         )
         self._add_multisets(
-            RankOrder.STANDARD,
+            RankOrder.REGULAR,
             Counter({4: 1, 1: 1}),
             (False,),
             Label.FOUR_OF_A_KIND,
@@ -523,7 +523,7 @@ class BadugiLookup(Lookup):
     def __post_init__(self) -> None:
         for i in range(4, 0, -1):
             self._add_multisets(
-                RankOrder.STANDARD,
+                RankOrder.REGULAR,
                 Counter({1: i}),
                 (i == 1,),
                 Label.HIGH_CARD,

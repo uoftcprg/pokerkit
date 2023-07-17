@@ -10,11 +10,11 @@ from typing import Any
 from warnings import warn
 
 from pokerkit.lookups import (
-    AceToFiveLowballLookup,
     BadugiLookup,
     Entry,
     Lookup,
-    LowEightOrBetterLookup,
+    EightOrBetterLowLookup,
+    RegularLowLookup,
     ShortDeckHoldemLookup,
     StandardLookup,
 )
@@ -55,11 +55,11 @@ class Hand(Hashable, ABC):
         In a game setting, a player uses private cards from their hole
         and the public cards from the board to make their hand.
 
-        >>> h0 = StandardHand.from_game(
+        >>> h0 = StandardHighHand.from_game(
         ...     Card.parse('AsQs'),
         ...     Card.parse('Ks8s9hTc2s'),
         ... )
-        >>> h1 = StandardHand(Card.parse('AsQsKs8s2s'))
+        >>> h1 = StandardHighHand(Card.parse('AsQsKs8s2s'))
         >>> h0 == h1
         True
 
@@ -109,7 +109,7 @@ class Hand(Hashable, ABC):
 
         >>> hole = Card.parse('AsAc')
         >>> board = Card.parse('Kh3sAdAh')
-        >>> hand = StandardHand.from_game(hole, board)
+        >>> hand = StandardHighHand.from_game(hole, board)
         >>> hand.cards
         (As, Ac, Kh, Ad, Ah)
 
@@ -123,7 +123,7 @@ class Hand(Hashable, ABC):
 
         >>> hole = Card.parse('AsAc')
         >>> board = Card.parse('Kh3sAdAh')
-        >>> hand = StandardHand.from_game(hole, board)
+        >>> hand = StandardHighHand.from_game(hole, board)
         >>> hand.entry.label
         <Label.FOUR_OF_A_KIND: 'Four of a kind'>
 
@@ -132,34 +132,10 @@ class Hand(Hashable, ABC):
         return self._lookup.get_entry(self.cards)
 
 
-class StandardHand(Hand):
-    """The class for standard hands.
+class CombinationHand(Hand):
+    """The class for combination hands."""
 
-    >>> h0 = StandardHand(Card.parse('7c5d4h3s2c'))
-    >>> h1 = StandardHand(Card.parse('7c6d4h3s2c'))
-    >>> h2 = StandardHand(Card.parse('8c7d6h4s2c'))
-    >>> h3 = StandardHand(Card.parse('AcAsAd2s4s'))
-    >>> h4 = StandardHand(Card.parse('TsJsQsKsAs'))
-    >>> h0 < h1 < h2 < h3 < h4
-    True
-
-    >>> h = StandardHand(Card.parse('4c5dThJsAcKh2h'))
-    Traceback (most recent call last):
-        ...
-    ValueError: invalid hand '4c5dThJsAcKh2h'
-    >>> h = StandardHand(Card.parse('Ac2c3c4c'))
-    Traceback (most recent call last):
-        ...
-    ValueError: invalid hand 'Ac2c3c4c'
-    >>> h = StandardHand(())
-    Traceback (most recent call last):
-        ...
-    ValueError: invalid hand ''
-    """
-
-    _lookup: Lookup = StandardLookup()
-    _low = False
-    _card_count = 5
+    _card_count: int
 
     @classmethod
     def from_game(
@@ -172,33 +148,33 @@ class StandardHand(Hand):
         In a game setting, a player uses private cards from their hole
         and the public cards from the board to make their hand.
 
-        >>> h0 = StandardHand.from_game(
+        >>> h0 = StandardHighHand.from_game(
         ...     Card.parse('AcAdAhAsKc'),
         ...     Card.parse(''),
         ... )
-        >>> h1 = StandardHand(Card.parse('AcAdAhAsKc'))
+        >>> h1 = StandardHighHand(Card.parse('AcAdAhAsKc'))
         >>> h0 == h1
         True
-        >>> h0 = StandardHand.from_game(
+        >>> h0 = StandardHighHand.from_game(
         ...     Card.parse('Ac9c'),
         ...     Card.parse('AhKhQhJhTh'),
         ... )
-        >>> h1 = StandardHand(Card.parse('AhKhQhJhTh'))
+        >>> h1 = StandardHighHand(Card.parse('AhKhQhJhTh'))
         >>> h0 == h1
         True
 
-        >>> h0 = DeuceToSevenLowballHand.from_game(
+        >>> h0 = StandardLowHand.from_game(
         ...     Card.parse('AcAdAhAsKc'),
         ...     Card.parse(''),
         ... )
-        >>> h1 = DeuceToSevenLowballHand(Card.parse('AcAdAhAsKc'))
+        >>> h1 = StandardLowHand(Card.parse('AcAdAhAsKc'))
         >>> h0 == h1
         True
-        >>> h0 = DeuceToSevenLowballHand.from_game(
+        >>> h0 = StandardLowHand.from_game(
         ...     Card.parse('Ac9c'),
         ...     Card.parse('AhKhQhJhTh'),
         ... )
-        >>> h1 = DeuceToSevenLowballHand(Card.parse('AcQhJhTh9c'))
+        >>> h1 = StandardLowHand(Card.parse('AcQhJhTh9c'))
         >>> h0 == h1
         True
 
@@ -217,26 +193,26 @@ class StandardHand(Hand):
         >>> h0 == h1
         True
 
-        >>> h0 = LowEightOrBetterHand.from_game(
+        >>> h0 = EightOrBetterLowHand.from_game(
         ...     Card.parse('As2s'),
         ...     Card.parse('2c3c4c5c6c'),
         ... )
-        >>> h1 = LowEightOrBetterHand(Card.parse('Ad2d3d4d5d'))
+        >>> h1 = EightOrBetterLowHand(Card.parse('Ad2d3d4d5d'))
         >>> h0 == h1
         True
 
-        >>> h0 = AceToFiveLowballHand.from_game(
+        >>> h0 = RegularLowHand.from_game(
         ...     Card.parse('AcAd'),
         ...     Card.parse('AhAsKcQdQh'),
         ... )
-        >>> h1 = AceToFiveLowballHand(Card.parse('AcAsQdQhKc'))
+        >>> h1 = RegularLowHand(Card.parse('AcAsQdQhKc'))
         >>> h0 == h1
         True
-        >>> h0 = AceToFiveLowballHand.from_game(
+        >>> h0 = RegularLowHand.from_game(
         ...     Card.parse('AcAd'),
         ...     Card.parse('AhAsKcQd'),
         ... )
-        >>> h1 = AceToFiveLowballHand(Card.parse('AdAhAsKcQd'))
+        >>> h1 = RegularLowHand(Card.parse('AdAhAsKcQd'))
         >>> h0 == h1
         True
 
@@ -264,26 +240,61 @@ class StandardHand(Hand):
         return max_hand
 
 
-class DeuceToSevenLowballHand(StandardHand):
-    """The class for deuce-to-seven lowball hands.
+class StandardHand(CombinationHand):
+    """The class for standard hands."""
 
-    >>> h0 = DeuceToSevenLowballHand(Card.parse('TsJsQsKsAs'))
-    >>> h1 = DeuceToSevenLowballHand(Card.parse('AcAsAd2s4s'))
-    >>> h2 = DeuceToSevenLowballHand(Card.parse('8c7d6h4s2c'))
-    >>> h3 = DeuceToSevenLowballHand(Card.parse('7c6d4h3s2c'))
-    >>> h4 = DeuceToSevenLowballHand(Card.parse('7c5d4h3s2c'))
+    _lookup = StandardLookup()
+    _card_count = 5
+
+
+class StandardHighHand(StandardHand):
+    """The class for standard high hands.
+
+    >>> h0 = StandardHighHand(Card.parse('7c5d4h3s2c'))
+    >>> h1 = StandardHighHand(Card.parse('7c6d4h3s2c'))
+    >>> h2 = StandardHighHand(Card.parse('8c7d6h4s2c'))
+    >>> h3 = StandardHighHand(Card.parse('AcAsAd2s4s'))
+    >>> h4 = StandardHighHand(Card.parse('TsJsQsKsAs'))
     >>> h0 < h1 < h2 < h3 < h4
     True
 
-    >>> h = DeuceToSevenLowballHand(Card.parse('4c5dThJsAcKh2h'))
+    >>> h = StandardHighHand(Card.parse('4c5dThJsAcKh2h'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand '4c5dThJsAcKh2h'
-    >>> h = DeuceToSevenLowballHand(Card.parse('Ac2c3c4c'))
+    >>> h = StandardHighHand(Card.parse('Ac2c3c4c'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand 'Ac2c3c4c'
-    >>> h = DeuceToSevenLowballHand(())
+    >>> h = StandardHighHand(())
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid hand ''
+    """
+
+    _low = False
+
+
+class StandardLowHand(StandardHand):
+    """The class for standard low hands.
+
+    >>> h0 = StandardLowHand(Card.parse('TsJsQsKsAs'))
+    >>> h1 = StandardLowHand(Card.parse('AcAsAd2s4s'))
+    >>> h2 = StandardLowHand(Card.parse('8c7d6h4s2c'))
+    >>> h3 = StandardLowHand(Card.parse('7c6d4h3s2c'))
+    >>> h4 = StandardLowHand(Card.parse('7c5d4h3s2c'))
+    >>> h0 < h1 < h2 < h3 < h4
+    True
+
+    >>> h = StandardLowHand(Card.parse('4c5dThJsAcKh2h'))
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid hand '4c5dThJsAcKh2h'
+    >>> h = StandardLowHand(Card.parse('Ac2c3c4c'))
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid hand 'Ac2c3c4c'
+    >>> h = StandardLowHand(())
     Traceback (most recent call last):
         ...
     ValueError: invalid hand ''
@@ -292,7 +303,7 @@ class DeuceToSevenLowballHand(StandardHand):
     _low = True
 
 
-class ShortDeckHoldemHand(StandardHand):
+class ShortDeckHoldemHand(CombinationHand):
     """The class for short-deck hold'em hands.
 
     Here, flushes beat full houses.
@@ -320,87 +331,77 @@ class ShortDeckHoldemHand(StandardHand):
     """
 
     _lookup = ShortDeckHoldemLookup()
+    _low = False
+    _card_count = 5
 
 
-class LowEightOrBetterHand(StandardHand):
+class EightOrBetterLowHand(CombinationHand):
     """The class for low eight or better hands.
 
-    >>> h0 = LowEightOrBetterHand(Card.parse('8c7d6h4s2c'))
-    >>> h1 = LowEightOrBetterHand(Card.parse('7c5d4h3s2c'))
-    >>> h2 = LowEightOrBetterHand(Card.parse('5d4h3s2dAd'))
+    >>> h0 = EightOrBetterLowHand(Card.parse('8c7d6h4s2c'))
+    >>> h1 = EightOrBetterLowHand(Card.parse('7c5d4h3s2c'))
+    >>> h2 = EightOrBetterLowHand(Card.parse('5d4h3s2dAd'))
     >>> h0 < h1 < h2
     True
 
-    >>> h = LowEightOrBetterHand(Card.parse('AcAsAd2s4s'))
+    >>> h = EightOrBetterLowHand(Card.parse('AcAsAd2s4s'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand 'AcAsAd2s4s'
-    >>> h = LowEightOrBetterHand(Card.parse('TsJsQsKsAs'))
+    >>> h = EightOrBetterLowHand(Card.parse('TsJsQsKsAs'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand 'TsJsQsKsAs'
-    >>> h = LowEightOrBetterHand(Card.parse('4c5dThJsAcKh2h'))
+    >>> h = EightOrBetterLowHand(Card.parse('4c5dThJsAcKh2h'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand '4c5dThJsAcKh2h'
-    >>> h = LowEightOrBetterHand(Card.parse('Ac2c3c4c'))
+    >>> h = EightOrBetterLowHand(Card.parse('Ac2c3c4c'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand 'Ac2c3c4c'
-    >>> h = LowEightOrBetterHand(())
+    >>> h = EightOrBetterLowHand(())
     Traceback (most recent call last):
         ...
     ValueError: invalid hand ''
     """
 
-    _lookup = LowEightOrBetterLookup()
+    _lookup = EightOrBetterLowLookup()
     _low = True
+    _card_count = 5
 
 
-class AceToFiveLowballHand(StandardHand):
-    """The class for ace-to-five lowball hands.
+class RegularLowHand(CombinationHand):
+    """The class for low regular hands.
 
     Here, flushes are ignored.
 
-    >>> h0 = AceToFiveLowballHand(Card.parse('KhKsKcKdAc'))
-    >>> h1 = AceToFiveLowballHand(Card.parse('2s2c3s3cAh'))
-    >>> h2 = AceToFiveLowballHand(Card.parse('6c4d3h2sAc'))
-    >>> h3 = AceToFiveLowballHand(Card.parse('Ac2c3c4c5c'))
+    >>> h0 = RegularLowHand(Card.parse('KhKsKcKdAc'))
+    >>> h1 = RegularLowHand(Card.parse('2s2c3s3cAh'))
+    >>> h2 = RegularLowHand(Card.parse('6c4d3h2sAc'))
+    >>> h3 = RegularLowHand(Card.parse('Ac2c3c4c5c'))
     >>> h0 < h1 < h2 < h3
     True
 
-    >>> h = AceToFiveLowballHand(Card.parse('4c5dThJsAcKh2h'))
+    >>> h = RegularLowHand(Card.parse('4c5dThJsAcKh2h'))
     Traceback (most recent call last):
         ...
     ValueError: invalid hand '4c5dThJsAcKh2h'
-    >>> h = AceToFiveLowballHand(())
+    >>> h = RegularLowHand(())
     Traceback (most recent call last):
         ...
     ValueError: invalid hand ''
     """
 
-    _lookup = AceToFiveLowballLookup()
+    _lookup = RegularLowLookup()
     _low = True
+    _card_count = 5
 
 
-class GreekHoldemHand(Hand):
-    """The class for Greek hold'em hands.
+class BoardCombinationHand(CombinationHand):
+    """The class for board-combination hands."""
 
-    In Greek hold'em, the player must use all of his/her hole cards to
-    make a hand.
-
-    >>> h0 = GreekHoldemHand(Card.parse('7c5d4h3s2c'))
-    >>> h1 = GreekHoldemHand(Card.parse('7c6d4h3s2c'))
-    >>> h2 = GreekHoldemHand(Card.parse('8c7d6h4s2c'))
-    >>> h3 = GreekHoldemHand(Card.parse('AcAsAd2s4s'))
-    >>> h4 = GreekHoldemHand(Card.parse('TsJsQsKsAs'))
-    >>> h0 < h1 < h2 < h3 < h4
-    True
-    """
-
-    _lookup: Lookup = StandardLookup()
-    _low = False
-    _board_card_count = 3
+    _board_card_count: int
 
     @classmethod
     def from_game(
@@ -459,22 +460,31 @@ class GreekHoldemHand(Hand):
         return max_hand
 
 
-class OmahaHoldemHand(GreekHoldemHand):
-    """The class for Omaha hold'em hands.
+class GreekHoldemHand(BoardCombinationHand):
+    """The class for Greek hold'em hands.
 
-    In Omaha hold'em, the player must use a fixed number of his/her hole
-    cards to make a hand.
+    In Greek hold'em, the player must use all of his or her hole cards
+    to make a hand.
 
-    >>> h0 = OmahaHoldemHand(Card.parse('7c5d4h3s2c'))
-    >>> h1 = OmahaHoldemHand(Card.parse('7c6d4h3s2c'))
-    >>> h2 = OmahaHoldemHand(Card.parse('8c7d6h4s2c'))
-    >>> h3 = OmahaHoldemHand(Card.parse('AcAsAd2s4s'))
-    >>> h4 = OmahaHoldemHand(Card.parse('TsJsQsKsAs'))
+    >>> h0 = GreekHoldemHand(Card.parse('7c5d4h3s2c'))
+    >>> h1 = GreekHoldemHand(Card.parse('7c6d4h3s2c'))
+    >>> h2 = GreekHoldemHand(Card.parse('8c7d6h4s2c'))
+    >>> h3 = GreekHoldemHand(Card.parse('AcAsAd2s4s'))
+    >>> h4 = GreekHoldemHand(Card.parse('TsJsQsKsAs'))
     >>> h0 < h1 < h2 < h3 < h4
     True
     """
 
-    _hole_card_count = 2
+    _lookup = StandardLookup()
+    _low = False
+    _card_count = 5
+    _board_card_count = 3
+
+
+class HoleBoardCombinationHand(BoardCombinationHand):
+    """The class for hole-board-combination hands."""
+
+    _hole_card_count: int
 
     @classmethod
     def from_game(
@@ -516,18 +526,18 @@ class OmahaHoldemHand(GreekHoldemHand):
         >>> h0 == h1
         True
 
-        >>> h0 = OmahaLowEightOrBetterHand.from_game(
+        >>> h0 = OmahaEightOrBetterLowHand.from_game(
         ...     Card.parse('As2s3s4s'),
         ...     Card.parse('2c3c4c5c6c'),
         ... )
-        >>> h1 = OmahaLowEightOrBetterHand(Card.parse('Ad2d3d4d5d'))
+        >>> h1 = OmahaEightOrBetterLowHand(Card.parse('Ad2d3d4d5d'))
         >>> h0 == h1
         True
-        >>> h0 = OmahaLowEightOrBetterHand.from_game(
+        >>> h0 = OmahaEightOrBetterLowHand.from_game(
         ...     Card.parse('As6s7s8s'),
         ...     Card.parse('2c3c4c5c6c'),
         ... )
-        >>> h1 = OmahaLowEightOrBetterHand(Card.parse('Ad2d3d4d6d'))
+        >>> h1 = OmahaEightOrBetterLowHand(Card.parse('Ad2d3d4d6d'))
         >>> h0 == h1
         True
 
@@ -555,18 +565,43 @@ class OmahaHoldemHand(GreekHoldemHand):
         return max_hand
 
 
-class OmahaLowEightOrBetterHand(OmahaHoldemHand):
+class OmahaHoldemHand(HoleBoardCombinationHand):
+    """The class for Omaha hold'em hands.
+
+    In Omaha hold'em, the player must use a fixed number of his or her
+    hole cards to make a hand.
+
+    >>> h0 = OmahaHoldemHand(Card.parse('7c5d4h3s2c'))
+    >>> h1 = OmahaHoldemHand(Card.parse('7c6d4h3s2c'))
+    >>> h2 = OmahaHoldemHand(Card.parse('8c7d6h4s2c'))
+    >>> h3 = OmahaHoldemHand(Card.parse('AcAsAd2s4s'))
+    >>> h4 = OmahaHoldemHand(Card.parse('TsJsQsKsAs'))
+    >>> h0 < h1 < h2 < h3 < h4
+    True
+    """
+
+    _lookup = StandardLookup()
+    _low = False
+    _card_count = 5
+    _board_card_count = 3
+    _hole_card_count = 2
+
+
+class OmahaEightOrBetterLowHand(HoleBoardCombinationHand):
     """The class for Omaha low eight or better hands.
 
-    >>> h0 = OmahaLowEightOrBetterHand(Card.parse('8c7d6h4s2c'))
-    >>> h1 = OmahaLowEightOrBetterHand(Card.parse('7c5d4h3s2c'))
-    >>> h2 = OmahaLowEightOrBetterHand(Card.parse('5d4h3s2dAd'))
+    >>> h0 = OmahaEightOrBetterLowHand(Card.parse('8c7d6h4s2c'))
+    >>> h1 = OmahaEightOrBetterLowHand(Card.parse('7c5d4h3s2c'))
+    >>> h2 = OmahaEightOrBetterLowHand(Card.parse('5d4h3s2dAd'))
     >>> h0 < h1 < h2
     True
     """
 
-    _lookup = LowEightOrBetterLookup()
+    _lookup = EightOrBetterLowLookup()
     _low = True
+    _card_count = 5
+    _board_card_count = 3
+    _hole_card_count = 2
 
 
 class BadugiHand(Hand):

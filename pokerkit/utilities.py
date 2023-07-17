@@ -65,13 +65,13 @@ class RankOrder(tuple[Rank], Enum):
 
     Poker variants order the ranks differently between each other. Most
     games use deuce to ace ordering which is defined here as
-    :attr:`RankOrder.ROTATED`.
+    :attr:`RankOrder.STANDARD`.
 
-    >>> len(RankOrder.ROTATED)
+    >>> len(RankOrder.STANDARD)
     13
-    >>> RankOrder.ROTATED[0]
+    >>> RankOrder.STANDARD[0]
     <Rank.DEUCE: '2'>
-    >>> RankOrder.ROTATED[-1]
+    >>> RankOrder.STANDARD[-1]
     <Rank.ACE: 'A'>
 
     Short-deck hold'em uses its own ranking which eliminates deuces,
@@ -86,17 +86,17 @@ class RankOrder(tuple[Rank], Enum):
     <Rank.ACE: 'A'>
 
     In some draw games, Ace is considered to be the lowest rank. This
-    ordering is accessible via :attr:`RankOrder.STANDARD`.
+    ordering is accessible via :attr:`RankOrder.REGULAR`.
 
-    >>> len(RankOrder.STANDARD)
+    >>> len(RankOrder.REGULAR)
     13
-    >>> RankOrder.STANDARD[0]
+    >>> RankOrder.REGULAR[0]
     <Rank.ACE: 'A'>
-    >>> RankOrder.STANDARD[-1]
+    >>> RankOrder.REGULAR[-1]
     <Rank.KING: 'K'>
     """
 
-    ROTATED: tuple[Rank, ...] = (
+    STANDARD: tuple[Rank, ...] = (
         Rank.DEUCE,
         Rank.TREY,
         Rank.FOUR,
@@ -111,9 +111,9 @@ class RankOrder(tuple[Rank], Enum):
         Rank.KING,
         Rank.ACE,
     )
-    """The rotated ranks (from deuce to ace).
+    """The standard ranks (from deuce to ace).
 
-    This is used in:
+    This is used in (in WSOP notations):
     - "Big O"
     - "Big O" hi-low eight or better
     - deuce to seven single draw lowball
@@ -138,7 +138,7 @@ class RankOrder(tuple[Rank], Enum):
         Rank.ACE,
     )
     """The short-deck hold'em ranks (from six to ace)."""
-    STANDARD: tuple[Rank, ...] = (
+    REGULAR: tuple[Rank, ...] = (
         Rank.ACE,
         Rank.DEUCE,
         Rank.TREY,
@@ -153,9 +153,9 @@ class RankOrder(tuple[Rank], Enum):
         Rank.QUEEN,
         Rank.KING,
     )
-    """The standard ranks (from ace to king).
+    """The regular ranks (from ace to king).
 
-    This is used in:
+    This is used in (in WSOP notations):
     - ace to five single draw lowball
     - ace to five triple draw lowball
     - badugi
@@ -163,7 +163,7 @@ class RankOrder(tuple[Rank], Enum):
     - seven card stud hi-low regular
     - et cetera
     """
-    LOW_EIGHT_OR_BETTER: tuple[Rank, ...] = (
+    EIGHT_OR_BETTER_LOW: tuple[Rank, ...] = (
         Rank.ACE,
         Rank.DEUCE,
         Rank.TREY,
@@ -173,9 +173,9 @@ class RankOrder(tuple[Rank], Enum):
         Rank.SEVEN,
         Rank.EIGHT,
     )
-    """The low eight or better ranks (from ace to eight).
+    """The eight or better low ranks (from ace to eight).
 
-    This is used in:
+    This is used in (in WSOP notations):
     - "Big O" hi-low eight or better
     - Omaha hi-low eight or better
     - seven card stud hi-low eight or better
@@ -192,6 +192,9 @@ class Suit(str, Enum):
 
     In most poker variants, suits are completely irrelevant and are
     never used to break ties or to decide the winner.
+
+    In stud games, suits are used to break ties when deciding the
+    opener.
 
     >>> Suit.CLUB
     <Suit.CLUB: 'c'>
@@ -431,12 +434,22 @@ class Deck(tuple[Card, ...], Enum):
         starmap(
             Card,
             product(
-                RankOrder.ROTATED,
+                RankOrder.STANDARD,
                 (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
             ),
         ),
     )
     """The 52-card standard deck cards."""
+    REGULAR: tuple[Card, ...] = tuple(
+        starmap(
+            Card,
+            product(
+                RankOrder.REGULAR,
+                (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
+            ),
+        ),
+    )
+    """The 52-card regular deck cards."""
     SHORT_DECK_HOLDEM: tuple[Card, ...] = tuple(
         starmap(
             Card,

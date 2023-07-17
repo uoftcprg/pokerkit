@@ -8,9 +8,9 @@ from itertools import combinations
 from unittest import TestCase, main
 
 from pokerkit.lookups import (
-    AceToFiveLowballLookup,
     BadugiLookup,
-    LowEightOrBetterLookup,
+    EightOrBetterLowLookup,
+    RegularLowLookup,
     ShortDeckHoldemLookup,
     StandardLookup,
 )
@@ -64,9 +64,9 @@ class ShortDeckHoldemLookupTestCase(LookupTestCaseMixin, TestCase):
         )
 
 
-class LowEightOrBetterLookupTestCase(LookupTestCaseMixin, TestCase):
+class EightOrBetterLowLookupTestCase(LookupTestCaseMixin, TestCase):
     def test_get_entry(self) -> None:
-        lookup = LowEightOrBetterLookup()
+        lookup = EightOrBetterLowLookup()
         combinations_ = sorted(
             filter(lookup.has_entry, combinations(Deck.STANDARD, 5)),
             key=lookup.get_entry,
@@ -81,9 +81,9 @@ class LowEightOrBetterLookupTestCase(LookupTestCaseMixin, TestCase):
         )
 
 
-class AceToFiveLowballLookupTestCase(LookupTestCaseMixin, TestCase):
+class RegularLowLookupTestCase(LookupTestCaseMixin, TestCase):
     def test_get_entry(self) -> None:
-        lookup = AceToFiveLowballLookup()
+        lookup = RegularLowLookup()
         combinations_ = sorted(
             combinations(Deck.STANDARD, 5),
             key=lookup.get_entry,

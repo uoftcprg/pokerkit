@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from random import shuffle
 
 from pokerkit.hands import (
-    AceToFiveLowballHand,
-    DeuceToSevenLowballHand,
-    LowEightOrBetterHand,
+    RegularLowHand,
+    StandardLowHand,
+    EightOrBetterLowHand,
     OmahaHoldemHand,
-    OmahaLowEightOrBetterHand,
-    StandardHand,
+    OmahaEightOrBetterLowHand,
+    StandardHighHand,
 )
 from pokerkit.state import BettingStructure, Opening, State, Street
 from pokerkit.utilities import Deck
@@ -42,7 +42,7 @@ class Game:
 
         return cls(
             State(
-                (StandardHand,),
+                (StandardHighHand,),
                 (
                     Street(
                         False,
@@ -108,7 +108,7 @@ class Game:
 
         return cls(
             State(
-                (StandardHand,),
+                (StandardHighHand,),
                 (
                     Street(
                         False,
@@ -243,7 +243,7 @@ class Game:
 
         return cls(
             State(
-                (StandardHand,),
+                (StandardHighHand,),
                 (
                     Street(
                         False,
@@ -322,7 +322,7 @@ class Game:
 
         return cls(
             State(
-                (StandardHand, LowEightOrBetterHand),
+                (StandardHighHand, EightOrBetterLowHand),
                 (
                     Street(
                         False,
@@ -400,7 +400,7 @@ class Game:
 
         return cls(
             State(
-                (AceToFiveLowballHand,),
+                (RegularLowHand,),
                 (
                     Street(
                         False,
@@ -477,7 +477,7 @@ class Game:
 
         return cls(
             State(
-                (OmahaHoldemHand, OmahaLowEightOrBetterHand),
+                (OmahaHoldemHand, OmahaEightOrBetterLowHand),
                 (
                     Street(
                         False,
@@ -543,7 +543,7 @@ class Game:
 
         return cls(
             State(
-                (DeuceToSevenLowballHand,),
+                (StandardLowHand,),
                 (
                     Street(
                         False,
@@ -592,7 +592,7 @@ class Game:
 
         return cls(
             State(
-                (DeuceToSevenLowballHand,),
+                (StandardLowHand,),
                 (
                     Street(
                         False,
