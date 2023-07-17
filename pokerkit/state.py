@@ -15,7 +15,13 @@ from pokerkit.utilities import Card, RankOrder, Suit, max_or_none, min_or_none
 
 @unique
 class BettingStructure(Enum):
-    """The enum class for betting structures."""
+    """The enum class for betting structures.
+
+    >>> BettingStructure.FIXED_LIMIT  # doctest: +ELLIPSIS
+    <BettingStructure.FIXED_LIMIT: ...>
+    >>> BettingStructure.NO_LIMIT  # doctest: +ELLIPSIS
+    <BettingStructure.NO_LIMIT: ...>
+    """
 
     FIXED_LIMIT = auto()
     """The fixed-limit."""
@@ -27,12 +33,18 @@ class BettingStructure(Enum):
 
 @unique
 class Opening(Enum):
-    """The enum class for openings."""
+    """The enum class for openings.
+
+    >>> Opening.POSITION  # doctest: +ELLIPSIS
+    <Opening.POSITION: ...>
+    >>> Opening.LOW_HAND  # doctest: +ELLIPSIS
+    <Opening.LOW_HAND: ...>
+    """
 
     POSITION = auto()
     """The opener is decided by position.
 
-    If blinds/straddles are present, they are taken account of.
+    If blinds or straddles are present, they are taken account of.
     """
     LOW_CARD = auto()
     """The opener is decided by having the lowest exposed card."""
@@ -133,8 +145,23 @@ class _HighHandOpeningLookup(Lookup):
 
 
 @dataclass(frozen=True)
-class Dealing:
-    """The class for dealings."""
+class Street:
+    """The class for streets.
+
+    >>> street = Street(
+    ...     False,
+    ...     (False, False),
+    ...     0,
+    ...     False,
+    ...     Opening.POSITION,
+    ...     2,
+    ...     None,
+    ... )
+    >>> street.burn_status
+    False
+    >>> street.hole_deal_statuses
+    (False, False)
+    """
 
     burn_status: bool
     """Whether to burn card."""
@@ -144,38 +171,47 @@ class Dealing:
     """The number of dealt board cards."""
     discard_and_draw_status: bool
     """Whether to discard and draw prior to betting."""
+    opening: Opening
+    """The opening."""
+    min_completion_bet_or_raise_amount: int
+    """The minimum completion, bet, or raise amount."""
+    max_completion_bet_or_raise_count: int | None
+    """The maximum number of completions, bets, or raises."""
 
     def __post_init__(self) -> None:
         if self.board_deal_count < 0:
             raise ValueError('negative number of dealt cards')
-
-
-@dataclass(frozen=True)
-class Street:
-    """The class for streets."""
-
-    dealing: Dealing
-    """The dealing."""
-    opening: Opening
-    """The opening."""
-    min_bet_or_raise_amount: int
-    """The min-bet/raise amount."""
-    max_bet_or_raise_count: int | None
-    """The maximum number of bet/raises."""
-
-    def __post_init__(self) -> None:
-        if self.min_bet_or_raise_amount <= 0:
-            raise ValueError('non-positive minimum bet/raise amount')
         elif (
-                self.max_bet_or_raise_count is not None
-                and self.max_bet_or_raise_count < 0
+                not self.hole_deal_statuses
+                and not self.board_deal_count
+                and not self.discard_and_draw_status
         ):
-            raise ValueError('negative maximum bet/raise count')
+            raise ValueError('no dealing')
+        elif self.hole_deal_statuses and self.discard_and_draw_status:
+            raise ValueError('dealing hole and discarding')
+        elif self.min_completion_bet_or_raise_amount <= 0:
+            raise ValueError(
+                'non-positive minimum completion, bet, or raise amount',
+            )
+        elif (
+                self.max_completion_bet_or_raise_count is not None
+                and self.max_completion_bet_or_raise_count < 0
+        ):
+            raise ValueError(
+                'negative maximum number of completions, bets, or raises',
+            )
 
 
 @dataclass(frozen=True)
 class Pot:
-    """The class for pots."""
+    """The class for pots.
+
+    >>> pot = Pot(100, (1, 3))
+    >>> pot.amount
+    100
+    >>> pot.player_indices
+    (1, 3)
+    """
 
     amount: int
     """The amount."""
@@ -191,7 +227,83 @@ class Pot:
 
 @dataclass
 class State:
-    """The class for states."""
+    """The class for states.
+
+    >>> from pokerkit import BadugiHand
+    >>> state = State(
+    ...     (BadugiHand,),
+    ...     (
+    ...         Street(
+    ...             False,
+    ...             (False,),
+    ...             0,
+    ...             False,
+    ...             Opening.POSITION,
+    ...             1,
+    ...             None,
+    ...         ),
+    ...     ),
+    ...     BettingStructure.FIXED_LIMIT,
+    ...     (1,) * 2,
+    ...     (0,) * 2,
+    ...     0,
+    ...     (2,) * 2,
+    ...     deque(Card.parse('JsQsKs')),
+    ... )
+    >>> state.stacks
+    [2, 2]
+    >>> state.bets
+    [0, 0]
+    >>> state.post_ante(0)
+    >>> state.post_ante(1)
+    >>> state.stacks
+    [1, 1]
+    >>> state.bets
+    [1, 1]
+    >>> state.collect_bets()
+    >>> state.stacks
+    [1, 1]
+    >>> state.bets
+    [0, 0]
+    >>> state.hole_cards
+    [[], []]
+    >>> state.deal_hole()
+    >>> state.hole_cards
+    [[Js], []]
+    >>> state.deal_hole()
+    >>> state.hole_cards
+    [[Js], [Qs]]
+    >>> state.stacks
+    [1, 1]
+    >>> state.bets
+    [0, 0]
+    >>> state.check_or_call()
+    >>> state.stacks
+    [1, 1]
+    >>> state.bets
+    [0, 0]
+    >>> state.complete_bet_or_raise_to()
+    >>> state.stacks
+    [1, 0]
+    >>> state.bets
+    [0, 1]
+    >>> state.fold()
+    >>> state.collect_bets()
+    >>> state.push_chips()
+    >>> state.stacks
+    [1, 0]
+    >>> state.bets
+    [0, 3]
+    >>> state.total_pot_amount
+    3
+    >>> state.pull_chips(1)
+    >>> state.stacks
+    [1, 3]
+    >>> state.bets
+    [0, 0]
+    >>> state.total_pot_amount
+    0
+    """
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
     __high_hand_opening_lookup = _HighHandOpeningLookup()
@@ -204,7 +316,7 @@ class State:
     antes: tuple[int, ...]
     """The antes."""
     blinds_or_straddles: tuple[int, ...]
-    """The blinds/straddles."""
+    """The blinds or straddles."""
     bring_in: int
     """The bring-in."""
     starting_stacks: tuple[int, ...]
@@ -240,11 +352,9 @@ class State:
         default_factory=list,
         init=False,
     )
-    """The player blind/straddle statuses."""
+    """The player blind or straddle statuses."""
     bet_collection_status: bool = field(default=False, init=False)
     """The bet collection status."""
-    bet_trimming_status: bool = field(default=True, init=False)
-    """The bet trimming status during bet collection."""
     burn_status: bool = field(default=False, init=False)
     """The card burn status."""
     hole_deal_statuses: list[deque[bool]] = field(
@@ -254,11 +364,11 @@ class State:
     """The statuses of the cards to be dealt to holes."""
     board_deal_count: int = field(default=0, init=False)
     """The number of cards to be dealt to the board."""
-    discard_and_draw_statuses: list[bool] = field(
+    discard_statuses: list[bool] = field(
         default_factory=list,
         init=False,
     )
-    """The statuses of the discard and draw."""
+    """The statuses of the discards."""
     bring_in_status: bool = field(default=False, init=False)
     """The bring-in status."""
     completion_status: bool = field(default=False, init=False)
@@ -267,26 +377,28 @@ class State:
     """The actor indices."""
     opener_index: int | None = field(default=None, init=False)
     """The opener index."""
-    bet_or_raise_amount: int = field(default=0, init=False)
-    """The last bet/raise amount."""
-    bet_or_raise_count: int | None = field(default=None, init=False)
-    """The number of bet/raises."""
-    kill_statuses: list[bool] = field(default_factory=list, init=False)
-    """The kill statuses."""
+    completion_bet_or_raise_amount: int = field(default=0, init=False)
+    """The last completion, bet, or raise amount."""
+    completion_bet_or_raise_count: int = field(default=0, init=False)
+    """The number of completions, bets, or raises."""
+    hand_kill_statuses: list[bool] = field(default_factory=list, init=False)
+    """The hand kill statuses."""
     chip_push_status: bool = field(default=False, init=False)
     """The chip push status."""
+    chip_pull_statuses: list[bool] = field(default_factory=list, init=False)
+    """The chip pull statuses."""
 
     def __post_init__(self) -> None:
         if not self.streets:
             raise ValueError('empty streets')
-        elif not self.streets[0].dealing.hole_deal_statuses:
+        elif not self.streets[0].hole_deal_statuses:
             raise ValueError('first street not hole dealing')
         elif (
                 min(self.antes) < 0
                 or min(self.blinds_or_straddles) < 0
                 or self.bring_in < 0
         ):
-            raise ValueError('negative antes/blinds/straddles/bring-ins')
+            raise ValueError('negative antes, blinds, straddles, or bring-ins')
         elif min(self.starting_stacks) <= 0:
             raise ValueError('non-positive starting stacks')
         elif (
@@ -294,11 +406,14 @@ class State:
                 and not any(self.blinds_or_straddles)
                 and not self.bring_in
         ):
-            raise ValueError('no antes/blinds/straddles/bring-in')
+            raise ValueError('no antes, blinds, straddles, or bring-ins')
         elif any(self.blinds_or_straddles) and self.bring_in:
-            raise ValueError('both blinds/straddles and bring-in')
-        elif self.bring_in >= self.streets[0].min_bet_or_raise_amount:
-            raise ValueError('bring-in must be less than min bet amount')
+            raise ValueError('both blinds or straddles and bring-in')
+        elif (
+                self.bring_in
+                >= self.streets[0].min_completion_bet_or_raise_amount
+        ):
+            raise ValueError('bring-in must be less than the min bet amount')
         elif not (
                 len(self.antes)
                 == len(self.blinds_or_straddles)
@@ -319,8 +434,9 @@ class State:
             self.ante_statuses.append(False)
             self.blind_or_straddle_statuses.append(False)
             self.hole_deal_statuses.append(deque())
-            self.discard_and_draw_statuses.append(False)
-            self.kill_statuses.append(False)
+            self.discard_statuses.append(False)
+            self.hand_kill_statuses.append(False)
+            self.chip_pull_statuses.append(False)
 
         self._begin_ante_posting()
 
@@ -341,13 +457,13 @@ class State:
         return range(self.hand_type_count)
 
     @property
-    def street_discard_and_draw_statuses(self) -> Iterator[bool]:
-        """Return the discard/draw statuses.
+    def discard_and_draw_statuses(self) -> Iterator[bool]:
+        """Return the discard and draw statuses.
 
-        :return: The discard/draw statuses.
+        :return: The discard and draw statuses.
         """
         for street in self.streets:
-            yield street.dealing.discard_and_draw_status
+            yield street.discard_and_draw_status
 
     @property
     def player_count(self) -> int:
@@ -402,13 +518,12 @@ class State:
 
         :return: The list of main and side pots (if any).
         """
-        if not self.status:
-            assert sum(self.stacks) == sum(self.starting_stacks)
-
+        if sum(self.stacks) + sum(self.bets) == sum(self.starting_stacks):
             return
 
         total_ante = 0
         contributions = list(self.starting_stacks)
+        pending_contributions = list(self.starting_stacks)
 
         for i in self.player_indices:
             assert self.stacks[i] <= self.starting_stacks[i]
@@ -416,6 +531,7 @@ class State:
             ante = min(self.antes[i], self.starting_stacks[i])
             total_ante += ante
             contributions[i] -= ante + self.bets[i] + self.stacks[i]
+            pending_contributions[i] -= ante + self.stacks[i]
 
         previous_contribution = 0
         amount = total_ante
@@ -427,8 +543,12 @@ class State:
                 if contributions[i] >= contribution:
                     amount += contribution - previous_contribution
 
-                    if self.statuses[i]:
-                        player_indices.append(i)
+            for i in self.player_indices:
+                if (
+                        pending_contributions[i] >= contribution
+                        and self.statuses[i]
+                ):
+                    player_indices.append(i)
 
             yield Pot(amount, tuple(player_indices))
 
@@ -442,29 +562,42 @@ class State:
         :return: The hole dealee index.
         """
         if any(self.hole_deal_statuses):
-            dealee_index = None
-            status_count = 0
+            assert self.street is not None
 
-            for i, statuses in enumerate(self.hole_deal_statuses):
-                if dealee_index is None or len(statuses) > status_count:
-                    dealee_index = i
-                    status_count = len(statuses)
+            dealee_index = None
+
+            if self.street.hole_deal_statuses:
+                status_count = 0
+
+                for i, statuses in enumerate(self.hole_deal_statuses):
+                    if dealee_index is None or len(statuses) > status_count:
+                        dealee_index = i
+                        status_count = len(statuses)
+
+                assert status_count
+            elif self.street.discard_and_draw_status:
+                for i, statuses in enumerate(self.hole_deal_statuses):
+                    if statuses:
+                        dealee_index = i
+
+                        break
+            else:
+                raise AssertionError
 
             assert dealee_index is not None
-            assert status_count
 
             return dealee_index
 
         return None
 
     @property
-    def discard_and_drawer_index(self) -> int | None:
-        """Return the discarder and drawer index.
+    def discarder_index(self) -> int | None:
+        """Return the discarder index.
 
-        :return: The discarder and drawer index.
+        :return: The discarder index.
         """
-        if any(self.discard_and_draw_statuses):
-            return self.discard_and_draw_statuses.index(True)
+        if any(self.discard_statuses):
+            return self.discard_statuses.index(True)
 
         return None
 
@@ -480,18 +613,23 @@ class State:
         return self.actor_indices[0]
 
     @property
-    def min_bet_or_raise_to_amount(self) -> int | None:
-        """Return the minimum bet/raise to amount.
+    def min_completion_bet_or_raise_to_amount(self) -> int | None:
+        """Return the minimum completion, bet, or raise to amount.
 
-        :return: The minimum bet/raise to amount.
+        :return: The minimum completion, bet, or raise to amount.
         """
         if self.actor_index is None:
             return None
 
-        if self.completion_status:
-            amount = self.bet_or_raise_amount
-        else:
-            amount = self.bet_or_raise_amount + max(self.bets)
+        assert self.street is not None
+
+        amount = max(
+            self.completion_bet_or_raise_amount,
+            self.street.min_completion_bet_or_raise_amount,
+        )
+
+        if not self.completion_status:
+            amount += max(self.bets)
 
         return min(
             self.get_effective_stack(self.actor_index)
@@ -500,34 +638,39 @@ class State:
         )
 
     @property
-    def pot_bet_or_raise_to_amount(self) -> int | None:
-        """Return the pot bet/raise to amount.
+    def pot_completion_bet_or_raise_to_amount(self) -> int | None:
+        """Return the pot completion, bet, or raise to amount.
 
-        :return: The pot bet/raise to amount.
+        :return: The pot completion, bet, or raise to amount.
         """
         if self.actor_index is None:
             return None
 
+        assert self.min_completion_bet_or_raise_to_amount is not None
+
         return min(
             self.stacks[self.actor_index] + self.bets[self.actor_index],
-            2 * max(self.bets) - self.bets[self.actor_index]
-            + self.total_pot_amount,
+            max(
+                self.min_completion_bet_or_raise_to_amount,
+                2 * max(self.bets) - self.bets[self.actor_index]
+                + self.total_pot_amount,
+            )
         )
 
     @property
-    def max_bet_or_raise_to_amount(self) -> int | None:
-        """Return the maximum bet/raise to amount.
+    def max_completion_bet_or_raise_to_amount(self) -> int | None:
+        """Return the maximum completion, bet, or raise to amount.
 
-        :return: The maximum bet/raise to amount.
+        :return: The maximum completion, bet, or raise to amount.
         """
         if self.actor_index is None:
             return None
 
         match self.betting_structure:
             case BettingStructure.FIXED_LIMIT:
-                amount = self.min_bet_or_raise_to_amount
+                amount = self.min_completion_bet_or_raise_to_amount
             case BettingStructure.POT_LIMIT:
-                amount = self.pot_bet_or_raise_to_amount
+                amount = self.pot_completion_bet_or_raise_to_amount
             case BettingStructure.NO_LIMIT:
                 amount = (
                     self.stacks[self.actor_index]
@@ -547,15 +690,15 @@ class State:
         return amount
 
     @property
-    def kill_index(self) -> int | None:
+    def hand_kill_index(self) -> int | None:
         """Return the index of a player whose hand is to be killed.
 
         :return: The index of the player whose hand is to be killed.
         """
-        if not any(self.kill_statuses):
+        if not any(self.hand_kill_statuses):
             return None
 
-        return self.kill_statuses.index(True)
+        return self.hand_kill_statuses.index(True)
 
     def get_effective_stack(self, player_index: int) -> int:
         """Return the effective stack of the player.
@@ -672,7 +815,6 @@ class State:
         assert not self.bet_collection_status
 
         self.bet_collection_status = True
-        self.bet_trimming_status = self.street is not None
 
         if not any(self.bets):
             self._end_bet_collection()
@@ -687,24 +829,27 @@ class State:
             raise ValueError('bet collection prohibited')
 
         self.bet_collection_status = False
+        player_indices = set(self.player_indices)
 
-        if self.bet_trimming_status:
+        if sum(self.statuses) == 1:
+            player_indices.remove(self.statuses.index(True))
+
+        if self.street is not None:
             max_bet = sorted(self.bets)[-2]
 
-            for i in self.player_indices:
+            for i in player_indices:
                 if self.bets[i] > max_bet:
                     assert self.statuses[i]
 
                     self.stacks[i] += self.bets[i] - max_bet
 
-        for i in self.player_indices:
+        for i in player_indices:
             self.bets[i] = 0
 
         self._end_bet_collection()
 
     def _end_bet_collection(self) -> None:
         self.bet_collection_status = False
-        self.bet_trimming_status = True
 
         if sum(self.statuses) == 1:
             self._begin_chip_push()
@@ -735,7 +880,7 @@ class State:
         :raises ValueError: If the player cannot post blind or straddle.
         """
         if not self.blind_or_straddle_statuses[player_index]:
-            raise ValueError('player cannot be blinded/straddled')
+            raise ValueError('player cannot be blinded or straddled')
 
         if self.player_count == 2:
             blind_or_straddle = self.blinds_or_straddles[not player_index]
@@ -764,7 +909,7 @@ class State:
     def _begin_dealing(self) -> None:
         assert not any(self.hole_deal_statuses)
         assert not self.board_deal_count
-        assert not any(self.discard_and_draw_statuses)
+        assert not any(self.discard_statuses)
 
         if self.street_index is None:
             self.street_index = 0
@@ -773,23 +918,23 @@ class State:
 
         assert self.street is not None
 
-        self.burn_status = self.street.dealing.burn_status
+        self.burn_status = self.street.burn_status
 
         for i in self.player_indices:
             if self.statuses[i]:
                 self.hole_deal_statuses[i].extend(
-                    self.street.dealing.hole_deal_statuses,
+                    self.street.hole_deal_statuses,
                 )
-                self.discard_and_draw_statuses[i] = (
-                    self.street.dealing.discard_and_draw_status
+                self.discard_statuses[i] = (
+                    self.street.discard_and_draw_status
                 )
 
-        self.board_deal_count = self.street.dealing.board_deal_count
+        self.board_deal_count = self.street.board_deal_count
 
         assert (
             any(self.hole_deal_statuses)
             or self.board_deal_count
-            or any(self.discard_and_draw_statuses)
+            or any(self.discard_statuses)
         )
 
     def burn_card(self) -> None:
@@ -822,10 +967,7 @@ class State:
         player_index = self.hole_dealee_index
 
         assert player_index is not None
-        assert (
-            len(self.hole_deal_statuses[player_index])
-            == max(map(len, self.hole_deal_statuses))
-        )
+        assert self.hole_deal_statuses[player_index]
         assert self.deck
 
         status = self.hole_deal_statuses[player_index].popleft()
@@ -837,7 +979,7 @@ class State:
         if (
                 not any(self.hole_deal_statuses)
                 and not self.board_deal_count
-                and not any(self.discard_and_draw_statuses)
+                and not any(self.discard_statuses)
         ):
             self._end_dealing()
 
@@ -861,43 +1003,47 @@ class State:
 
         if (
                 not any(self.hole_deal_statuses)
-                and not any(self.discard_and_draw_statuses)
+                and not any(self.discard_statuses)
         ):
             self._end_dealing()
 
-    def discard_and_draw(
+    def discard(
             self,
             discarded_cards: list[Card],
     ) -> None:
-        """Discard and draw some cards.
+        """Discard some cards.
 
         :return: ``None``.
-        :raises ValueError: If no player can discard and draw.
+        :raises ValueError: If no player can discard.
         """
-        if not any(self.discard_and_draw_statuses):
-            raise ValueError('no pending draws')
+        if not any(self.discard_statuses):
+            raise ValueError('no pending discards')
         elif self.burn_status:
             raise ValueError('card not burnt')
 
-        player_index = self.discard_and_drawer_index
+        player_index = self.discarder_index
 
         assert player_index is not None
-        assert self.discard_and_draw_statuses[player_index]
-        assert len(self.deck) >= len(discarded_cards)
+        assert self.discard_statuses[player_index]
 
         if not set(discarded_cards) <= set(self.hole_cards[player_index]):
             raise ValueError('discarded cards not a subset of hole cards')
 
-        self.discard_and_draw_statuses[player_index] = False
+        self.discard_statuses[player_index] = False
 
         for discarded_card in discarded_cards:
             index = self.hole_cards[player_index].index(discarded_card)
-            self.hole_cards[player_index][index] = self.deck.popleft()
+
+            self.hole_deal_statuses[player_index].append(
+                self.hole_card_statuses[player_index][index],
+            )
+            self.hole_cards[player_index].pop(index)
+            self.hole_card_statuses[player_index].pop(index)
 
         if (
                 not any(self.hole_deal_statuses)
                 and not self.board_deal_count
-                and not any(self.discard_and_draw_statuses)
+                and not any(self.discard_statuses)
         ):
             self._end_dealing()
 
@@ -907,7 +1053,7 @@ class State:
 
         for i in self.player_indices:
             self.hole_deal_statuses[i].clear()
-            self.discard_and_draw_statuses[i] = False
+            self.discard_statuses[i] = False
 
         self._begin_betting()
 
@@ -988,8 +1134,8 @@ class State:
             if not self.statuses[i] or not self.stacks[i]:
                 self.actor_indices.remove(i)
 
-        self.bet_or_raise_amount = self.street.min_bet_or_raise_amount
-        self.bet_or_raise_count = self.street.max_bet_or_raise_count
+        self.completion_bet_or_raise_amount = 0
+        self.completion_bet_or_raise_count = 0
 
         if len(self.actor_indices) <= 1:
             self._end_betting()
@@ -1023,7 +1169,7 @@ class State:
             self._end_betting()
 
     def check_or_call(self) -> None:
-        """Check/call.
+        """Check or call.
 
         :return: ``None``.
         """
@@ -1099,18 +1245,21 @@ class State:
         assert self.stacks[actor_index]
 
         if amount is None:
-            amount = self.min_bet_or_raise_to_amount
+            amount = self.min_completion_bet_or_raise_to_amount
 
         assert amount is not None
-        assert self.min_bet_or_raise_to_amount is not None
-        assert self.max_bet_or_raise_to_amount is not None
+        assert self.min_completion_bet_or_raise_to_amount is not None
+        assert self.max_completion_bet_or_raise_to_amount is not None
 
-        if amount < self.min_bet_or_raise_to_amount:
-            raise ValueError('below min bet/raise to amount')
-        elif amount > self.max_bet_or_raise_to_amount:
-            raise ValueError('above max bet/raise to amount')
-        elif self.bet_or_raise_count == 0:
-            raise ValueError('no more bet/raises permitted')
+        if amount < self.min_completion_bet_or_raise_to_amount:
+            raise ValueError('below min completion, bet, or raise to amount')
+        elif amount > self.max_completion_bet_or_raise_to_amount:
+            raise ValueError('above max completion, bet, or raise to amount')
+        elif (
+                self.completion_bet_or_raise_count
+                == self.street.max_completion_bet_or_raise_count
+        ):
+            raise ValueError('no more completion, bet, or raise permitted')
 
         for i in self.player_indices:
             if (
@@ -1120,11 +1269,11 @@ class State:
             ):
                 break
         else:
-            raise ValueError('irrelevant bet/raise')
+            raise ValueError('irrelevant completion, bet, or raise')
 
         self.actor_indices.popleft()
 
-        bet_or_raise_amount = amount - max(self.bets)
+        completion_bet_or_raise_amount = amount - max(self.bets)
         self.stacks[actor_index] -= amount - self.bets[actor_index]
         self.bets[actor_index] = amount
         self.actor_indices = deque(self.player_indices)
@@ -1140,13 +1289,11 @@ class State:
                     self.actor_indices.remove(i)
 
         self.opener_index = actor_index
-        self.bet_or_raise_amount = max(
-            self.bet_or_raise_amount,
-            bet_or_raise_amount,
+        self.completion_bet_or_raise_amount = max(
+            self.completion_bet_or_raise_amount,
+            completion_bet_or_raise_amount,
         )
-
-        if self.bet_or_raise_count is not None:
-            self.bet_or_raise_count -= 1
+        self.completion_bet_or_raise_count += 1
 
         assert self.actor_indices
 
@@ -1166,7 +1313,7 @@ class State:
                 sum(self.statuses) > 1
                 and not any(
                     islice(
-                        self.street_discard_and_draw_statuses,
+                        self.discard_and_draw_statuses,
                         self.street_index + 1,
                         None,
                     ),
@@ -1272,7 +1419,7 @@ class State:
         self._begin_hand_killing()
 
     def _begin_hand_killing(self) -> None:
-        assert not any(self.kill_statuses)
+        assert not any(self.hand_kill_statuses)
         assert self.street is None
 
         for i in self.player_indices:
@@ -1281,9 +1428,9 @@ class State:
 
             assert self.statuses[i]
 
-            self.kill_statuses[i] = not self.can_win(i)
+            self.hand_kill_statuses[i] = not self.can_win(i)
 
-        if not any(self.kill_statuses):
+        if not any(self.hand_kill_statuses):
             self._end_hand_killing()
 
     def kill_hand(self) -> None:
@@ -1291,22 +1438,22 @@ class State:
 
         :return: ``None``.
         """
-        if not any(self.kill_statuses):
+        if not any(self.hand_kill_statuses):
             raise ValueError('no hand to be killed')
 
-        player_index = self.kill_index
+        player_index = self.hand_kill_index
 
         assert player_index is not None
 
-        self.kill_statuses[player_index] = False
+        self.hand_kill_statuses[player_index] = False
         self._muck_hole_cards(player_index)
 
-        if not any(self.kill_statuses):
+        if not any(self.hand_kill_statuses):
             self._end_hand_killing()
 
     def _end_hand_killing(self) -> None:
         for i in self.player_indices:
-            self.kill_statuses[i] = False
+            self.hand_kill_statuses[i] = False
 
         self._begin_chip_push()
 
@@ -1330,7 +1477,7 @@ class State:
             for pot in self.pots:
                 assert len(pot.player_indices) == 1
 
-                self.stacks[pot.player_indices[0]] += pot.amount
+                self.bets[pot.player_indices[0]] += pot.amount
         else:
 
             def push(player_indices: list[int], amount: int) -> None:
@@ -1344,7 +1491,7 @@ class State:
                     if not j:
                         sub_amount += amount % len(player_indices)
 
-                    self.stacks[k] += sub_amount
+                    self.bets[k] += sub_amount
 
             for pot in self.pots:
                 assert len(pot.player_indices) > 1
@@ -1366,6 +1513,32 @@ class State:
 
     def _end_chip_push(self) -> None:
         self.chip_push_status = False
+
+        self._begin_chip_pull()
+
+    def _begin_chip_pull(self) -> None:
+        assert not any(self.chip_pull_statuses)
+
+        for i in self.player_indices:
+            self.chip_pull_statuses[i] = self.bets[i] > 0
+
+        assert any(self.chip_pull_statuses)
+
+    def pull_chips(self, player_index: int) -> None:
+        if not self.chip_pull_statuses[player_index]:
+            raise ValueError('no chip to be pulled')
+
+        self.stacks[player_index] += self.bets[player_index]
+        self.bets[player_index] = 0
+        self.chip_pull_statuses[player_index] = False
+
+        if not any(self.chip_pull_statuses):
+            self._end_chip_pull()
+
+    def _end_chip_pull(self) -> None:
+        for i in self.player_indices:
+            self.chip_pull_statuses[i] = False
+
         self.status = False
 
     def _muck_hole_cards(self, player_index: int) -> None:

@@ -374,16 +374,16 @@ class Card:
         :return: The generator yielding the parsed cards.
         :raises ValueError: If any card representation is invalid.
         """
-        content = ''.join(''.join(raw_cards).split())
+        for contents in raw_cards:
+            for content in contents.split():
+                if len(content) % 2 != 0:
+                    raise ValueError('content length not a multiple of 2')
 
-        if len(content) % 2 != 0:
-            raise ValueError('content length not a multiple of 2')
+                for i in range(0, len(content), 2):
+                    rank = Rank(content[i])
+                    suit = Suit(content[i + 1])
 
-        for i in range(0, len(content), 2):
-            rank = Rank(content[i])
-            suit = Suit(content[i + 1])
-
-            yield cls(rank, suit)
+                    yield cls(rank, suit)
 
     def __repr__(self) -> str:
         return f'{self.rank}{self.suit}'
@@ -452,7 +452,7 @@ class Deck(tuple[Card, ...], Enum):
     """
 
 
-def filter_none(values: Iterable[Any]) -> Iterator[Any]:
+def filter_none(values: Iterable[Any]) -> Any:
     """Filter ``None`` from values.
 
     >>> filter_none([1, 2, None, 3])  # doctest: +ELLIPSIS

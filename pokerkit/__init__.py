@@ -10,7 +10,6 @@ __all__ = (
     'BadugiLookup',
     'BettingStructure',
     'Card',
-    'Dealing',
     'Deck',
     'DeuceToSevenLowballHand',
     'Entry',
@@ -64,7 +63,6 @@ from pokerkit.lookups import (
 )
 from pokerkit.state import (
     BettingStructure,
-    Dealing,
     Opening,
     Pot,
     State,

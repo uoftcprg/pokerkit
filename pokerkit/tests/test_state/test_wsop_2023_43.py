@@ -97,6 +97,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -136,10 +137,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to(4990000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 6195000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 6195000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -207,10 +209,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to(225000)
         state.complete_bet_or_raise_to(700000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1875000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1875000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -270,10 +273,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to(300000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1000000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1000000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -339,10 +343,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1050000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1050000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -448,6 +453,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -487,10 +493,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 500000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -530,10 +537,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 500000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -636,6 +644,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -675,10 +684,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 500000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -784,6 +794,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -866,6 +877,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -946,6 +958,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -997,10 +1010,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1100000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1100000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1083,6 +1097,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1164,6 +1180,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1244,6 +1261,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1324,6 +1342,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1402,10 +1422,11 @@ class StateTestCase(TestCase):
 
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2300000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2300000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1458,10 +1479,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 550000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 550000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1515,10 +1537,11 @@ class StateTestCase(TestCase):
 
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 900000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 900000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1558,10 +1581,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 500000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1664,6 +1688,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1746,10 +1771,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2500000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2500000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1854,6 +1880,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1894,10 +1921,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to(1100000)
         state.complete_bet_or_raise_to(3350000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 4600000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 4600000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1936,10 +1964,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 525000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 525000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1978,10 +2007,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 600000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 600000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2058,6 +2088,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2132,6 +2163,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2181,10 +2214,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to(800000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1650000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1650000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2234,10 +2268,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to(375000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1025000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1025000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2313,6 +2348,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2388,6 +2424,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2423,10 +2460,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 700000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 700000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2461,10 +2499,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 300000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 300000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2499,10 +2538,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 300000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 300000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2558,10 +2598,11 @@ class StateTestCase(TestCase):
         state.deal_board()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1700000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1700000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2620,10 +2661,11 @@ class StateTestCase(TestCase):
         state.deal_board()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2700000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2700000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2663,10 +2705,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 500000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2706,10 +2749,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1225000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1225000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2749,10 +2793,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to(1000000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1375000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1375000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2792,10 +2837,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 825000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 825000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2844,12 +2890,16 @@ class StateTestCase(TestCase):
         # Draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('JsJd')))
-        state.discard_and_draw(list(Card.parse('9h')))
+        state.discard(list(Card.parse('JsJd')))
+        state.discard(list(Card.parse('9h')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         self.assertEqual(state.total_pot_amount, 1850000)
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2898,8 +2948,11 @@ class StateTestCase(TestCase):
         # Draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('JcAs')))
-        state.discard_and_draw(list(Card.parse('3h')))
+        state.discard(list(Card.parse('JcAs')))
+        state.discard(list(Card.parse('3h')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         state.check_or_call()
         state.check_or_call()
         self.assertEqual(state.total_pot_amount, 1000000)
@@ -2911,6 +2964,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2953,10 +3007,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to(2400000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2775000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2775000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3063,6 +3118,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3105,10 +3162,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 575000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 575000)
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3214,6 +3272,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3320,6 +3380,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(3)
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3375,10 +3437,11 @@ class StateTestCase(TestCase):
 
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1000000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1000000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3461,10 +3524,11 @@ class StateTestCase(TestCase):
 
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2750000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2750000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3522,10 +3586,11 @@ class StateTestCase(TestCase):
 
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1000000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1000000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3578,8 +3643,13 @@ class StateTestCase(TestCase):
         # First draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('QdJc')))
-        state.discard_and_draw(list(Card.parse('KsKd4s')))
+        state.discard(list(Card.parse('QdJc')))
+        state.discard(list(Card.parse('KsKd4s')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3589,8 +3659,10 @@ class StateTestCase(TestCase):
         # Second draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('As')))
-        state.discard_and_draw(list(Card.parse('7s')))
+        state.discard(list(Card.parse('As')))
+        state.discard(list(Card.parse('7s')))
+        state.deal_hole()
+        state.deal_hole()
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3600,12 +3672,14 @@ class StateTestCase(TestCase):
         # Third draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('8s')))
-        state.discard_and_draw([])
+        state.discard(list(Card.parse('8s')))
+        state.discard([])
+        state.deal_hole()
         self.assertEqual(state.total_pot_amount, 3000000)
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3644,10 +3718,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 875000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 875000)
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3701,8 +3776,12 @@ class StateTestCase(TestCase):
         # First draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('AsKs')))
-        state.discard_and_draw(list(Card.parse('AcTd')))
+        state.discard(list(Card.parse('AsKs')))
+        state.discard(list(Card.parse('AcTd')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3712,8 +3791,11 @@ class StateTestCase(TestCase):
         # Second draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('Jh4s')))
-        state.discard_and_draw(list(Card.parse('Qc')))
+        state.discard(list(Card.parse('Jh4s')))
+        state.discard(list(Card.parse('Qc')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3723,8 +3805,10 @@ class StateTestCase(TestCase):
         # Third draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('4h')))
-        state.discard_and_draw(list(Card.parse('3s')))
+        state.discard(list(Card.parse('4h')))
+        state.discard(list(Card.parse('3s')))
+        state.deal_hole()
+        state.deal_hole()
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3737,6 +3821,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3775,10 +3860,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 750000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 750000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3817,10 +3903,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 875000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 875000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3871,8 +3958,12 @@ class StateTestCase(TestCase):
         # First draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('Kh6c')))
-        state.discard_and_draw(list(Card.parse('AsAd')))
+        state.discard(list(Card.parse('Kh6c')))
+        state.discard(list(Card.parse('AsAd')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
@@ -3883,8 +3974,9 @@ class StateTestCase(TestCase):
         # Second draw
 
         state.burn_card()
-        state.discard_and_draw([])
-        state.discard_and_draw(list(Card.parse('2h')))
+        state.discard([])
+        state.discard(list(Card.parse('2h')))
+        state.deal_hole()
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3894,8 +3986,8 @@ class StateTestCase(TestCase):
         # Third draw
 
         state.burn_card()
-        state.discard_and_draw([])
-        state.discard_and_draw([])
+        state.discard([])
+        state.discard([])
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.check_or_call()
@@ -3908,6 +4000,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3957,8 +4050,11 @@ class StateTestCase(TestCase):
         # First draw
 
         state.burn_card()
-        state.discard_and_draw(list(Card.parse('9d6c')))
-        state.discard_and_draw(list(Card.parse('Th')))
+        state.discard(list(Card.parse('9d6c')))
+        state.discard(list(Card.parse('Th')))
+        state.deal_hole()
+        state.deal_hole()
+        state.deal_hole()
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
@@ -3969,8 +4065,9 @@ class StateTestCase(TestCase):
         # Second draw
 
         state.burn_card()
-        state.discard_and_draw([])
-        state.discard_and_draw(list(Card.parse('Qh')))
+        state.discard([])
+        state.discard(list(Card.parse('Qh')))
+        state.deal_hole()
         state.complete_bet_or_raise_to()
         state.check_or_call()
         state.collect_bets()
@@ -3979,8 +4076,9 @@ class StateTestCase(TestCase):
         # Third draw
 
         state.burn_card()
-        state.discard_and_draw([])
-        state.discard_and_draw(list(Card.parse('7d')))
+        state.discard([])
+        state.discard(list(Card.parse('7d')))
+        state.deal_hole()
         state.check_or_call()
         state.check_or_call()
         self.assertEqual(state.total_pot_amount, 3125000)
@@ -3991,6 +4089,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4027,10 +4126,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to(2350000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2725000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2725000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4067,10 +4167,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2825000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2825000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4108,10 +4209,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to(2200000)
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2875000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2875000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4149,10 +4251,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to(2600000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 3200000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 3200000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4200,10 +4303,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to(350000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1450000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1450000)
 
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4241,10 +4345,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to(1900000)
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2275000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2275000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4308,6 +4413,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(4)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4408,6 +4514,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(3)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4447,10 +4554,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to()
         state.fold()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1025000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1025000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4505,10 +4613,11 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2025000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2025000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4610,6 +4719,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4662,10 +4772,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1025000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1025000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4743,10 +4854,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 1775000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 1775000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4826,6 +4938,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4908,6 +5022,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4981,6 +5096,7 @@ class StateTestCase(TestCase):
         state.kill_hand()
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5059,6 +5175,8 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(0)
+        state.pull_chips(2)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5136,6 +5254,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5216,6 +5336,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(0)
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5294,6 +5416,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5330,10 +5453,11 @@ class StateTestCase(TestCase):
         state.post_bring_in()
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 600000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 600000)
 
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5396,10 +5520,11 @@ class StateTestCase(TestCase):
 
         state.complete_bet_or_raise_to()
         state.fold()
-        self.assertEqual(state.total_pot_amount, 2000000)
         state.collect_bets()
+        self.assertEqual(state.total_pot_amount, 2000000)
 
         state.push_chips()
+        state.pull_chips(0)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5493,6 +5618,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.pull_chips(1)
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
