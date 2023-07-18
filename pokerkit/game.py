@@ -223,6 +223,74 @@ class Game:
         )
 
     @classmethod
+    def create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            cls,
+            antes: Iterable[int],
+            blinds_or_straddles: Iterable[int],
+            small_bet: int,
+            big_bet: int,
+            starting_stacks: Iterable[int],
+    ) -> Game:
+        """Create a fixed-limit Omaha hold'em high-low split-eight or
+        better.
+
+        :return: The poker game.
+        """
+        deck = deque(Deck.STANDARD)
+
+        shuffle(deck)
+
+        return cls(
+            State(
+                (OmahaHoldemHand, OmahaEightOrBetterLowHand),
+                (
+                    Street(
+                        False,
+                        (False,) * 4,
+                        0,
+                        False,
+                        Opening.POSITION,
+                        small_bet,
+                        None,
+                    ),
+                    Street(
+                        True,
+                        (),
+                        3,
+                        False,
+                        Opening.POSITION,
+                        small_bet,
+                        None,
+                    ),
+                    Street(
+                        True,
+                        (),
+                        1,
+                        False,
+                        Opening.POSITION,
+                        big_bet,
+                        None,
+                    ),
+                    Street(
+                        True,
+                        (),
+                        1,
+                        False,
+                        Opening.POSITION,
+                        big_bet,
+                        None,
+                    ),
+                ),
+                BettingStructure.FIXED_LIMIT,
+                tuple(antes),
+                tuple(blinds_or_straddles),
+                0,
+                tuple(starting_stacks),
+                deck,
+            ),
+        )
+
+    @classmethod
     def create_fixed_limit_seven_card_stud(
             cls,
             antes: Iterable[int],
@@ -452,74 +520,6 @@ class Game:
                 antes,
                 blinds_or_straddles,
                 bring_in,
-                tuple(starting_stacks),
-                deck,
-            ),
-        )
-
-    @classmethod
-    def create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
-            cls,
-            antes: Iterable[int],
-            blinds_or_straddles: Iterable[int],
-            small_bet: int,
-            big_bet: int,
-            starting_stacks: Iterable[int],
-    ) -> Game:
-        """Create a fixed-limit Omaha hold'em high-low split-eight or
-        better.
-
-        :return: The poker game.
-        """
-        deck = deque(Deck.STANDARD)
-
-        shuffle(deck)
-
-        return cls(
-            State(
-                (OmahaHoldemHand, OmahaEightOrBetterLowHand),
-                (
-                    Street(
-                        False,
-                        (False,) * 4,
-                        0,
-                        False,
-                        Opening.POSITION,
-                        small_bet,
-                        None,
-                    ),
-                    Street(
-                        True,
-                        (),
-                        3,
-                        False,
-                        Opening.POSITION,
-                        small_bet,
-                        None,
-                    ),
-                    Street(
-                        True,
-                        (),
-                        1,
-                        False,
-                        Opening.POSITION,
-                        big_bet,
-                        None,
-                    ),
-                    Street(
-                        True,
-                        (),
-                        1,
-                        False,
-                        Opening.POSITION,
-                        big_bet,
-                        None,
-                    ),
-                ),
-                BettingStructure.FIXED_LIMIT,
-                tuple(antes),
-                tuple(blinds_or_straddles),
-                0,
                 tuple(starting_stacks),
                 deck,
             ),

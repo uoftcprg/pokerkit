@@ -466,6 +466,15 @@ class State:
             yield street.discard_and_draw_status
 
     @property
+    def openings(self) -> Iterator[Opening]:
+        """Return the openings.
+
+        :return: The openings.
+        """
+        for street in self.streets:
+            yield street.opening
+
+    @property
     def player_count(self) -> int:
         """Return the number of players.
 
