@@ -1,19 +1,19 @@
-""":mod:`pokerkit.tests.test_wsop.test_2023_43` implements unit tests
-for :mod:`pokerkit.state` with hands played on 2023 World Series of
-Poker Event #43: $50000 Poker Players Championship.
+""":mod:`pokerkit.tests.test_state.test_wsop_2023_43` implements unit
+tests for :mod:`pokerkit.state` with hands played on 2023 World Series
+of Poker Event #43: $50000 Poker Players Championship.
 
 https://www.pokergo.com/videos/6e5e4f34-9857-458c-b61e-d478ad29dbd6
 
-Game order:
-- Fixed-limit Texas hold'em
-- Fixed-limit Omaha hold'em high-low split-eight or better
-- Fixed-limit Razz
-- Fixed-limit seven card stud
-- Fixed-limit seven card stud high-low split-eight or better
-- Fixed-limit deuce-to-seven lowball triple draw
-- No-limit deuce-to-seven lowball single draw
-- No-limit Texas hold'em
-- Pot-limit Omaha hold'em
+Game order (in WSOP notations):
+- Limit hold'em
+- Omaha hi/low 8 or better
+- Seven card razz
+- Seven card stud
+- Seven card stud hi/low 8 or better
+- Deuce-to-seven limit triple draw
+- Deuce to seven no-limit single draw
+- No-limit hold'em
+- Pot-limit Omaha
 """
 
 from collections import deque

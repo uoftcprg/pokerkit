@@ -60,7 +60,7 @@ class Rank(str, Enum):
 
 
 @unique
-class RankOrder(tuple[Rank], Enum):
+class RankOrder(tuple[Rank, ...], Enum):
     """The enum class for tuples of ranks.
 
     Poker variants order the ranks differently between each other. Most
@@ -111,21 +111,7 @@ class RankOrder(tuple[Rank], Enum):
         Rank.KING,
         Rank.ACE,
     )
-    """The standard ranks (from deuce to ace).
-
-    This is used in (in WSOP notations):
-    - "Big O"
-    - "Big O" hi-low eight or better
-    - deuce to seven single draw lowball
-    - deuce to seven triple draw lowball
-    - Omaha hi-low eight or better
-    - Omaha hold'em
-    - seven card stud
-    - seven card stud hi-low eight or better
-    - seven card stud hi-low regular
-    - Texas hold'em
-    - et cetera
-    """
+    """The standard ranks (from deuce to ace)."""
     SHORT_DECK_HOLDEM: tuple[Rank, ...] = (
         Rank.SIX,
         Rank.SEVEN,
@@ -153,16 +139,7 @@ class RankOrder(tuple[Rank], Enum):
         Rank.QUEEN,
         Rank.KING,
     )
-    """The regular ranks (from ace to king).
-
-    This is used in (in WSOP notations):
-    - ace to five single draw lowball
-    - ace to five triple draw lowball
-    - badugi
-    - razz
-    - seven card stud hi-low regular
-    - et cetera
-    """
+    """The regular ranks (from ace to king)."""
     EIGHT_OR_BETTER_LOW: tuple[Rank, ...] = (
         Rank.ACE,
         Rank.DEUCE,
@@ -173,14 +150,7 @@ class RankOrder(tuple[Rank], Enum):
         Rank.SEVEN,
         Rank.EIGHT,
     )
-    """The eight or better low ranks (from ace to eight).
-
-    This is used in (in WSOP notations):
-    - "Big O" hi-low eight or better
-    - Omaha hi-low eight or better
-    - seven card stud hi-low eight or better
-    - et cetera
-    """
+    """The eight or better low ranks (from ace to eight)."""
 
 
 @unique
@@ -194,7 +164,7 @@ class Suit(str, Enum):
     never used to break ties or to decide the winner.
 
     In stud games, suits are used to break ties when deciding the
-    opener.
+    opener when there are multiple up cards with the same rank.
 
     >>> Suit.CLUB
     <Suit.CLUB: 'c'>
@@ -440,16 +410,6 @@ class Deck(tuple[Card, ...], Enum):
         ),
     )
     """The 52-card standard deck cards."""
-    REGULAR: tuple[Card, ...] = tuple(
-        starmap(
-            Card,
-            product(
-                RankOrder.REGULAR,
-                (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
-            ),
-        ),
-    )
-    """The 52-card regular deck cards."""
     SHORT_DECK_HOLDEM: tuple[Card, ...] = tuple(
         starmap(
             Card,
@@ -463,6 +423,16 @@ class Deck(tuple[Card, ...], Enum):
 
     In this deck, deuces to fives are stripped away.
     """
+    REGULAR: tuple[Card, ...] = tuple(
+        starmap(
+            Card,
+            product(
+                RankOrder.REGULAR,
+                (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
+            ),
+        ),
+    )
+    """The 52-card regular deck cards."""
 
 
 def filter_none(values: Iterable[Any]) -> Any:
@@ -476,24 +446,6 @@ def filter_none(values: Iterable[Any]) -> Any:
     :return: The filtered values.
     """
     return filter(partial(is_not, None), values)
-
-
-def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
-    """Get the maximum value while ignoring ``None`` values.
-
-    >>> max_or_none([1, 2, 3, -2, -1])
-    3
-    >>> max_or_none([1, None, 2, None, 3, -2, -1, None])
-    3
-    >>> max_or_none([]) is None
-    True
-
-    :return: The maximum value if any, otherwise ``None``.
-    """
-    try:
-        return max(filter_none(values), key=key)
-    except ValueError:
-        return None
 
 
 def min_or_none(values: Iterable[Any], key: Any = None) -> Any:
@@ -510,5 +462,23 @@ def min_or_none(values: Iterable[Any], key: Any = None) -> Any:
     """
     try:
         return min(filter_none(values), key=key)
+    except ValueError:
+        return None
+
+
+def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
+    """Get the maximum value while ignoring ``None`` values.
+
+    >>> max_or_none([1, 2, 3, -2, -1])
+    3
+    >>> max_or_none([1, None, 2, None, 3, -2, -1, None])
+    3
+    >>> max_or_none([]) is None
+    True
+
+    :return: The maximum value if any, otherwise ``None``.
+    """
+    try:
+        return max(filter_none(values), key=key)
     except ValueError:
         return None

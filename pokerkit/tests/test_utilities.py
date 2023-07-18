@@ -37,16 +37,6 @@ class DeckTestCase(TestCase):
                 '2s3s4s5s6s7s8s9sTsJsQsKsAs',
             ),
         )
-        self.assertEqual(len(Deck.REGULAR), 52)
-        self.assertCountEqual(
-            Deck.STANDARD,
-            Card.parse(
-                'Ac2c3c4c5c6c7c8c9cTcJcQcKc',
-                'Ad2d3d4d5d6d7d8d9dTdJdQdKd',
-                'Ah2h3h4h5h6h7h8h9hThJhQhKh',
-                'As2s3s4s5s6s7s8s9sTsJsQsKs',
-            ),
-        )
         self.assertEqual(len(Deck.SHORT_DECK_HOLDEM), 36)
         self.assertCountEqual(
             Deck.SHORT_DECK_HOLDEM,
@@ -55,6 +45,16 @@ class DeckTestCase(TestCase):
                 '6d7d8d9dTdJdQdKdAd',
                 '6h7h8h9hThJhQhKhAh',
                 '6s7s8s9sTsJsQsKsAs',
+            ),
+        )
+        self.assertEqual(len(Deck.REGULAR), 52)
+        self.assertCountEqual(
+            Deck.STANDARD,
+            Card.parse(
+                'Ac2c3c4c5c6c7c8c9cTcJcQcKc',
+                'Ad2d3d4d5d6d7d8d9dTdJdQdKd',
+                'Ah2h3h4h5h6h7h8h9hThJhQhKh',
+                'As2s3s4s5s6s7s8s9sTsJsQsKs',
             ),
         )
 

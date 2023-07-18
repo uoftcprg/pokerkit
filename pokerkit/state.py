@@ -724,6 +724,10 @@ class State:
         )
 
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
+        """Return the down cards of the player.
+
+        :return: The down cards of the player.
+        """
         for card, status in zip(
                 self.hole_cards[player_index],
                 self.hole_card_statuses[player_index],
@@ -732,6 +736,10 @@ class State:
                 yield card
 
     def get_up_cards(self, player_index: int) -> Iterator[Card]:
+        """Return the up cards of the player.
+
+        :return: The up cards of the player.
+        """
         for card, status in zip(
                 self.hole_cards[player_index],
                 self.hole_card_statuses[player_index],
@@ -740,6 +748,10 @@ class State:
                 yield card
 
     def get_hand(self, player_index: int, hand_type_index: int) -> Hand | None:
+        """Return the corresponding hand of the player.
+
+        :return: The corresponding hand of the player.
+        """
         try:
             hand = self.hand_types[hand_type_index].from_game(
                 self.hole_cards[player_index],
@@ -751,6 +763,10 @@ class State:
         return hand
 
     def get_up_hands(self, hand_type_index: int) -> Iterator[Hand | None]:
+        """Return the optional corresponding hands from up cards.
+
+        :return: The optional corresponding hands from up cards.
+        """
         for i in self.player_indices:
             try:
                 hand = self.hand_types[hand_type_index].from_game(
@@ -763,6 +779,11 @@ class State:
             yield hand
 
     def can_win(self, player_index: int) -> bool:
+        """Return whether if the player can win pots based on showdowns
+        so far.
+
+        :return: ``True`` if the player can win, otherwise ``False``.
+        """
         for i in self.hand_type_indices:
             hands = tuple(self.get_up_hands(i))
             hand = self.get_hand(player_index, i)
@@ -1525,6 +1546,10 @@ class State:
         assert any(self.chip_pull_statuses)
 
     def pull_chips(self, player_index: int) -> None:
+        """Pull chips to the stack of the player.
+
+        :return: ``None``.
+        """
         if not self.chip_pull_statuses[player_index]:
             raise ValueError('no chip to be pulled')
 

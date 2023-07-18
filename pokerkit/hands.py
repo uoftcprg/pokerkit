@@ -11,9 +11,9 @@ from warnings import warn
 
 from pokerkit.lookups import (
     BadugiLookup,
+    EightOrBetterLowLookup,
     Entry,
     Lookup,
-    EightOrBetterLowLookup,
     RegularLowLookup,
     ShortDeckHoldemLookup,
     StandardLookup,
@@ -132,8 +132,8 @@ class Hand(Hashable, ABC):
         return self._lookup.get_entry(self.cards)
 
 
-class CombinationHand(Hand):
-    """The class for combination hands."""
+class CombinationHand(Hand, ABC):
+    """The abstract base class for combination hands."""
 
     _card_count: int
 
@@ -240,8 +240,8 @@ class CombinationHand(Hand):
         return max_hand
 
 
-class StandardHand(CombinationHand):
-    """The class for standard hands."""
+class StandardHand(CombinationHand, ABC):
+    """The abstract base class for standard hands."""
 
     _lookup = StandardLookup()
     _card_count = 5
@@ -398,8 +398,8 @@ class RegularLowHand(CombinationHand):
     _card_count = 5
 
 
-class BoardCombinationHand(CombinationHand):
-    """The class for board-combination hands."""
+class BoardCombinationHand(CombinationHand, ABC):
+    """The abstract base class for board-combination hands."""
 
     _board_card_count: int
 
@@ -481,8 +481,8 @@ class GreekHoldemHand(BoardCombinationHand):
     _board_card_count = 3
 
 
-class HoleBoardCombinationHand(BoardCombinationHand):
-    """The class for hole-board-combination hands."""
+class HoleBoardCombinationHand(BoardCombinationHand, ABC):
+    """The abstract base class for hole-board-combination hands."""
 
     _hole_card_count: int
 
