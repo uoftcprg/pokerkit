@@ -8,10 +8,12 @@ from collections.abc import Iterable, Mapping
 from random import shuffle
 
 from pokerkit.hands import (
+    BadugiHand,
     EightOrBetterLowHand,
     OmahaEightOrBetterLowHand,
     OmahaHoldemHand,
     RegularLowHand,
+    ShortDeckHoldemHand,
     StandardHighHand,
     StandardLowHand,
 )
@@ -218,6 +220,82 @@ class NoLimitTexasHoldem(TexasHoldem):
             0,
             cls._clean_values(starting_stacks, player_count),
             cls._clean_deck(Deck.STANDARD),
+        )
+
+
+class NoLimitShortDeckHoldem(TexasHoldem):
+    """The class for no-limit short-deck hold'em games."""
+
+    max_down_card_count = 2
+    max_up_card_count = 0
+    max_board_card_count = 5
+    rank_orders = (RankOrder.SHORT_DECK_HOLDEM,)
+    button_status = True
+
+    @classmethod
+    def create_state(
+            cls,
+            antes: int | Iterable[int] | Mapping[int, int] | None,
+            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            min_bet: int,
+            starting_stacks: int | Iterable[int],
+            player_count: int,
+    ) -> State:
+        """Create a no-limit short-deck hold'em game.
+
+        :param antes: The antes.
+        :param blinds_or_straddles: The blinds or straddles.
+        :param min_bet: The min bet.
+        :param starting_stacks: The starting stacks.
+        :param player_count: The number of players.
+        :return: The created state.
+        """
+        return State(
+            (ShortDeckHoldemHand,),
+            (
+                Street(
+                    False,
+                    (False,) * 2,
+                    0,
+                    False,
+                    Opening.POSITION,
+                    min_bet,
+                    None,
+                ),
+                Street(
+                    True,
+                    (),
+                    3,
+                    False,
+                    Opening.POSITION,
+                    min_bet,
+                    None,
+                ),
+                Street(
+                    True,
+                    (),
+                    1,
+                    False,
+                    Opening.POSITION,
+                    min_bet,
+                    None,
+                ),
+                Street(
+                    True,
+                    (),
+                    1,
+                    False,
+                    Opening.POSITION,
+                    min_bet,
+                    None,
+                ),
+            ),
+            BettingStructure.NO_LIMIT,
+            cls._clean_values(antes, player_count),
+            cls._clean_values(blinds_or_straddles, player_count),
+            0,
+            cls._clean_values(starting_stacks, player_count),
+            cls._clean_deck(Deck.SHORT_DECK_HOLDEM),
         )
 
 
@@ -643,6 +721,9 @@ class FixedLimitRazz(SevenCardStud):
 class DeuceToSevenLowball(Poker, ABC):
     """The abstract base class for deuce-to-seven lowball games."""
 
+    max_down_card_count = 5
+    max_up_card_count = 0
+    max_board_card_count = 0
     rank_orders = (RankOrder.STANDARD,)
     button_status = True
 
@@ -770,4 +851,82 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
             0,
             cls._clean_values(starting_stacks, player_count),
             cls._clean_deck(Deck.STANDARD),
+        )
+
+
+class FixedLimitBadugiDraw(Poker):
+    """The class for fixed-limit badugi games."""
+
+    max_down_card_count = 4
+    max_up_card_count = 0
+    max_board_card_count = 0
+    rank_orders = (RankOrder.REGULAR,)
+    button_status = True
+
+    @classmethod
+    def create_state(
+            cls,
+            antes: int | Iterable[int] | Mapping[int, int] | None,
+            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            small_bet: int,
+            big_bet: int,
+            starting_stacks: int | Iterable[int],
+            player_count: int,
+    ) -> State:
+        """Create a fixed-limit badugi game.
+
+        :param antes: The antes.
+        :param blinds_or_straddles: The blinds or straddles.
+        :param small_bet: The small bet.
+        :param big_bet: The big bet.
+        :param starting_stacks: The starting stacks.
+        :param player_count: The number of players.
+        :return: The created state.
+        """
+        return State(
+            (BadugiHand,),
+            (
+                Street(
+                    False,
+                    (False,) * 4,
+                    0,
+                    False,
+                    Opening.POSITION,
+                    small_bet,
+                    None,
+                ),
+                Street(
+                    True,
+                    (),
+                    0,
+                    True,
+                    Opening.POSITION,
+                    small_bet,
+                    None,
+                ),
+                Street(
+                    True,
+                    (),
+                    0,
+                    True,
+                    Opening.POSITION,
+                    big_bet,
+                    None,
+                ),
+                Street(
+                    True,
+                    (),
+                    0,
+                    True,
+                    Opening.POSITION,
+                    big_bet,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            cls._clean_values(antes, player_count),
+            cls._clean_values(blinds_or_straddles, player_count),
+            0,
+            cls._clean_values(starting_stacks, player_count),
+            cls._clean_deck(Deck.REGULAR),
         )
