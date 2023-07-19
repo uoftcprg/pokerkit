@@ -443,6 +443,7 @@ def filter_none(values: Iterable[Any]) -> Any:
     >>> list(filter_none([1, 2, None, 3]))
     [1, 2, 3]
 
+    :param values: The optional values.
     :return: The filtered values.
     """
     return filter(partial(is_not, None), values)
@@ -458,6 +459,8 @@ def min_or_none(values: Iterable[Any], key: Any = None) -> Any:
     >>> min_or_none([]) is None
     True
 
+    :param values: The optional values.
+    :param key: The optional key function.
     :return: The minimum value if any, otherwise ``None``.
     """
     try:
@@ -476,6 +479,8 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
     >>> max_or_none([]) is None
     True
 
+    :param values: The optional values.
+    :param key: The optional key function.
     :return: The maximum value if any, otherwise ``None``.
     """
     try:

@@ -1,5 +1,5 @@
-""":mod:`pokerkit.tests.test_state.test_lookups` implements unit tests
-for lookups in :mod:`pokerkit.state`.
+""":mod:`pokerkit.tests.test_state` implements unit tests for
+:mod:`pokerkit.state`.
 """
 
 from hashlib import md5

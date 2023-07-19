@@ -1,6 +1,6 @@
-""":mod:`pokerkit.tests.test_state.test_wsop_2023_43` implements unit
-tests for :mod:`pokerkit.state` with hands played on 2023 World Series
-of Poker Event #43: $50000 Poker Players Championship.
+""":mod:`pokerkit.tests.test_wsop.test_2023_43` implements unit tests
+for :mod:`pokerkit.state` with hands played on 2023 World Series of
+Poker Event #43: $50000 Poker Players Championship.
 
 https://www.pokergo.com/videos/6e5e4f34-9857-458c-b61e-d478ad29dbd6
 
@@ -19,18 +19,29 @@ Game order (in WSOP notations):
 from collections import deque
 from unittest import TestCase, main
 
-from pokerkit.game import Game
+from pokerkit.games import (
+    FixedLimitDeuceToSevenLowballTripleDraw,
+    FixedLimitOmahaHoldemSplitHighEightOrBetterLow,
+    FixedLimitRazz,
+    FixedLimitSevenCardStud,
+    FixedLimitSevenCardStudSplitHighEightOrBetterLow,
+    FixedLimitTexasHoldem,
+    NoLimitDeuceToSevenLowballSingleDraw,
+    NoLimitTexasHoldem,
+    PotLimitOmahaHoldem,
+)
 from pokerkit.utilities import Card
 
 
 class StateTestCase(TestCase):
     def test_00_02_07(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 120000, 0, 0, 0),
             (40000, 80000, 0, 0, 0),
             80000,
             (7380000, 2500000, 5110000, 10170000, 4545000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '7s Js Td 6d Qh',
@@ -105,12 +116,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_08_38(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 120000, 0, 0, 0),
             (40000, 80000, 0, 0, 0),
             80000,
             (3775000, 5110000, 8935000, 4545000, 7340000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Th Qs Ac Qc As',
@@ -149,12 +161,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_15_36(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 150000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (4100000, 8775000, 4550000, 8525000, 3750000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Qd Ts 4c 7s Qc',
@@ -221,12 +234,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_18_39(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 150000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (8025000, 4550000, 8525000, 4550000, 4050000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Qd 5h Jc 9h Jd',
@@ -285,13 +299,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_22_43(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (4050000, 7750000, 4825000, 8525000, 4550000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Td Kd As 8c Kc',
@@ -355,13 +370,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_25_05(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (4000000, 7700000, 4775000, 8275000, 4950000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qd Ts 7c Th 8h',
@@ -461,13 +477,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_29_03(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (2150000, 9750000, 4675000, 8225000, 4900000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   8d 9s Kd Ah Th',
@@ -505,13 +522,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_30_52(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (2400000, 9700000, 4575000, 8175000, 4850000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qh 8s 7d 6h Qc',
@@ -549,13 +567,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_32_02(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (2650000, 9600000, 4525000, 8125000, 4800000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qd 9d Kc Qh Kh',
@@ -652,13 +671,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_34_43(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (2600000, 11250000, 4475000, 6675000, 4700000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   5d 7h Js Ts Qc',
@@ -696,13 +716,14 @@ class StateTestCase(TestCase):
         )
 
     def test_00_35_59(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (2550000, 11150000, 4425000, 6925000, 4650000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qh Js 9d Qs Qd',
@@ -802,15 +823,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_41_13(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (4175000, 6675000, 4600000, 4750000, 9500000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (4175000, 6675000, 4600000, 4750000, 9500000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -885,15 +904,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_43_47(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (5275000, 6100000, 4750000, 9500000, 4075000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (5275000, 6100000, 4750000, 9500000, 4075000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -966,15 +983,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_46_43(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (5900000, 4750000, 7900000, 4075000, 7075000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (5900000, 4750000, 7900000, 4075000, 7075000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -1022,15 +1037,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_48_29(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (4350000, 8400000, 4075000, 7075000, 5800000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (4350000, 8400000, 4075000, 7075000, 5800000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -1106,15 +1119,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_51_22(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (9375000, 4075000, 6200000, 5800000, 4250000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (9375000, 4075000, 6200000, 5800000, 4250000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -1188,15 +1199,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_55_24(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (3875000, 7800000, 5800000, 4250000, 7975000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (3875000, 7800000, 5800000, 4250000, 7975000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -1269,15 +1278,13 @@ class StateTestCase(TestCase):
         )
 
     def test_00_58_03(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 5,
-                (100000, 200000, 0, 0, 0),
-                200000,
-                400000,
-                (7600000, 5400000, 6550000, 6375000, 3775000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 5,
+            (100000, 200000, 0, 0, 0),
+            200000,
+            400000,
+            (7600000, 5400000, 6550000, 6375000, 3775000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -1351,13 +1358,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_00_21(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (6550000, 6425000, 3775000, 7500000, 5450000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   7c 8s 3s Qc 9d',
@@ -1434,13 +1442,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_02_14(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (6450000, 5575000, 4825000, 7450000, 5400000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   5s Qs 8d Ks Qc',
@@ -1491,13 +1500,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_03_57(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (6700000, 5525000, 4775000, 7350000, 5350000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qd 8h Jh 9h 6c',
@@ -1549,13 +1559,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_06_16(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (6650000, 5475000, 4675000, 7100000, 5800000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Ks 9d Td Ad 8d',
@@ -1593,13 +1604,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_07_20(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (6600000, 5425000, 4575000, 7050000, 6050000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   6s As 4s Tc 5h',
@@ -1696,13 +1708,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_10_31(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (6500000, 3575000, 6625000, 7000000, 6000000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   7s Ks 5h Jd 9h',
@@ -1783,13 +1796,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_13_57(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (50000,) * 5,
             50000,
             200000,
             400000,
             (5650000, 3525000, 7875000, 6900000, 5750000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kd Th 6c Ks 7s',
@@ -1888,12 +1902,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_18_22(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (4100000, 5550000, 3075000, 10125000, 6850000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Qh As Qc Kh Ah',
@@ -1933,12 +1948,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_22_35(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (4350000, 3075000, 10125000, 8100000, 4050000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '2d Tc Ah Kd Ts',
@@ -1976,12 +1992,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_25_08(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (2875000, 10375000, 8100000, 4050000, 4300000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Td Kc Qh Ac Jh',
@@ -2019,12 +2036,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_26_14(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (10175000, 8350000, 4050000, 4300000, 2825000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Jd Ah Qs 8h Tc',
@@ -2096,12 +2114,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_29_49(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (7700000, 4050000, 4300000, 3525000, 10125000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Js Ad Kh 9h 9c',
@@ -2172,12 +2191,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_32_58(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (4000000, 4300000, 3525000, 10125000, 7750000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Tc Ac Jh Ad Qh',
@@ -2226,12 +2246,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_37_39(self) -> None:
-        state = Game.create_pot_limit_omaha_holdem(
+        state = PotLimitOmahaHoldem.create_state(
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (3850000, 3525000, 10625000, 7750000, 3950000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Qs Ks Td Qh Ac',
@@ -2280,13 +2301,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_39_18(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (3175000, 10625000, 7750000, 4350000, 3800000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Td Tc 6s 3h Jc',
@@ -2356,13 +2378,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_42_31(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (11925000, 7750000, 3150000, 3800000, 3075000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Ks Td 2d 5c Qc',
@@ -2432,13 +2455,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_44_49(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (7550000, 3150000, 3800000, 1475000, 13725000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Td Qs Ks 2d Jd',
@@ -2472,13 +2496,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_45_43(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (2950000, 4100000, 1475000, 13725000, 7450000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '8h 9d Kc Td Tc',
@@ -2511,13 +2536,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_46_42(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (4200000, 1475000, 13725000, 7450000, 2850000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '5s Ah 8c 5d 9s',
@@ -2550,13 +2576,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_47_38(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (1575000, 13725000, 7450000, 2850000, 4100000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Js Ah 7s 6c Qs',
@@ -2610,13 +2637,14 @@ class StateTestCase(TestCase):
         )
 
     def test_01_51_27(self) -> None:
-        state = Game.create_fixed_limit_texas_holdem(
+        state = FixedLimitTexasHoldem.create_state(
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
             400000,
             (14425000, 7450000, 2850000, 3500000, 1475000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Jd 8d Jh Ah Ts',
@@ -2673,12 +2701,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_53_52(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 150000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
             (7250000, 2850000, 4800000, 475000, 14325000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Js Ah Qc Qd Ks',
@@ -2717,12 +2746,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_56_25(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (2600000, 4800000, 775000, 14325000, 7200000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   2d Qh Ah Kh Ad',
@@ -2761,12 +2791,13 @@ class StateTestCase(TestCase):
         )
 
     def test_01_59_02(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (4425000, 1225000, 14325000, 7200000, 2525000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kd 5s Ac Ts Ks',
@@ -2805,12 +2836,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_00_25(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (850000, 14325000, 7200000, 2525000, 4800000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qs Qh Td Kd Qd',
@@ -2849,12 +2881,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_01_50(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (13950000, 7200000, 2975000, 4800000, 775000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kd Js Kh Ah Ts',
@@ -2907,12 +2940,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_04_37(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (6200000, 2975000, 4800000, 1850000, 13875000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kh As Ad Qs 8s',
@@ -2972,12 +3006,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_07_21(self) -> None:
-        state = Game.create_no_limit_deuce_to_seven_lowball_single_draw(
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (2400000, 4800000, 1850000, 14525000, 6125000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kc Js Jd Ks Ad',
@@ -3019,15 +3054,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_09_20(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (4425000, 1850000, 14525000, 6125000, 2775000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (4425000, 1850000, 14525000, 6125000, 2775000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3127,15 +3160,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_13_08(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (4550000, 1800000, 14400000, 6075000, 2875000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (4550000, 1800000, 14400000, 6075000, 2875000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3174,15 +3205,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_14_32(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (4500000, 1750000, 14675000, 5950000, 2825000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (4500000, 1750000, 14675000, 5950000, 2825000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3281,15 +3310,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_18_42(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (4575000, 1700000, 14750000, 5900000, 2775000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (4575000, 1700000, 14750000, 5900000, 2775000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3389,15 +3416,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_22_35(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (4525000, 1650000, 14700000, 5975000, 2850000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (4525000, 1650000, 14700000, 5975000, 2850000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3449,15 +3474,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_25_11(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (4475000, 1600000, 14650000, 5675000, 3300000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (4475000, 1600000, 14650000, 5675000, 3300000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3536,15 +3559,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_28_14(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
-                (50000,) * 5,
-                75000,
-                250000,
-                500000,
-                (5675000, 1550000, 14600000, 4625000, 3250000),
-            )._state
+        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+            (50000,) * 5,
+            75000,
+            250000,
+            500000,
+            (5675000, 1550000, 14600000, 4625000, 3250000),
+            5,
         )
         state.deck = deque(
             Card.parse(
@@ -3598,13 +3619,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_29_59(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (6125000, 1500000, 14550000, 4575000, 2950000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qd Ks Qh Ah Js',
@@ -3687,13 +3709,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_34_51(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (3000000, 14550000, 4575000, 2950000, 4625000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Ah Jd Kc 2d 8s',
@@ -3730,13 +3753,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_36_12(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (14300000, 4575000, 2950000, 5000000, 2875000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qs As Kd Ad Ac',
@@ -3829,13 +3853,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_40_27(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (2325000, 2950000, 5000000, 5250000, 14175000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Jc Ah 2c Kd Kh',
@@ -3872,13 +3897,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_41_31(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (2700000, 5000000, 5250000, 14175000, 2575000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   Ac Ah 2c 6h Ad',
@@ -3915,13 +3941,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_42_44(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (4750000, 5250000, 14550000, 2575000, 2575000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   2d Kh As Ac Qd',
@@ -4008,13 +4035,14 @@ class StateTestCase(TestCase):
         )
 
     def test_02_46_42(self) -> None:
-        state = Game.create_fixed_limit_deuce_to_seven_lowball_triple_draw(
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
             500000,
             (2500000, 17425000, 2575000, 2575000, 4625000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '   5c 9d Kd Ac Th',
@@ -4097,12 +4125,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_51_10(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (19050000, 2575000, 2575000, 3125000, 2375000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Kc 8s 9d Tc As',
@@ -4138,12 +4167,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_53_09(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (2200000, 2575000, 3125000, 2375000, 19425000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '4h Qd Td Ad Js',
@@ -4179,12 +4209,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_54_12(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (2200000, 3125000, 2825000, 19425000, 2125000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '3s Kh Jd Ks 8d',
@@ -4221,12 +4252,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_56_12(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (2750000, 2825000, 19125000, 2125000, 2875000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '8c Qd Kh Ks Kd',
@@ -4263,12 +4295,13 @@ class StateTestCase(TestCase):
         )
 
     def test_02_57_27(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (3200000, 18825000, 2125000, 2875000, 2675000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '7s Jc 8c Ks Td',
@@ -4315,12 +4348,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_00_32(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (18200000, 2125000, 3575000, 2675000, 3125000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 'Th Ac Js Kh 5d',
@@ -4357,12 +4391,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_02_41(self) -> None:
-        state = Game.create_no_limit_texas_holdem(
+        state = NoLimitTexasHoldem.create_state(
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
             (2275000, 3575000, 2675000, 3125000, 18050000),
-        )._state
+            5,
+        )
         state.deck = deque(
             Card.parse(
                 '8d 9d 6c Js Ac',
@@ -4421,13 +4456,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_05_55(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 4,
             75000,
             250000,
             500000,
             (2675000, 3125000, 21700000, 2200000),
-        )._state
+            4,
+        )
         state.deck = deque(
             Card.parse(
                 '   Ks Js Kh 7s',
@@ -4522,13 +4558,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_11_08(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 4,
             75000,
             250000,
             500000,
             (2425000, 2050000, 21600000, 3625000),
-        )._state
+            4,
+        )
         state.deck = deque(
             Card.parse(
                 '   8h 3d 9h As',
@@ -4566,13 +4603,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_12_55(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 4,
             75000,
             250000,
             500000,
             (2375000, 2525000, 21475000, 3325000),
-        )._state
+            4,
+        )
         state.deck = deque(
             Card.parse(
                 '   5d Tc As Th',
@@ -4625,13 +4663,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_14_40(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 4,
             75000,
             250000,
             500000,
             (2325000, 3500000, 20675000, 3200000),
-        )._state
+            4,
+        )
         state.deck = deque(
             Card.parse(
                 '   5s Kd Jc 9c',
@@ -4727,13 +4766,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_17_31(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 4,
             75000,
             250000,
             500000,
             (2275000, 5650000, 18625000, 3150000),
-        )._state
+            4,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kh Qd Td Ah',
@@ -4784,13 +4824,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_19_14(self) -> None:
-        state = Game.create_fixed_limit_seven_card_stud(
+        state = FixedLimitSevenCardStud.create_state(
             (50000,) * 4,
             75000,
             250000,
             500000,
             (2750000, 5525000, 18325000, 3100000),
-        )._state
+            4,
+        )
         state.deck = deque(
             Card.parse(
                 '   9d Kc Ah Th',
@@ -4866,15 +4907,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_22_08(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 4,
-                (250000, 0, 0, 0),
-                250000,
-                500000,
-                (2625000, 6250000, 18275000, 2550000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 4,
+            (250000, 0, 0, 0),
+            250000,
+            500000,
+            (2625000, 6250000, 18275000, 2550000),
+            4,
         )
         state.deck = deque(
             Card.parse(
@@ -4947,15 +4986,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_25_05(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 4,
-                (125000, 250000, 0, 0),
-                250000,
-                500000,
-                (2375000, 6375000, 18400000, 2550000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 4,
+            (125000, 250000, 0, 0),
+            250000,
+            500000,
+            (2375000, 6375000, 18400000, 2550000),
+            4,
         )
         state.deck = deque(
             Card.parse(
@@ -5030,15 +5067,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_32_24(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 4,
-                (125000, 250000, 0, 0),
-                250000,
-                500000,
-                (6125000, 22150000, 1300000, 125000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 4,
+            (125000, 250000, 0, 0),
+            250000,
+            500000,
+            (6125000, 22150000, 1300000, 125000),
+            4,
         )
         state.deck = deque(
             Card.parse(
@@ -5104,15 +5139,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_36_22(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 3,
-                (125000, 250000, 0),
-                250000,
-                500000,
-                (23025000, 1300000, 5375000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 3,
+            (125000, 250000, 0),
+            250000,
+            500000,
+            (23025000, 1300000, 5375000),
+            3,
         )
         state.deck = deque(
             Card.parse(
@@ -5184,15 +5217,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_42_38(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 2,
-                (150000, 300000),
-                300000,
-                600000,
-                (4550000, 25150000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 2,
+            (150000, 300000),
+            300000,
+            600000,
+            (4550000, 25150000),
+            2,
         )
         state.deck = deque(
             Card.parse(
@@ -5263,15 +5294,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_44_38(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 2,
-                (150000, 300000),
-                300000,
-                600000,
-                (25150000, 4550000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 2,
+            (150000, 300000),
+            300000,
+            600000,
+            (25150000, 4550000),
+            2,
         )
         state.deck = deque(
             Card.parse(
@@ -5345,15 +5374,13 @@ class StateTestCase(TestCase):
         )
 
     def test_03_46_32(self) -> None:
-        state = (
-            Game
-            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
-                (0,) * 2,
-                (150000, 300000),
-                300000,
-                600000,
-                (4550000, 25150000),
-            )._state
+        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+            (0,) * 2,
+            (150000, 300000),
+            300000,
+            600000,
+            (4550000, 25150000),
+            2,
         )
         state.deck = deque(
             Card.parse(
@@ -5424,13 +5451,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_48_33(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (100000,) * 2,
             100000,
             300000,
             600000,
             (2150000, 27550000),
-        )._state
+            2,
+        )
         state.deck = deque(
             Card.parse(
                 '   Qh As',
@@ -5465,13 +5493,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_49_18(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (100000,) * 2,
             100000,
             300000,
             600000,
             (1950000, 27750000),
-        )._state
+            2,
+        )
         state.deck = deque(
             Card.parse(
                 '   Kd Ah',
@@ -5532,13 +5561,14 @@ class StateTestCase(TestCase):
         )
 
     def test_03_50_24(self) -> None:
-        state = Game.create_fixed_limit_razz(
+        state = FixedLimitRazz.create_state(
             (100000,) * 2,
             100000,
             300000,
             600000,
             (2650000, 27050000),
-        )._state
+            2,
+        )
         state.deck = deque(
             Card.parse(
                 '   8c 4h',

@@ -398,7 +398,7 @@ class State:
                 or min(self.blinds_or_straddles) < 0
                 or self.bring_in < 0
         ):
-            raise ValueError('negative antes, blinds, straddles, or bring-ins')
+            raise ValueError('negative antes, blinds, straddles, or bring-in')
         elif min(self.starting_stacks) <= 0:
             raise ValueError('non-positive starting stacks')
         elif (
@@ -406,9 +406,9 @@ class State:
                 and not any(self.blinds_or_straddles)
                 and not self.bring_in
         ):
-            raise ValueError('no antes, blinds, straddles, or bring-ins')
+            raise ValueError('no antes, blinds, straddles, or bring-in')
         elif any(self.blinds_or_straddles) and self.bring_in:
-            raise ValueError('both blinds or straddles and bring-in')
+            raise ValueError('both bring-in and blinds or straddles specified')
         elif (
                 self.bring_in
                 >= self.streets[0].min_completion_bet_or_raise_amount
@@ -712,6 +712,7 @@ class State:
     def get_effective_stack(self, player_index: int) -> int:
         """Return the effective stack of the player.
 
+        :param player_index: The player index.
         :return: The effective stack of the player.
         """
         if self.street_index is None or not self.statuses[player_index]:
@@ -735,6 +736,7 @@ class State:
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
         """Return the down cards of the player.
 
+        :param player_index: The player index.
         :return: The down cards of the player.
         """
         for card, status in zip(
@@ -747,6 +749,7 @@ class State:
     def get_up_cards(self, player_index: int) -> Iterator[Card]:
         """Return the up cards of the player.
 
+        :param player_index: The player index.
         :return: The up cards of the player.
         """
         for card, status in zip(
@@ -759,6 +762,8 @@ class State:
     def get_hand(self, player_index: int, hand_type_index: int) -> Hand | None:
         """Return the corresponding hand of the player.
 
+        :param player_index: The player index.
+        :param hand_type_index: The hand type index.
         :return: The corresponding hand of the player.
         """
         try:
@@ -774,6 +779,7 @@ class State:
     def get_up_hands(self, hand_type_index: int) -> Iterator[Hand | None]:
         """Return the optional corresponding hands from up cards.
 
+        :param hand_type_index: The hand type index.
         :return: The optional corresponding hands from up cards.
         """
         for i in self.player_indices:
@@ -791,6 +797,7 @@ class State:
         """Return whether if the player can win pots based on showdowns
         so far.
 
+        :param player_index: The player index.
         :return: ``True`` if the player can win, otherwise ``False``.
         """
         for i in self.hand_type_indices:
@@ -819,6 +826,7 @@ class State:
     def post_ante(self, player_index: int) -> None:
         """Post the ante of the player.
 
+        :param player_index: The player index.
         :return: ``None``.
         :raises ValueError: If the player cannot ante.
         """
@@ -906,6 +914,7 @@ class State:
     def post_blind_or_straddle(self, player_index: int) -> None:
         """Post the blind or straddle of the player.
 
+        :param player_index: The player index.
         :return: ``None``.
         :raises ValueError: If the player cannot post blind or straddle.
         """
@@ -993,6 +1002,8 @@ class State:
             raise ValueError('no pending hole deals')
         elif self.burn_status:
             raise ValueError('card not burnt')
+        elif any(self.discard_statuses):
+            raise ValueError('not all discarded')
 
         player_index = self.hole_dealee_index
 
@@ -1043,6 +1054,7 @@ class State:
     ) -> None:
         """Discard some cards.
 
+        :param discarded_cards: The discarded cards.
         :return: ``None``.
         :raises ValueError: If no player can discard.
         """
@@ -1228,7 +1240,7 @@ class State:
             self._end_betting()
 
     def post_bring_in(self) -> None:
-        """Post bring-in.
+        """Post the bring-in.
 
         :return: ``None``.
         """
@@ -1262,6 +1274,9 @@ class State:
     def complete_bet_or_raise_to(self, amount: int | None = None) -> None:
         """Complete, bet, or raise to an amount.
 
+        :param amount: The optional completion, bet, or raise to amount,
+                       defaults to the min-completion, bet, or raise to
+                       amount.
         :return: ``None``.
         """
         if self.street is None:
@@ -1557,6 +1572,7 @@ class State:
     def pull_chips(self, player_index: int) -> None:
         """Pull chips to the stack of the player.
 
+        :param player_index: The player index.
         :return: ``None``.
         """
         if not self.chip_pull_statuses[player_index]:
