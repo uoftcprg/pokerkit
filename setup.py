@@ -14,7 +14,7 @@ setup(
     url='https://github.com/uoftcprg/pokerkit',
     author='University of Toronto Computer Poker Research Group',
     author_email='uoftcprg@outlook.com',
-    license='AGPLv3',
+    license='MIT',
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
@@ -22,7 +22,7 @@ setup(
         'Topic :: Education',
         'Topic :: Games/Entertainment',
         'Topic :: Games/Entertainment :: Board Games',
-        'License :: OSI Approved :: GNU Affero General Public License v3',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',

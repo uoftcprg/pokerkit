@@ -804,7 +804,7 @@ class StateTestCase(TestCase):
     def test_00_41_13(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -887,7 +887,7 @@ class StateTestCase(TestCase):
     def test_00_43_47(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -968,7 +968,7 @@ class StateTestCase(TestCase):
     def test_00_46_43(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -1024,7 +1024,7 @@ class StateTestCase(TestCase):
     def test_00_48_29(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -1108,7 +1108,7 @@ class StateTestCase(TestCase):
     def test_00_51_22(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -1190,7 +1190,7 @@ class StateTestCase(TestCase):
     def test_00_55_24(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -1271,7 +1271,7 @@ class StateTestCase(TestCase):
     def test_00_58_03(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 5,
                 (100000, 200000, 0, 0, 0),
                 200000,
@@ -3021,7 +3021,7 @@ class StateTestCase(TestCase):
     def test_02_09_20(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -3129,7 +3129,7 @@ class StateTestCase(TestCase):
     def test_02_13_08(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -3176,7 +3176,7 @@ class StateTestCase(TestCase):
     def test_02_14_32(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -3283,7 +3283,7 @@ class StateTestCase(TestCase):
     def test_02_18_42(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -3391,7 +3391,7 @@ class StateTestCase(TestCase):
     def test_02_22_35(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -3451,7 +3451,7 @@ class StateTestCase(TestCase):
     def test_02_25_11(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -3538,7 +3538,7 @@ class StateTestCase(TestCase):
     def test_02_28_14(self) -> None:
         state = (
             Game
-            .create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+            .create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
                 (50000,) * 5,
                 75000,
                 250000,
@@ -4868,7 +4868,7 @@ class StateTestCase(TestCase):
     def test_03_22_08(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 4,
                 (250000, 0, 0, 0),
                 250000,
@@ -4949,7 +4949,7 @@ class StateTestCase(TestCase):
     def test_03_25_05(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 4,
                 (125000, 250000, 0, 0),
                 250000,
@@ -5032,7 +5032,7 @@ class StateTestCase(TestCase):
     def test_03_32_24(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 4,
                 (125000, 250000, 0, 0),
                 250000,
@@ -5106,7 +5106,7 @@ class StateTestCase(TestCase):
     def test_03_36_22(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 3,
                 (125000, 250000, 0),
                 250000,
@@ -5186,7 +5186,7 @@ class StateTestCase(TestCase):
     def test_03_42_38(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 2,
                 (150000, 300000),
                 300000,
@@ -5265,7 +5265,7 @@ class StateTestCase(TestCase):
     def test_03_44_38(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 2,
                 (150000, 300000),
                 300000,
@@ -5347,7 +5347,7 @@ class StateTestCase(TestCase):
     def test_03_46_32(self) -> None:
         state = (
             Game
-            .create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+            .create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
                 (0,) * 2,
                 (150000, 300000),
                 300000,

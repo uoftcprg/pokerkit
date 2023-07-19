@@ -223,7 +223,7 @@ class Game:
         )
 
     @classmethod
-    def create_fixed_limit_omaha_holdem_high_low_split_eight_or_better(
+    def create_fixed_limit_omaha_holdem_split_high_eight_or_better_low(
             cls,
             antes: Iterable[int],
             blinds_or_straddles: Iterable[int],
@@ -369,7 +369,7 @@ class Game:
         )
 
     @classmethod
-    def create_fixed_limit_seven_card_stud_high_low_split_eight_or_better(
+    def create_fixed_limit_seven_card_stud_split_high_eight_or_better_low(
             cls,
             antes: Iterable[int],
             bring_in: int,

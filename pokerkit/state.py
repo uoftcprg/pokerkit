@@ -346,9 +346,9 @@ class State:
     """The street index."""
     status: bool = field(default=True, init=False)
     """The game status."""
-    ante_statuses: list[bool] = field(default_factory=list, init=False)
-    """The player ante statuses."""
-    blind_or_straddle_statuses: list[bool] = field(
+    ante_posting_statuses: list[bool] = field(default_factory=list, init=False)
+    """The player ante posting statuses."""
+    blind_or_straddle_posting_statuses: list[bool] = field(
         default_factory=list,
         init=False,
     )
@@ -431,8 +431,8 @@ class State:
             self.stacks.append(self.starting_stacks[i])
             self.hole_cards.append([])
             self.hole_card_statuses.append([])
-            self.ante_statuses.append(False)
-            self.blind_or_straddle_statuses.append(False)
+            self.ante_posting_statuses.append(False)
+            self.blind_or_straddle_posting_statuses.append(False)
             self.hole_deal_statuses.append(deque())
             self.discard_statuses.append(False)
             self.hand_kill_statuses.append(False)
@@ -808,12 +808,12 @@ class State:
         return False
 
     def _begin_ante_posting(self) -> None:
-        assert not any(self.ante_statuses)
+        assert not any(self.ante_posting_statuses)
 
         for i in self.player_indices:
-            self.ante_statuses[i] = self.antes[i] > 0
+            self.ante_posting_statuses[i] = self.antes[i] > 0
 
-        if not any(self.ante_statuses):
+        if not any(self.ante_posting_statuses):
             self._end_ante_posting()
 
     def post_ante(self, player_index: int) -> None:
@@ -822,7 +822,7 @@ class State:
         :return: ``None``.
         :raises ValueError: If the player cannot ante.
         """
-        if not self.ante_statuses[player_index]:
+        if not self.ante_posting_statuses[player_index]:
             raise ValueError('player already anted or cannot ante')
 
         ante = min(self.antes[player_index], self.stacks[player_index])
@@ -830,18 +830,18 @@ class State:
         assert ante
         assert not self.bets[player_index]
 
-        self.ante_statuses[player_index] = False
+        self.ante_posting_statuses[player_index] = False
         self.bets[player_index] = ante
         self.stacks[player_index] -= ante
 
-        if not any(self.ante_statuses):
+        if not any(self.ante_posting_statuses):
             self._end_ante_posting()
 
     def _end_ante_posting(self) -> None:
         self._begin_bet_collection()
 
     def _begin_bet_collection(self) -> None:
-        assert not any(self.ante_statuses)
+        assert not any(self.ante_posting_statuses)
         assert not self.bet_collection_status
 
         self.bet_collection_status = True
@@ -891,16 +891,16 @@ class State:
             self._begin_dealing()
 
     def _begin_blind_or_straddle_posting(self) -> None:
-        assert not any(self.ante_statuses)
+        assert not any(self.ante_posting_statuses)
         assert not self.bet_collection_status
-        assert not any(self.blind_or_straddle_statuses)
+        assert not any(self.blind_or_straddle_posting_statuses)
 
         for i in self.player_indices:
-            self.blind_or_straddle_statuses[i] = (
+            self.blind_or_straddle_posting_statuses[i] = (
                 self.blinds_or_straddles[i] > 0 and self.stacks[i] > 0
             )
 
-        if not any(self.blind_or_straddle_statuses):
+        if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
 
     def post_blind_or_straddle(self, player_index: int) -> None:
@@ -909,7 +909,7 @@ class State:
         :return: ``None``.
         :raises ValueError: If the player cannot post blind or straddle.
         """
-        if not self.blind_or_straddle_statuses[player_index]:
+        if not self.blind_or_straddle_posting_statuses[player_index]:
             raise ValueError('player cannot be blinded or straddled')
 
         if self.player_count == 2:
@@ -922,16 +922,16 @@ class State:
         assert blind_or_straddle
         assert not self.bets[player_index]
 
-        self.blind_or_straddle_statuses[player_index] = False
+        self.blind_or_straddle_posting_statuses[player_index] = False
         self.bets[player_index] = blind_or_straddle
         self.stacks[player_index] -= blind_or_straddle
 
-        if not any(self.blind_or_straddle_statuses):
+        if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
 
     def _end_blind_or_straddle_posting(self) -> None:
         for i in self.player_indices:
-            self.blind_or_straddle_statuses[i] = False
+            self.blind_or_straddle_posting_statuses[i] = False
 
         if not any(self.hole_deal_statuses):
             self._begin_dealing()
