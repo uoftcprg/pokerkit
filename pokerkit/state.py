@@ -5,7 +5,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 from functools import partial
-from itertools import islice
+from itertools import chain, islice
 from operator import getitem
 
 from pokerkit.hands import Hand
@@ -255,7 +255,9 @@ class State:
     >>> state.bets
     [0, 0]
     >>> state.post_ante(0)
+    (0, 1)
     >>> state.post_ante(1)
+    (1, 1)
     >>> state.stacks
     [1, 1]
     >>> state.bets
@@ -268,9 +270,11 @@ class State:
     >>> state.hole_cards
     [[], []]
     >>> state.deal_hole()
+    (0, (Js,))
     >>> state.hole_cards
     [[Js], []]
     >>> state.deal_hole()
+    (1, (Qs,))
     >>> state.hole_cards
     [[Js], [Qs]]
     >>> state.stacks
@@ -346,29 +350,6 @@ class State:
     """The street index."""
     status: bool = field(default=True, init=False)
     """The game status."""
-    ante_posting_statuses: list[bool] = field(default_factory=list, init=False)
-    """The player ante posting statuses."""
-    blind_or_straddle_posting_statuses: list[bool] = field(
-        default_factory=list,
-        init=False,
-    )
-    """The player blind or straddle statuses."""
-    bet_collection_status: bool = field(default=False, init=False)
-    """The bet collection status."""
-    burn_status: bool = field(default=False, init=False)
-    """The card burn status."""
-    hole_deal_statuses: list[deque[bool]] = field(
-        default_factory=list,
-        init=False,
-    )
-    """The statuses of the cards to be dealt to holes."""
-    board_deal_count: int = field(default=0, init=False)
-    """The number of cards to be dealt to the board."""
-    discard_statuses: list[bool] = field(
-        default_factory=list,
-        init=False,
-    )
-    """The statuses of the discards."""
     bring_in_status: bool = field(default=False, init=False)
     """The bring-in status."""
     completion_status: bool = field(default=False, init=False)
@@ -431,13 +412,13 @@ class State:
             self.stacks.append(self.starting_stacks[i])
             self.hole_cards.append([])
             self.hole_card_statuses.append([])
-            self.ante_posting_statuses.append(False)
-            self.blind_or_straddle_posting_statuses.append(False)
-            self.hole_deal_statuses.append(deque())
-            self.discard_statuses.append(False)
             self.hand_kill_statuses.append(False)
             self.chip_pull_statuses.append(False)
 
+        self._setup_ante_posting()
+        self._setup_bet_collection()
+        self._setup_blind_or_straddle_posting()
+        self._setup_dealing()
         self._begin_ante_posting()
 
     @property
@@ -563,52 +544,6 @@ class State:
 
             previous_contribution = contribution
             amount = 0
-
-    @property
-    def hole_dealee_index(self) -> int | None:
-        """Return the hole dealee index.
-
-        :return: The hole dealee index.
-        """
-        if any(self.hole_deal_statuses):
-            assert self.street is not None
-
-            dealee_index = None
-
-            if self.street.hole_deal_statuses:
-                status_count = 0
-
-                for i, statuses in enumerate(self.hole_deal_statuses):
-                    if dealee_index is None or len(statuses) > status_count:
-                        dealee_index = i
-                        status_count = len(statuses)
-
-                assert status_count
-            elif self.street.discard_and_draw_status:
-                for i, statuses in enumerate(self.hole_deal_statuses):
-                    if statuses:
-                        dealee_index = i
-
-                        break
-            else:
-                raise AssertionError
-
-            assert dealee_index is not None
-
-            return dealee_index
-
-        return None
-
-    @property
-    def discarder_index(self) -> int | None:
-        """Return the discarder index.
-
-        :return: The discarder index.
-        """
-        if any(self.discard_statuses):
-            return self.discard_statuses.index(True)
-
-        return None
 
     @property
     def actor_index(self) -> int | None:
@@ -814,80 +749,125 @@ class State:
 
         return False
 
+    # Ante posting
+
+    ante_posting_statuses: list[bool] = field(default_factory=list, init=False)
+    """The player ante posting statuses."""
+
+    def _setup_ante_posting(self) -> None:
+        assert not self.ante_posting_statuses
+
+        for _ in range(self.player_count):
+            self.ante_posting_statuses.append(False)
+
     def _begin_ante_posting(self) -> None:
         assert not any(self.ante_posting_statuses)
 
         for i in self.player_indices:
-            self.ante_posting_statuses[i] = self.antes[i] > 0
-
-        if not any(self.ante_posting_statuses):
-            self._end_ante_posting()
-
-    def post_ante(self, player_index: int) -> None:
-        """Post the ante of the player.
-
-        :param player_index: The player index.
-        :return: ``None``.
-        :raises ValueError: If the player cannot ante.
-        """
-        if not self.ante_posting_statuses[player_index]:
-            raise ValueError('player already anted or cannot ante')
-
-        ante = min(self.antes[player_index], self.stacks[player_index])
-
-        assert ante
-        assert not self.bets[player_index]
-
-        self.ante_posting_statuses[player_index] = False
-        self.bets[player_index] = ante
-        self.stacks[player_index] -= ante
+            self.ante_posting_statuses[i] = self.get_effective_ante(i) > 0
 
         if not any(self.ante_posting_statuses):
             self._end_ante_posting()
 
     def _end_ante_posting(self) -> None:
+        assert not any(self.ante_posting_statuses)
+
         self._begin_bet_collection()
 
-    def _begin_bet_collection(self) -> None:
-        assert not any(self.ante_posting_statuses)
+    @property
+    def ante_poster_indices(self) -> Iterator[int]:
+        """Iterate through players who can post antes.
+
+        :return: The ante posters.
+        """
+        for i in self.player_indices:
+            if self.ante_posting_statuses[i]:
+                yield i
+
+    def get_effective_ante(self, player_index: int) -> int:
+        """Return the effective ante of the player.
+
+        :param player_index: The player index.
+        :return: The effective ante.
+        """
+        return min(
+            self.antes[player_index],
+            self.starting_stacks[player_index],
+        )
+
+    def verify_ante_posting(self, player_index: int | None = None) -> int:
+        """Verify the ante posting.
+
+        :param player_index: The optional player index.
+        :return: The completed arguments.
+        :raises ValueError: If the ante posting cannot be done.
+        """
+        if not any(self.ante_posting_statuses):
+            raise ValueError('nobody can post the ante')
+
+        if player_index is None:
+            player_index = next(self.ante_poster_indices)
+
+        if not self.ante_posting_statuses[player_index]:
+            raise ValueError('player cannot post the ante')
+
+        return player_index
+
+    def can_post_ante(self, player_index: int | None = None) -> bool:
+        """Return whether the ante posting can be done.
+
+        :param player_index: The optional player index.
+        :return: ``True`` if the ante posting can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_ante_posting(player_index)
+        except ValueError:
+            return False
+
+        return True
+
+    def post_ante(self, player_index: int | None = None) -> tuple[int, int]:
+        """Post the ante.
+
+        :param player_index: The optional player index.
+        :return: The completed arguments.
+        :raises ValueError: If the ante posting cannot be done.
+        """
+        player_index = self.verify_ante_posting(player_index)
+        effective_ante = self.get_effective_ante(player_index)
+
+        assert self.ante_posting_statuses[player_index]
+        assert not self.bets[player_index]
+        assert 0 < effective_ante <= self.stacks[player_index]
+
+        self.ante_posting_statuses[player_index] = False
+        self.bets[player_index] = effective_ante
+        self.stacks[player_index] -= effective_ante
+
+        if not any(self.ante_posting_statuses):
+            self._end_ante_posting()
+
+        return player_index, effective_ante
+
+    # Bet collection
+
+    bet_collection_status: bool = field(default=False, init=False)
+    """The bet collection status."""
+
+    def _setup_bet_collection(self) -> None:
         assert not self.bet_collection_status
 
-        self.bet_collection_status = True
+    def _begin_bet_collection(self) -> None:
+        assert not self.bet_collection_status
 
-        if not any(self.bets):
+        self.bet_collection_status = any(self.bets)
+
+        if not self.bet_collection_status:
             self._end_bet_collection()
 
-    def collect_bets(self) -> None:
-        """Collect all the bets of the players.
-
-        :return: ``None``.
-        :raises ValueError: If the bets cannot be collected.
-        """
-        if not self.bet_collection_status:
-            raise ValueError('bet collection prohibited')
-
-        self.bet_collection_status = False
-        player_indices = set(self.player_indices)
-
-        if sum(self.statuses) == 1:
-            player_indices.remove(self.statuses.index(True))
-
-        if self.street is not None:
-            max_bet = sorted(self.bets)[-2]
-
-            for i in player_indices:
-                if self.bets[i] > max_bet:
-                    assert self.statuses[i]
-
-                    self.stacks[i] += self.bets[i] - max_bet
-
-        for i in player_indices:
-            self.bets[i] = 0
-
-        self._end_bet_collection()
-
     def _end_bet_collection(self) -> None:
-        self.bet_collection_status = False
+        assert not self.bet_collection_status
 
         if sum(self.statuses) == 1:
             self._begin_chip_push()
@@ -898,54 +878,210 @@ class State:
         else:
             self._begin_dealing()
 
+    def verify_bet_collection(self) -> None:
+        """Verify the bet collection.
+
+        :return: ``None``.
+        :raises ValueError: If the bet collection cannot be done.
+        """
+        if not self.bet_collection_status:
+            raise ValueError('bet collection prohibited')
+
+    def can_collect_bets(self) -> bool:
+        """Return whether the bet collection can be done.
+
+        :return: ``True`` if the bet collection can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_bet_collection()
+        except ValueError:
+            return False
+
+        return True
+
+    def collect_bets(self) -> None:
+        """Collect the bets of the players.
+
+        :return: ``None``.
+        :raises ValueError: If the bet collection cannot be done.
+        """
+        self.verify_bet_collection()
+
+        assert self.bet_collection_status
+        assert any(self.bets)
+
+        self.bet_collection_status = False
+        player_indices = list(self.player_indices)
+
+        if sum(self.statuses) == 1:
+            player_indices.remove(self.statuses.index(True))
+
+        if self.street is not None:
+            bet_cutoff = sorted(self.bets)[-2]
+
+            for i in player_indices:
+                if self.bets[i] > bet_cutoff:
+                    assert self.statuses[i]
+
+                    self.stacks[i] += self.bets[i] - bet_cutoff
+
+        for i in player_indices:
+            self.bets[i] = 0
+
+        self._end_bet_collection()
+
+    # Blind or straddle posting
+
+    blind_or_straddle_posting_statuses: list[bool] = field(
+        default_factory=list,
+        init=False,
+    )
+    """The player blind or straddle statuses."""
+
+    def _setup_blind_or_straddle_posting(self) -> None:
+        assert not self.blind_or_straddle_posting_statuses
+
+        for _ in range(self.player_count):
+            self.blind_or_straddle_posting_statuses.append(False)
+
     def _begin_blind_or_straddle_posting(self) -> None:
-        assert not any(self.ante_posting_statuses)
-        assert not self.bet_collection_status
         assert not any(self.blind_or_straddle_posting_statuses)
 
         for i in self.player_indices:
             self.blind_or_straddle_posting_statuses[i] = (
-                self.blinds_or_straddles[i] > 0 and self.stacks[i] > 0
+                self.get_effective_blind_or_straddle(i) > 0
             )
 
         if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
 
-    def post_blind_or_straddle(self, player_index: int) -> None:
-        """Post the blind or straddle of the player.
+    def _end_blind_or_straddle_posting(self) -> None:
+        assert not any(self.blind_or_straddle_posting_statuses)
+
+        self._begin_dealing()
+
+    @property
+    def blind_or_straddle_poster_indices(self) -> Iterator[int]:
+        """Iterate through players who can post blinds or straddles.
+
+        :return: The blind or straddle posters.
+        """
+        for i in self.player_indices:
+            if self.blind_or_straddle_posting_statuses[i]:
+                yield i
+
+    def get_effective_blind_or_straddle(self, player_index: int) -> int:
+        """Return the effective blind or straddle of the player.
 
         :param player_index: The player index.
-        :return: ``None``.
-        :raises ValueError: If the player cannot post blind or straddle.
+        :return: The effective blind or straddle.
         """
-        if not self.blind_or_straddle_posting_statuses[player_index]:
-            raise ValueError('player cannot be blinded or straddled')
-
         if self.player_count == 2:
             blind_or_straddle = self.blinds_or_straddles[not player_index]
         else:
             blind_or_straddle = self.blinds_or_straddles[player_index]
 
-        blind_or_straddle = min(blind_or_straddle, self.stacks[player_index])
+        return min(
+            blind_or_straddle,
+            self.starting_stacks[player_index]
+            - self.get_effective_ante(player_index),
+        )
 
-        assert blind_or_straddle
+    def verify_blind_or_straddle_posting(
+            self,
+            player_index: int | None = None,
+    ) -> int:
+        """Verify the blind or straddle posting.
+
+        :param player_index: The optional player index.
+        :return: The completed arguments.
+        :raises ValueError: If blind or straddle posting cannot be done.
+        """
+        if not any(self.blind_or_straddle_posting_statuses):
+            raise ValueError('nobody can post the blind or straddle')
+
+        if player_index is None:
+            player_index = next(self.blind_or_straddle_poster_indices)
+
+        if not self.blind_or_straddle_posting_statuses[player_index]:
+            raise ValueError('player cannot post the blind or straddle')
+
+        return player_index
+
+    def can_post_blind_or_straddle(
+            self,
+            player_index: int | None = None,
+    ) -> bool:
+        """Return whether the blind or straddle posting can be done.
+
+        :param player_index: The optional player index.
+        :return: ``True`` if the blind or straddle posting can be done,
+                 otherwise ``False``.
+        """
+        try:
+            self.verify_blind_or_straddle_posting(player_index)
+        except ValueError:
+            return False
+
+        return True
+
+    def post_blind_or_straddle(
+            self,
+            player_index: int | None = None,
+    ) -> tuple[int, int]:
+        """Post the blind or straddle of the player.
+
+        :param player_index: The optional player index.
+        :return: The completed arguments.
+        :raises ValueError: If the blind or straddle posting cannot be
+                            done.
+        """
+        player_index = self.verify_blind_or_straddle_posting(player_index)
+        effective_blind_or_straddle = self.get_effective_blind_or_straddle(
+            player_index,
+        )
+
+        assert self.blind_or_straddle_posting_statuses[player_index]
         assert not self.bets[player_index]
+        assert 0 < effective_blind_or_straddle <= self.stacks[player_index]
 
         self.blind_or_straddle_posting_statuses[player_index] = False
-        self.bets[player_index] = blind_or_straddle
-        self.stacks[player_index] -= blind_or_straddle
+        self.bets[player_index] = effective_blind_or_straddle
+        self.stacks[player_index] -= effective_blind_or_straddle
 
         if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
 
-    def _end_blind_or_straddle_posting(self) -> None:
-        for i in self.player_indices:
-            self.blind_or_straddle_posting_statuses[i] = False
+        return player_index, effective_blind_or_straddle
 
-        if not any(self.hole_deal_statuses):
-            self._begin_dealing()
+    # Dealing
+
+    burn_status: bool = field(default=False, init=False)
+    """The card burn status."""
+    hole_deal_statuses: list[deque[bool]] = field(
+        default_factory=list,
+        init=False,
+    )
+    """The statuses of the cards to be dealt to holes."""
+    board_deal_count: int = field(default=0, init=False)
+    """The number of cards to be dealt to the board."""
+    discard_statuses: list[bool] = field(
+        default_factory=list,
+        init=False,
+    )
+    """The statuses of the discards."""
+
+    def _setup_dealing(self) -> None:
+        assert not self.hole_deal_statuses
+        assert not self.discard_statuses
+
+        for _ in range(self.player_count):
+            self.hole_deal_statuses.append(deque())
+            self.discard_statuses.append(False)
 
     def _begin_dealing(self) -> None:
+        assert not self.burn_status
         assert not any(self.hole_deal_statuses)
         assert not self.board_deal_count
         assert not any(self.discard_statuses)
@@ -955,9 +1091,11 @@ class State:
         else:
             self.street_index += 1
 
+        assert 0 <= self.street_index < len(self.streets)
         assert self.street is not None
 
         self.burn_status = self.street.burn_status
+        self.board_deal_count = self.street.board_deal_count
 
         for i in self.player_indices:
             if self.statuses[i]:
@@ -968,54 +1106,293 @@ class State:
                     self.street.discard_and_draw_status
                 )
 
-        self.board_deal_count = self.street.board_deal_count
-
         assert (
             any(self.hole_deal_statuses)
             or self.board_deal_count
             or any(self.discard_statuses)
         )
 
-    def burn_card(self) -> None:
-        """Burn a card.
+    def _end_dealing(self) -> None:
+        assert not self.burn_status
+        assert not any(self.hole_deal_statuses)
+        assert not self.board_deal_count
+        assert not any(self.discard_statuses)
 
-        :return: ``None``.
-        :raises ValueError: If a card cannot be burnt.
+        self._begin_betting()
+
+    def _make_available(self, cards: tuple[Card, ...]) -> None:
+        assert len(self.deck) >= len(cards)
+
+        for card in cards:
+            assert card in self.burned_cards or card in self.deck
+
+            if card in self.burned_cards:
+                self.burned_cards[self.burned_cards.index(card)] = (
+                    self.deck.popleft()
+                )
+            else:
+                self.deck.remove(card)
+
+    @property
+    def available_cards(self) -> Iterator[Card]:
+        """Iterate through the available cards that can be dealt or
+        burned.
+
+        :return: The available cards.
         """
+        if (
+                self.burn_status
+                or any(self.hole_deal_statuses)
+                or self.board_deal_count
+        ):
+            yield from chain(self.burned_cards, self.deck)
+
+    def verify_card_availabilities(
+            self,
+            cards: tuple[Card, ...] | Card | int,
+    ) -> tuple[Card, ...]:
+        """Verify the card availability.
+
+        :param card: The optional card.
+        :return: The completed arguments.
+        :raises ValueError: If the card is unavailable.
+        """
+        if isinstance(cards, int):
+            card_count = cards
+        elif isinstance(cards, Card):
+            card_count = 1
+        else:
+            card_count = len(cards)
+
+        if len(self.deck) < card_count:
+            raise ValueError('too many cards')
+
+        if isinstance(cards, int):
+            cards = tuple(self.deck)[:cards]
+        elif isinstance(cards, Card):
+            cards = (cards,)
+
+        for card in cards:
+            if card not in tuple(self.available_cards):
+                raise ValueError('unavailable card')
+
+        return cards
+
+    def verify_card_burning(self, card: Card | None = None) -> Card:
+        """Verify the card burning.
+
+        :param card: The optional card.
+        :return: The completed arguments.
+        :raises ValueError: If the card burning cannot be done.
+        """
+        card, = self.verify_card_availabilities(1 if card is None else (card,))
+
         if not self.burn_status:
             raise ValueError('no pending burns')
 
-        assert self.deck
+        return card
 
-        card = self.deck.popleft()
+    def can_burn_card(self, card: Card | None = None) -> bool:
+        """Return whether the card burning can be done.
+
+        :param card: The optional card.
+        :return: ``True`` if the card burning can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_card_burning(card)
+        except ValueError:
+            return False
+
+        return True
+
+    def burn_card(self, card: Card | None = None) -> Card:
+        """Burn a card.
+
+        :param card: The optional card.
+        :return: The completed arguments.
+        :raises ValueError: If the card burning cannot be done.
+        """
+        card = self.verify_card_burning(card)
+
+        assert self.burn_status
+        assert self.street is not None
+        assert (
+            any(self.hole_deal_statuses)
+            or self.board_deal_count
+            or self.street.discard_and_draw_status
+        )
+        assert not any(self.discard_statuses)
+
+        self._make_available((card,))
+
         self.burn_status = False
-
         self.burned_cards.append(card)
 
-    def deal_hole(self) -> None:
-        """Deal the hole card of the next player to be dealt.
+        if not any(self.hole_deal_statuses) and not self.board_deal_count:
+            self._end_dealing()
 
-        :return: ``None``.
-        :raises ValueError: If the hole card cannot be dealt.
+        return card
+
+    @property
+    def hole_dealee_index(self) -> int | None:
+        """Return the hole dealee index.
+
+        :return: The hole dealee index.
         """
-        if not any(self.hole_deal_statuses):
-            raise ValueError('no pending hole deals')
-        elif self.burn_status:
-            raise ValueError('card not burnt')
-        elif any(self.discard_statuses):
-            raise ValueError('not all discarded')
+        if any(self.hole_deal_statuses):
+            assert self.street is not None
+            assert (
+                self.street.hole_deal_statuses
+                or self.street.discard_and_draw_status
+            )
 
+            if self.street.hole_deal_statuses:
+                return max(
+                    self.player_indices,
+                    key=lambda i: (len(self.hole_deal_statuses[i]), -i),
+                )
+            else:
+                return next(
+                    filter(
+                        partial(getitem, self.hole_deal_statuses),
+                        self.player_indices,
+                    ),
+                )
+
+        return None
+
+    def verify_hole_dealing(
+            self,
+            cards: tuple[Card, ...] | Card | int | None = None,
+    ) -> tuple[Card, ...]:
+        """Verify the hole dealing.
+
+        :param cards: The optional cards.
+        :return: The completed arguments.
+        :raises ValueError: If the hole dealing cannot be done.
+        """
+        if self.burn_status:
+            raise ValueError('card must be burnt')
+        elif not any(self.hole_deal_statuses):
+            raise ValueError('nobody can be dealt hole cards')
+
+        cards = self.verify_card_availabilities(1 if cards is None else cards)
+        player_index = self.hole_dealee_index
+
+        assert player_index is not None
+
+        if not 0 < len(cards) <= len(self.hole_deal_statuses[player_index]):
+            raise ValueError('invalid number of cards')
+
+        return cards
+
+    def can_deal_hole(
+            self,
+            cards: tuple[Card, ...] | Card | int | None = None,
+    ) -> bool:
+        """Return whether the hole dealing can be done.
+
+        :param cards: The optional cards.
+        :return: ``True`` if the hole dealing can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_hole_dealing(cards)
+        except ValueError:
+            return False
+
+        return True
+
+    def deal_hole(
+            self,
+            cards: tuple[Card, ...] | Card | int | None = None,
+    ) -> tuple[int, tuple[Card, ...]]:
+        """Deal the hole.
+
+        :param cards: The optional cards.
+        :return: The completed arguments.
+        :raises ValueError: If the hole dealing cannot be done.
+        """
+        cards = self.verify_hole_dealing(cards)
         player_index = self.hole_dealee_index
 
         assert player_index is not None
         assert self.hole_deal_statuses[player_index]
-        assert self.deck
 
-        status = self.hole_deal_statuses[player_index].popleft()
-        card = self.deck.popleft()
+        self._make_available(cards)
 
-        self.hole_cards[player_index].append(card)
-        self.hole_card_statuses[player_index].append(status)
+        for card in cards:
+            status = self.hole_deal_statuses[player_index].popleft()
+
+            self.hole_cards[player_index].append(card)
+            self.hole_card_statuses[player_index].append(status)
+
+        if not any(self.hole_deal_statuses) and not self.board_deal_count:
+            self._end_dealing()
+
+        return player_index, cards
+
+    def verify_board_dealing(
+            self,
+            cards: tuple[Card, ...] | Card | int | None = None,
+    ) -> tuple[Card, ...]:
+        """Verify the board dealing.
+
+        :param cards: The optional cards.
+        :return: The completed arguments.
+        :raises ValueError: If the board dealing cannot be done.
+        """
+        if self.burn_status:
+            raise ValueError('card must be burnt')
+        elif not self.board_deal_count:
+            raise ValueError('no pending board dealing')
+
+        cards = self.verify_card_availabilities(
+            self.board_deal_count if cards is None else cards,
+        )
+
+        if not 0 < len(cards) <= self.board_deal_count:
+            raise ValueError('invalid number of cards')
+
+        return cards
+
+    def can_deal_board(
+            self,
+            cards: tuple[Card, ...] | Card | int | None = None,
+    ) -> bool:
+        """Return whether the board dealing can be done.
+
+        :param cards: The optional cards.
+        :param player_index: The optional player index.
+        :return: ``True`` if the board dealing can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_board_dealing(cards)
+        except ValueError:
+            return False
+
+        return True
+
+    def deal_board(
+            self,
+            cards: tuple[Card, ...] | Card | int | None = None,
+    ) -> tuple[Card, ...]:
+        """Deal the board.
+
+        :param cards: The optional cards.
+        :return: The completed arguments.
+        :raises ValueError: If the board dealing cannot be done.
+        """
+        cards = self.verify_board_dealing(cards)
+
+        assert self.board_deal_count
+
+        self._make_available(cards)
+
+        self.board_deal_count -= len(cards)
+        self.board_cards.extend(cards)
 
         if (
                 not any(self.hole_deal_statuses)
@@ -1024,52 +1401,76 @@ class State:
         ):
             self._end_dealing()
 
-    def deal_board(self) -> None:
-        """Deal card(s) to the board.
+        return cards
 
-        :return: ``None``.
-        :raises ValueError: If a card cannot be dealt to the board.
+    @property
+    def discarder_index(self) -> int | None:
+        """Return the discarder index.
+
+        :return: The discarder index.
         """
-        if not self.board_deal_count:
-            raise ValueError('no pending board deals')
-        elif self.burn_status:
-            raise ValueError('card not burnt')
+        if any(self.discard_statuses):
+            return self.discard_statuses.index(True)
 
-        assert len(self.deck) >= self.board_deal_count
+        return None
 
-        for _ in range(self.board_deal_count):
-            self.board_cards.append(self.deck.popleft())
-
-        self.board_deal_count = 0
-
-        if (
-                not any(self.hole_deal_statuses)
-                and not any(self.discard_statuses)
-        ):
-            self._end_dealing()
-
-    def discard(
+    def verify_discard(
             self,
-            discarded_cards: list[Card],
-    ) -> None:
-        """Discard some cards.
+            discarded_cards: tuple[Card, ...] | None = None,
+    ) -> tuple[Card, ...]:
+        """Verify the discard.
 
-        :param discarded_cards: The discarded cards.
-        :return: ``None``.
-        :raises ValueError: If no player can discard.
+        :param discarded_cards: The optional discarded cards.
+        :return: The completed arguments.
+        :raises ValueError: If the discard cannot be done.
         """
         if not any(self.discard_statuses):
             raise ValueError('no pending discards')
-        elif self.burn_status:
-            raise ValueError('card not burnt')
+
+        if discarded_cards is None:
+            discarded_cards = ()
 
         player_index = self.discarder_index
 
         assert player_index is not None
-        assert self.discard_statuses[player_index]
 
         if not set(discarded_cards) <= set(self.hole_cards[player_index]):
             raise ValueError('discarded cards not a subset of hole cards')
+
+        return discarded_cards
+
+    def can_discard(
+            self,
+            discarded_cards: tuple[Card, ...] | None = None,
+    ) -> bool:
+        """Return whether the discard can be done.
+
+        :param discarded_cards: The optional discarded cards.
+        :return: ``True`` if the discard can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_discard(discarded_cards)
+        except ValueError:
+            return False
+
+        return True
+
+    def discard(
+            self,
+            discarded_cards: tuple[Card, ...] | None = None,
+    ) -> tuple[int, tuple[Card, ...]]:
+        """Discard hole cards.
+
+        :param discarded_cards: The optional discarded cards.
+        :return: The completed arguments.
+        :raises ValueError: If the discard cannot be done.
+        """
+        discarded_cards = self.verify_discard(discarded_cards)
+        player_index = self.discarder_index
+
+        assert player_index is not None
+        assert self.discard_statuses[player_index]
 
         self.discard_statuses[player_index] = False
 
@@ -1083,21 +1484,16 @@ class State:
             self.hole_card_statuses[player_index].pop(index)
 
         if (
-                not any(self.hole_deal_statuses)
+                not self.burn_status
+                and not any(self.hole_deal_statuses)
                 and not self.board_deal_count
                 and not any(self.discard_statuses)
         ):
             self._end_dealing()
 
-    def _end_dealing(self) -> None:
-        self.burn_status = False
-        self.board_deal_count = 0
+        return player_index, discarded_cards
 
-        for i in self.player_indices:
-            self.hole_deal_statuses[i].clear()
-            self.discard_statuses[i] = False
-
-        self._begin_betting()
+    # Betting
 
     def _begin_betting(self) -> None:
 
