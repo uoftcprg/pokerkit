@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
-from enum import Enum, unique
+from enum import Enum, StrEnum, unique
 from functools import partial
 from itertools import product, starmap
 from operator import is_not
@@ -14,7 +14,7 @@ from typing import Any
 
 
 @unique
-class Rank(str, Enum):
+class Rank(StrEnum):
     """The enum class for ranks.
 
     A card of lower rank is said to be less than that of a higher rank.
@@ -154,7 +154,7 @@ class RankOrder(tuple[Rank, ...], Enum):
 
 
 @unique
-class Suit(str, Enum):
+class Suit(StrEnum):
     """The enum class for suits.
 
     As in the case of every poker games, the suit's ordering is clubs,

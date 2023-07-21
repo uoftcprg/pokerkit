@@ -6,7 +6,7 @@ from abc import ABC
 from collections import Counter
 from collections.abc import Iterable, Iterator, Reversible, Sequence
 from dataclasses import dataclass, field
-from enum import Enum, unique
+from enum import StrEnum, unique
 from functools import partial
 from itertools import combinations, filterfalse
 from math import prod
@@ -16,7 +16,7 @@ from pokerkit.utilities import Card, Rank, RankOrder
 
 
 @unique
-class Label(str, Enum):
+class Label(StrEnum):
     """The enum class for all hand classification labels.
 
     >>> Label.ONE_PAIR
