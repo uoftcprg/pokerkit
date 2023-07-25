@@ -282,16 +282,19 @@ class State:
     >>> state.bets
     [0, 0]
     >>> state.check_or_call()
+    (0, 0)
     >>> state.stacks
     [1, 1]
     >>> state.bets
     [0, 0]
     >>> state.complete_bet_or_raise_to()
+    (1, 1)
     >>> state.stacks
     [1, 0]
     >>> state.bets
     [0, 1]
     >>> state.fold()
+    0
     >>> state.collect_bets()
     >>> state.push_chips()
     >>> state.stacks
@@ -301,6 +304,7 @@ class State:
     >>> state.total_pot_amount
     3
     >>> state.pull_chips(1)
+    1
     >>> state.stacks
     [1, 3]
     >>> state.bets
@@ -350,24 +354,6 @@ class State:
     """The street index."""
     status: bool = field(default=True, init=False)
     """The game status."""
-    bring_in_status: bool = field(default=False, init=False)
-    """The bring-in status."""
-    completion_status: bool = field(default=False, init=False)
-    """The completion status."""
-    actor_indices: deque[int] = field(default_factory=deque, init=False)
-    """The actor indices."""
-    opener_index: int | None = field(default=None, init=False)
-    """The opener index."""
-    completion_bet_or_raise_amount: int = field(default=0, init=False)
-    """The last completion, bet, or raise amount."""
-    completion_bet_or_raise_count: int = field(default=0, init=False)
-    """The number of completions, bets, or raises."""
-    hand_kill_statuses: list[bool] = field(default_factory=list, init=False)
-    """The hand kill statuses."""
-    chip_push_status: bool = field(default=False, init=False)
-    """The chip push status."""
-    chip_pull_statuses: list[bool] = field(default_factory=list, init=False)
-    """The chip pull statuses."""
 
     def __post_init__(self) -> None:
         if not self.streets:
@@ -412,13 +398,13 @@ class State:
             self.stacks.append(self.starting_stacks[i])
             self.hole_cards.append([])
             self.hole_card_statuses.append([])
-            self.hand_kill_statuses.append(False)
-            self.chip_pull_statuses.append(False)
 
         self._setup_ante_posting()
         self._setup_bet_collection()
         self._setup_blind_or_straddle_posting()
         self._setup_dealing()
+        self._setup_hand_killing()
+        self._setup_chip_pulling()
         self._begin_ante_posting()
 
     @property
@@ -477,7 +463,7 @@ class State:
 
         ``None`` is returned if the state is terminal or in showdown.
 
-        :return: The street.
+        :return: The street if applicable, otherwise ``None``.
         """
         if self.street_index is None:
             return None
@@ -545,129 +531,6 @@ class State:
             previous_contribution = contribution
             amount = 0
 
-    @property
-    def actor_index(self) -> int | None:
-        """Return the actor index.
-
-        :return: The actor index.
-        """
-        if not self.actor_indices:
-            return None
-
-        return self.actor_indices[0]
-
-    @property
-    def min_completion_bet_or_raise_to_amount(self) -> int | None:
-        """Return the minimum completion, bet, or raise to amount.
-
-        :return: The minimum completion, bet, or raise to amount.
-        """
-        if self.actor_index is None:
-            return None
-
-        assert self.street is not None
-
-        amount = max(
-            self.completion_bet_or_raise_amount,
-            self.street.min_completion_bet_or_raise_amount,
-        )
-
-        if not self.completion_status:
-            amount += max(self.bets)
-
-        return min(
-            self.get_effective_stack(self.actor_index)
-            + self.bets[self.actor_index],
-            amount,
-        )
-
-    @property
-    def pot_completion_bet_or_raise_to_amount(self) -> int | None:
-        """Return the pot completion, bet, or raise to amount.
-
-        :return: The pot completion, bet, or raise to amount.
-        """
-        if self.actor_index is None:
-            return None
-
-        assert self.min_completion_bet_or_raise_to_amount is not None
-
-        return min(
-            self.stacks[self.actor_index] + self.bets[self.actor_index],
-            max(
-                self.min_completion_bet_or_raise_to_amount,
-                2 * max(self.bets) - self.bets[self.actor_index]
-                + self.total_pot_amount,
-            )
-        )
-
-    @property
-    def max_completion_bet_or_raise_to_amount(self) -> int | None:
-        """Return the maximum completion, bet, or raise to amount.
-
-        :return: The maximum completion, bet, or raise to amount.
-        """
-        if self.actor_index is None:
-            return None
-
-        match self.betting_structure:
-            case BettingStructure.FIXED_LIMIT:
-                amount = self.min_completion_bet_or_raise_to_amount
-            case BettingStructure.POT_LIMIT:
-                amount = self.pot_completion_bet_or_raise_to_amount
-            case BettingStructure.NO_LIMIT:
-                amount = (
-                    self.stacks[self.actor_index]
-                    + self.bets[self.actor_index]
-                )
-            case _:
-                raise AssertionError
-
-        assert (
-            amount is None
-            or (
-                amount
-                <= self.stacks[self.actor_index] + self.bets[self.actor_index]
-            )
-        )
-
-        return amount
-
-    @property
-    def hand_kill_index(self) -> int | None:
-        """Return the index of a player whose hand is to be killed.
-
-        :return: The index of the player whose hand is to be killed.
-        """
-        if not any(self.hand_kill_statuses):
-            return None
-
-        return self.hand_kill_statuses.index(True)
-
-    def get_effective_stack(self, player_index: int) -> int:
-        """Return the effective stack of the player.
-
-        :param player_index: The player index.
-        :return: The effective stack of the player.
-        """
-        if self.street_index is None or not self.statuses[player_index]:
-            return 0
-
-        effective_stacks = []
-
-        for i in self.player_indices:
-            if self.statuses[i]:
-                effective_stacks.append(self.bets[i] + self.stacks[i])
-
-        assert len(effective_stacks) > 1
-
-        effective_stacks.sort()
-
-        return min(
-            self.stacks[player_index],
-            effective_stacks[-2] - self.bets[player_index],
-        )
-
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
         """Return the down cards of the player.
 
@@ -699,11 +562,33 @@ class State:
 
         :param player_index: The player index.
         :param hand_type_index: The hand type index.
-        :return: The corresponding hand of the player.
+        :return: The corresponding hand of the player if applicable,
+                 otherwise ``None``.
         """
         try:
             hand = self.hand_types[hand_type_index].from_game(
                 self.hole_cards[player_index],
+                self.board_cards,
+            )
+        except ValueError:
+            hand = None
+
+        return hand
+
+    def get_up_hand(
+            self,
+            player_index: int,
+            hand_type_index: int,
+    ) -> Hand | None:
+        """Return the corresponding hand of the player from up cards.
+
+        :param player_index: The player index.
+        :param hand_type_index: The hand type index.
+        :return: The corresponding hand of the player.
+        """
+        try:
+            hand = self.hand_types[hand_type_index].from_game(
+                self.get_up_cards(player_index),
                 self.board_cards,
             )
         except ValueError:
@@ -718,15 +603,7 @@ class State:
         :return: The optional corresponding hands from up cards.
         """
         for i in self.player_indices:
-            try:
-                hand = self.hand_types[hand_type_index].from_game(
-                    self.get_up_cards(i),
-                    self.board_cards,
-                )
-            except ValueError:
-                hand = None
-
-            yield hand
+            yield self.get_up_hand(i, hand_type_index)
 
     def can_win(self, player_index: int) -> bool:
         """Return whether if the player can win pots based on showdowns
@@ -748,6 +625,22 @@ class State:
                     return True
 
         return False
+
+    def _muck_hole_cards(self, player_index: int) -> None:
+        assert self.statuses[player_index]
+
+        for i, card in enumerate(self.hole_cards[player_index]):
+            self.mucked_cards.append(card)
+
+        self.statuses[player_index] = False
+        self.hole_cards[player_index].clear()
+        self.hole_card_statuses[player_index].clear()
+
+    def _show_hole_cards(self, player_index: int) -> None:
+        assert self.statuses[player_index]
+
+        for i in range(len(self.hole_cards[player_index])):
+            self.hole_card_statuses[player_index][i] = True
 
     # Ante posting
 
@@ -774,16 +667,6 @@ class State:
 
         self._begin_bet_collection()
 
-    @property
-    def ante_poster_indices(self) -> Iterator[int]:
-        """Iterate through players who can post antes.
-
-        :return: The ante posters.
-        """
-        for i in self.player_indices:
-            if self.ante_posting_statuses[i]:
-                yield i
-
     def get_effective_ante(self, player_index: int) -> int:
         """Return the effective ante of the player.
 
@@ -795,15 +678,33 @@ class State:
             self.starting_stacks[player_index],
         )
 
+    @property
+    def ante_poster_indices(self) -> Iterator[int]:
+        """Iterate through players who can post antes.
+
+        :return: The ante posters.
+        """
+        try:
+            self._verify_ante_posting()
+        except ValueError:
+            return
+
+        for i in self.player_indices:
+            if self.ante_posting_statuses[i]:
+                yield i
+
+    def _verify_ante_posting(self) -> None:
+        if not any(self.ante_posting_statuses):
+            raise ValueError('nobody can post the ante')
+
     def verify_ante_posting(self, player_index: int | None = None) -> int:
         """Verify the ante posting.
 
         :param player_index: The optional player index.
-        :return: The completed arguments.
+        :return: The anteing player index.
         :raises ValueError: If the ante posting cannot be done.
         """
-        if not any(self.ante_posting_statuses):
-            raise ValueError('nobody can post the ante')
+        self._verify_ante_posting()
 
         if player_index is None:
             player_index = next(self.ante_poster_indices)
@@ -831,7 +732,8 @@ class State:
         """Post the ante.
 
         :param player_index: The optional player index.
-        :return: The completed arguments.
+        :return: A tuple containing the anteing player index and the
+                 effective ante amount.
         :raises ValueError: If the ante posting cannot be done.
         """
         player_index = self.verify_ante_posting(player_index)
@@ -870,7 +772,7 @@ class State:
         assert not self.bet_collection_status
 
         if sum(self.statuses) == 1:
-            self._begin_chip_push()
+            self._begin_chip_pushing()
         elif self.street is None:
             self._begin_blind_or_straddle_posting()
         elif self.street is self.streets[-1]:
@@ -961,16 +863,6 @@ class State:
 
         self._begin_dealing()
 
-    @property
-    def blind_or_straddle_poster_indices(self) -> Iterator[int]:
-        """Iterate through players who can post blinds or straddles.
-
-        :return: The blind or straddle posters.
-        """
-        for i in self.player_indices:
-            if self.blind_or_straddle_posting_statuses[i]:
-                yield i
-
     def get_effective_blind_or_straddle(self, player_index: int) -> int:
         """Return the effective blind or straddle of the player.
 
@@ -988,6 +880,25 @@ class State:
             - self.get_effective_ante(player_index),
         )
 
+    @property
+    def blind_or_straddle_poster_indices(self) -> Iterator[int]:
+        """Iterate through players who can post blinds or straddles.
+
+        :return: The blind or straddle posters.
+        """
+        try:
+            self._verify_blind_or_straddle_posting()
+        except ValueError:
+            return
+
+        for i in self.player_indices:
+            if self.blind_or_straddle_posting_statuses[i]:
+                yield i
+
+    def _verify_blind_or_straddle_posting(self) -> None:
+        if not any(self.blind_or_straddle_posting_statuses):
+            raise ValueError('nobody can post the blind or straddle')
+
     def verify_blind_or_straddle_posting(
             self,
             player_index: int | None = None,
@@ -995,11 +906,10 @@ class State:
         """Verify the blind or straddle posting.
 
         :param player_index: The optional player index.
-        :return: The completed arguments.
+        :return: The blinding or straddling player index.
         :raises ValueError: If blind or straddle posting cannot be done.
         """
-        if not any(self.blind_or_straddle_posting_statuses):
-            raise ValueError('nobody can post the blind or straddle')
+        self._verify_blind_or_straddle_posting()
 
         if player_index is None:
             player_index = next(self.blind_or_straddle_poster_indices)
@@ -1033,7 +943,8 @@ class State:
         """Post the blind or straddle of the player.
 
         :param player_index: The optional player index.
-        :return: The completed arguments.
+        :return: A tuple containing the blinding or straddling player
+                 index and the effective blind or straddle amount.
         :raises ValueError: If the blind or straddle posting cannot be
                             done.
         """
@@ -1154,7 +1065,7 @@ class State:
         """Verify the card availability.
 
         :param card: The optional card.
-        :return: The completed arguments.
+        :return: The available cards.
         :raises ValueError: If the card is unavailable.
         """
         if isinstance(cards, int):
@@ -1182,7 +1093,7 @@ class State:
         """Verify the card burning.
 
         :param card: The optional card.
-        :return: The completed arguments.
+        :return: The burned card.
         :raises ValueError: If the card burning cannot be done.
         """
         card, = self.verify_card_availabilities(1 if card is None else (card,))
@@ -1210,7 +1121,7 @@ class State:
         """Burn a card.
 
         :param card: The optional card.
-        :return: The completed arguments.
+        :return: The burned card.
         :raises ValueError: If the card burning cannot be done.
         """
         card = self.verify_card_burning(card)
@@ -1238,29 +1149,38 @@ class State:
     def hole_dealee_index(self) -> int | None:
         """Return the hole dealee index.
 
-        :return: The hole dealee index.
+        :return: The hole dealee index if applicable, otherwise
+                 ``None``.
         """
-        if any(self.hole_deal_statuses):
-            assert self.street is not None
-            assert (
-                self.street.hole_deal_statuses
-                or self.street.discard_and_draw_status
+        try:
+            self._verify_hole_dealing()
+        except ValueError:
+            return None
+
+        assert self.street is not None
+        assert (
+            self.street.hole_deal_statuses
+            or self.street.discard_and_draw_status
+        )
+
+        if self.street.hole_deal_statuses:
+            return max(
+                self.player_indices,
+                key=lambda i: (len(self.hole_deal_statuses[i]), -i),
+            )
+        else:
+            return next(
+                filter(
+                    partial(getitem, self.hole_deal_statuses),
+                    self.player_indices,
+                ),
             )
 
-            if self.street.hole_deal_statuses:
-                return max(
-                    self.player_indices,
-                    key=lambda i: (len(self.hole_deal_statuses[i]), -i),
-                )
-            else:
-                return next(
-                    filter(
-                        partial(getitem, self.hole_deal_statuses),
-                        self.player_indices,
-                    ),
-                )
-
-        return None
+    def _verify_hole_dealing(self) -> None:
+        if self.burn_status:
+            raise ValueError('card must be burnt')
+        elif not any(self.hole_deal_statuses):
+            raise ValueError('nobody can be dealt hole cards')
 
     def verify_hole_dealing(
             self,
@@ -1269,13 +1189,10 @@ class State:
         """Verify the hole dealing.
 
         :param cards: The optional cards.
-        :return: The completed arguments.
+        :return: The dealt hole cards.
         :raises ValueError: If the hole dealing cannot be done.
         """
-        if self.burn_status:
-            raise ValueError('card must be burnt')
-        elif not any(self.hole_deal_statuses):
-            raise ValueError('nobody can be dealt hole cards')
+        self._verify_hole_dealing()
 
         cards = self.verify_card_availabilities(1 if cards is None else cards)
         player_index = self.hole_dealee_index
@@ -1311,7 +1228,8 @@ class State:
         """Deal the hole.
 
         :param cards: The optional cards.
-        :return: The completed arguments.
+        :return: A tuple containing the hole dealee index and the dealt
+                 hole cards.
         :raises ValueError: If the hole dealing cannot be done.
         """
         cards = self.verify_hole_dealing(cards)
@@ -1340,7 +1258,7 @@ class State:
         """Verify the board dealing.
 
         :param cards: The optional cards.
-        :return: The completed arguments.
+        :return: The dealt board cards.
         :raises ValueError: If the board dealing cannot be done.
         """
         if self.burn_status:
@@ -1382,7 +1300,7 @@ class State:
         """Deal the board.
 
         :param cards: The optional cards.
-        :return: The completed arguments.
+        :return: The dealt board cards.
         :raises ValueError: If the board dealing cannot be done.
         """
         cards = self.verify_board_dealing(cards)
@@ -1407,12 +1325,18 @@ class State:
     def discarder_index(self) -> int | None:
         """Return the discarder index.
 
-        :return: The discarder index.
+        :return: The discarder index if applicable, otherwise ``None``.
         """
-        if any(self.discard_statuses):
-            return self.discard_statuses.index(True)
+        try:
+            self._verify_discard()
+        except ValueError:
+            return None
 
-        return None
+        return self.discard_statuses.index(True)
+
+    def _verify_discard(self) -> None:
+        if not any(self.discard_statuses):
+            raise ValueError('no pending discards')
 
     def verify_discard(
             self,
@@ -1421,11 +1345,10 @@ class State:
         """Verify the discard.
 
         :param discarded_cards: The optional discarded cards.
-        :return: The completed arguments.
+        :return: The discarded cards.
         :raises ValueError: If the discard cannot be done.
         """
-        if not any(self.discard_statuses):
-            raise ValueError('no pending discards')
+        self._verify_discard()
 
         if discarded_cards is None:
             discarded_cards = ()
@@ -1463,7 +1386,8 @@ class State:
         """Discard hole cards.
 
         :param discarded_cards: The optional discarded cards.
-        :return: The completed arguments.
+        :return: A tuple containing the discarder index and the
+                 discarded cards.
         :raises ValueError: If the discard cannot be done.
         """
         discarded_cards = self.verify_discard(discarded_cards)
@@ -1495,17 +1419,27 @@ class State:
 
     # Betting
 
+    opener_index: int | None = field(default=None, init=False)
+    """The opener index."""
+    bring_in_status: bool = field(default=False, init=False)
+    """The bring-in status."""
+    completion_status: bool = field(default=False, init=False)
+    """The completion status."""
+    actor_indices: deque[int] = field(default_factory=deque, init=False)
+    """The actor indices."""
+    completion_bet_or_raise_amount: int = field(default=0, init=False)
+    """The last completion, bet, or raise amount."""
+    completion_bet_or_raise_count: int = field(default=0, init=False)
+    """The number of completions, bets, or raises."""
+
     def _begin_betting(self) -> None:
 
         def card_key(rank_order: RankOrder, card: Card) -> tuple[int, Suit]:
             return rank_order.index(card.rank), card.suit
 
-        assert not self.bring_in_status
-        assert not self.completion_status
-        assert not self.actor_indices
-        assert self.street is not None
-
         self.opener_index = None
+
+        assert self.street is not None
 
         match self.street.opening:
             case Opening.POSITION:
@@ -1578,174 +1512,7 @@ class State:
         if len(self.actor_indices) <= 1:
             self._end_betting()
 
-    def fold(self) -> None:
-        """Fold.
-
-        :return: ``None``.
-        """
-        if self.street is None:
-            raise ValueError('in showdown')
-        elif self.bring_in_status:
-            raise ValueError('bring-in not posted')
-        elif not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-        assert self.stacks[actor_index]
-
-        if self.bets[actor_index] >= max(self.bets):
-            raise ValueError('redundant fold')
-
-        self.actor_indices.popleft()
-        self._muck_hole_cards(actor_index)
-
-        assert any(self.statuses)
-
-        if not self.actor_indices or sum(self.statuses) == 1:
-            self._end_betting()
-
-    def check_or_call(self) -> None:
-        """Check or call.
-
-        :return: ``None``.
-        """
-        if self.street is None:
-            raise ValueError('in showdown')
-        elif self.bring_in_status:
-            raise ValueError('bring-in not posted')
-        elif not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-        assert self.stacks[actor_index]
-
-        self.actor_indices.popleft()
-
-        amount = min(
-            self.stacks[actor_index],
-            max(self.bets) - self.bets[actor_index],
-        )
-        self.stacks[actor_index] -= amount
-        self.bets[actor_index] += amount
-
-        if not self.actor_indices:
-            self._end_betting()
-
-    def post_bring_in(self) -> None:
-        """Post the bring-in.
-
-        :return: ``None``.
-        """
-        if self.street is None:
-            raise ValueError('in showdown')
-        elif not self.bring_in_status:
-            raise ValueError('bring-in cannot be posted')
-        elif not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-        assert self.stacks[actor_index]
-        assert not any(self.bets)
-        assert self.bring_in
-        assert self.completion_status
-
-        amount = min(
-            self.stacks[actor_index],
-            self.bring_in,
-        )
-        self.stacks[actor_index] -= amount
-        self.bets[actor_index] += amount
-        self.bring_in_status = False
-
-        self.actor_indices.popleft()
-
-        assert self.actor_indices
-
-    def complete_bet_or_raise_to(self, amount: int | None = None) -> None:
-        """Complete, bet, or raise to an amount.
-
-        :param amount: The optional completion, bet, or raise to amount,
-                       defaults to the min-completion, bet, or raise to
-                       amount.
-        :return: ``None``.
-        """
-        if self.street is None:
-            raise ValueError('in showdown')
-        elif not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-        assert self.stacks[actor_index]
-
-        if amount is None:
-            amount = self.min_completion_bet_or_raise_to_amount
-
-        assert amount is not None
-        assert self.min_completion_bet_or_raise_to_amount is not None
-        assert self.max_completion_bet_or_raise_to_amount is not None
-
-        if amount < self.min_completion_bet_or_raise_to_amount:
-            raise ValueError('below min completion, bet, or raise to amount')
-        elif amount > self.max_completion_bet_or_raise_to_amount:
-            raise ValueError('above max completion, bet, or raise to amount')
-        elif (
-                self.completion_bet_or_raise_count
-                == self.street.max_completion_bet_or_raise_count
-        ):
-            raise ValueError('no more completion, bet, or raise permitted')
-
-        for i in self.player_indices:
-            if (
-                    i != actor_index
-                    and self.statuses[i]
-                    and self.stacks[i] + self.bets[i] > max(self.bets)
-            ):
-                break
-        else:
-            raise ValueError('irrelevant completion, bet, or raise')
-
-        self.actor_indices.popleft()
-
-        completion_bet_or_raise_amount = amount - max(self.bets)
-        self.stacks[actor_index] -= amount - self.bets[actor_index]
-        self.bets[actor_index] = amount
-        self.actor_indices = deque(self.player_indices)
-        self.bring_in_status = False
-        self.completion_status = False
-
-        self.actor_indices.rotate(-actor_index)
-        self.actor_indices.popleft()
-
-        for i in self.player_indices:
-            if not self.statuses[i] or not self.stacks[i]:
-                if i in self.actor_indices:
-                    self.actor_indices.remove(i)
-
-        self.opener_index = actor_index
-        self.completion_bet_or_raise_amount = max(
-            self.completion_bet_or_raise_amount,
-            completion_bet_or_raise_amount,
-        )
-        self.completion_bet_or_raise_count += 1
-
-        assert self.actor_indices
-
     def _end_betting(self) -> None:
-        assert sum(self.statuses) >= 1
-
-        self.bring_in_status = False
-        self.completion_status = False
-
-        self.actor_indices.clear()
-
         show = False
 
         assert self.street_index is not None
@@ -1779,89 +1546,544 @@ class State:
 
         self._begin_bet_collection()
 
+    def _pop_actor_index(self) -> int:
+        return self.actor_indices.popleft()
+
+    @property
+    def actor_index(self) -> int | None:
+        """Return the actor index.
+
+        :return: The actor index if applicable, otherwise ``None``.
+        """
+        if not self.actor_indices:
+            return None
+
+        # assert self.stacks[self.actor_indices[0]]  # TODO
+
+        return self.actor_indices[0]
+
+    def verify_fold(self) -> None:
+        """Verify the fold.
+
+        :return: ``None``.
+        :raises ValueError: If the fold cannot be done.
+        """
+        if not self.actor_indices:
+            raise ValueError('no player to act')
+        elif self.bring_in_status:
+            raise ValueError('bring-in not posted')
+
+        actor_index = self.actor_index
+
+        assert actor_index is not None
+
+        if self.bets[actor_index] >= max(self.bets):
+            raise ValueError('redundant fold')
+
+    def can_fold(self) -> bool:
+        """Return whether the fold can be done.
+
+        :return: ``True`` if the fold can be done, otherwise ``False``.
+        """
+        try:
+            self.verify_fold()
+        except ValueError:
+            return False
+
+        return True
+
+    def fold(self) -> int:
+        """Fold.
+
+        :return: The actor index.
+        :raises ValueError: If the fold cannot be done.
+        """
+        self.verify_fold()
+
+        actor_index = self._pop_actor_index()
+
+        assert self.stacks[actor_index]
+
+        self._muck_hole_cards(actor_index)
+
+        assert any(self.statuses)
+
+        if not self.actor_indices or sum(self.statuses) <= 1:
+            self._end_betting()
+
+        return actor_index
+
+    @property
+    def check_or_call_amount(self) -> int | None:
+        """Return the check or call amount.
+
+        :return: The check or call amount if applicable, otherwise ``None``.
+        """
+        try:
+            self.verify_check_or_call()
+        except ValueError:
+            return None
+
+        assert self.actor_index is not None
+
+        return min(
+            self.stacks[self.actor_index],
+            max(self.bets) - self.bets[self.actor_index],
+        )
+
+    def verify_check_or_call(self) -> None:
+        """Verify the check or call.
+
+        :return: ``None``.
+        :raises ValueError: If the check or call cannot be done.
+        """
+        if not self.actor_indices:
+            raise ValueError('no player to act')
+        elif self.bring_in_status:
+            raise ValueError('bring-in not posted')
+
+    def can_check_or_call(self) -> bool:
+        """Return whether the check or call can be done.
+
+        :return: ``True`` if the check or call can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_check_or_call()
+        except ValueError:
+            return False
+
+        return True
+
+    def check_or_call(self) -> tuple[int, int]:
+        """Check or call.
+
+        :return: A tuple containing the actor index and the check or
+                 call amount.
+        :raises ValueError: If the check or call cannot be done.
+        """
+        self.verify_check_or_call()
+
+        amount = self.check_or_call_amount
+        actor_index = self._pop_actor_index()
+
+        assert self.stacks[actor_index]
+        assert amount is not None
+
+        self.stacks[actor_index] -= amount
+        self.bets[actor_index] += amount
+
+        if not self.actor_indices:
+            self._end_betting()
+
+        return actor_index, amount
+
+    @property
+    def effective_bring_in_amount(self) -> int | None:
+        """Return the effective bring-in.
+
+        :return: The effective bring-in amount if applicable, otherwise
+                 ``None``.
+        """
+        try:
+            self.verify_bring_in_posting()
+        except ValueError:
+            return None
+
+        assert self.actor_index is not None
+
+        return min(self.stacks[self.actor_index], self.bring_in)
+
+    def verify_bring_in_posting(self) -> None:
+        """Verify the bring-in posting.
+
+        :return: ``None``.
+        :raises ValueError: If the bring-in posting cannot be done.
+        """
+        if not self.actor_indices:
+            raise ValueError('no player to act')
+        elif not self.bring_in_status:
+            raise ValueError('bring-in cannot be posted')
+
+    def can_post_bring_in(self) -> bool:
+        """Return whether the bring-in posting can be done.
+
+        :return: ``True`` if the bring-in posting can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_bring_in_posting()
+        except ValueError:
+            return False
+
+        return True
+
+    def post_bring_in(self) -> tuple[int, int]:
+        """Post the bring-in.
+
+        :return: A tuple containing the poster index and the effective
+                 bring-in amount.
+        :raises ValueError: If the bring-in posting cannot be done.
+        """
+        self.verify_bring_in_posting()
+
+        amount = self.effective_bring_in_amount
+        actor_index = self._pop_actor_index()
+
+        assert self.stacks[actor_index]
+        assert amount is not None
+        assert not any(self.bets)
+        assert self.bring_in
+        assert self.completion_status
+        assert self.actor_indices
+
+        self.stacks[actor_index] -= amount
+        self.bets[actor_index] += amount
+        self.bring_in_status = False
+
+        return actor_index, amount
+
+    def get_effective_stack(self, player_index: int) -> int:
+        """Return the effective stack of the player.
+
+        :param player_index: The player index.
+        :return: The effective stack of the player.
+        """
+        if self.street_index is None or not self.statuses[player_index]:
+            return 0
+
+        effective_stacks = []
+
+        for i in self.player_indices:
+            if self.statuses[i]:
+                effective_stacks.append(self.bets[i] + self.stacks[i])
+
+        assert len(effective_stacks) > 1
+
+        effective_stacks.sort()
+
+        return min(
+            self.stacks[player_index],
+            effective_stacks[-2] - self.bets[player_index],
+        )
+
+    @property
+    def min_completion_bet_or_raise_to_amount(self) -> int | None:
+        """Return the minimum completion, bet, or raise to amount.
+
+        :return: The minimum completion, bet, or raise to amount if
+                 applicable, otherwise ``None``.
+        """
+        try:
+            self._verify_completion_bet_or_raise()
+        except ValueError:
+            return None
+
+        assert self.street is not None
+
+        amount = max(
+            self.completion_bet_or_raise_amount,
+            self.street.min_completion_bet_or_raise_amount,
+        )
+
+        if not self.completion_status:
+            amount += max(self.bets)
+
+        assert self.actor_index is not None
+
+        return min(
+            self.get_effective_stack(self.actor_index)
+            + self.bets[self.actor_index],
+            amount,
+        )
+
+    @property
+    def pot_completion_bet_or_raise_to_amount(self) -> int | None:
+        """Return the pot completion, bet, or raise to amount.
+
+        :return: The pot completion, bet, or raise to amount if
+                 applicable, otherwise ``None``.
+        """
+        try:
+            self._verify_completion_bet_or_raise()
+        except ValueError:
+            return None
+
+        assert self.actor_index is not None
+        assert self.min_completion_bet_or_raise_to_amount is not None
+
+        return min(
+            self.stacks[self.actor_index] + self.bets[self.actor_index],
+            max(
+                self.min_completion_bet_or_raise_to_amount,
+                2 * max(self.bets) - self.bets[self.actor_index]
+                + self.total_pot_amount,
+            )
+        )
+
+    @property
+    def max_completion_bet_or_raise_to_amount(self) -> int | None:
+        """Return the maximum completion, bet, or raise to amount.
+
+        :return: The maximum completion, bet, or raise to amount if
+                 applicable, otherwise ``None``.
+        """
+        try:
+            self._verify_completion_bet_or_raise()
+        except ValueError:
+            return None
+
+        assert self.actor_index is not None
+
+        match self.betting_structure:
+            case BettingStructure.FIXED_LIMIT:
+                amount = self.min_completion_bet_or_raise_to_amount
+            case BettingStructure.POT_LIMIT:
+                amount = self.pot_completion_bet_or_raise_to_amount
+            case BettingStructure.NO_LIMIT:
+                amount = (
+                    self.stacks[self.actor_index]
+                    + self.bets[self.actor_index]
+                )
+            case _:
+                raise AssertionError
+
+        assert amount is not None
+        assert (
+            amount
+            <= self.stacks[self.actor_index] + self.bets[self.actor_index]
+        )
+
+        return amount
+
+    def _verify_completion_bet_or_raise(self) -> None:
+        if not self.actor_indices:
+            raise ValueError('no player to act')
+
+        assert self.street is not None
+
+        if (
+                self.completion_bet_or_raise_count
+                == self.street.max_completion_bet_or_raise_count
+        ):
+            raise ValueError('no more completion, bet, or raise permitted')
+
+        actor_index = self.actor_index
+
+        assert actor_index is not None
+
+        if self.stacks[actor_index] <= max(self.bets) - self.bets[actor_index]:
+            raise ValueError('not enough chips in stack')
+
+        for i in self.player_indices:
+            if (
+                    i != actor_index
+                    and self.statuses[i]
+                    and self.stacks[i] + self.bets[i] > max(self.bets)
+            ):
+                break
+        else:
+            raise ValueError('irrelevant completion, bet, or raise')
+
+    def verify_completion_bet_or_raise_to(
+            self,
+            amount: int | None = None,
+    ) -> int:
+        """Verify the completion, bet, or raise.
+
+        :param amount: The optional completion, bet, or raise to amount.
+        :return: The completion, bet, or raise to amount.
+        :raises ValueError: If the completion, bet, or raise cannot be
+                            done.
+        """
+        self._verify_completion_bet_or_raise()
+
+        actor_index = self.actor_index
+
+        assert actor_index is not None
+        assert self.min_completion_bet_or_raise_to_amount is not None
+        assert self.max_completion_bet_or_raise_to_amount is not None
+
+        if amount is None:
+            amount = self.min_completion_bet_or_raise_to_amount
+
+        if amount < self.min_completion_bet_or_raise_to_amount:
+            raise ValueError('below min completion, bet, or raise to amount')
+        elif amount > self.max_completion_bet_or_raise_to_amount:
+            raise ValueError('above max completion, bet, or raise to amount')
+
+        return amount
+
+    def can_complete_bet_or_raise_to(
+            self,
+            amount: int | None = None,
+    ) -> bool:
+        """Return whether the completion, bet, or raise can be done.
+
+        :param amount: The optional completion, bet, or raise to amount.
+        :return: ``True`` if the completion, bet, or raise can be done,
+                 otherwise ``False``.
+        """
+        try:
+            self.verify_completion_bet_or_raise_to(amount)
+        except ValueError:
+            return False
+
+        return True
+
+    def complete_bet_or_raise_to(
+            self,
+            amount: int | None = None,
+    ) -> tuple[int, int]:
+        """Complete, bet, or raise to an amount.
+
+        :param amount: The optional completion, bet, or raise to amount.
+        :return: A tuple containing the actor index and the completion,
+                 bet, or raise to amount.
+        :raises ValueError: If the completion, bet, or raise cannot be
+                            done.
+        """
+        amount = self.verify_completion_bet_or_raise_to(amount)
+        actor_index = self._pop_actor_index()
+
+        completion_bet_or_raise_amount = amount - max(self.bets)
+        self.stacks[actor_index] -= amount - self.bets[actor_index]
+        self.bets[actor_index] = amount
+        self.bring_in_status = False
+        self.completion_status = False
+        self.actor_indices = deque(self.player_indices)
+        self.opener_index = actor_index
+        self.completion_bet_or_raise_amount = max(
+            self.completion_bet_or_raise_amount,
+            completion_bet_or_raise_amount,
+        )
+        self.completion_bet_or_raise_count += 1
+
+        self.actor_indices.rotate(-actor_index)
+        self.actor_indices.popleft()
+
+        for i in self.player_indices:
+            if not self.statuses[i] or not self.stacks[i]:
+                if i in self.actor_indices:
+                    self.actor_indices.remove(i)
+
+        assert self.actor_indices
+
+        return actor_index, amount
+
+    # Showdown
+
+    showdown_indices: deque[int] = field(default_factory=deque, init=False)
+    """The showdown indices."""
+
     def _begin_showdown(self) -> None:
-        assert not self.actor_indices
+        assert not self.showdown_indices
 
         self.street_index = None
-        self.actor_indices = deque(self.player_indices)
+        self.showdown_indices = deque(self.player_indices)
 
         if self.opener_index is not None:
-            self.actor_indices.rotate(-self.opener_index)
+            self.showdown_indices.rotate(-self.opener_index)
 
         for i in self.player_indices:
             if not self.statuses[i] or all(self.hole_card_statuses[i]):
-                self.actor_indices.remove(i)
+                self.showdown_indices.remove(i)
 
-        if not self.actor_indices:
+        if not self.showdown_indices:
             self._end_showdown()
-
-    def show_hole_cards(self) -> None:
-        """Show hole cards.
-
-        :return: ``None``.
-        """
-        if self.street is not None:
-            raise ValueError('not in showdown')
-        elif not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-
-        self.actor_indices.popleft()
-        self._show_hole_cards(actor_index)
-
-        if not self.actor_indices:
-            self._end_showdown()
-
-    def muck_hole_cards(self) -> None:
-        """Muck hole cards.
-
-        :return: ``None``.
-        """
-        if self.street is not None:
-            raise ValueError('not in showdown')
-        elif not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-
-        self.actor_indices.popleft()
-        self._muck_hole_cards(actor_index)
-
-        if not self.actor_indices:
-            self._end_showdown()
-
-    def show_or_muck_hole_cards(self) -> None:
-        """Show or muck hole cards.
-
-        The hole cards will be shown if and only if there is chance of
-        winning the pot. Otherwise, the hand will be mucked.
-
-        :return: ``None``.
-        """
-        if not self.actor_indices:
-            raise ValueError('no player to act')
-
-        actor_index = self.actor_index
-
-        assert actor_index is not None
-
-        if self.can_win(actor_index):
-            self.show_hole_cards()
-        else:
-            self.muck_hole_cards()
 
     def _end_showdown(self) -> None:
-        self.actor_indices.clear()
+        assert not self.showdown_indices
+
         self._begin_hand_killing()
 
+    @property
+    def showdown_index(self) -> int | None:
+        """Return the showdown index.
+
+        :return: The showdown index if applicable, otherwise ``None``.
+        """
+        try:
+            self._verify_hole_card_showing_or_mucking()
+        except ValueError:
+            return None
+
+        return self.showdown_indices[0]
+
+    def _pop_showdown_index(self) -> int:
+        return self.showdown_indices.popleft()
+
+    def _verify_hole_card_showing_or_mucking(self) -> None:
+        if not self.showdown_indices:
+            raise ValueError('no player to act')
+
+    def verify_hole_card_showing_or_mucking(
+            self,
+            status: bool | None = None,
+    ) -> bool:
+        """Verify the hole card showing or mucking.
+
+        :param status: The optional status.
+        :return: The status.
+        :raises ValueError: If hole card showing or mucking cannot be done.
+        """
+        self._verify_hole_card_showing_or_mucking()
+
+        assert self.showdown_index is not None
+
+        if status is None:
+            status = self.can_win(self.showdown_index)
+
+        return status
+
+    def can_show_or_muck_hole_cards(self, status: bool | None = None) -> bool:
+        """Return whether the hole card showing or mucking can be done.
+
+        :param status: The optional status.
+        :return: ``True`` if the hole crad showing or mucking can be done,
+                 otherwise ``False``.
+        """
+        try:
+            self.verify_hole_card_showing_or_mucking(status)
+        except ValueError:
+            return False
+
+        return True
+
+    def show_or_muck_hole_cards(self, status: bool | None = None) -> None:
+        """Show or muck hole cards.
+
+        If the status is not given, the hole cards will be shown if and
+        only if there is chance of winning the pot. Otherwise, the hand
+        will be mucked.
+
+        :param status: The optional status.
+        :return: A tuple containing the showdown index and the status.
+        """
+        status = self.verify_hole_card_showing_or_mucking(status)
+        showdown_index = self._pop_showdown_index()
+
+        if status:
+            self._show_hole_cards(showdown_index)
+        else:
+            self._muck_hole_cards(showdown_index)
+
+        if not self.showdown_indices:
+            self._end_showdown()
+
+    # Hand killing
+
+    hand_killing_statuses: list[bool] = field(default_factory=list, init=False)
+    """The hand killing statuses."""
+
+    def _setup_hand_killing(self) -> None:
+        assert not self.hand_killing_statuses
+
+        for _ in range(self.player_count):
+            self.hand_killing_statuses.append(False)
+
     def _begin_hand_killing(self) -> None:
-        assert not any(self.hand_kill_statuses)
-        assert self.street is None
+        assert not any(self.hand_killing_statuses)
 
         for i in self.player_indices:
             if not self.statuses[i]:
@@ -1869,50 +2091,131 @@ class State:
 
             assert self.statuses[i]
 
-            self.hand_kill_statuses[i] = not self.can_win(i)
+            self.hand_killing_statuses[i] = not self.can_win(i)
 
-        if not any(self.hand_kill_statuses):
-            self._end_hand_killing()
-
-    def kill_hand(self) -> None:
-        """Kill hand.
-
-        :return: ``None``.
-        """
-        if not any(self.hand_kill_statuses):
-            raise ValueError('no hand to be killed')
-
-        player_index = self.hand_kill_index
-
-        assert player_index is not None
-
-        self.hand_kill_statuses[player_index] = False
-        self._muck_hole_cards(player_index)
-
-        if not any(self.hand_kill_statuses):
+        if not any(self.hand_killing_statuses):
             self._end_hand_killing()
 
     def _end_hand_killing(self) -> None:
         for i in self.player_indices:
-            self.hand_kill_statuses[i] = False
+            self.hand_killing_statuses[i] = False
 
-        self._begin_chip_push()
+        self._begin_chip_pushing()
 
-    def _begin_chip_push(self) -> None:
-        assert not self.chip_push_status
+    @property
+    def hand_killing_indices(self) -> Iterator[int]:
+        """Iterate through players who can post antes.
+
+        :return: The ante posters.
+        """
+        try:
+            self._verify_hand_killing()
+        except ValueError:
+            return
+
+        for i in self.player_indices:
+            if self.hand_killing_statuses[i]:
+                yield i
+
+    def _verify_hand_killing(self) -> None:
+        if not any(self.hand_killing_statuses):
+            raise ValueError('nobody can kill his or her hand')
+
+    def verify_hand_killing(self, player_index: int | None = None) -> int:
+        """Verify the hand killing.
+
+        :param player_index: The optional player index.
+        :return: The hand killing index.
+        :raises ValueError: If the hand killing cannot be done.
+        """
+        self._verify_hand_killing()
+
+        if player_index is None:
+            player_index = next(self.hand_killing_indices)
+
+        if not self.hand_killing_statuses[player_index]:
+            raise ValueError('player cannot kill his or her hand')
+
+        return player_index
+
+    def can_kill_hand(self, player_index: int | None = None) -> bool:
+        """Return whether the hand killing can be done.
+
+        :param player_index: The optional player index.
+        :return: ``True`` if the hand killing can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_hand_killing(player_index)
+        except ValueError:
+            return False
+
+        return True
+
+    def kill_hand(self, player_index: int | None = None) -> int:
+        """Kill hand.
+
+        :param player_index: The optional player index.
+        :return: The hand killing index.
+        :raises ValueError: If the hand killing cannot be done.
+        """
+        player_index = self.verify_hand_killing(player_index)
+        self.hand_killing_statuses[player_index] = False
+
+        self._muck_hole_cards(player_index)
+
+        if not any(self.hand_killing_statuses):
+            self._end_hand_killing()
+
+        return player_index
+
+    # Chip pushing
+
+    chip_pushing_status: bool = field(default=False, init=False)
+    """The chip pushing status."""
+
+    def _begin_chip_pushing(self) -> None:
+        assert not self.chip_pushing_status
 
         self.street_index = None
-        self.chip_push_status = True
+        self.chip_pushing_status = True
+
+    def _end_chip_pushing(self) -> None:
+        self.chip_pushing_status = False
+
+        self._begin_chip_pulling()
+
+    def verify_chip_pushing(self) -> None:
+        """Verify the chip pushing.
+
+        :return: ``None``.
+        :raises ValueError: If the chip pushing cannot be done.
+        """
+        if not self.chip_pushing_status:
+            raise ValueError('chip push not allowed')
+
+    def can_push_chips(self) -> bool:
+        """Return whether the chip pushing can be done.
+
+        :return: ``True`` if the chip pushing can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_chip_pushing()
+        except ValueError:
+            return False
+
+        return True
 
     def push_chips(self) -> None:
         """Push chips.
 
         :return: ``None``.
+        :raises ValueError: If the chip pushing cannot be done.
         """
-        if not self.chip_push_status:
-            raise ValueError('chip push not allowed')
+        self.verify_chip_pushing()
 
-        self.chip_push_status = False
+        self.chip_pushing_status = False
 
         if sum(self.statuses) == 1:
             for pot in self.pots:
@@ -1950,55 +2253,97 @@ class State:
 
                     push(player_indices, amount)
 
-        self._end_chip_push()
+        self._end_chip_pushing()
 
-    def _end_chip_push(self) -> None:
-        self.chip_push_status = False
+    # Chip pulling
 
-        self._begin_chip_pull()
+    chip_pulling_statuses: list[bool] = field(default_factory=list, init=False)
+    """The chip pulling statuses."""
 
-    def _begin_chip_pull(self) -> None:
-        assert not any(self.chip_pull_statuses)
+    def _setup_chip_pulling(self) -> None:
+        assert not self.chip_pulling_statuses
+
+        for _ in range(self.player_count):
+            self.chip_pulling_statuses.append(False)
+
+    def _begin_chip_pulling(self) -> None:
+        assert not any(self.chip_pulling_statuses)
 
         for i in self.player_indices:
-            self.chip_pull_statuses[i] = self.bets[i] > 0
+            self.chip_pulling_statuses[i] = self.bets[i] > 0
 
-        assert any(self.chip_pull_statuses)
+        assert any(self.chip_pulling_statuses)
 
-    def pull_chips(self, player_index: int) -> None:
-        """Pull chips to the stack of the player.
-
-        :param player_index: The player index.
-        :return: ``None``.
-        """
-        if not self.chip_pull_statuses[player_index]:
-            raise ValueError('no chip to be pulled')
-
-        self.stacks[player_index] += self.bets[player_index]
-        self.bets[player_index] = 0
-        self.chip_pull_statuses[player_index] = False
-
-        if not any(self.chip_pull_statuses):
-            self._end_chip_pull()
-
-    def _end_chip_pull(self) -> None:
+    def _end_chip_pulling(self) -> None:
         for i in self.player_indices:
-            self.chip_pull_statuses[i] = False
+            self.chip_pulling_statuses[i] = False
 
         self.status = False
 
-    def _muck_hole_cards(self, player_index: int) -> None:
-        assert self.statuses[player_index]
+    @property
+    def chip_pulling_indices(self) -> Iterator[int]:
+        """Iterate through players who can pull chips.
 
-        for i, card in enumerate(self.hole_cards[player_index]):
-            self.mucked_cards.append(card)
+        :return: The chip pullers.
+        """
+        try:
+            self._verify_chip_pulling()
+        except ValueError:
+            return None
 
-        self.statuses[player_index] = False
-        self.hole_cards[player_index].clear()
-        self.hole_card_statuses[player_index].clear()
+        for i in self.player_indices:
+            if self.chip_pulling_statuses[i]:
+                yield i
 
-    def _show_hole_cards(self, player_index: int) -> None:
-        assert self.statuses[player_index]
+    def _verify_chip_pulling(self) -> None:
+        if not any(self.chip_pulling_statuses):
+            raise ValueError('no one can pull chips')
 
-        for i in range(len(self.hole_cards[player_index])):
-            self.hole_card_statuses[player_index][i] = True
+    def verify_chip_pulling(self, player_index: int | None = None) -> int:
+        """Verify the chip pulling.
+
+        :param player_index: The optional player index.
+        :return: The chip pulling index.
+        :raises ValueError: If the chip pulling cannot be done.
+        """
+        self._verify_chip_pulling()
+
+        if player_index is None:
+            player_index = next(self.chip_pulling_indices)
+
+        if not self.chip_pulling_statuses[player_index]:
+            raise ValueError('no chip to be pulled')
+
+        return player_index
+
+    def can_pull_chips(self, player_index: int | None = None) -> bool:
+        """Return whether the chip pulling can be done.
+
+        :param player_index: The optional player index.
+        :return: ``True`` if the chip pulling can be done, otherwise
+                 ``False``.
+        """
+        try:
+            self.verify_chip_pulling(player_index)
+        except ValueError:
+            return False
+
+        return True
+
+    def pull_chips(self, player_index: int | None = None) -> int:
+        """Pull chips..
+
+        :param player_index: The optional player index.
+        :return: The chip pulling index.
+        :raises ValueError: If the chip pulling cannot be done.
+        """
+        player_index = self.verify_chip_pulling(player_index)
+
+        self.stacks[player_index] += self.bets[player_index]
+        self.bets[player_index] = 0
+        self.chip_pulling_statuses[player_index] = False
+
+        if not any(self.chip_pulling_statuses):
+            self._end_chip_pulling()
+
+        return player_index

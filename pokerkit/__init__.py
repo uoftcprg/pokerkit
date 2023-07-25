@@ -16,6 +16,7 @@ __all__ = (
     'EightOrBetterLowLookup',
     'Entry',
     'filter_none',
+    'FixedLimitBadugiDraw',
     'FixedLimitDeuceToSevenLowballTripleDraw',
     'FixedLimitOmahaHoldemSplitHighEightOrBetterLow',
     'FixedLimitRazz',
@@ -30,6 +31,7 @@ __all__ = (
     'max_or_none',
     'min_or_none',
     'NoLimitDeuceToSevenLowballSingleDraw',
+    'NoLimitShortDeckHoldem',
     'NoLimitTexasHoldem',
     'OmahaEightOrBetterLowHand',
     'OmahaHoldem',
@@ -57,6 +59,7 @@ __all__ = (
 
 from pokerkit.games import (
     DeuceToSevenLowball,
+    FixedLimitBadugiDraw,
     FixedLimitDeuceToSevenLowballTripleDraw,
     FixedLimitOmahaHoldemSplitHighEightOrBetterLow,
     FixedLimitRazz,
@@ -64,6 +67,7 @@ from pokerkit.games import (
     FixedLimitSevenCardStudSplitHighEightOrBetterLow,
     FixedLimitTexasHoldem,
     NoLimitDeuceToSevenLowballSingleDraw,
+    NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
     OmahaHoldem,
     Poker,
