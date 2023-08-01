@@ -398,6 +398,18 @@ class Deck(tuple[Card, ...], Enum):
     >>> deck[3] = Card(Rank.ACE, Suit.SPADE)
     >>> deck[:6]
     [2c, 2d, 2h, As, 3c, 3d]
+
+    The standard and regular decks have identical contents. The ordering
+    of the cards are different, however.
+
+    >>> len(Deck.STANDARD)
+    52
+    >>> len(Deck.REGULAR)
+    52
+    >>> Deck.STANDARD[:6]
+    (2c, 2d, 2h, 2s, 3c, 3d)
+    >>> Deck.REGULAR[:6]
+    (Ac, Ad, Ah, As, 2c, 2d)
     """
 
     STANDARD: tuple[Card, ...] = tuple(
@@ -409,7 +421,10 @@ class Deck(tuple[Card, ...], Enum):
             ),
         ),
     )
-    """The 52-card standard deck cards."""
+    """The 52-card standard deck cards.
+
+    The ranks are ordered from deuces to aces.
+    """
     SHORT_DECK_HOLDEM: tuple[Card, ...] = tuple(
         starmap(
             Card,
@@ -432,7 +447,16 @@ class Deck(tuple[Card, ...], Enum):
             ),
         ),
     )
-    """The 52-card regular deck cards."""
+    """The 52-card regular deck cards.
+
+    The ranks are ordered from aces to kings.
+    """
+    KUHN_POKER: tuple[Card, ...] = tuple(Card.parse('JsQsKs'))
+    """The 3-card Kuhn poker deck cards.
+
+    The cards in it are jack of spades, queen of spades, and king of
+    spades.
+    """
 
 
 def filter_none(values: Iterable[Any]) -> Any:

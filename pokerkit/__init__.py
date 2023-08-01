@@ -4,6 +4,7 @@ All poker tools are imported here.
 """
 
 __all__ = (
+    'Automation',
     'BadugiHand',
     'BadugiLookup',
     'BettingStructure',
@@ -15,7 +16,6 @@ __all__ = (
     'EightOrBetterLowHand',
     'EightOrBetterLowLookup',
     'Entry',
-    'filter_none',
     'FixedLimitBadugi',
     'FixedLimitDeuceToSevenLowballTripleDraw',
     'FixedLimitOmahaHoldemSplitHighEightOrBetterLow',
@@ -28,8 +28,6 @@ __all__ = (
     'HoleBoardCombinationHand',
     'Label',
     'Lookup',
-    'max_or_none',
-    'min_or_none',
     'NoLimitDeuceToSevenLowballSingleDraw',
     'NoLimitShortDeckHoldem',
     'NoLimitTexasHoldem',
@@ -54,7 +52,10 @@ __all__ = (
     'State',
     'Street',
     'Suit',
+    'filter_none',
     'TexasHoldem',
+    'max_or_none',
+    'min_or_none',
 )
 
 from pokerkit.games import (
@@ -102,6 +103,7 @@ from pokerkit.lookups import (
     StandardLookup,
 )
 from pokerkit.state import (
+    Automation,
     BettingStructure,
     Opening,
     Pot,

@@ -210,6 +210,38 @@ class Street:
             )
 
 
+@unique
+class Automation(Enum):
+    """The enum class for automation.
+
+    >>> Automation.ANTE_POSTING  # doctest: +ELLIPSIS
+    <Automation.ANTE_POSTING: ...>
+    >>> Automation.CARD_BURNING  # doctest: +ELLIPSIS
+    <Automation.CARD_BURNING: ...>
+    """
+
+    ANTE_POSTING = auto()
+    """The ante posting automation."""
+    BET_COLLECTION = auto()
+    """The bet collection automation."""
+    BLIND_OR_STRADDLE_POSTING = auto()
+    """The blind or straddle posting automation."""
+    CARD_BURNING = auto()
+    """The card burning automation."""
+    HOLE_DEALING = auto()
+    """The hole dealing automation."""
+    BOARD_DEALING = auto()
+    """The board dealing automation."""
+    HOLE_CARDS_SHOWING_OR_MUCKING = auto()
+    """The hole cards showing or mucking automation."""
+    HAND_KILLING = auto()
+    """The hand killing automation."""
+    CHIP_PUSHING = auto()
+    """The chip pushing automation."""
+    CHIP_PULLING = auto()
+    """The chip pulling automation."""
+
+
 @dataclass(frozen=True)
 class Pot:
     """The class for pots.
@@ -237,9 +269,12 @@ class Pot:
 class State:
     """The class for states.
 
+    Below code shows an example Kuhn poker game with all non-player
+    actions and showdown automated.
+
     >>> from pokerkit import BadugiHand
     >>> state = State(
-    ...     deque(Card.parse('JsQsKs')),
+    ...     Deck.KUHN_POKER,
     ...     (BadugiHand,),
     ...     (
     ...         Street(
@@ -253,42 +288,31 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
+    ...     (
+    ...         Automation.ANTE_POSTING,
+    ...         Automation.BET_COLLECTION,
+    ...         Automation.BLIND_OR_STRADDLE_POSTING,
+    ...         Automation.CARD_BURNING,
+    ...         Automation.HOLE_DEALING,
+    ...         Automation.BOARD_DEALING,
+    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+    ...         Automation.HAND_KILLING,
+    ...         Automation.CHIP_PUSHING,
+    ...         Automation.CHIP_PULLING,
+    ...     ),
     ...     (1,) * 2,
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
     ... )
-    >>> state.stacks
-    [2, 2]
-    >>> state.bets
-    [0, 0]
-    >>> state.post_ante(0)
-    (0, 1)
-    >>> state.post_ante(1)
-    (1, 1)
-    >>> state.stacks
-    [1, 1]
-    >>> state.bets
-    [1, 1]
-    >>> state.collect_bets()
+    >>> state.status
+    True
     >>> state.stacks
     [1, 1]
     >>> state.bets
     [0, 0]
-    >>> state.hole_cards
-    [[], []]
-    >>> state.deal_hole()
-    (0, (Js,))
-    >>> state.hole_cards
-    [[Js], []]
-    >>> state.deal_hole()
-    (1, (Qs,))
-    >>> state.hole_cards
-    [[Js], [Qs]]
-    >>> state.stacks
-    [1, 1]
-    >>> state.bets
-    [0, 0]
+    >>> state.hole_cards  # doctest: +ELLIPSIS
+    [[...s], [...s]]
     >>> state.check_or_call()
     (0, 0)
     >>> state.stacks
@@ -303,27 +327,67 @@ class State:
     [0, 1]
     >>> state.fold()
     0
-    >>> state.collect_bets()
-    >>> state.push_chips()
-    >>> state.stacks
-    [1, 0]
-    >>> state.bets
-    [0, 3]
-    >>> state.total_pot_amount
-    3
-    >>> state.pull_chips(1)
-    1
     >>> state.stacks
     [1, 3]
     >>> state.bets
     [0, 0]
     >>> state.total_pot_amount
     0
+    >>> state.status
+    False
+
+    Below shows the identical game, but without any automation.
+
+    >>> from pokerkit import BadugiHand
+    >>> state = State(
+    ...     Deck.KUHN_POKER,
+    ...     (BadugiHand,),
+    ...     (
+    ...         Street(
+    ...             False,
+    ...             (False,),
+    ...             0,
+    ...             False,
+    ...             Opening.POSITION,
+    ...             1,
+    ...             None,
+    ...         ),
+    ...     ),
+    ...     BettingStructure.FIXED_LIMIT,
+    ...     (),
+    ...     (1,) * 2,
+    ...     (0,) * 2,
+    ...     0,
+    ...     (2,) * 2,
+    ... )
+    >>> state.status
+    True
+    >>> state.post_ante(0)
+    (0, 1)
+    >>> state.post_ante(1)
+    (1, 1)
+    >>> state.collect_bets()
+    >>> state.deal_hole(tuple(Card.parse('Js')))
+    (0, (Js,))
+    >>> state.deal_hole()  # doctest: +ELLIPSIS
+    (1, (...s,))
+    >>> state.check_or_call()
+    (0, 0)
+    >>> state.complete_bet_or_raise_to()
+    (1, 1)
+    >>> state.fold()
+    0
+    >>> state.collect_bets()
+    >>> state.push_chips()
+    >>> state.pull_chips(1)
+    1
+    >>> state.status
+    False
     """
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
     __high_hand_opening_lookup = _HighHandOpeningLookup()
-    deck: Deck | deque[Card]
+    deck: Deck
     """The deck."""
     hand_types: tuple[type[Hand], ...]
     """The hand types."""
@@ -331,6 +395,8 @@ class State:
     """The streets."""
     betting_structure: BettingStructure
     """The betting structure."""
+    automations: tuple[Automation, ...]
+    """The automations."""
     antes: tuple[int, ...]
     """The antes."""
     blinds_or_straddles: tuple[int, ...]
@@ -339,6 +405,14 @@ class State:
     """The bring-in."""
     starting_stacks: tuple[int, ...]
     """The starting stacks."""
+    deck_cards: deque[Card] = field(default_factory=deque, init=False)
+    """The deck cards."""
+    board_cards: list[Card] = field(default_factory=list, init=False)
+    """The board cards."""
+    mucked_cards: list[Card] = field(default_factory=list, init=False)
+    """The mucked cards."""
+    burned_cards: list[Card] = field(default_factory=list, init=False)
+    """The burned cards."""
     statuses: list[bool] = field(default_factory=list, init=False)
     """The player statuses."""
     bets: list[int] = field(default_factory=list, init=False)
@@ -352,12 +426,6 @@ class State:
         init=False,
     )
     """The player hole card statuses."""
-    board_cards: list[Card] = field(default_factory=list, init=False)
-    """The board cards."""
-    mucked_cards: list[Card] = field(default_factory=list, init=False)
-    """The mucked cards."""
-    burned_cards: list[Card] = field(default_factory=list, init=False)
-    """The burned cards."""
     street_index: int | None = field(default=None, init=False)
     """The street index."""
     status: bool = field(default=True, init=False)
@@ -400,10 +468,9 @@ class State:
         elif self.player_count < 2:
             raise ValueError('not enough players')
 
-        if isinstance(self.deck, Deck):
-            self.deck = deque(self.deck)
+        self.deck_cards.extend(self.deck)
 
-            shuffle(self.deck)
+        shuffle(self.deck_cards)
 
         for i in self.player_indices:
             self.statuses.append(True)
@@ -655,7 +722,7 @@ class State:
         for i in range(len(self.hole_cards[player_index])):
             self.hole_card_statuses[player_index][i] = True
 
-    # Ante posting
+    # ante posting
 
     ante_posting_statuses: list[bool] = field(default_factory=list, init=False)
     """The player ante posting statuses."""
@@ -674,6 +741,9 @@ class State:
 
         if not any(self.ante_posting_statuses):
             self._end_ante_posting()
+        elif Automation.ANTE_POSTING in self.automations:
+            while any(self.ante_posting_statuses):
+                self.post_ante()
 
     def _end_ante_posting(self) -> None:
         assert not any(self.ante_posting_statuses)
@@ -765,7 +835,7 @@ class State:
 
         return player_index, effective_ante
 
-    # Bet collection
+    # bet collection
 
     bet_collection_status: bool = field(default=False, init=False)
     """The bet collection status."""
@@ -780,6 +850,8 @@ class State:
 
         if not self.bet_collection_status:
             self._end_bet_collection()
+        elif Automation.BET_COLLECTION in self.automations:
+            self.collect_bets()
 
     def _end_bet_collection(self) -> None:
         assert not self.bet_collection_status
@@ -846,7 +918,7 @@ class State:
 
         self._end_bet_collection()
 
-    # Blind or straddle posting
+    # blind or straddle posting
 
     blind_or_straddle_posting_statuses: list[bool] = field(
         default_factory=list,
@@ -870,6 +942,9 @@ class State:
 
         if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
+        elif Automation.BLIND_OR_STRADDLE_POSTING in self.automations:
+            while any(self.blind_or_straddle_posting_statuses):
+                self.post_blind_or_straddle()
 
     def _end_blind_or_straddle_posting(self) -> None:
         assert not any(self.blind_or_straddle_posting_statuses)
@@ -979,7 +1054,7 @@ class State:
 
         return player_index, effective_blind_or_straddle
 
-    # Dealing
+    # dealing
 
     burn_status: bool = field(default=False, init=False)
     """The card burn status."""
@@ -1036,6 +1111,30 @@ class State:
             or any(self.discard_statuses)
         )
 
+        if (
+                Automation.CARD_BURNING in self.automations
+                and self.burn_status
+        ):
+            self.burn_card()
+
+        if Automation.HOLE_DEALING in self.automations:
+            while any(self.hole_deal_statuses):
+                self.deal_hole()
+
+        if (
+                Automation.BOARD_DEALING in self.automations
+                and self.board_deal_count
+        ):
+            self.deal_board()
+
+        if (
+                not self.burn_status
+                and not any(self.hole_deal_statuses)
+                and not self.board_deal_count
+                and not any(self.discard_statuses)
+        ):
+            self._end_dealing()
+
     def _end_dealing(self) -> None:
         assert not self.burn_status
         assert not any(self.hole_deal_statuses)
@@ -1045,18 +1144,17 @@ class State:
         self._begin_betting()
 
     def _make_available(self, cards: tuple[Card, ...]) -> None:
-        assert len(self.deck) >= len(cards)
-        assert isinstance(self.deck, deque)
+        assert len(self.deck_cards) >= len(cards)
 
         for card in cards:
-            assert card in self.burned_cards or card in self.deck
+            assert card in self.burned_cards or card in self.deck_cards
 
             if card in self.burned_cards:
                 self.burned_cards[self.burned_cards.index(card)] = (
-                    self.deck.popleft()
+                    self.deck_cards.popleft()
                 )
             else:
-                self.deck.remove(card)
+                self.deck_cards.remove(card)
 
     @property
     def available_cards(self) -> Iterator[Card]:
@@ -1070,7 +1168,7 @@ class State:
                 or any(self.hole_deal_statuses)
                 or self.board_deal_count
         ):
-            yield from chain(self.burned_cards, self.deck)
+            yield from chain(self.burned_cards, self.deck_cards)
 
     def verify_card_availabilities(
             self,
@@ -1089,11 +1187,11 @@ class State:
         else:
             card_count = len(cards)
 
-        if len(self.deck) < card_count:
+        if len(self.deck_cards) < card_count:
             raise ValueError('too many cards')
 
         if isinstance(cards, int):
-            cards = tuple(self.deck)[:cards]
+            cards = tuple(self.deck_cards)[:cards]
         elif isinstance(cards, Card):
             cards = (cards,)
 
@@ -1147,14 +1245,17 @@ class State:
             or self.board_deal_count
             or self.street.discard_and_draw_status
         )
-        assert not any(self.discard_statuses)
 
         self._make_available((card,))
 
         self.burn_status = False
         self.burned_cards.append(card)
 
-        if not any(self.hole_deal_statuses) and not self.board_deal_count:
+        if (
+                not any(self.hole_deal_statuses)
+                and not self.board_deal_count
+                and not any(self.discard_statuses)
+        ):
             self._end_dealing()
 
         return card
@@ -1431,7 +1532,7 @@ class State:
 
         return player_index, discarded_cards
 
-    # Betting
+    # betting
 
     opener_index: int | None = field(default=None, init=False)
     """The opener index."""
@@ -1985,7 +2086,7 @@ class State:
 
         return actor_index, amount
 
-    # Showdown
+    # showdown
 
     showdown_indices: deque[int] = field(default_factory=deque, init=False)
     """The showdown indices."""
@@ -2005,6 +2106,9 @@ class State:
 
         if not self.showdown_indices:
             self._end_showdown()
+        elif Automation.HOLE_CARDS_SHOWING_OR_MUCKING in self.automations:
+            while self.showdown_indices:
+                self.show_or_muck_hole_cards()
 
     def _end_showdown(self) -> None:
         assert not self.showdown_indices
@@ -2018,7 +2122,7 @@ class State:
         :return: The showdown index if applicable, otherwise ``None``.
         """
         try:
-            self._verify_hole_card_showing_or_mucking()
+            self._verify_hole_cards_showing_or_mucking()
         except ValueError:
             return None
 
@@ -2027,11 +2131,11 @@ class State:
     def _pop_showdown_index(self) -> int:
         return self.showdown_indices.popleft()
 
-    def _verify_hole_card_showing_or_mucking(self) -> None:
+    def _verify_hole_cards_showing_or_mucking(self) -> None:
         if not self.showdown_indices:
             raise ValueError('no player to act')
 
-    def verify_hole_card_showing_or_mucking(
+    def verify_hole_cards_showing_or_mucking(
             self,
             status: bool | None = None,
     ) -> bool:
@@ -2041,7 +2145,7 @@ class State:
         :return: The status.
         :raises ValueError: If hole card showing or mucking cannot be done.
         """
-        self._verify_hole_card_showing_or_mucking()
+        self._verify_hole_cards_showing_or_mucking()
 
         assert self.showdown_index is not None
 
@@ -2058,7 +2162,7 @@ class State:
                  otherwise ``False``.
         """
         try:
-            self.verify_hole_card_showing_or_mucking(status)
+            self.verify_hole_cards_showing_or_mucking(status)
         except ValueError:
             return False
 
@@ -2074,7 +2178,7 @@ class State:
         :param status: The optional status.
         :return: A tuple containing the showdown index and the status.
         """
-        status = self.verify_hole_card_showing_or_mucking(status)
+        status = self.verify_hole_cards_showing_or_mucking(status)
         showdown_index = self._pop_showdown_index()
 
         if status:
@@ -2085,7 +2189,7 @@ class State:
         if not self.showdown_indices:
             self._end_showdown()
 
-    # Hand killing
+    # hand killing
 
     hand_killing_statuses: list[bool] = field(default_factory=list, init=False)
     """The hand killing statuses."""
@@ -2109,6 +2213,9 @@ class State:
 
         if not any(self.hand_killing_statuses):
             self._end_hand_killing()
+        elif Automation.HAND_KILLING in self.automations:
+            while any(self.hand_killing_statuses):
+                self.kill_hand()
 
     def _end_hand_killing(self) -> None:
         for i in self.player_indices:
@@ -2183,7 +2290,7 @@ class State:
 
         return player_index
 
-    # Chip pushing
+    # chip pushing
 
     chip_pushing_status: bool = field(default=False, init=False)
     """The chip pushing status."""
@@ -2193,6 +2300,9 @@ class State:
 
         self.street_index = None
         self.chip_pushing_status = True
+
+        if Automation.CHIP_PUSHING in self.automations:
+            self.push_chips()
 
     def _end_chip_pushing(self) -> None:
         self.chip_pushing_status = False
@@ -2269,7 +2379,7 @@ class State:
 
         self._end_chip_pushing()
 
-    # Chip pulling
+    # chip pulling
 
     chip_pulling_statuses: list[bool] = field(default_factory=list, init=False)
     """The chip pulling statuses."""
@@ -2287,6 +2397,9 @@ class State:
             self.chip_pulling_statuses[i] = self.bets[i] > 0
 
         assert any(self.chip_pulling_statuses)
+
+        if Automation.CHIP_PULLING in self.automations:
+            self.pull_chips()
 
     def _end_chip_pulling(self) -> None:
         for i in self.player_indices:
