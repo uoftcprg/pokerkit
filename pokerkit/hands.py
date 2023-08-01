@@ -43,16 +43,11 @@ class Hand(Hashable, ABC):
 
     It does not make sense to compare hands of different types.
 
-    >>> h0 = StandardHighHand(Card.parse('6s7s8s9sTs'))
-    >>> h1 = ShortDeckHoldemHand(Card.parse('7c8c9cTcJc'))
-    >>> h0 < h1  # doctest: +ELLIPSIS
+    >>> h = BadugiHand(Card.parse('6d7s8h9c'))
+    >>> h < 500
     Traceback (most recent call last):
         ...
-    TypeError: '<' not supported between instances of ...
-    >>> h0 < 500  # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    TypeError: '<' not supported between instances of ...
+    TypeError: '<' not supported between instances of 'BadugiHand' and 'int'
 
     The hands are hashable.
 

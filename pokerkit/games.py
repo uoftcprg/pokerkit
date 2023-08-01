@@ -1120,9 +1120,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         Below shows the first draw and actions.
 
-        >>> state.discard()  # Yockey
+        >>> state.stand_pat_or_discard()  # Yockey
         (0, ())
-        >>> state.discard(Card.parse('AsQs'))  # Arieh
+        >>> state.stand_pat_or_discard(Card.parse('AsQs'))  # Arieh
         (3, (As, Qs))
         >>> state.deal_hole(Card.parse('2hQh'))  # Arieh
         (3, (2h, Qh))
@@ -1134,9 +1134,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         Below shows the second draw and actions.
 
-        >>> state.discard()  # Yockey
+        >>> state.stand_pat_or_discard()  # Yockey
         (0, ())
-        >>> state.discard(Card.parse('Qh'))  # Arieh
+        >>> state.stand_pat_or_discard(Card.parse('Qh'))  # Arieh
         (3, (Qh,))
         >>> state.deal_hole(Card.parse('4d'))  # Arieh
         (3, (4d,))
@@ -1148,9 +1148,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         Below shows the third draw and actions.
 
-        >>> state.discard()  # Yockey
+        >>> state.stand_pat_or_discard()  # Yockey
         (0, ())
-        >>> state.discard(Card.parse('6s'))  # Arieh
+        >>> state.stand_pat_or_discard(Card.parse('6s'))  # Arieh
         (3, (6s,))
         >>> state.deal_hole(Card.parse('7c'))  # Arieh
         (3, (7c,))
@@ -1291,11 +1291,11 @@ class FixedLimitBadugi(Poker):
 
         Below shows the first draw and actions.
 
-        >>> state.discard(Card.parse('JcKh'))  # Bob*
+        >>> state.stand_pat_or_discard(Card.parse('JcKh'))  # Bob*
         (0, (Jc, Kh))
-        >>> state.discard(Card.parse('7s8s'))  # Carol*
+        >>> state.stand_pat_or_discard(Card.parse('7s8s'))  # Carol*
         (1, (7s, 8s))
-        >>> state.discard(Card.parse('Kc'))  # Alice*
+        >>> state.stand_pat_or_discard(Card.parse('Kc'))  # Alice*
         (3, (Kc,))
         >>> state.deal_hole(Card.parse('TcJs'))  # Bob*
         (0, (Tc, Js))
@@ -1315,11 +1315,11 @@ class FixedLimitBadugi(Poker):
 
         Below shows the second draw and actions.
 
-        >>> state.discard(Card.parse('Js'))  # Bob*
+        >>> state.stand_pat_or_discard(Card.parse('Js'))  # Bob*
         (0, (Js,))
-        >>> state.discard()  # Carol*
+        >>> state.stand_pat_or_discard()  # Carol*
         (1, ())
-        >>> state.discard(Card.parse('Qc'))  # Alice*
+        >>> state.stand_pat_or_discard(Card.parse('Qc'))  # Alice*
         (3, (Qc,))
         >>> state.deal_hole(Card.parse('Ts'))  # Bob*
         (0, (Ts,))
@@ -1339,9 +1339,9 @@ class FixedLimitBadugi(Poker):
 
         Below shows the third draw and actions.
 
-        >>> state.discard(Card.parse('Th'))  # Carol*
+        >>> state.stand_pat_or_discard(Card.parse('Th'))  # Carol*
         (1, (Th,))
-        >>> state.discard()  # Alice*
+        >>> state.stand_pat_or_discard()  # Alice*
         (3, ())
         >>> state.deal_hole(Card.parse('8h'))  # Carol*
         (1, (8h,))

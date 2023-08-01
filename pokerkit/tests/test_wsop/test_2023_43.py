@@ -2966,8 +2966,8 @@ class StateTestCase(TestCase):
 
         # Draw
 
-        state.discard(Card.parse('JsJd'))
-        state.discard(Card.parse('9h'))
+        state.stand_pat_or_discard(Card.parse('JsJd'))
+        state.stand_pat_or_discard(Card.parse('9h'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3026,8 +3026,8 @@ class StateTestCase(TestCase):
 
         # Draw
 
-        state.discard(Card.parse('JcAs'))
-        state.discard(Card.parse('3h'))
+        state.stand_pat_or_discard(Card.parse('JcAs'))
+        state.stand_pat_or_discard(Card.parse('3h'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3718,8 +3718,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(Card.parse('QdJc'))
-        state.discard(Card.parse('KsKd4s'))
+        state.stand_pat_or_discard(Card.parse('QdJc'))
+        state.stand_pat_or_discard(Card.parse('KsKd4s'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3734,8 +3734,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.discard(Card.parse('As'))
-        state.discard(Card.parse('7s'))
+        state.stand_pat_or_discard(Card.parse('As'))
+        state.stand_pat_or_discard(Card.parse('7s'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3747,8 +3747,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.discard(Card.parse('8s'))
-        state.discard(())
+        state.stand_pat_or_discard(Card.parse('8s'))
+        state.stand_pat_or_discard(())
         state.burn_card()
         state.deal_hole()
         self.assertEqual(state.total_pot_amount, 3000000)
@@ -3855,8 +3855,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(Card.parse('AsKs'))
-        state.discard(Card.parse('AcTd'))
+        state.stand_pat_or_discard(Card.parse('AsKs'))
+        state.stand_pat_or_discard(Card.parse('AcTd'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3870,8 +3870,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.discard(Card.parse('Jh4s'))
-        state.discard(Card.parse('Qc'))
+        state.stand_pat_or_discard(Card.parse('Jh4s'))
+        state.stand_pat_or_discard(Card.parse('Qc'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3884,8 +3884,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.discard(Card.parse('4h'))
-        state.discard(Card.parse('3s'))
+        state.stand_pat_or_discard(Card.parse('4h'))
+        state.stand_pat_or_discard(Card.parse('3s'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4043,8 +4043,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(Card.parse('Kh6c'))
-        state.discard(Card.parse('AsAd'))
+        state.stand_pat_or_discard(Card.parse('Kh6c'))
+        state.stand_pat_or_discard(Card.parse('AsAd'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4059,8 +4059,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.discard(())
-        state.discard(Card.parse('2h'))
+        state.stand_pat_or_discard(())
+        state.stand_pat_or_discard(Card.parse('2h'))
         state.burn_card()
         state.deal_hole()
         state.complete_bet_or_raise_to()
@@ -4071,8 +4071,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.discard(())
-        state.discard(())
+        state.stand_pat_or_discard(())
+        state.stand_pat_or_discard(())
         state.burn_card()
         state.check_or_call()
         state.complete_bet_or_raise_to()
@@ -4137,8 +4137,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(Card.parse('9d6c'))
-        state.discard(Card.parse('Th'))
+        state.stand_pat_or_discard(Card.parse('9d6c'))
+        state.stand_pat_or_discard(Card.parse('Th'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4152,8 +4152,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.discard(())
-        state.discard(Card.parse('Qh'))
+        state.stand_pat_or_discard(())
+        state.stand_pat_or_discard(Card.parse('Qh'))
         state.burn_card()
         state.deal_hole()
         state.complete_bet_or_raise_to()
@@ -4163,8 +4163,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.discard(())
-        state.discard(Card.parse('7d'))
+        state.stand_pat_or_discard(())
+        state.stand_pat_or_discard(Card.parse('7d'))
         state.burn_card()
         state.deal_hole()
         state.check_or_call()
