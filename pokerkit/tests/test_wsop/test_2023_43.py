@@ -2966,8 +2966,8 @@ class StateTestCase(TestCase):
 
         # Draw
 
-        state.discard(tuple(Card.parse('JsJd')))
-        state.discard(tuple(Card.parse('9h')))
+        state.discard(Card.parse('JsJd'))
+        state.discard(Card.parse('9h'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3026,8 +3026,8 @@ class StateTestCase(TestCase):
 
         # Draw
 
-        state.discard(tuple(Card.parse('JcAs')))
-        state.discard(tuple(Card.parse('3h')))
+        state.discard(Card.parse('JcAs'))
+        state.discard(Card.parse('3h'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3718,8 +3718,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(tuple(Card.parse('QdJc')))
-        state.discard(tuple(Card.parse('KsKd4s')))
+        state.discard(Card.parse('QdJc'))
+        state.discard(Card.parse('KsKd4s'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3734,8 +3734,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.discard(tuple(Card.parse('As')))
-        state.discard(tuple(Card.parse('7s')))
+        state.discard(Card.parse('As'))
+        state.discard(Card.parse('7s'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3747,7 +3747,7 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.discard(tuple(Card.parse('8s')))
+        state.discard(Card.parse('8s'))
         state.discard(())
         state.burn_card()
         state.deal_hole()
@@ -3855,8 +3855,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(tuple(Card.parse('AsKs')))
-        state.discard(tuple(Card.parse('AcTd')))
+        state.discard(Card.parse('AsKs'))
+        state.discard(Card.parse('AcTd'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3870,8 +3870,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.discard(tuple(Card.parse('Jh4s')))
-        state.discard(tuple(Card.parse('Qc')))
+        state.discard(Card.parse('Jh4s'))
+        state.discard(Card.parse('Qc'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3884,8 +3884,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.discard(tuple(Card.parse('4h')))
-        state.discard(tuple(Card.parse('3s')))
+        state.discard(Card.parse('4h'))
+        state.discard(Card.parse('3s'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4043,8 +4043,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(tuple(Card.parse('Kh6c')))
-        state.discard(tuple(Card.parse('AsAd')))
+        state.discard(Card.parse('Kh6c'))
+        state.discard(Card.parse('AsAd'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4060,7 +4060,7 @@ class StateTestCase(TestCase):
         # Second draw
 
         state.discard(())
-        state.discard(tuple(Card.parse('2h')))
+        state.discard(Card.parse('2h'))
         state.burn_card()
         state.deal_hole()
         state.complete_bet_or_raise_to()
@@ -4137,8 +4137,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.discard(tuple(Card.parse('9d6c')))
-        state.discard(tuple(Card.parse('Th')))
+        state.discard(Card.parse('9d6c'))
+        state.discard(Card.parse('Th'))
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4153,7 +4153,7 @@ class StateTestCase(TestCase):
         # Second draw
 
         state.discard(())
-        state.discard(tuple(Card.parse('Qh')))
+        state.discard(Card.parse('Qh'))
         state.burn_card()
         state.deal_hole()
         state.complete_bet_or_raise_to()
@@ -4164,7 +4164,7 @@ class StateTestCase(TestCase):
         # Third draw
 
         state.discard(())
-        state.discard(tuple(Card.parse('7d')))
+        state.discard(Card.parse('7d'))
         state.burn_card()
         state.deal_hole()
         state.check_or_call()

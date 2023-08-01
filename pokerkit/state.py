@@ -1,7 +1,7 @@
 """:mod:`pokerkit.state` implements classes related to poker states."""
 
 from collections import Counter, deque
-from collections.abc import Iterator
+from collections.abc import Iterator, Iterable
 from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 from functools import partial
@@ -367,7 +367,7 @@ class State:
     >>> state.post_ante(1)
     (1, 1)
     >>> state.collect_bets()
-    >>> state.deal_hole(tuple(Card.parse('Js')))
+    >>> state.deal_hole(Card.parse('Js'))
     (0, (Js,))
     >>> state.deal_hole()  # doctest: +ELLIPSIS
     (1, (...s,))
@@ -1143,6 +1143,34 @@ class State:
 
         self._begin_betting()
 
+    def _clean_cards(
+            self,
+            cards: Iterable[Card] | Card | int | None,
+    ) -> tuple[Card, ...]:
+        if cards is None:
+            card_count = 0
+        elif isinstance(cards, int):
+            card_count = cards
+        elif isinstance(cards, Card):
+            card_count = 1
+        elif isinstance(cards, tuple):
+            card_count = len(cards)
+        else:
+            cards = tuple(cards)
+            card_count = len(cards)
+
+        if len(self.deck_cards) < card_count:
+            raise ValueError('too many cards')
+
+        if isinstance(cards, int):
+            cards = tuple(self.deck_cards)[:cards]
+        elif isinstance(cards, Card):
+            cards = (cards,)
+        elif cards is None:
+            cards = ()
+
+        return cards
+
     def _make_available(self, cards: tuple[Card, ...]) -> None:
         assert len(self.deck_cards) >= len(cards)
 
@@ -1172,28 +1200,15 @@ class State:
 
     def verify_card_availabilities(
             self,
-            cards: tuple[Card, ...] | Card | int,
+            cards: Iterable[Card] | Card | int | None,
     ) -> tuple[Card, ...]:
         """Verify the card availability.
 
-        :param card: The optional card.
+        :param cards: The optional cards.
         :return: The available cards.
         :raises ValueError: If the card is unavailable.
         """
-        if isinstance(cards, int):
-            card_count = cards
-        elif isinstance(cards, Card):
-            card_count = 1
-        else:
-            card_count = len(cards)
-
-        if len(self.deck_cards) < card_count:
-            raise ValueError('too many cards')
-
-        if isinstance(cards, int):
-            cards = tuple(self.deck_cards)[:cards]
-        elif isinstance(cards, Card):
-            cards = (cards,)
+        cards = self._clean_cards(cards)
 
         for card in cards:
             if card not in tuple(self.available_cards):
@@ -1299,7 +1314,7 @@ class State:
 
     def verify_hole_dealing(
             self,
-            cards: tuple[Card, ...] | Card | int | None = None,
+            cards: Iterable[Card] | Card | int | None = None,
     ) -> tuple[Card, ...]:
         """Verify the hole dealing.
 
@@ -1321,7 +1336,7 @@ class State:
 
     def can_deal_hole(
             self,
-            cards: tuple[Card, ...] | Card | int | None = None,
+            cards: Iterable[Card] | Card | int | None = None,
     ) -> bool:
         """Return whether the hole dealing can be done.
 
@@ -1338,7 +1353,7 @@ class State:
 
     def deal_hole(
             self,
-            cards: tuple[Card, ...] | Card | int | None = None,
+            cards: Iterable[Card] | Card | int | None = None,
     ) -> tuple[int, tuple[Card, ...]]:
         """Deal the hole.
 
@@ -1368,7 +1383,7 @@ class State:
 
     def verify_board_dealing(
             self,
-            cards: tuple[Card, ...] | Card | int | None = None,
+            cards: Iterable[Card] | Card | int | None = None,
     ) -> tuple[Card, ...]:
         """Verify the board dealing.
 
@@ -1392,7 +1407,7 @@ class State:
 
     def can_deal_board(
             self,
-            cards: tuple[Card, ...] | Card | int | None = None,
+            cards: Iterable[Card] | Card | int | None = None,
     ) -> bool:
         """Return whether the board dealing can be done.
 
@@ -1410,7 +1425,7 @@ class State:
 
     def deal_board(
             self,
-            cards: tuple[Card, ...] | Card | int | None = None,
+            cards: Iterable[Card] | Card | int | None = None,
     ) -> tuple[Card, ...]:
         """Deal the board.
 
@@ -1455,7 +1470,7 @@ class State:
 
     def verify_discard(
             self,
-            discarded_cards: tuple[Card, ...] | None = None,
+            discarded_cards: Iterable[Card] | None = None,
     ) -> tuple[Card, ...]:
         """Verify the discard.
 
@@ -1465,9 +1480,7 @@ class State:
         """
         self._verify_discard()
 
-        if discarded_cards is None:
-            discarded_cards = ()
-
+        discarded_cards = self._clean_cards(discarded_cards)
         player_index = self.discarder_index
 
         assert player_index is not None
@@ -1479,7 +1492,7 @@ class State:
 
     def can_discard(
             self,
-            discarded_cards: tuple[Card, ...] | None = None,
+            discarded_cards: Iterable[Card] | None = None,
     ) -> bool:
         """Return whether the discard can be done.
 
@@ -1496,7 +1509,7 @@ class State:
 
     def discard(
             self,
-            discarded_cards: tuple[Card, ...] | None = None,
+            discarded_cards: Iterable[Card] | None = None,
     ) -> tuple[int, tuple[Card, ...]]:
         """Discard hole cards.
 

@@ -111,9 +111,9 @@ class FixedLimitTexasHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(tuple(Card.parse('AcAs')))
+        >>> state.deal_hole(Card.parse('AcAs'))
         (0, (Ac, As))
-        >>> state.deal_hole(tuple(Card.parse('7h6h')))
+        >>> state.deal_hole(Card.parse('7h6h'))
         (1, (7h, 6h))
 
         >>> state.complete_bet_or_raise_to()
@@ -227,11 +227,11 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(tuple(Card.parse('Ac2d')))  # Ivey
+        >>> state.deal_hole(Card.parse('Ac2d'))  # Ivey
         (0, (Ac, 2d))
-        >>> state.deal_hole(tuple(Card.parse('5h7s')))  # Antonius*
+        >>> state.deal_hole(Card.parse('5h7s'))  # Antonius*
         (1, (5h, 7s))
-        >>> state.deal_hole(tuple(Card.parse('7h6h')))  # Dwan
+        >>> state.deal_hole(Card.parse('7h6h'))  # Dwan
         (2, (7h, 6h))
 
         >>> state.complete_bet_or_raise_to(7000)  # Dwan
@@ -245,7 +245,7 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Below shows the flop dealing and actions.
 
-        >>> state.deal_board(tuple(Card.parse('Jc3d5c')))
+        >>> state.deal_board(Card.parse('Jc3d5c'))
         (Jc, 3d, 5c)
 
         >>> state.complete_bet_or_raise_to(35000)  # Ivey
@@ -255,7 +255,7 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Below shows the turn dealing and actions.
 
-        >>> state.deal_board(tuple(Card.parse('4h')))
+        >>> state.deal_board(Card.parse('4h'))
         (4h,)
 
         >>> state.complete_bet_or_raise_to(90000)  # Ivey
@@ -269,7 +269,7 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Below shows the river dealing.
 
-        >>> state.deal_board(tuple(Card.parse('Jh')))
+        >>> state.deal_board(Card.parse('Jh'))
         (Jh,)
 
         Below show the final stacks.
@@ -380,17 +380,17 @@ class NoLimitShortDeckHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(tuple(Card.parse('Th8h')))  # Badziakouski
+        >>> state.deal_hole(Card.parse('Th8h'))  # Badziakouski
         (0, (Th, 8h))
-        >>> state.deal_hole(tuple(Card.parse('QsJd')))  # Zhong
+        >>> state.deal_hole(Card.parse('QsJd'))  # Zhong
         (1, (Qs, Jd))
-        >>> state.deal_hole(tuple(Card.parse('QhQd')))  # Xuan
+        >>> state.deal_hole(Card.parse('QhQd'))  # Xuan
         (2, (Qh, Qd))
-        >>> state.deal_hole(tuple(Card.parse('8d7c')))  # Jun
+        >>> state.deal_hole(Card.parse('8d7c'))  # Jun
         (3, (8d, 7c))
-        >>> state.deal_hole(tuple(Card.parse('KhKs')))  # Phua
+        >>> state.deal_hole(Card.parse('KhKs'))  # Phua
         (4, (Kh, Ks))
-        >>> state.deal_hole(tuple(Card.parse('8c7h')))  # Koon
+        >>> state.deal_hole(Card.parse('8c7h'))  # Koon
         (5, (8c, 7h))
 
         >>> state.check_or_call()  # Badziakouski
@@ -414,17 +414,17 @@ class NoLimitShortDeckHoldem(TexasHoldem):
 
         Below shows the flop dealing.
 
-        >>> state.deal_board(tuple(Card.parse('9h6cKc')))
+        >>> state.deal_board(Card.parse('9h6cKc'))
         (9h, 6c, Kc)
 
         Below shows the turn dealing.
 
-        >>> state.deal_board(tuple(Card.parse('Jh')))
+        >>> state.deal_board(Card.parse('Jh'))
         (Jh,)
 
         Below shows the river dealing.
 
-        >>> state.deal_board(tuple(Card.parse('Ts')))
+        >>> state.deal_board(Card.parse('Ts'))
         (Ts,)
 
         Below show the final stacks.
@@ -541,9 +541,9 @@ class PotLimitOmahaHoldem(OmahaHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(tuple(Card.parse('Ah3sKsKh')))  # Antonius
+        >>> state.deal_hole(Card.parse('Ah3sKsKh'))  # Antonius
         (0, (Ah, 3s, Ks, Kh))
-        >>> state.deal_hole(tuple(Card.parse('6d9s7d8h')))  # Blom
+        >>> state.deal_hole(Card.parse('6d9s7d8h'))  # Blom
         (1, (6d, 9s, 7d, 8h))
 
         >>> state.complete_bet_or_raise_to(300000)  # Blom
@@ -559,7 +559,7 @@ class PotLimitOmahaHoldem(OmahaHoldem):
 
         Below shows the flop dealing and actions.
 
-        >>> state.deal_board(tuple(Card.parse('4s5c2h')))
+        >>> state.deal_board(Card.parse('4s5c2h'))
         (4s, 5c, 2h)
 
         >>> state.complete_bet_or_raise_to(9100000)  # Antonius
@@ -573,12 +573,12 @@ class PotLimitOmahaHoldem(OmahaHoldem):
 
         Below shows the turn dealing.
 
-        >>> state.deal_board(tuple(Card.parse('5h')))
+        >>> state.deal_board(Card.parse('5h'))
         (5h,)
 
         Below shows the river dealing.
 
-        >>> state.deal_board(tuple(Card.parse('9c')))
+        >>> state.deal_board(Card.parse('9c'))
         (9c,)
 
         Below show the final stacks.
@@ -1098,13 +1098,13 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(tuple(Card.parse('7h6c4c3d2c')))  # Yockey
+        >>> state.deal_hole(Card.parse('7h6c4c3d2c'))  # Yockey
         (0, (7h, 6c, 4c, 3d, 2c))
-        >>> state.deal_hole(tuple(Card.parse('JsJcJdJhTs')))  # Hui*
+        >>> state.deal_hole(Card.parse('JsJcJdJhTs'))  # Hui*
         (1, (Js, Jc, Jd, Jh, Ts))
-        >>> state.deal_hole(tuple(Card.parse('KsKcKdKhTh')))  # Esposito*
+        >>> state.deal_hole(Card.parse('KsKcKdKhTh'))  # Esposito*
         (2, (Ks, Kc, Kd, Kh, Th))
-        >>> state.deal_hole(tuple(Card.parse('AsQs6s5c3c')))  # Arieh
+        >>> state.deal_hole(Card.parse('AsQs6s5c3c'))  # Arieh
         (3, (As, Qs, 6s, 5c, 3c))
 
         >>> state.fold()  # Esposito
@@ -1122,9 +1122,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         >>> state.discard()  # Yockey
         (0, ())
-        >>> state.discard(tuple(Card.parse('AsQs')))  # Arieh
+        >>> state.discard(Card.parse('AsQs'))  # Arieh
         (3, (As, Qs))
-        >>> state.deal_hole(tuple(Card.parse('2hQh')))  # Arieh
+        >>> state.deal_hole(Card.parse('2hQh'))  # Arieh
         (3, (2h, Qh))
 
         >>> state.complete_bet_or_raise_to()  # Yockey
@@ -1136,9 +1136,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         >>> state.discard()  # Yockey
         (0, ())
-        >>> state.discard(tuple(Card.parse('Qh')))  # Arieh
+        >>> state.discard(Card.parse('Qh'))  # Arieh
         (3, (Qh,))
-        >>> state.deal_hole(tuple(Card.parse('4d')))  # Arieh
+        >>> state.deal_hole(Card.parse('4d'))  # Arieh
         (3, (4d,))
 
         >>> state.complete_bet_or_raise_to()  # Yockey
@@ -1150,9 +1150,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         >>> state.discard()  # Yockey
         (0, ())
-        >>> state.discard(tuple(Card.parse('6s')))  # Arieh
+        >>> state.discard(Card.parse('6s'))  # Arieh
         (3, (6s,))
-        >>> state.deal_hole(tuple(Card.parse('7c')))  # Arieh
+        >>> state.deal_hole(Card.parse('7c'))  # Arieh
         (3, (7c,))
 
         >>> state.complete_bet_or_raise_to()  # Yockey
@@ -1271,13 +1271,13 @@ class FixedLimitBadugi(Poker):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(tuple(Card.parse('As4hJcKh')))  # Bob*
+        >>> state.deal_hole(Card.parse('As4hJcKh'))  # Bob*
         (0, (As, 4h, Jc, Kh))
-        >>> state.deal_hole(tuple(Card.parse('3s5d7s8s')))  # Carol*
+        >>> state.deal_hole(Card.parse('3s5d7s8s'))  # Carol*
         (1, (3s, 5d, 7s, 8s))
-        >>> state.deal_hole(tuple(Card.parse('KsKdQsQd')))  # Ted*
+        >>> state.deal_hole(Card.parse('KsKdQsQd'))  # Ted*
         (2, (Ks, Kd, Qs, Qd))
-        >>> state.deal_hole(tuple(Card.parse('2s4c6dKc')))  # Alice*
+        >>> state.deal_hole(Card.parse('2s4c6dKc'))  # Alice*
         (3, (2s, 4c, 6d, Kc))
 
         >>> state.fold()  # Ted
@@ -1291,17 +1291,17 @@ class FixedLimitBadugi(Poker):
 
         Below shows the first draw and actions.
 
-        >>> state.discard(tuple(Card.parse('JcKh')))  # Bob*
+        >>> state.discard(Card.parse('JcKh'))  # Bob*
         (0, (Jc, Kh))
-        >>> state.discard(tuple(Card.parse('7s8s')))  # Carol*
+        >>> state.discard(Card.parse('7s8s'))  # Carol*
         (1, (7s, 8s))
-        >>> state.discard(tuple(Card.parse('Kc')))  # Alice*
+        >>> state.discard(Card.parse('Kc'))  # Alice*
         (3, (Kc,))
-        >>> state.deal_hole(tuple(Card.parse('TcJs')))  # Bob*
+        >>> state.deal_hole(Card.parse('TcJs'))  # Bob*
         (0, (Tc, Js))
-        >>> state.deal_hole(tuple(Card.parse('7cTh')))  # Carol*
+        >>> state.deal_hole(Card.parse('7cTh'))  # Carol*
         (1, (7c, Th))
-        >>> state.deal_hole(tuple(Card.parse('Qc')))  # Alice*
+        >>> state.deal_hole(Card.parse('Qc'))  # Alice*
         (3, (Qc,))
 
         >>> state.check_or_call()  # Bob
@@ -1315,15 +1315,15 @@ class FixedLimitBadugi(Poker):
 
         Below shows the second draw and actions.
 
-        >>> state.discard(tuple(Card.parse('Js')))  # Bob*
+        >>> state.discard(Card.parse('Js'))  # Bob*
         (0, (Js,))
         >>> state.discard()  # Carol*
         (1, ())
-        >>> state.discard(tuple(Card.parse('Qc')))  # Alice*
+        >>> state.discard(Card.parse('Qc'))  # Alice*
         (3, (Qc,))
-        >>> state.deal_hole(tuple(Card.parse('Ts')))  # Bob*
+        >>> state.deal_hole(Card.parse('Ts'))  # Bob*
         (0, (Ts,))
-        >>> state.deal_hole(tuple(Card.parse('9h')))  # Alice*
+        >>> state.deal_hole(Card.parse('9h'))  # Alice*
         (3, (9h,))
 
         >>> state.check_or_call()  # Bob
@@ -1339,11 +1339,11 @@ class FixedLimitBadugi(Poker):
 
         Below shows the third draw and actions.
 
-        >>> state.discard(tuple(Card.parse('Th')))  # Carol*
+        >>> state.discard(Card.parse('Th'))  # Carol*
         (1, (Th,))
         >>> state.discard()  # Alice*
         (3, ())
-        >>> state.deal_hole(tuple(Card.parse('8h')))  # Carol*
+        >>> state.deal_hole(Card.parse('8h'))  # Carol*
         (1, (8h,))
 
         >>> state.check_or_call()  # Carol
