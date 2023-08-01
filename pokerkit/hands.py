@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Hashable, Iterable, Iterator
 from functools import total_ordering
 from itertools import chain, combinations
 from typing import Any
-from warnings import warn
 
 from pokerkit.lookups import (
     BadugiLookup,
@@ -37,14 +36,36 @@ class Hand(Hashable, ABC):
     6s7s8s9sTs
     >>> h1
     7c8c9cTcJc
+    >>> print(h0)
+    Straight flush (6s7s8s9sTs)
     >>> h0 < h1
     True
+
+    It does not make sense to compare hands of different types.
+
+    >>> h0 = StandardHighHand(Card.parse('6s7s8s9sTs'))
+    >>> h1 = ShortDeckHoldemHand(Card.parse('7c8c9cTcJc'))
+    >>> h0 < h1  # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    TypeError: '<' not supported between instances of ...
+    >>> h0 < 500  # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    TypeError: '<' not supported between instances of ...
+
+    The hands are hashable.
+
+    >>> h0 = ShortDeckHoldemHand(Card.parse('6s7s8s9sTs'))
+    >>> h1 = ShortDeckHoldemHand(Card.parse('7c8c9cTcJc'))
+    >>> hands = {h0, h1}
     """
 
     _lookup: Lookup
     _low: bool
 
     @classmethod
+    @abstractmethod
     def from_game(
             cls,
             hole_cards: Iterable[Card],
@@ -55,19 +76,10 @@ class Hand(Hashable, ABC):
         In a game setting, a player uses private cards from their hole
         and the public cards from the board to make their hand.
 
-        >>> h0 = StandardHighHand.from_game(
-        ...     Card.parse('AsQs'),
-        ...     Card.parse('Ks8s9hTc2s'),
-        ... )
-        >>> h1 = StandardHighHand(Card.parse('AsQsKs8s2s'))
-        >>> h0 == h1
-        True
-
         :param hole_cards: The hole cards.
         :param board_cards: The optional board cards.
         :return: The strongest hand from possible card combinations.
         """
-        return cls(chain(hole_cards, board_cards))
 
     def __init__(self, cards: Iterable[Card]) -> None:
         self.__cards = tuple(cards)
@@ -76,10 +88,10 @@ class Hand(Hashable, ABC):
             raise ValueError(f'invalid hand \'{repr(self)}\'')
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Hand):
+        if type(self) != type(other):
             return NotImplemented
-        elif type(self) != type(other):
-            warn('comparing hands of different types')
+
+        assert isinstance(other, Hand)
 
         return self.entry == other.entry
 
@@ -87,10 +99,10 @@ class Hand(Hashable, ABC):
         return hash(self.entry)
 
     def __lt__(self, other: Hand) -> bool:
-        if not isinstance(other, Hand):
+        if type(self) != type(other):
             return NotImplemented
-        elif type(self) != type(other):
-            warn('comparing hands of different types')
+
+        assert isinstance(other, Hand)
 
         if self._low:
             return self.entry > other.entry
@@ -619,6 +631,10 @@ class BadugiHand(Hand):
     Traceback (most recent call last):
         ...
     ValueError: invalid hand 'Ac2d3c4s5c'
+    >>> h = BadugiHand(Card.parse('Ac2d3c4s'))
+    Traceback (most recent call last):
+        ...
+    ValueError: cards not rainbow
     >>> h = BadugiHand(Card.parse('AcAd3h4s'))
     Traceback (most recent call last):
         ...
@@ -683,4 +699,4 @@ class BadugiHand(Hand):
         super().__init__(cards)
 
         if not Card.are_rainbow(self.cards):
-            raise ValueError('cards are not rainbow')
+            raise ValueError('cards not rainbow')

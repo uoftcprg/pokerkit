@@ -216,12 +216,9 @@ class Lookup(ABC):
             self,
             rank_order: RankOrder,
             counter: Counter[int],
-            suitednesses: Iterable[bool],
+            suitednesses: tuple[bool, ...],
             label: Label,
     ) -> None:
-        if isinstance(suitednesses, Iterator):
-            suitednesses = tuple(suitednesses)
-
         hashes = self.__hash_multisets(rank_order, counter)
 
         for hash_ in reversed(hashes):
@@ -231,12 +228,9 @@ class Lookup(ABC):
             self,
             rank_order: RankOrder,
             count: int,
-            suitednesses: Iterable[bool],
+            suitednesses: tuple[bool, ...],
             label: Label,
     ) -> None:
-        if isinstance(suitednesses, Iterator):
-            suitednesses = tuple(suitednesses)
-
         self.__add(
             self.__hash(rank_order[-1:] + rank_order[: count - 1]),
             suitednesses,

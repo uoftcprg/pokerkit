@@ -4,7 +4,7 @@
 
 from hashlib import md5
 from itertools import combinations
-from unittest import TestCase, main
+from unittest import TestCase
 
 from pokerkit.state import _HighHandOpeningLookup, _LowHandOpeningLookup
 from pokerkit.tests.test_lookups import LookupTestCaseMixin
@@ -49,7 +49,3 @@ class HighHandOpeningLookupTestCase(LookupTestCaseMixin, TestCase):
             algorithm.hexdigest(),
             'b11a0c444a528e78c5be57c7bb6db06c',
         )
-
-
-if __name__ == "__main__":
-    main()
