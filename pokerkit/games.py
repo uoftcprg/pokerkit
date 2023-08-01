@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from collections import deque
 from collections.abc import Iterable, Mapping
-from random import shuffle
 
 from pokerkit.hands import (
     BadugiHand,
@@ -18,7 +16,7 @@ from pokerkit.hands import (
     StandardLowHand,
 )
 from pokerkit.state import BettingStructure, Opening, State, Street
-from pokerkit.utilities import Card, Deck, RankOrder
+from pokerkit.utilities import Deck, RankOrder
 
 
 class Poker(ABC):
@@ -62,14 +60,6 @@ class Poker(ABC):
         else:
             raise AssertionError
 
-    @classmethod
-    def _clean_deck(cls, deck: Deck) -> deque[Card]:
-        cards = deque(deck)
-
-        shuffle(cards)
-
-        return cards
-
 
 class TexasHoldem(Poker, ABC):
     """The abstract base class for Texas hold'em games."""
@@ -105,6 +95,7 @@ class FixedLimitTexasHoldem(TexasHoldem):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (StandardHighHand,),
             (
                 Street(
@@ -149,7 +140,6 @@ class FixedLimitTexasHoldem(TexasHoldem):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -175,6 +165,7 @@ class NoLimitTexasHoldem(TexasHoldem):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (StandardHighHand,),
             (
                 Street(
@@ -219,7 +210,6 @@ class NoLimitTexasHoldem(TexasHoldem):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -251,6 +241,7 @@ class NoLimitShortDeckHoldem(TexasHoldem):
         :return: The created state.
         """
         return State(
+            Deck.SHORT_DECK_HOLDEM,
             (ShortDeckHoldemHand,),
             (
                 Street(
@@ -295,7 +286,6 @@ class NoLimitShortDeckHoldem(TexasHoldem):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.SHORT_DECK_HOLDEM),
         )
 
 
@@ -332,6 +322,7 @@ class PotLimitOmahaHoldem(OmahaHoldem):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (OmahaHoldemHand,),
             (
                 Street(
@@ -376,7 +367,6 @@ class PotLimitOmahaHoldem(OmahaHoldem):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -409,6 +399,7 @@ class FixedLimitOmahaHoldemSplitHighEightOrBetterLow(OmahaHoldem):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (OmahaHoldemHand, OmahaEightOrBetterLowHand),
             (
                 Street(
@@ -453,7 +444,6 @@ class FixedLimitOmahaHoldemSplitHighEightOrBetterLow(OmahaHoldem):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -492,6 +482,7 @@ class FixedLimitSevenCardStud(SevenCardStud):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (StandardHighHand,),
             (
                 Street(
@@ -545,7 +536,6 @@ class FixedLimitSevenCardStud(SevenCardStud):
             cls._clean_values(0, player_count),
             bring_in,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -578,6 +568,7 @@ class FixedLimitSevenCardStudSplitHighEightOrBetterLow(SevenCardStud):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (StandardHighHand, EightOrBetterLowHand),
             (
                 Street(
@@ -631,7 +622,6 @@ class FixedLimitSevenCardStudSplitHighEightOrBetterLow(SevenCardStud):
             cls._clean_values(0, player_count),
             bring_in,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -661,6 +651,7 @@ class FixedLimitRazz(SevenCardStud):
         :return: The created state.
         """
         return State(
+            Deck.REGULAR,
             (RegularLowHand,),
             (
                 Street(
@@ -714,7 +705,6 @@ class FixedLimitRazz(SevenCardStud):
             cls._clean_values(0, player_count),
             bring_in,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.REGULAR),
         )
 
 
@@ -750,6 +740,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (StandardLowHand,),
             (
                 Street(
@@ -776,7 +767,6 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
@@ -806,6 +796,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
         :return: The created state.
         """
         return State(
+            Deck.STANDARD,
             (StandardLowHand,),
             (
                 Street(
@@ -850,11 +841,10 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.STANDARD),
         )
 
 
-class FixedLimitBadugiDraw(Poker):
+class FixedLimitBadugi(Poker):
     """The class for fixed-limit badugi games."""
 
     max_down_card_count = 4
@@ -884,6 +874,7 @@ class FixedLimitBadugiDraw(Poker):
         :return: The created state.
         """
         return State(
+            Deck.REGULAR,
             (BadugiHand,),
             (
                 Street(
@@ -928,5 +919,4 @@ class FixedLimitBadugiDraw(Poker):
             cls._clean_values(blinds_or_straddles, player_count),
             0,
             cls._clean_values(starting_stacks, player_count),
-            cls._clean_deck(Deck.REGULAR),
         )

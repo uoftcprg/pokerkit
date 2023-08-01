@@ -245,7 +245,7 @@ class Lookup(ABC):
 
         for i in range(len(rank_order) - count + 1):
             self.__add(
-                self.__hash(rank_order[i : i + count]),
+                self.__hash(rank_order[i:i + count]),
                 suitednesses,
                 label,
             )

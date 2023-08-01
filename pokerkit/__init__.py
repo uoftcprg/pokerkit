@@ -16,7 +16,7 @@ __all__ = (
     'EightOrBetterLowLookup',
     'Entry',
     'filter_none',
-    'FixedLimitBadugiDraw',
+    'FixedLimitBadugi',
     'FixedLimitDeuceToSevenLowballTripleDraw',
     'FixedLimitOmahaHoldemSplitHighEightOrBetterLow',
     'FixedLimitRazz',
@@ -59,7 +59,7 @@ __all__ = (
 
 from pokerkit.games import (
     DeuceToSevenLowball,
-    FixedLimitBadugiDraw,
+    FixedLimitBadugi,
     FixedLimitDeuceToSevenLowballTripleDraw,
     FixedLimitOmahaHoldemSplitHighEightOrBetterLow,
     FixedLimitRazz,

@@ -7,10 +7,18 @@ from enum import Enum, auto, unique
 from functools import partial
 from itertools import chain, islice
 from operator import getitem
+from random import shuffle
 
 from pokerkit.hands import Hand
 from pokerkit.lookups import Label, Lookup
-from pokerkit.utilities import Card, RankOrder, Suit, max_or_none, min_or_none
+from pokerkit.utilities import (
+    Card,
+    Deck,
+    RankOrder,
+    Suit,
+    max_or_none,
+    min_or_none,
+)
 
 
 @unique
@@ -231,6 +239,7 @@ class State:
 
     >>> from pokerkit import BadugiHand
     >>> state = State(
+    ...     deque(Card.parse('JsQsKs')),
     ...     (BadugiHand,),
     ...     (
     ...         Street(
@@ -248,7 +257,6 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
-    ...     deque(Card.parse('JsQsKs')),
     ... )
     >>> state.stacks
     [2, 2]
@@ -315,6 +323,8 @@ class State:
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
     __high_hand_opening_lookup = _HighHandOpeningLookup()
+    deck: Deck | deque[Card]
+    """The deck."""
     hand_types: tuple[type[Hand], ...]
     """The hand types."""
     streets: tuple[Street, ...]
@@ -329,8 +339,6 @@ class State:
     """The bring-in."""
     starting_stacks: tuple[int, ...]
     """The starting stacks."""
-    deck: deque[Card]
-    """The deck."""
     statuses: list[bool] = field(default_factory=list, init=False)
     """The player statuses."""
     bets: list[int] = field(default_factory=list, init=False)
@@ -356,7 +364,9 @@ class State:
     """The game status."""
 
     def __post_init__(self) -> None:
-        if not self.streets:
+        if len(set(self.deck)) != len(self.deck):
+            raise ValueError('duplicate cards in deck')
+        elif not self.streets:
             raise ValueError('empty streets')
         elif not self.streets[0].hole_deal_statuses:
             raise ValueError('first street not hole dealing')
@@ -387,10 +397,13 @@ class State:
                 == len(self.starting_stacks)
         ):
             raise ValueError('inconsistent number of players')
-        elif len(set(self.deck)) != len(self.deck):
-            raise ValueError('duplicate cards in deck')
         elif self.player_count < 2:
             raise ValueError('not enough players')
+
+        if isinstance(self.deck, Deck):
+            self.deck = deque(self.deck)
+
+            shuffle(self.deck)
 
         for i in self.player_indices:
             self.statuses.append(True)
@@ -1033,6 +1046,7 @@ class State:
 
     def _make_available(self, cards: tuple[Card, ...]) -> None:
         assert len(self.deck) >= len(cards)
+        assert isinstance(self.deck, deque)
 
         for card in cards:
             assert card in self.burned_cards or card in self.deck
@@ -1558,7 +1572,7 @@ class State:
         if not self.actor_indices:
             return None
 
-        # assert self.stacks[self.actor_indices[0]]  # TODO
+        assert self.stacks[self.actor_indices[0]]
 
         return self.actor_indices[0]
 
