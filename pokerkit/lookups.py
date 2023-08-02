@@ -61,8 +61,8 @@ class Entry:
     utilities.
 
     >>> e0 = Entry(0, Label.HIGH_CARD)
-    >>> e1 = Entry(1, Label.STRAIGHT_FLUSH)
-    >>> e2 = Entry(1, Label.FULL_HOUSE)
+    >>> e1 = Entry(1, Label.HIGH_CARD)
+    >>> e2 = Entry(1, Label.HIGH_CARD)
     >>> e0 < e1
     True
     >>> e1 < e2
