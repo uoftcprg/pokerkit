@@ -14,7 +14,6 @@ from pokerkit.games import (
 )
 from pokerkit.state import (
     Automation,
-    State,
     _HighHandOpeningLookup,
     _LowHandOpeningLookup,
 )
@@ -75,7 +74,8 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
-            2,
+            False,
+            {1: 2},
             (1, 2),
             2,
             (6, 4, 1),
@@ -85,6 +85,8 @@ class StateTestCase(TestCase):
         state.deal_hole('AcAd')
         state.deal_hole('KcKd')
         state.deal_hole('QcQd')
+        self.assertRaises(ValueError, state.complete_bet_or_raise_to)
+        state.check_or_call()
         self.assertRaises(ValueError, state.complete_bet_or_raise_to)
         state.check_or_call()
         state.deal_board('QhQs2c')
@@ -104,6 +106,37 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
+            2,
+            (1, 2),
+            2,
+            (6, 4, 1),
+            3,
+        )
+
+        state.deal_hole('AcAd')
+        state.deal_hole('KcKd')
+        state.deal_hole('QcQd')
+        self.assertRaises(ValueError, state.complete_bet_or_raise_to)
+        state.check_or_call()
+        state.deal_board('QhQs2c')
+        state.deal_board('3c')
+        state.deal_board('4c')
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [8, 0, 3])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.CARD_BURNING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIP_PUSHING,
+                Automation.CHIP_PULLING,
+            ),
+            True,
             2,
             (1, 2),
             2,
@@ -118,7 +151,7 @@ class StateTestCase(TestCase):
         state.deal_board('3c')
         state.deal_board('4c')
         self.assertFalse(state.status)
-        self.assertEqual(state.stacks, [2, 1, 5])
+        self.assertEqual(state.stacks, [4, 1, 3])
 
         state = NoLimitTexasHoldem.create_state(
             (
@@ -131,6 +164,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             2,
             (1, 2),
             2,
@@ -152,6 +186,72 @@ class StateTestCase(TestCase):
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 18, 0, 0, 0])
 
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.CARD_BURNING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIP_PUSHING,
+                Automation.CHIP_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (200, 2, 200),
+            3,
+        )
+
+        state.deal_hole('AcAd')
+        state.deal_hole('KcKd')
+        state.deal_hole('QcQd')
+        state.complete_bet_or_raise_to(100)
+        state.check_or_call()
+        state.deal_board('QhQs2c')
+        state.complete_bet_or_raise_to(100)
+        state.check_or_call()
+        state.deal_board('3c')
+        state.deal_board('4c')
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [0, 0, 402])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.CARD_BURNING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIP_PUSHING,
+                Automation.CHIP_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (2, 200, 200),
+            3,
+        )
+
+        state.deal_hole('AcAd')
+        state.deal_hole('KcKd')
+        state.deal_hole('QcQd')
+        state.complete_bet_or_raise_to(100)
+        self.assertRaises(ValueError, state.complete_bet_or_raise_to)
+        state.check_or_call()
+        state.check_or_call()
+        state.deal_board('QhQs2c')
+        state.complete_bet_or_raise_to(100)
+        state.check_or_call()
+        state.deal_board('3c')
+        state.deal_board('4c')
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [0, 0, 402])
+
         state = NoLimitShortDeckHoldem.create_state(
             (
                 Automation.ANTE_POSTING,
@@ -163,6 +263,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             2,
             {-1: 2},
             2,
@@ -193,6 +294,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             2,
             {-1: 2},
             2,
@@ -225,6 +327,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             2,
             {-1: 2},
             2,
@@ -257,6 +360,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             2,
             {-1: 2},
             2,
@@ -291,11 +395,12 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             100,
-            (200, 200),
+            (100, 200),
             200,
             400,
-            (150, 150),
+            150,
             2,
         )
 
@@ -318,6 +423,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             None,
             50,
             200,
@@ -358,6 +464,7 @@ class StateTestCase(TestCase):
                 Automation.CHIP_PUSHING,
                 Automation.CHIP_PULLING,
             ),
+            True,
             None,
             50,
             200,

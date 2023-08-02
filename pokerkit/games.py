@@ -78,6 +78,7 @@ class FixedLimitTexasHoldem(TexasHoldem):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             small_bet: int,
@@ -89,7 +90,6 @@ class FixedLimitTexasHoldem(TexasHoldem):
 
         Below is an example hand in fixed-limit Texas hold'em.
 
-        >>> from pokerkit import *
         >>> state = FixedLimitTexasHoldem.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -101,6 +101,7 @@ class FixedLimitTexasHoldem(TexasHoldem):
         ...         Automation.CHIP_PUSHING,
         ...         Automation.CHIP_PULLING,
         ...     ),
+        ...     True,
         ...     None,
         ...     (1, 2),
         ...     2,
@@ -111,17 +112,17 @@ class FixedLimitTexasHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(Card.parse('AcAs'))
-        (0, (Ac, As))
-        >>> state.deal_hole(Card.parse('7h6h'))
-        (1, (7h, 6h))
+        >>> state.deal_hole('AcAs')
+        State.HoleDealing(player_index=0, cards=(Ac, As), statuses=(False, False))
+        >>> state.deal_hole('7h6h')
+        State.HoleDealing(player_index=1, cards=(7h, 6h), statuses=(False, False))
 
         >>> state.complete_bet_or_raise_to()
-        (1, 4)
+        State.CompletionBettingOrRaisingTo(player_index=1, amount=4)
         >>> state.complete_bet_or_raise_to()
-        (0, 6)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=6)
         >>> state.fold()
-        1
+        State.Folding(player_index=1)
 
         Below show the final stacks.
 
@@ -179,6 +180,7 @@ class FixedLimitTexasHoldem(TexasHoldem):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -193,6 +195,7 @@ class NoLimitTexasHoldem(TexasHoldem):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             min_bet: int,
@@ -206,7 +209,6 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Link: https://youtu.be/GnxFohpljqM
 
-        >>> from pokerkit import *
         >>> state = NoLimitTexasHoldem.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -218,6 +220,7 @@ class NoLimitTexasHoldem(TexasHoldem):
         ...         Automation.CHIP_PUSHING,
         ...         Automation.CHIP_PULLING,
         ...     ),
+        ...     True,
         ...     500,
         ...     (1000, 2000),
         ...     2000,
@@ -227,50 +230,50 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(Card.parse('Ac2d'))  # Ivey
-        (0, (Ac, 2d))
-        >>> state.deal_hole(Card.parse('5h7s'))  # Antonius*
-        (1, (5h, 7s))
-        >>> state.deal_hole(Card.parse('7h6h'))  # Dwan
-        (2, (7h, 6h))
+        >>> state.deal_hole('Ac2d')  # Ivey
+        State.HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, False))
+        >>> state.deal_hole('5h7s')  # Antonius*
+        State.HoleDealing(player_index=1, cards=(5h, 7s), statuses=(False, False))
+        >>> state.deal_hole('7h6h')  # Dwan
+        State.HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, False))
 
         >>> state.complete_bet_or_raise_to(7000)  # Dwan
-        (2, 7000)
+        State.CompletionBettingOrRaisingTo(player_index=2, amount=7000)
         >>> state.complete_bet_or_raise_to(23000)  # Ivey
-        (0, 23000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=23000)
         >>> state.fold()  # Antonius
-        1
+        State.Folding(player_index=1)
         >>> state.check_or_call()  # Dwan
-        (2, 16000)
+        State.CheckingOrCalling(player_index=2, amount=16000)
 
         Below shows the flop dealing and actions.
 
-        >>> state.deal_board(Card.parse('Jc3d5c'))
-        (Jc, 3d, 5c)
+        >>> state.deal_board('Jc3d5c')
+        State.BoardDealing(cards=(Jc, 3d, 5c))
 
         >>> state.complete_bet_or_raise_to(35000)  # Ivey
-        (0, 35000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=35000)
         >>> state.check_or_call()  # Dwan
-        (2, 35000)
+        State.CheckingOrCalling(player_index=2, amount=35000)
 
         Below shows the turn dealing and actions.
 
-        >>> state.deal_board(Card.parse('4h'))
-        (4h,)
+        >>> state.deal_board('4h')
+        State.BoardDealing(cards=(4h,))
 
         >>> state.complete_bet_or_raise_to(90000)  # Ivey
-        (0, 90000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=90000)
         >>> state.complete_bet_or_raise_to(232600)  # Dwan
-        (2, 232600)
+        State.CompletionBettingOrRaisingTo(player_index=2, amount=232600)
         >>> state.complete_bet_or_raise_to(1067100)  # Ivey
-        (0, 1067100)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=1067100)
         >>> state.check_or_call()  # Dwan
-        (2, 262400)
+        State.CheckingOrCalling(player_index=2, amount=262400)
 
         Below shows the river dealing.
 
-        >>> state.deal_board(Card.parse('Jh'))
-        (Jh,)
+        >>> state.deal_board('Jh')
+        State.BoardDealing(cards=(Jh,))
 
         Below show the final stacks.
 
@@ -327,6 +330,7 @@ class NoLimitTexasHoldem(TexasHoldem):
             ),
             BettingStructure.NO_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -347,6 +351,7 @@ class NoLimitShortDeckHoldem(TexasHoldem):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             min_bet: int,
@@ -359,7 +364,6 @@ class NoLimitShortDeckHoldem(TexasHoldem):
 
         Link: https://youtu.be/QlgCcphLjaQ
 
-        >>> from pokerkit import *
         >>> state = NoLimitShortDeckHoldem.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -371,6 +375,7 @@ class NoLimitShortDeckHoldem(TexasHoldem):
         ...         Automation.CHIP_PUSHING,
         ...         Automation.CHIP_PULLING,
         ...     ),
+        ...     True,
         ...     3000,
         ...     {-1: 3000},
         ...     3000,
@@ -380,52 +385,52 @@ class NoLimitShortDeckHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(Card.parse('Th8h'))  # Badziakouski
-        (0, (Th, 8h))
-        >>> state.deal_hole(Card.parse('QsJd'))  # Zhong
-        (1, (Qs, Jd))
-        >>> state.deal_hole(Card.parse('QhQd'))  # Xuan
-        (2, (Qh, Qd))
-        >>> state.deal_hole(Card.parse('8d7c'))  # Jun
-        (3, (8d, 7c))
-        >>> state.deal_hole(Card.parse('KhKs'))  # Phua
-        (4, (Kh, Ks))
-        >>> state.deal_hole(Card.parse('8c7h'))  # Koon
-        (5, (8c, 7h))
+        >>> state.deal_hole('Th8h')  # Badziakouski
+        State.HoleDealing(player_index=0, cards=(Th, 8h), statuses=(False, False))
+        >>> state.deal_hole('QsJd')  # Zhong
+        State.HoleDealing(player_index=1, cards=(Qs, Jd), statuses=(False, False))
+        >>> state.deal_hole('QhQd')  # Xuan
+        State.HoleDealing(player_index=2, cards=(Qh, Qd), statuses=(False, False))
+        >>> state.deal_hole('8d7c')  # Jun
+        State.HoleDealing(player_index=3, cards=(8d, 7c), statuses=(False, False))
+        >>> state.deal_hole('KhKs')  # Phua
+        State.HoleDealing(player_index=4, cards=(Kh, Ks), statuses=(False, False))
+        >>> state.deal_hole('8c7h')  # Koon
+        State.HoleDealing(player_index=5, cards=(8c, 7h), statuses=(False, False))
 
         >>> state.check_or_call()  # Badziakouski
-        (0, 3000)
+        State.CheckingOrCalling(player_index=0, amount=3000)
         >>> state.check_or_call()  # Zhong
-        (1, 3000)
+        State.CheckingOrCalling(player_index=1, amount=3000)
         >>> state.complete_bet_or_raise_to(35000)  # Xuan
-        (2, 35000)
+        State.CompletionBettingOrRaisingTo(player_index=2, amount=35000)
         >>> state.fold()  # Jun
-        3
+        State.Folding(player_index=3)
         >>> state.complete_bet_or_raise_to(298000)  # Phua
-        (4, 298000)
+        State.CompletionBettingOrRaisingTo(player_index=4, amount=298000)
         >>> state.fold()  # Koon
-        5
+        State.Folding(player_index=5)
         >>> state.fold()  # Badziakouski
-        0
+        State.Folding(player_index=0)
         >>> state.fold()  # Zhong
-        1
+        State.Folding(player_index=1)
         >>> state.check_or_call()  # Xuan
-        (2, 263000)
+        State.CheckingOrCalling(player_index=2, amount=263000)
 
         Below shows the flop dealing.
 
-        >>> state.deal_board(Card.parse('9h6cKc'))
-        (9h, 6c, Kc)
+        >>> state.deal_board('9h6cKc')
+        State.BoardDealing(cards=(9h, 6c, Kc))
 
         Below shows the turn dealing.
 
-        >>> state.deal_board(Card.parse('Jh'))
-        (Jh,)
+        >>> state.deal_board('Jh')
+        State.BoardDealing(cards=(Jh,))
 
         Below shows the river dealing.
 
-        >>> state.deal_board(Card.parse('Ts'))
-        (Ts,)
+        >>> state.deal_board('Ts')
+        State.BoardDealing(cards=(Ts,))
 
         Below show the final stacks.
 
@@ -482,6 +487,7 @@ class NoLimitShortDeckHoldem(TexasHoldem):
             ),
             BettingStructure.NO_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -507,6 +513,7 @@ class PotLimitOmahaHoldem(OmahaHoldem):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             min_bet: int,
@@ -520,7 +527,6 @@ class PotLimitOmahaHoldem(OmahaHoldem):
 
         Link: https://youtu.be/UMBm66Id2AA
 
-        >>> from pokerkit import *
         >>> state = PotLimitOmahaHoldem.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -532,6 +538,7 @@ class PotLimitOmahaHoldem(OmahaHoldem):
         ...         Automation.CHIP_PUSHING,
         ...         Automation.CHIP_PULLING,
         ...     ),
+        ...     True,
         ...     None,
         ...     (50000, 100000),
         ...     2000,
@@ -541,45 +548,45 @@ class PotLimitOmahaHoldem(OmahaHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(Card.parse('Ah3sKsKh'))  # Antonius
-        (0, (Ah, 3s, Ks, Kh))
-        >>> state.deal_hole(Card.parse('6d9s7d8h'))  # Blom
-        (1, (6d, 9s, 7d, 8h))
+        >>> state.deal_hole('Ah3sKsKh')  # Antonius
+        State.HoleDealing(player_index=0, cards=(Ah, 3s, Ks, Kh), statuses=(False, False, False, False))
+        >>> state.deal_hole('6d9s7d8h')  # Blom
+        State.HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False, False, False, False))
 
         >>> state.complete_bet_or_raise_to(300000)  # Blom
-        (1, 300000)
+        State.CompletionBettingOrRaisingTo(player_index=1, amount=300000)
         >>> state.complete_bet_or_raise_to(900000)  # Antonius
-        (0, 900000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=900000)
         >>> state.complete_bet_or_raise_to(2700000)  # Blom
-        (1, 2700000)
+        State.CompletionBettingOrRaisingTo(player_index=1, amount=2700000)
         >>> state.complete_bet_or_raise_to(8100000)  # Antonius
-        (0, 8100000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=8100000)
         >>> state.check_or_call()  # Blom
-        (1, 5400000)
+        State.CheckingOrCalling(player_index=1, amount=5400000)
 
         Below shows the flop dealing and actions.
 
-        >>> state.deal_board(Card.parse('4s5c2h'))
-        (4s, 5c, 2h)
+        >>> state.deal_board('4s5c2h')
+        State.BoardDealing(cards=(4s, 5c, 2h))
 
         >>> state.complete_bet_or_raise_to(9100000)  # Antonius
-        (0, 9100000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=9100000)
         >>> state.complete_bet_or_raise_to(43500000)  # Blom
-        (1, 43500000)
+        State.CompletionBettingOrRaisingTo(player_index=1, amount=43500000)
         >>> state.complete_bet_or_raise_to(77900000)  # Antonius
-        (0, 77900000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=77900000)
         >>> state.check_or_call()  # Blom
-        (1, 16247350)
+        State.CheckingOrCalling(player_index=1, amount=16247350)
 
         Below shows the turn dealing.
 
-        >>> state.deal_board(Card.parse('5h'))
-        (5h,)
+        >>> state.deal_board('5h')
+        State.BoardDealing(cards=(5h,))
 
         Below shows the river dealing.
 
-        >>> state.deal_board(Card.parse('9c'))
-        (9c,)
+        >>> state.deal_board('9c')
+        State.BoardDealing(cards=(9c,))
 
         Below show the final stacks.
 
@@ -636,6 +643,7 @@ class PotLimitOmahaHoldem(OmahaHoldem):
             ),
             BettingStructure.POT_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -654,6 +662,7 @@ class FixedLimitOmahaHoldemSplitHighEightOrBetterLow(OmahaHoldem):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             small_bet: int,
@@ -715,6 +724,7 @@ class FixedLimitOmahaHoldemSplitHighEightOrBetterLow(OmahaHoldem):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -740,6 +750,7 @@ class FixedLimitSevenCardStud(SevenCardStud):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             bring_in: int,
             small_bet: int,
@@ -808,6 +819,7 @@ class FixedLimitSevenCardStud(SevenCardStud):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(0, player_count),
             bring_in,
@@ -826,6 +838,7 @@ class FixedLimitSevenCardStudSplitHighEightOrBetterLow(SevenCardStud):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             bring_in: int,
             small_bet: int,
@@ -896,6 +909,7 @@ class FixedLimitSevenCardStudSplitHighEightOrBetterLow(SevenCardStud):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(0, player_count),
             bring_in,
@@ -912,6 +926,7 @@ class FixedLimitRazz(SevenCardStud):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             bring_in: int,
             small_bet: int,
@@ -981,6 +996,7 @@ class FixedLimitRazz(SevenCardStud):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(0, player_count),
             bring_in,
@@ -999,12 +1015,14 @@ class DeuceToSevenLowball(Poker, ABC):
 
 
 class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
-    """The class for no-limit deuce-to-seven lowball single draw games."""
+    """The class for no-limit deuce-to-seven lowball single draw games.
+    """
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             min_bet: int,
@@ -1045,6 +1063,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
             ),
             BettingStructure.NO_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -1061,6 +1080,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             small_bet: int,
@@ -1074,91 +1094,89 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         Link: https://youtu.be/pChCqb2FNxY
 
-        >>> from pokerkit import *
-        >>> state = (
-        ...     FixedLimitDeuceToSevenLowballTripleDraw.create_state(
-        ...         (
-        ...             Automation.ANTE_POSTING,
-        ...             Automation.BET_COLLECTION,
-        ...             Automation.BLIND_OR_STRADDLE_POSTING,
-        ...             Automation.CARD_BURNING,
-        ...             Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
-        ...             Automation.HAND_KILLING,
-        ...             Automation.CHIP_PUSHING,
-        ...             Automation.CHIP_PULLING,
-        ...         ),
-        ...         None,
-        ...         (75000, 150000),
-        ...         150000,
-        ...         300000,
-        ...         (1180000, 4340000, 5910000, 10765000),
-        ...         4,
-        ...     )
+        >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIP_PUSHING,
+        ...         Automation.CHIP_PULLING,
+        ...     ),
+        ...     True,
+        ...     None,
+        ...     (75000, 150000),
+        ...     150000,
+        ...     300000,
+        ...     (1180000, 4340000, 5910000, 10765000),
+        ...     4,
         ... )
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(Card.parse('7h6c4c3d2c'))  # Yockey
-        (0, (7h, 6c, 4c, 3d, 2c))
-        >>> state.deal_hole(Card.parse('JsJcJdJhTs'))  # Hui*
-        (1, (Js, Jc, Jd, Jh, Ts))
-        >>> state.deal_hole(Card.parse('KsKcKdKhTh'))  # Esposito*
-        (2, (Ks, Kc, Kd, Kh, Th))
-        >>> state.deal_hole(Card.parse('AsQs6s5c3c'))  # Arieh
-        (3, (As, Qs, 6s, 5c, 3c))
+        >>> state.deal_hole('7h6c4c3d2c')  # Yockey
+        State.HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(False, False, False, False, False))
+        >>> state.deal_hole('JsJcJdJhTs')  # Hui*
+        State.HoleDealing(player_index=1, cards=(Js, Jc, Jd, Jh, Ts), statuses=(False, False, False, False, False))
+        >>> state.deal_hole('KsKcKdKhTh')  # Esposito*
+        State.HoleDealing(player_index=2, cards=(Ks, Kc, Kd, Kh, Th), statuses=(False, False, False, False, False))
+        >>> state.deal_hole('AsQs6s5c3c')  # Arieh
+        State.HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(False, False, False, False, False))
 
         >>> state.fold()  # Esposito
-        2
+        State.Folding(player_index=2)
         >>> state.complete_bet_or_raise_to()  # Arieh
-        (3, 300000)
+        State.CompletionBettingOrRaisingTo(player_index=3, amount=300000)
         >>> state.complete_bet_or_raise_to()  # Yockey
-        (0, 450000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=450000)
         >>> state.fold()  # Hui
-        1
+        State.Folding(player_index=1)
         >>> state.check_or_call()  # Arieh
-        (3, 150000)
+        State.CheckingOrCalling(player_index=3, amount=150000)
 
         Below shows the first draw and actions.
 
         >>> state.stand_pat_or_discard()  # Yockey
-        (0, ())
-        >>> state.stand_pat_or_discard(Card.parse('AsQs'))  # Arieh
-        (3, (As, Qs))
-        >>> state.deal_hole(Card.parse('2hQh'))  # Arieh
-        (3, (2h, Qh))
+        State.StandingPatOrDiscarding(player_index=0, cards=())
+        >>> state.stand_pat_or_discard('AsQs')  # Arieh
+        State.StandingPatOrDiscarding(player_index=3, cards=(As, Qs))
+        >>> state.deal_hole('2hQh')  # Arieh
+        State.HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, False))
 
         >>> state.complete_bet_or_raise_to()  # Yockey
-        (0, 150000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=150000)
         >>> state.check_or_call()  # Arieh
-        (3, 150000)
+        State.CheckingOrCalling(player_index=3, amount=150000)
 
         Below shows the second draw and actions.
 
         >>> state.stand_pat_or_discard()  # Yockey
-        (0, ())
-        >>> state.stand_pat_or_discard(Card.parse('Qh'))  # Arieh
-        (3, (Qh,))
-        >>> state.deal_hole(Card.parse('4d'))  # Arieh
-        (3, (4d,))
+        State.StandingPatOrDiscarding(player_index=0, cards=())
+        >>> state.stand_pat_or_discard('Qh')  # Arieh
+        State.StandingPatOrDiscarding(player_index=3, cards=(Qh,))
+        >>> state.deal_hole('4d')  # Arieh
+        State.HoleDealing(player_index=3, cards=(4d,), statuses=(False,))
 
         >>> state.complete_bet_or_raise_to()  # Yockey
-        (0, 300000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=300000)
         >>> state.check_or_call()  # Arieh
-        (3, 300000)
+        State.CheckingOrCalling(player_index=3, amount=300000)
 
         Below shows the third draw and actions.
 
         >>> state.stand_pat_or_discard()  # Yockey
-        (0, ())
-        >>> state.stand_pat_or_discard(Card.parse('6s'))  # Arieh
-        (3, (6s,))
-        >>> state.deal_hole(Card.parse('7c'))  # Arieh
-        (3, (7c,))
+        State.StandingPatOrDiscarding(player_index=0, cards=())
+        >>> state.stand_pat_or_discard('6s')  # Arieh
+        State.StandingPatOrDiscarding(player_index=3, cards=(6s,))
+        >>> state.deal_hole('7c')  # Arieh
+        State.HoleDealing(player_index=3, cards=(7c,), statuses=(False,))
 
         >>> state.complete_bet_or_raise_to()  # Yockey
-        (0, 280000)
+        State.CompletionBettingOrRaisingTo(player_index=0, amount=280000)
         >>> state.check_or_call()  # Arieh
-        (3, 280000)
+        State.CheckingOrCalling(player_index=3, amount=280000)
 
         Below show the final stacks.
 
@@ -1216,6 +1234,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,
@@ -1236,6 +1255,7 @@ class FixedLimitBadugi(Poker):
     def create_state(
             cls,
             automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
             antes: int | Iterable[int] | Mapping[int, int] | None,
             blinds_or_straddles: Iterable[int] | Mapping[int, int],
             small_bet: int,
@@ -1249,7 +1269,6 @@ class FixedLimitBadugi(Poker):
 
         Link: https://en.wikipedia.org/wiki/Badugi
 
-        >>> from pokerkit import *
         >>> state = FixedLimitBadugi.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -1261,97 +1280,98 @@ class FixedLimitBadugi(Poker):
         ...         Automation.CHIP_PUSHING,
         ...         Automation.CHIP_PULLING,
         ...     ),
+        ...     True,
         ...     None,
         ...     (1, 2),
         ...     2,
         ...     4,
-        ...     (200,) * 4,
+        ...     200,
         ...     4,
         ... )
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole(Card.parse('As4hJcKh'))  # Bob*
-        (0, (As, 4h, Jc, Kh))
-        >>> state.deal_hole(Card.parse('3s5d7s8s'))  # Carol*
-        (1, (3s, 5d, 7s, 8s))
-        >>> state.deal_hole(Card.parse('KsKdQsQd'))  # Ted*
-        (2, (Ks, Kd, Qs, Qd))
-        >>> state.deal_hole(Card.parse('2s4c6dKc'))  # Alice*
-        (3, (2s, 4c, 6d, Kc))
+        >>> state.deal_hole('As4hJcKh')  # Bob*
+        State.HoleDealing(player_index=0, cards=(As, 4h, Jc, Kh), statuses=(False, False, False, False))
+        >>> state.deal_hole('3s5d7s8s')  # Carol*
+        State.HoleDealing(player_index=1, cards=(3s, 5d, 7s, 8s), statuses=(False, False, False, False))
+        >>> state.deal_hole('KsKdQsQd')  # Ted*
+        State.HoleDealing(player_index=2, cards=(Ks, Kd, Qs, Qd), statuses=(False, False, False, False))
+        >>> state.deal_hole('2s4c6dKc')  # Alice*
+        State.HoleDealing(player_index=3, cards=(2s, 4c, 6d, Kc), statuses=(False, False, False, False))
 
         >>> state.fold()  # Ted
-        2
+        State.Folding(player_index=2)
         >>> state.check_or_call()  # Alice
-        (3, 2)
+        State.CheckingOrCalling(player_index=3, amount=2)
         >>> state.check_or_call()  # Bob
-        (0, 1)
+        State.CheckingOrCalling(player_index=0, amount=1)
         >>> state.check_or_call()  # Carol
-        (1, 0)
+        State.CheckingOrCalling(player_index=1, amount=0)
 
         Below shows the first draw and actions.
 
-        >>> state.stand_pat_or_discard(Card.parse('JcKh'))  # Bob*
-        (0, (Jc, Kh))
-        >>> state.stand_pat_or_discard(Card.parse('7s8s'))  # Carol*
-        (1, (7s, 8s))
-        >>> state.stand_pat_or_discard(Card.parse('Kc'))  # Alice*
-        (3, (Kc,))
-        >>> state.deal_hole(Card.parse('TcJs'))  # Bob*
-        (0, (Tc, Js))
-        >>> state.deal_hole(Card.parse('7cTh'))  # Carol*
-        (1, (7c, Th))
-        >>> state.deal_hole(Card.parse('Qc'))  # Alice*
-        (3, (Qc,))
+        >>> state.stand_pat_or_discard('JcKh')  # Bob*
+        State.StandingPatOrDiscarding(player_index=0, cards=(Jc, Kh))
+        >>> state.stand_pat_or_discard('7s8s')  # Carol*
+        State.StandingPatOrDiscarding(player_index=1, cards=(7s, 8s))
+        >>> state.stand_pat_or_discard('Kc')  # Alice*
+        State.StandingPatOrDiscarding(player_index=3, cards=(Kc,))
+        >>> state.deal_hole('TcJs')  # Bob*
+        State.HoleDealing(player_index=0, cards=(Tc, Js), statuses=(False, False))
+        >>> state.deal_hole('7cTh')  # Carol*
+        State.HoleDealing(player_index=1, cards=(7c, Th), statuses=(False, False))
+        >>> state.deal_hole('Qc')  # Alice*
+        State.HoleDealing(player_index=3, cards=(Qc,), statuses=(False,))
 
         >>> state.check_or_call()  # Bob
-        (0, 0)
+        State.CheckingOrCalling(player_index=0, amount=0)
         >>> state.complete_bet_or_raise_to()  # Carol
-        (1, 2)
+        State.CompletionBettingOrRaisingTo(player_index=1, amount=2)
         >>> state.check_or_call()  # Alice
-        (3, 2)
+        State.CheckingOrCalling(player_index=3, amount=2)
         >>> state.check_or_call()  # Bob
-        (0, 2)
+        State.CheckingOrCalling(player_index=0, amount=2)
 
         Below shows the second draw and actions.
 
-        >>> state.stand_pat_or_discard(Card.parse('Js'))  # Bob*
-        (0, (Js,))
+        >>> state.stand_pat_or_discard('Js')  # Bob*
+        State.StandingPatOrDiscarding(player_index=0, cards=(Js,))
         >>> state.stand_pat_or_discard()  # Carol*
-        (1, ())
-        >>> state.stand_pat_or_discard(Card.parse('Qc'))  # Alice*
-        (3, (Qc,))
-        >>> state.deal_hole(Card.parse('Ts'))  # Bob*
-        (0, (Ts,))
-        >>> state.deal_hole(Card.parse('9h'))  # Alice*
-        (3, (9h,))
+        State.StandingPatOrDiscarding(player_index=1, cards=())
+        >>> state.stand_pat_or_discard('Qc')  # Alice*
+        State.StandingPatOrDiscarding(player_index=3, cards=(Qc,))
+        >>> state.deal_hole('Ts')  # Bob*
+        State.HoleDealing(player_index=0, cards=(Ts,), statuses=(False,))
+        >>> state.deal_hole('9h')  # Alice*
+        State.HoleDealing(player_index=3, cards=(9h,), statuses=(False,))
 
         >>> state.check_or_call()  # Bob
-        (0, 0)
+        State.CheckingOrCalling(player_index=0, amount=0)
         >>> state.complete_bet_or_raise_to()  # Carol
-        (1, 4)
+        State.CompletionBettingOrRaisingTo(player_index=1, amount=4)
         >>> state.complete_bet_or_raise_to()  # Alice
-        (3, 8)
+        State.CompletionBettingOrRaisingTo(player_index=3, amount=8)
         >>> state.fold()  # Bob
-        0
+        State.Folding(player_index=0)
         >>> state.check_or_call()  # Carol
-        (1, 4)
+        State.CheckingOrCalling(player_index=1, amount=4)
 
         Below shows the third draw and actions.
 
-        >>> state.stand_pat_or_discard(Card.parse('Th'))  # Carol*
-        (1, (Th,))
+        >>> state.stand_pat_or_discard('Th')  # Carol*
+        State.StandingPatOrDiscarding(player_index=1, cards=(Th,))
         >>> state.stand_pat_or_discard()  # Alice*
-        (3, ())
-        >>> state.deal_hole(Card.parse('8h'))  # Carol*
-        (1, (8h,))
+        State.StandingPatOrDiscarding(player_index=3, cards=())
+        >>> state.deal_hole('8h')  # Carol*
+        State.HoleDealing(player_index=1, cards=(8h,), statuses=(False,))
 
         >>> state.check_or_call()  # Carol
-        (1, 0)
+        State.CheckingOrCalling(player_index=1, amount=0)
         >>> state.complete_bet_or_raise_to()  # Alice
-        (3, 4)
+        State.CompletionBettingOrRaisingTo(player_index=3, amount=4)
         >>> state.check_or_call()  # Carol
-        (1, 4)
+        State.CheckingOrCalling(player_index=1, amount=4)
 
         Below show the final stacks.
 
@@ -1409,6 +1429,7 @@ class FixedLimitBadugi(Poker):
             ),
             BettingStructure.FIXED_LIMIT,
             automations,
+            ante_trimming_status,
             cls._clean_values(antes, player_count),
             cls._clean_values(blinds_or_straddles, player_count),
             0,

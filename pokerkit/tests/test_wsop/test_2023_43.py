@@ -37,6 +37,7 @@ class StateTestCase(TestCase):
     def test_00_02_07(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 120000, 0, 0, 0),
             (40000, 80000, 0, 0, 0),
             80000,
@@ -119,6 +120,7 @@ class StateTestCase(TestCase):
     def test_00_08_38(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 120000, 0, 0, 0),
             (40000, 80000, 0, 0, 0),
             80000,
@@ -165,6 +167,7 @@ class StateTestCase(TestCase):
     def test_00_15_36(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 150000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -239,6 +242,7 @@ class StateTestCase(TestCase):
     def test_00_18_39(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 150000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -305,6 +309,7 @@ class StateTestCase(TestCase):
     def test_00_22_43(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -377,6 +382,7 @@ class StateTestCase(TestCase):
     def test_00_25_05(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -485,6 +491,7 @@ class StateTestCase(TestCase):
     def test_00_29_03(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -531,6 +538,7 @@ class StateTestCase(TestCase):
     def test_00_30_52(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -577,6 +585,7 @@ class StateTestCase(TestCase):
     def test_00_32_02(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -682,6 +691,7 @@ class StateTestCase(TestCase):
     def test_00_34_43(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -728,6 +738,7 @@ class StateTestCase(TestCase):
     def test_00_35_59(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -836,6 +847,7 @@ class StateTestCase(TestCase):
     def test_00_41_13(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -918,6 +930,7 @@ class StateTestCase(TestCase):
     def test_00_43_47(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -998,6 +1011,7 @@ class StateTestCase(TestCase):
     def test_00_46_43(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -1053,6 +1067,7 @@ class StateTestCase(TestCase):
     def test_00_48_29(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -1136,6 +1151,7 @@ class StateTestCase(TestCase):
     def test_00_51_22(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -1217,6 +1233,7 @@ class StateTestCase(TestCase):
     def test_00_55_24(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -1297,6 +1314,7 @@ class StateTestCase(TestCase):
     def test_00_58_03(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -1378,6 +1396,7 @@ class StateTestCase(TestCase):
     def test_01_00_21(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1463,6 +1482,7 @@ class StateTestCase(TestCase):
     def test_01_02_14(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1522,6 +1542,7 @@ class StateTestCase(TestCase):
     def test_01_03_57(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1582,6 +1603,7 @@ class StateTestCase(TestCase):
     def test_01_06_16(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1628,6 +1650,7 @@ class StateTestCase(TestCase):
     def test_01_07_20(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1733,6 +1756,7 @@ class StateTestCase(TestCase):
     def test_01_10_31(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1822,6 +1846,7 @@ class StateTestCase(TestCase):
     def test_01_13_57(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (50000,) * 5,
             50000,
             200000,
@@ -1929,6 +1954,7 @@ class StateTestCase(TestCase):
     def test_01_18_22(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -1976,6 +2002,7 @@ class StateTestCase(TestCase):
     def test_01_22_35(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2021,6 +2048,7 @@ class StateTestCase(TestCase):
     def test_01_25_08(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2066,6 +2094,7 @@ class StateTestCase(TestCase):
     def test_01_26_14(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2145,6 +2174,7 @@ class StateTestCase(TestCase):
     def test_01_29_49(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2223,6 +2253,7 @@ class StateTestCase(TestCase):
     def test_01_32_58(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2279,6 +2310,7 @@ class StateTestCase(TestCase):
     def test_01_37_39(self) -> None:
         state = PotLimitOmahaHoldem.create_state(
             (),
+            False,
             (0, 100000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2335,6 +2367,7 @@ class StateTestCase(TestCase):
     def test_01_39_18(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2413,6 +2446,7 @@ class StateTestCase(TestCase):
     def test_01_42_31(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2491,6 +2525,7 @@ class StateTestCase(TestCase):
     def test_01_44_49(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2533,6 +2568,7 @@ class StateTestCase(TestCase):
     def test_01_45_43(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2574,6 +2610,7 @@ class StateTestCase(TestCase):
     def test_01_46_42(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2615,6 +2652,7 @@ class StateTestCase(TestCase):
     def test_01_47_38(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2677,6 +2715,7 @@ class StateTestCase(TestCase):
     def test_01_51_27(self) -> None:
         state = FixedLimitTexasHoldem.create_state(
             (),
+            True,
             (0,) * 5,
             (100000, 200000, 0, 0, 0),
             200000,
@@ -2742,6 +2781,7 @@ class StateTestCase(TestCase):
     def test_01_53_52(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 150000, 0, 0, 0),
             (50000, 100000, 0, 0, 0),
             100000,
@@ -2788,6 +2828,7 @@ class StateTestCase(TestCase):
     def test_01_56_25(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -2834,6 +2875,7 @@ class StateTestCase(TestCase):
     def test_01_59_02(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -2880,6 +2922,7 @@ class StateTestCase(TestCase):
     def test_02_00_25(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -2926,6 +2969,7 @@ class StateTestCase(TestCase):
     def test_02_01_50(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -2966,8 +3010,8 @@ class StateTestCase(TestCase):
 
         # Draw
 
-        state.stand_pat_or_discard(Card.parse('JsJd'))
-        state.stand_pat_or_discard(Card.parse('9h'))
+        state.stand_pat_or_discard('JsJd')
+        state.stand_pat_or_discard('9h')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -2986,6 +3030,7 @@ class StateTestCase(TestCase):
     def test_02_04_37(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -3026,8 +3071,8 @@ class StateTestCase(TestCase):
 
         # Draw
 
-        state.stand_pat_or_discard(Card.parse('JcAs'))
-        state.stand_pat_or_discard(Card.parse('3h'))
+        state.stand_pat_or_discard('JcAs')
+        state.stand_pat_or_discard('3h')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3053,6 +3098,7 @@ class StateTestCase(TestCase):
     def test_02_07_21(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -3102,6 +3148,7 @@ class StateTestCase(TestCase):
     def test_02_09_20(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3209,6 +3256,7 @@ class StateTestCase(TestCase):
     def test_02_13_08(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3255,6 +3303,7 @@ class StateTestCase(TestCase):
     def test_02_14_32(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3361,6 +3410,7 @@ class StateTestCase(TestCase):
     def test_02_18_42(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3468,6 +3518,7 @@ class StateTestCase(TestCase):
     def test_02_22_35(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3527,6 +3578,7 @@ class StateTestCase(TestCase):
     def test_02_25_11(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3613,6 +3665,7 @@ class StateTestCase(TestCase):
     def test_02_28_14(self) -> None:
         state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (50000,) * 5,
             75000,
             250000,
@@ -3674,6 +3727,7 @@ class StateTestCase(TestCase):
     def test_02_29_59(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -3718,8 +3772,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.stand_pat_or_discard(Card.parse('QdJc'))
-        state.stand_pat_or_discard(Card.parse('KsKd4s'))
+        state.stand_pat_or_discard('QdJc')
+        state.stand_pat_or_discard('KsKd4s')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3734,8 +3788,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.stand_pat_or_discard(Card.parse('As'))
-        state.stand_pat_or_discard(Card.parse('7s'))
+        state.stand_pat_or_discard('As')
+        state.stand_pat_or_discard('7s')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3747,8 +3801,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.stand_pat_or_discard(Card.parse('8s'))
-        state.stand_pat_or_discard(())
+        state.stand_pat_or_discard('8s')
+        state.stand_pat_or_discard()
         state.burn_card()
         state.deal_hole()
         self.assertEqual(state.total_pot_amount, 3000000)
@@ -3765,6 +3819,7 @@ class StateTestCase(TestCase):
     def test_02_34_51(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -3810,6 +3865,7 @@ class StateTestCase(TestCase):
     def test_02_36_12(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -3855,8 +3911,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.stand_pat_or_discard(Card.parse('AsKs'))
-        state.stand_pat_or_discard(Card.parse('AcTd'))
+        state.stand_pat_or_discard('AsKs')
+        state.stand_pat_or_discard('AcTd')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3870,8 +3926,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.stand_pat_or_discard(Card.parse('Jh4s'))
-        state.stand_pat_or_discard(Card.parse('Qc'))
+        state.stand_pat_or_discard('Jh4s')
+        state.stand_pat_or_discard('Qc')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3884,8 +3940,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.stand_pat_or_discard(Card.parse('4h'))
-        state.stand_pat_or_discard(Card.parse('3s'))
+        state.stand_pat_or_discard('4h')
+        state.stand_pat_or_discard('3s')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -3911,6 +3967,7 @@ class StateTestCase(TestCase):
     def test_02_40_27(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -3956,6 +4013,7 @@ class StateTestCase(TestCase):
     def test_02_41_31(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -4001,6 +4059,7 @@ class StateTestCase(TestCase):
     def test_02_42_44(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -4043,8 +4102,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.stand_pat_or_discard(Card.parse('Kh6c'))
-        state.stand_pat_or_discard(Card.parse('AsAd'))
+        state.stand_pat_or_discard('Kh6c')
+        state.stand_pat_or_discard('AsAd')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4059,8 +4118,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.stand_pat_or_discard(())
-        state.stand_pat_or_discard(Card.parse('2h'))
+        state.stand_pat_or_discard()
+        state.stand_pat_or_discard('2h')
         state.burn_card()
         state.deal_hole()
         state.complete_bet_or_raise_to()
@@ -4071,8 +4130,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.stand_pat_or_discard(())
-        state.stand_pat_or_discard(())
+        state.stand_pat_or_discard()
+        state.stand_pat_or_discard()
         state.burn_card()
         state.check_or_call()
         state.complete_bet_or_raise_to()
@@ -4096,6 +4155,7 @@ class StateTestCase(TestCase):
     def test_02_46_42(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (),
+            True,
             (0,) * 5,
             (125000, 250000, 0, 0, 0),
             250000,
@@ -4137,8 +4197,8 @@ class StateTestCase(TestCase):
 
         # First draw
 
-        state.stand_pat_or_discard(Card.parse('9d6c'))
-        state.stand_pat_or_discard(Card.parse('Th'))
+        state.stand_pat_or_discard('9d6c')
+        state.stand_pat_or_discard('Th')
         state.burn_card()
         state.deal_hole()
         state.deal_hole()
@@ -4152,8 +4212,8 @@ class StateTestCase(TestCase):
 
         # Second draw
 
-        state.stand_pat_or_discard(())
-        state.stand_pat_or_discard(Card.parse('Qh'))
+        state.stand_pat_or_discard()
+        state.stand_pat_or_discard('Qh')
         state.burn_card()
         state.deal_hole()
         state.complete_bet_or_raise_to()
@@ -4163,8 +4223,8 @@ class StateTestCase(TestCase):
 
         # Third draw
 
-        state.stand_pat_or_discard(())
-        state.stand_pat_or_discard(Card.parse('7d'))
+        state.stand_pat_or_discard()
+        state.stand_pat_or_discard('7d')
         state.burn_card()
         state.deal_hole()
         state.check_or_call()
@@ -4187,6 +4247,7 @@ class StateTestCase(TestCase):
     def test_02_51_10(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4230,6 +4291,7 @@ class StateTestCase(TestCase):
     def test_02_53_09(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4273,6 +4335,7 @@ class StateTestCase(TestCase):
     def test_02_54_12(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4317,6 +4380,7 @@ class StateTestCase(TestCase):
     def test_02_56_12(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4361,6 +4425,7 @@ class StateTestCase(TestCase):
     def test_02_57_27(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4415,6 +4480,7 @@ class StateTestCase(TestCase):
     def test_03_00_32(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4459,6 +4525,7 @@ class StateTestCase(TestCase):
     def test_03_02_41(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (),
+            False,
             (0, 225000, 0, 0, 0),
             (75000, 150000, 0, 0, 0),
             150000,
@@ -4525,6 +4592,7 @@ class StateTestCase(TestCase):
     def test_03_05_55(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 4,
             75000,
             250000,
@@ -4628,6 +4696,7 @@ class StateTestCase(TestCase):
     def test_03_11_08(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 4,
             75000,
             250000,
@@ -4674,6 +4743,7 @@ class StateTestCase(TestCase):
     def test_03_12_55(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 4,
             75000,
             250000,
@@ -4735,6 +4805,7 @@ class StateTestCase(TestCase):
     def test_03_14_40(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 4,
             75000,
             250000,
@@ -4839,6 +4910,7 @@ class StateTestCase(TestCase):
     def test_03_17_31(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 4,
             75000,
             250000,
@@ -4898,6 +4970,7 @@ class StateTestCase(TestCase):
     def test_03_19_14(self) -> None:
         state = FixedLimitSevenCardStud.create_state(
             (),
+            True,
             (50000,) * 4,
             75000,
             250000,
@@ -4982,6 +5055,7 @@ class StateTestCase(TestCase):
     def test_03_22_08(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 4,
             (250000, 0, 0, 0),
             250000,
@@ -5062,6 +5136,7 @@ class StateTestCase(TestCase):
     def test_03_25_05(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 4,
             (125000, 250000, 0, 0),
             250000,
@@ -5144,6 +5219,7 @@ class StateTestCase(TestCase):
     def test_03_32_24(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 4,
             (125000, 250000, 0, 0),
             250000,
@@ -5217,6 +5293,7 @@ class StateTestCase(TestCase):
     def test_03_36_22(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 3,
             (125000, 250000, 0),
             250000,
@@ -5296,6 +5373,7 @@ class StateTestCase(TestCase):
     def test_03_42_38(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 2,
             (150000, 300000),
             300000,
@@ -5374,6 +5452,7 @@ class StateTestCase(TestCase):
     def test_03_44_38(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 2,
             (150000, 300000),
             300000,
@@ -5455,6 +5534,7 @@ class StateTestCase(TestCase):
     def test_03_46_32(self) -> None:
         state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
             (),
+            True,
             (0,) * 2,
             (150000, 300000),
             300000,
@@ -5533,6 +5613,7 @@ class StateTestCase(TestCase):
     def test_03_48_33(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (100000,) * 2,
             100000,
             300000,
@@ -5576,6 +5657,7 @@ class StateTestCase(TestCase):
     def test_03_49_18(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (100000,) * 2,
             100000,
             300000,
@@ -5645,6 +5727,7 @@ class StateTestCase(TestCase):
     def test_03_50_24(self) -> None:
         state = FixedLimitRazz.create_state(
             (),
+            True,
             (100000,) * 2,
             100000,
             300000,
