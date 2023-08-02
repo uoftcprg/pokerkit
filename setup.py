@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open('README.rst', 'r') as file:
     long_description = file.read()
@@ -46,6 +46,7 @@ setup(
         'Source': 'https://github.com/uoftcprg/pokerkit',
         'Tracker': 'https://github.com/uoftcprg/pokerkit/issues',
     },
-    packages=['pokerkit'],
+    package_data={'pokerkit': ['py.typed']},
+    packages=find_packages(),
     python_requires='>=3.11',
 )
