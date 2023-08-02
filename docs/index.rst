@@ -3,14 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pokerkit's documentation!
-====================================
+.. include:: ../README.rst
+
+.. include:: ../CONTRIBUTING.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
+   simulation
+   evaluation
+   reference
 
 Indices and tables
 ==================

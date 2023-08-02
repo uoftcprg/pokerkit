@@ -262,7 +262,8 @@ class StandardLookup(Lookup):
     """The class for standard hand lookups.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please subclasses of :cls:`Hand` that use this lookup.
+    please subclasses of :class:`pokerkit.hands.Hand` that use this
+    lookup.
 
     >>> lookup = StandardLookup()
     >>> e0 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
@@ -338,7 +339,7 @@ class ShortDeckHoldemLookup(Lookup):
     Here, flushes beat full houses.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`ShortDeckHoldemHand`.
+    please use :class:`pokerkit.hands.ShortDeckHoldemHand`.
 
     >>> lookup = ShortDeckHoldemLookup()
     >>> e0 = lookup.get_entry(Card.parse('AhAc6s6hTd'))
@@ -413,11 +414,11 @@ class ShortDeckHoldemLookup(Lookup):
 
 
 @dataclass
-class EightOrBetterLowLookup(Lookup):
-    """The class for eight or better low hand lookups.
+class EightOrBetterLookup(Lookup):
+    """The class for eight or better hand lookups.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`EightOrBetterLowHand`.
+    please use :class:`pokerkit.hands.EightOrBetterLowHand`.
     """
 
     def __post_init__(self) -> None:
@@ -436,7 +437,7 @@ class RegularLowLookup(Lookup):
     Here, flushes are ignored.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`RegularLowHand`.
+    please use :class:`pokerkit.hands.RegularLowHand`.
 
     >>> lookup = RegularLowLookup()
     >>> e0 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
@@ -497,7 +498,7 @@ class BadugiLookup(Lookup):
     """The class for badugi hand lookups.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
-    please use :cls:`BadugiHand`.
+    please use :class:`pokerkit.hands.BadugiHand`.
 
     >>> lookup = BadugiLookup()
     >>> e0 = lookup.get_entry(Card.parse('2s'))
@@ -522,3 +523,34 @@ class BadugiLookup(Lookup):
                 (i == 1,),
                 Label.HIGH_CARD,
             )
+
+
+@dataclass
+class KuhnPokerLookup(Lookup):
+    """The class for Kuhn poker hand lookups.
+
+    Lookups are used by evaluators. If you want to evaluate poker hands,
+    please use :class:`pokerkit.hands.KuhnPokerHand`.
+
+    >>> lookup = KuhnPokerLookup()
+    >>> e0 = lookup.get_entry(Card.parse('Js'))
+    >>> e1 = lookup.get_entry(Card.parse('Qs'))
+    >>> e2 = lookup.get_entry(Card.parse('2c'))
+    Traceback (most recent call last):
+        ...
+    ValueError: cards form an invalid hand
+    >>> e0 < e1
+    True
+    >>> e0.label
+    <Label.HIGH_CARD: 'High card'>
+    >>> e1.label
+    <Label.HIGH_CARD: 'High card'>
+    """
+
+    def __post_init__(self) -> None:
+        self._add_multisets(
+            RankOrder.KUHN_POKER,
+            Counter({1: 1}),
+            (True,),
+            Label.HIGH_CARD,
+        )

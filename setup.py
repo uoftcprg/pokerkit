@@ -7,7 +7,7 @@ with open('README.rst', 'r') as file:
 
 setup(
     name='pokerkit',
-    version='0.0.0.dev0',
+    version='0.0.0',
     description='A Python package for various poker tools',
     long_description=long_description,
     long_description_content_type='text/x-rst',
@@ -16,12 +16,14 @@ setup(
     author_email='uoftcprg@outlook.com',
     license='MIT',
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Topic :: Education',
         'Topic :: Games/Entertainment',
         'Topic :: Games/Entertainment :: Board Games',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
@@ -40,7 +42,7 @@ setup(
         'modicum',
     ],
     project_urls={
-        'Documentation': 'https://pokerkit.uoftcprg.com',
+        'Documentation': 'https://pokerkit.readthedocs.io/en/latest/',
         'Source': 'https://github.com/uoftcprg/pokerkit',
         'Tracker': 'https://github.com/uoftcprg/pokerkit/issues',
     },

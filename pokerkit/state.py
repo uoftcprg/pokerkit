@@ -298,10 +298,10 @@ class Automation(StrEnum):
     """The hole cards showing or mucking automation."""
     HAND_KILLING = 'Hand killing'
     """The hand killing automation."""
-    CHIP_PUSHING = 'Chip pushing'
-    """The chip pushing automation."""
-    CHIP_PULLING = 'Chip pulling'
-    """The chip pulling automation."""
+    CHIPS_PUSHING = 'Chips pushing'
+    """The chips pushing automation."""
+    CHIPS_PULLING = 'Chips pulling'
+    """The chips pulling automation."""
 
 
 @dataclass(frozen=True)
@@ -343,10 +343,10 @@ class State:
     Below code shows an example Kuhn poker game with all non-player
     actions and showdown automated.
 
-    >>> from pokerkit import BadugiHand
+    >>> from pokerkit import KuhnPokerHand
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -368,8 +368,8 @@ class State:
     ...         Automation.BOARD_DEALING,
     ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
     ...         Automation.HAND_KILLING,
-    ...         Automation.CHIP_PUSHING,
-    ...         Automation.CHIP_PULLING,
+    ...         Automation.CHIPS_PUSHING,
+    ...         Automation.CHIPS_PULLING,
     ...     ),
     ...     True,
     ...     (1,) * 2,
@@ -412,7 +412,7 @@ class State:
 
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -453,15 +453,15 @@ class State:
     >>> state.collect_bets()
     State.BetCollection(bets=(0, 0))
     >>> state.push_chips()
-    State.ChipPushing(amounts=(0, 3))
+    State.ChipsPushing(amounts=(0, 3))
     >>> state.pull_chips(1)
-    State.ChipPulling(player_index=1, amount=3)
+    State.ChipsPulling(player_index=1, amount=3)
     >>> state.status
     False
 
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (),
     ...     BettingStructure.FIXED_LIMIT,
     ...     (),
@@ -476,7 +476,7 @@ class State:
     ValueError: empty streets
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             True,
@@ -501,7 +501,7 @@ class State:
     ValueError: first street not hole dealing
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -526,7 +526,7 @@ class State:
     ValueError: negative antes, blinds, straddles, or bring-in
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -551,7 +551,7 @@ class State:
     ValueError: no antes, blinds, straddles, or bring-in
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -576,7 +576,7 @@ class State:
     ValueError: non-positive starting stacks
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -601,7 +601,7 @@ class State:
     ValueError: both bring-in and blinds or straddles specified
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -626,7 +626,7 @@ class State:
     ValueError: bring-in must be less than the min bet
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -651,7 +651,7 @@ class State:
     ValueError: inconsistent number of players
     >>> state = State(
     ...     Deck.KUHN_POKER,
-    ...     (BadugiHand,),
+    ...     (KuhnPokerHand,),
     ...     (
     ...         Street(
     ...             False,
@@ -784,7 +784,7 @@ class State:
         self._setup_blind_or_straddle_posting()
         self._setup_dealing()
         self._setup_hand_killing()
-        self._setup_chip_pulling()
+        self._setup_chips_pulling()
 
     def _begin(self) -> None:
         self._begin_ante_posting()
@@ -797,7 +797,7 @@ class State:
         """Return the number of hand types.
 
         >>> from pokerkit import (
-        ...     FixedLimitOmahaHoldemSplitHighEightOrBetterLow,
+        ...     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
         ...     NoLimitTexasHoldem,
         ... )
         >>> state = NoLimitTexasHoldem.create_state(
@@ -811,7 +811,7 @@ class State:
         ... )
         >>> state.hand_type_count
         1
-        >>> state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        >>> state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
         ...     (),
         ...     True,
         ...     1,
@@ -833,7 +833,7 @@ class State:
         """Return the hand type indices.
 
         >>> from pokerkit import (
-        ...     FixedLimitOmahaHoldemSplitHighEightOrBetterLow,
+        ...     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
         ...     NoLimitTexasHoldem,
         ... )
         >>> state = NoLimitTexasHoldem.create_state(
@@ -847,7 +847,7 @@ class State:
         ... )
         >>> state.hand_type_indices
         range(0, 1)
-        >>> state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        >>> state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
         ...     (),
         ...     True,
         ...     1,
@@ -1061,11 +1061,11 @@ class State:
         >>> state.street is None
         True
         >>> state.push_chips()
-        State.ChipPushing(amounts=(6, 0))
+        State.ChipsPushing(amounts=(6, 0))
         >>> state.street is None
         True
         >>> state.pull_chips()
-        State.ChipPulling(player_index=0, amount=6)
+        State.ChipsPulling(player_index=0, amount=6)
         >>> state.street is None
         True
 
@@ -1079,8 +1079,8 @@ class State:
         ...         Automation.BOARD_DEALING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     False,
         ...     (0, 2),
@@ -1198,11 +1198,11 @@ class State:
         >>> state.show_or_muck_hole_cards()
         State.HoleCardsShowingOrMucking(player_index=1, status=False)
         >>> state.push_chips()
-        State.ChipPushing(amounts=(66, 0))
+        State.ChipsPushing(amounts=(66, 0))
         >>> state.total_pot_amount
         66
         >>> state.pull_chips()
-        State.ChipPulling(player_index=0, amount=66)
+        State.ChipsPulling(player_index=0, amount=66)
         >>> state.total_pot_amount
         0
 
@@ -1216,8 +1216,8 @@ class State:
         ...         Automation.BOARD_DEALING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     False,
         ...     (0, 2),
@@ -1259,8 +1259,8 @@ class State:
         ...         Automation.HOLE_DEALING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1380,8 +1380,8 @@ class State:
         ...         Automation.BOARD_DEALING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1432,8 +1432,8 @@ class State:
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1484,8 +1484,8 @@ class State:
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1581,8 +1581,8 @@ class State:
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1671,8 +1671,8 @@ class State:
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1736,8 +1736,8 @@ class State:
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
         ...         Automation.CARD_BURNING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1961,7 +1961,7 @@ class State:
         assert not self.bet_collection_status
 
         if sum(self.statuses) == 1:
-            self._begin_chip_pushing()
+            self._begin_chips_pushing()
         elif self.street is None:
             self._begin_blind_or_straddle_posting()
         elif self.street is self.streets[-1]:
@@ -2723,6 +2723,9 @@ class State:
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
+        elif Automation.HOLE_DEALING in self.automations:
+            while any(self.hole_dealing_statuses):
+                self.deal_hole()
 
         return self.StandingPatOrDiscarding(player_index, cards)
 
@@ -3490,7 +3493,7 @@ class State:
         for i in self.player_indices:
             self.hand_killing_statuses[i] = False
 
-        self._begin_chip_pushing()
+        self._begin_chips_pushing()
 
     @dataclass
     class HandKilling:
@@ -3566,28 +3569,28 @@ class State:
 
         return self.HandKilling(player_index)
 
-    # chip pushing
+    # chips pushing
 
-    chip_pushing_status: bool = field(default=False, init=False)
-    """The chip pushing status."""
+    chips_pushing_status: bool = field(default=False, init=False)
+    """The chips pushing status."""
 
-    def _begin_chip_pushing(self) -> None:
-        assert not self.chip_pushing_status
+    def _begin_chips_pushing(self) -> None:
+        assert not self.chips_pushing_status
 
         self.street_index = None
-        self.chip_pushing_status = True
+        self.chips_pushing_status = True
 
-        if Automation.CHIP_PUSHING in self.automations:
+        if Automation.CHIPS_PUSHING in self.automations:
             self.push_chips()
 
-    def _end_chip_pushing(self) -> None:
-        self.chip_pushing_status = False
+    def _end_chips_pushing(self) -> None:
+        self.chips_pushing_status = False
 
-        self._begin_chip_pulling()
+        self._begin_chips_pulling()
 
     @dataclass
-    class ChipPushing:
-        """The chip pushing."""
+    class ChipsPushing:
+        """The chips pushing."""
 
         amounts: tuple[int, ...]
         """The amounts."""
@@ -3600,37 +3603,37 @@ class State:
             """
             return sum(self.amounts)
 
-    def verify_chip_pushing(self) -> None:
-        """Verify the chip pushing.
+    def verify_chips_pushing(self) -> None:
+        """Verify the chips pushing.
 
         :return: ``None``.
-        :raises ValueError: If the chip pushing cannot be done.
+        :raises ValueError: If the chips pushing cannot be done.
         """
-        if not self.chip_pushing_status:
-            raise ValueError('chip push not allowed')
+        if not self.chips_pushing_status:
+            raise ValueError('chips push not allowed')
 
     def can_push_chips(self) -> bool:
-        """Return whether the chip pushing can be done.
+        """Return whether the chips pushing can be done.
 
-        :return: ``True`` if the chip pushing can be done, otherwise
+        :return: ``True`` if the chips pushing can be done, otherwise
                  ``False``.
         """
         try:
-            self.verify_chip_pushing()
+            self.verify_chips_pushing()
         except ValueError:
             return False
 
         return True
 
-    def push_chips(self) -> ChipPushing:
+    def push_chips(self) -> ChipsPushing:
         """Push chips.
 
-        :return: The chip pushing.
-        :raises ValueError: If the chip pushing cannot be done.
+        :return: The chips pushing.
+        :raises ValueError: If the chips pushing cannot be done.
         """
-        self.verify_chip_pushing()
+        self.verify_chips_pushing()
 
-        self.chip_pushing_status = False
+        self.chips_pushing_status = False
 
         if sum(self.statuses) == 1:
             for pot in self.pots:
@@ -3678,42 +3681,42 @@ class State:
 
                     push(player_indices, amount)
 
-        self._end_chip_pushing()
+        self._end_chips_pushing()
 
-        return self.ChipPushing(tuple(self.bets))
+        return self.ChipsPushing(tuple(self.bets))
 
-    # chip pulling
+    # chips pulling
 
-    chip_pulling_statuses: list[bool] = field(default_factory=list, init=False)
-    """The chip pulling statuses."""
+    chips_pulling_statuses: list[bool] = field(default_factory=list, init=False)
+    """The chips pulling statuses."""
 
-    def _setup_chip_pulling(self) -> None:
-        assert not self.chip_pulling_statuses
+    def _setup_chips_pulling(self) -> None:
+        assert not self.chips_pulling_statuses
 
         for _ in range(self.player_count):
-            self.chip_pulling_statuses.append(False)
+            self.chips_pulling_statuses.append(False)
 
-    def _begin_chip_pulling(self) -> None:
-        assert not any(self.chip_pulling_statuses)
+    def _begin_chips_pulling(self) -> None:
+        assert not any(self.chips_pulling_statuses)
 
         for i in self.player_indices:
-            self.chip_pulling_statuses[i] = self.bets[i] > 0
+            self.chips_pulling_statuses[i] = self.bets[i] > 0
 
-        assert any(self.chip_pulling_statuses)
+        assert any(self.chips_pulling_statuses)
 
-        if Automation.CHIP_PULLING in self.automations:
-            while any(self.chip_pulling_statuses):
+        if Automation.CHIPS_PULLING in self.automations:
+            while any(self.chips_pulling_statuses):
                 self.pull_chips()
 
-    def _end_chip_pulling(self) -> None:
+    def _end_chips_pulling(self) -> None:
         for i in self.player_indices:
-            self.chip_pulling_statuses[i] = False
+            self.chips_pulling_statuses[i] = False
 
         self._end()
 
     @dataclass
-    class ChipPulling:
-        """The chip pulling."""
+    class ChipsPulling:
+        """The chips pulling."""
 
         player_index: int
         """The player index."""
@@ -3721,70 +3724,70 @@ class State:
         """The amount."""
 
     @property
-    def chip_pulling_indices(self) -> Iterator[int]:
+    def chips_pulling_indices(self) -> Iterator[int]:
         """Iterate through players who can pull chips.
 
-        :return: The chip pullers.
+        :return: The chips pullers.
         """
         try:
-            self._verify_chip_pulling()
+            self._verify_chips_pulling()
         except ValueError:
             return None
 
         for i in self.player_indices:
-            if self.chip_pulling_statuses[i]:
+            if self.chips_pulling_statuses[i]:
                 yield i
 
-    def _verify_chip_pulling(self) -> None:
-        if not any(self.chip_pulling_statuses):
+    def _verify_chips_pulling(self) -> None:
+        if not any(self.chips_pulling_statuses):
             raise ValueError('no one can pull chips')
 
-    def verify_chip_pulling(self, player_index: int | None = None) -> int:
-        """Verify the chip pulling.
+    def verify_chips_pulling(self, player_index: int | None = None) -> int:
+        """Verify the chips pulling.
 
         :param player_index: The optional player index.
-        :return: The chip pulling index.
-        :raises ValueError: If the chip pulling cannot be done.
+        :return: The chips pulling index.
+        :raises ValueError: If the chips pulling cannot be done.
         """
-        self._verify_chip_pulling()
+        self._verify_chips_pulling()
 
         if player_index is None:
-            player_index = next(self.chip_pulling_indices)
+            player_index = next(self.chips_pulling_indices)
 
-        if not self.chip_pulling_statuses[player_index]:
+        if not self.chips_pulling_statuses[player_index]:
             raise ValueError('no chip to be pulled')
 
         return player_index
 
     def can_pull_chips(self, player_index: int | None = None) -> bool:
-        """Return whether the chip pulling can be done.
+        """Return whether the chips pulling can be done.
 
         :param player_index: The optional player index.
-        :return: ``True`` if the chip pulling can be done, otherwise
+        :return: ``True`` if the chips pulling can be done, otherwise
                  ``False``.
         """
         try:
-            self.verify_chip_pulling(player_index)
+            self.verify_chips_pulling(player_index)
         except ValueError:
             return False
 
         return True
 
-    def pull_chips(self, player_index: int | None = None) -> ChipPulling:
+    def pull_chips(self, player_index: int | None = None) -> ChipsPulling:
         """Pull chips..
 
         :param player_index: The optional player index.
-        :return: The chip pulling.
-        :raises ValueError: If the chip pulling cannot be done.
+        :return: The chips pulling.
+        :raises ValueError: If the chips pulling cannot be done.
         """
-        player_index = self.verify_chip_pulling(player_index)
+        player_index = self.verify_chips_pulling(player_index)
         amount = self.bets[player_index]
 
         self.stacks[player_index] += amount
         self.bets[player_index] = 0
-        self.chip_pulling_statuses[player_index] = False
+        self.chips_pulling_statuses[player_index] = False
 
-        if not any(self.chip_pulling_statuses):
-            self._end_chip_pulling()
+        if not any(self.chips_pulling_statuses):
+            self._end_chips_pulling()
 
-        return self.ChipPulling(player_index, amount)
+        return self.ChipsPulling(player_index, amount)

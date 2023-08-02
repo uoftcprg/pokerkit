@@ -151,6 +151,8 @@ class RankOrder(tuple[Rank, ...], Enum):
         Rank.EIGHT,
     )
     """The eight or better low ranks (from ace to eight)."""
+    KUHN_POKER: tuple[Rank, ...] = Rank.JACK, Rank.QUEEN, Rank.KING
+    """The Kuhn poker ranks (from jack to king)."""
 
 
 @unique
@@ -386,9 +388,9 @@ class Deck(tuple[Card, ...], Enum):
     >>> Deck.SHORT_DECK_HOLDEM[:6]
     (6c, 6d, 6h, 6s, 7c, 7d)
 
-    The members of :cls:`Deck` are tuples and cannot be modified. To use
-    it effectively, you must make a copy with a different data type like
-    ``list`` or ``deque``.
+    The members of :class:`Deck` are tuples and cannot be modified. To
+    use it effectively, you must make a copy with a different data type
+    like ``list`` or ``deque``.
 
     >>> Deck.STANDARD[3] = Card(Rank.ACE, Suit.SPADE)
     Traceback (most recent call last):

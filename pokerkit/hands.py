@@ -10,8 +10,9 @@ from typing import Any
 
 from pokerkit.lookups import (
     BadugiLookup,
-    EightOrBetterLowLookup,
+    EightOrBetterLookup,
     Entry,
+    KuhnPokerLookup,
     Lookup,
     RegularLowLookup,
     ShortDeckHoldemLookup,
@@ -343,7 +344,7 @@ class ShortDeckHoldemHand(CombinationHand):
 
 
 class EightOrBetterLowHand(CombinationHand):
-    """The class for low eight or better hands.
+    """The class for eight or better low hands.
 
     >>> h0 = EightOrBetterLowHand(Card.parse('8c7d6h4s2c'))
     >>> h1 = EightOrBetterLowHand(Card.parse('7c5d4h3s2c'))
@@ -373,7 +374,7 @@ class EightOrBetterLowHand(CombinationHand):
     ValueError: invalid hand ''
     """
 
-    _lookup = EightOrBetterLowLookup()
+    _lookup = EightOrBetterLookup()
     _low = True
     _card_count = 5
 
@@ -595,7 +596,7 @@ class OmahaHoldemHand(HoleBoardCombinationHand):
 
 
 class OmahaEightOrBetterLowHand(HoleBoardCombinationHand):
-    """The class for Omaha low eight or better hands.
+    """The class for Omaha eight or better low hands.
 
     >>> h0 = OmahaEightOrBetterLowHand(Card.parse('8c7d6h4s2c'))
     >>> h1 = OmahaEightOrBetterLowHand(Card.parse('7c5d4h3s2c'))
@@ -604,7 +605,7 @@ class OmahaEightOrBetterLowHand(HoleBoardCombinationHand):
     True
     """
 
-    _lookup = EightOrBetterLowLookup()
+    _lookup = EightOrBetterLookup()
     _low = True
     _card_count = 5
     _board_card_count = 3
@@ -695,3 +696,44 @@ class BadugiHand(Hand):
 
         if not Card.are_rainbow(self.cards):
             raise ValueError('cards not rainbow')
+
+
+class KuhnPokerHand(Hand):
+    """The class for Kuhn poker hands.
+
+    >>> h0 = KuhnPokerHand(Card.parse('Js'))
+    >>> h1 = KuhnPokerHand(Card.parse('Qs'))
+    >>> h2 = KuhnPokerHand(Card.parse('Ks'))
+    >>> h0 < h1 < h2
+    True
+
+    >>> h = KuhnPokerHand(Card.parse('As'))
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid hand 'As'
+    """
+
+    _lookup = KuhnPokerLookup()
+    _low = False
+
+    @classmethod
+    def from_game(
+            cls,
+            hole_cards: Iterable[Card],
+            board_cards: Iterable[Card] = (),
+    ) -> Hand:
+        """Create a poker hand from a game setting.
+
+        In a game setting, a player uses private cards from their hole
+        and the public cards from the board to make their hand.
+
+        >>> h0 = BadugiHand.from_game(Card.parse('Ks'))
+        >>> h1 = BadugiHand(Card.parse('Ks'))
+        >>> h0 == h1
+        True
+
+        :param hole_cards: The hole cards.
+        :param board_cards: The optional board cards.
+        :return: The strongest hand from possible card combinations.
+        """
+        return max(map(cls, chain(hole_cards, board_cards)))

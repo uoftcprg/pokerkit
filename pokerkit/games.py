@@ -98,8 +98,8 @@ class FixedLimitTexasHoldem(TexasHoldem):
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -217,8 +217,8 @@ class NoLimitTexasHoldem(TexasHoldem):
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     500,
@@ -372,8 +372,8 @@ class NoLimitShortDeckHoldem(TexasHoldem):
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     3000,
@@ -535,8 +535,8 @@ class PotLimitOmahaHoldem(OmahaHoldem):
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -651,8 +651,8 @@ class PotLimitOmahaHoldem(OmahaHoldem):
         )
 
 
-class FixedLimitOmahaHoldemSplitHighEightOrBetterLow(OmahaHoldem):
-    """The class for fixed-limit Omaha hold'em split-high/eight or
+class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(OmahaHoldem):
+    """The class for fixed-limit Omaha hold'em high/low-split eight or
     better low games.
     """
 
@@ -670,7 +670,7 @@ class FixedLimitOmahaHoldemSplitHighEightOrBetterLow(OmahaHoldem):
             starting_stacks: int | Iterable[int],
             player_count: int,
     ) -> State:
-        """Create a fixed-limit Omaha hold'em split-high/eight or better
+        """Create a fixed-limit Omaha hold'em high/low-split eight or better
         low game.
 
         :param antes: The antes.
@@ -827,8 +827,8 @@ class FixedLimitSevenCardStud(SevenCardStud):
         )
 
 
-class FixedLimitSevenCardStudSplitHighEightOrBetterLow(SevenCardStud):
-    """The class for fixed-limit seven card stud split-high/eight or
+class FixedLimitSevenCardStudHighLowSplitEightOrBetter(SevenCardStud):
+    """The class for fixed-limit seven card stud high/low-split eight or
     better low games.
     """
 
@@ -846,7 +846,7 @@ class FixedLimitSevenCardStudSplitHighEightOrBetterLow(SevenCardStud):
             starting_stacks: int | Iterable[int],
             player_count: int,
     ) -> State:
-        """Create a fixed-limit seven card stud split-high/eight or
+        """Create a fixed-limit seven card stud high/low-split eight or
         better low game.
 
         :param antes: The antes.
@@ -1102,8 +1102,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,
@@ -1277,8 +1277,8 @@ class FixedLimitBadugi(Poker):
         ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
-        ...         Automation.CHIP_PUSHING,
-        ...         Automation.CHIP_PULLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
         ...     None,

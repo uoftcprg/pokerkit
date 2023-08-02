@@ -21,10 +21,10 @@ from unittest import TestCase
 
 from pokerkit.games import (
     FixedLimitDeuceToSevenLowballTripleDraw,
-    FixedLimitOmahaHoldemSplitHighEightOrBetterLow,
+    FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
     FixedLimitRazz,
     FixedLimitSevenCardStud,
-    FixedLimitSevenCardStudSplitHighEightOrBetterLow,
+    FixedLimitSevenCardStudHighLowSplitEightOrBetter,
     FixedLimitTexasHoldem,
     NoLimitDeuceToSevenLowballSingleDraw,
     NoLimitTexasHoldem,
@@ -845,7 +845,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_41_13(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -928,7 +928,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_43_47(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -1009,7 +1009,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_46_43(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -1065,7 +1065,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_48_29(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -1149,7 +1149,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_51_22(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -1231,7 +1231,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_55_24(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -1312,7 +1312,7 @@ class StateTestCase(TestCase):
         )
 
     def test_00_58_03(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 5,
@@ -3146,7 +3146,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_09_20(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -3254,7 +3254,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_13_08(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -3301,7 +3301,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_14_32(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -3408,7 +3408,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_18_42(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -3516,7 +3516,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_22_35(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -3576,7 +3576,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_25_11(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -3663,7 +3663,7 @@ class StateTestCase(TestCase):
         )
 
     def test_02_28_14(self) -> None:
-        state = FixedLimitSevenCardStudSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (50000,) * 5,
@@ -5053,7 +5053,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_22_08(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 4,
@@ -5134,7 +5134,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_25_05(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 4,
@@ -5217,7 +5217,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_32_24(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 4,
@@ -5291,7 +5291,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_36_22(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 3,
@@ -5371,7 +5371,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_42_38(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 2,
@@ -5450,7 +5450,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_44_38(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 2,
@@ -5532,7 +5532,7 @@ class StateTestCase(TestCase):
         )
 
     def test_03_46_32(self) -> None:
-        state = FixedLimitOmahaHoldemSplitHighEightOrBetterLow.create_state(
+        state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
             (),
             True,
             (0,) * 2,
