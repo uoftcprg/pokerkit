@@ -2,14 +2,14 @@
 Contributing to PokerKit
 ========================
 
-Thanks for considering contributing to ``PokerKit``! Your contributions are
-greatly appreciated, and help make ``PokerKit`` a better tool for everyone in
+Thanks for considering contributing to PokerKit! Your contributions are
+greatly appreciated, and help make PokerKit a better tool for everyone in
 the Poker AI and research communities.
 
 **Setting up Your Development Environment**
 -------------------------------------------
 
-1. Fork the ``PokerKit`` repository on GitHub.
+1. Fork the PokerKit repository on GitHub.
 2. Clone your fork locally: ``git clone git@github.com:username/pokerkit.git``
 3. Setup virtual environment: ``python -m venv venv``
 4. Activate the virtual environment: ``source venv/bin/activate``
@@ -22,7 +22,7 @@ the Poker AI and research communities.
 When making changes, please follow these guidelines:
 
 - Always write your code in compliance with
-  [PEP8](https://peps.python.org/pep-0008/).
+  `PEP8 <https://peps.python.org/pep-0008/>`_.
 - Write unit tests for your changes, and make sure all tests pass before
   submitting a pull request.
 - Document your changes in the code and update the `README <README.rst>`_ file
@@ -39,11 +39,11 @@ When making changes, please follow these guidelines:
 
 1. Commit your changes: ``git commit -am 'Add some feature'``
 2. Push to the branch: ``git push origin branch-name``
-3. Submit a pull request to the ``main`` branch in the ``PokerKit`` repository.
+3. Submit a pull request to the ``main`` branch in the PokerKit repository.
 
 Before submitting your pull request, please make sure the mypy static type
 checking with ``--strict`` flag, flake8, doctests, unit tests pass, and your
-code adheres to [PEP8](https://peps.python.org/pep-0008/).
+code adheres to `PEP8 <https://peps.python.org/pep-0008/>`_.
 
 **After Your Pull Request Is Merged**
 -------------------------------------

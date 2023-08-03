@@ -1,11 +1,10 @@
 Poker Simulation
 ================
 
-``PokerKit`` is a very powerful tool you can use to simulate games. It allow
-you to play any poker games and modify the state at any level. It also gives
-you handy programmatic API to query if you can do something or get information
-such as maximum completion/betting/raising to amount, or checking/calling
-amount.
+PokerKit is a very powerful tool you can use to simulate games. It allows you to
+play any poker games and modify the state at any level. It also gives you a handy
+programmatic API to query if you can do something or get information such as
+maximum completion/betting/raising to amount, or checking/calling amount.
 
 All poker games progresses as follows:
 
@@ -30,7 +29,7 @@ automatic.
 Initialization
 --------------
 
-``PokerKit`` offers virtually unlimited poker variants to be played. However,
+PokerKit offers virtually unlimited poker variants to be played. However,
 defining poker variants can be quite an overwhelming task for a new user. We
 offer pre-defined poker variants where user can just supply arguments such as
 antes, blinds, starting stacks, et cetera.
@@ -74,8 +73,8 @@ They can be created as shown below:
            Automation.CARD_BURNING,
            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
-           Automation.CHIP_PUSHING,
-           Automation.CHIP_PULLING,
+           Automation.CHIPS_PUSHING,
+           Automation.CHIPS_PULLING,
        ),
        True,  # False for big blind ante, True otherwise
        None,  # ante
@@ -95,8 +94,8 @@ They can be created as shown below:
            Automation.CARD_BURNING,
            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
-           Automation.CHIP_PUSHING,
-           Automation.CHIP_PULLING,
+           Automation.CHIPS_PUSHING,
+           Automation.CHIPS_PULLING,
        ),
        True,  # False for big blind ante, True otherwise
        500,  # ante
@@ -234,9 +233,9 @@ fine changes to create smooth user experience. Although, you might not be
 concerned about exactly what cards are dealt. You would be happy with cards
 being dealt at random (hopefully).
 
-``PokerKit`` allow you to specify what you are worried about, and what you are
-not worried about. :class:`pokerkit.state.Automation` describes operations that
-can be automated.
+PokerKit allow you to specify what you are worried about, and what you are not
+worried about. :class:`pokerkit.state.Automation` describes operations that can
+be automated.
 
 Sample automations:
 
@@ -254,8 +253,8 @@ Sample automations:
        Automation.BOARD_DEALING,
        Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
        Automation.HAND_KILLING,
-       Automation.CHIP_PUSHING,
-       Automation.CHIP_PULLING,
+       Automation.CHIPS_PUSHING,
+       Automation.CHIPS_PULLING,
    )
 
    # Automate everything except actions and dealings
@@ -266,8 +265,8 @@ Sample automations:
        Automation.CARD_BURNING,
        Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
        Automation.HAND_KILLING,
-       Automation.CHIP_PUSHING,
-       Automation.CHIP_PULLING,
+       Automation.CHIPS_PUSHING,
+       Automation.CHIPS_PULLING,
    )
 
    # Automate nothing
@@ -317,10 +316,10 @@ than others. Let's see what we can specify for each action.
 - Hole cards showing/mucking: status, defaults to showing only when no-one else
   has shown a better hand
 - Hand killing: player_index, defaults to the first player who cannot win any
-                portion of the pot
+  portion of the pot
 - Chips pushing: N/A
 - Chips pulling: player_index, defaults to the first player who won a portion of
-                 the pot
+  the pot
 
 How do you know what the minimum bets are? How do you know to whom the hole card
 will be dealt next? How do you know the call amount? Whose action is it? You can

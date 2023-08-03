@@ -2,7 +2,7 @@
 PokerKit
 ========
 
-``PokerKit`` is an open-source Python library for simulating poker games and
+PokerKit is an open-source Python library for simulating poker games and
 evaluating poker hands, developed by the University of Toronto Computer Poker
 Research Group. It provides extensive support for all major and minor poker
 variants, offers a high level of control over game states, and supports
@@ -11,7 +11,7 @@ high-speed hand evaluations.
 **Installation**
 ----------------
 
-The ``PokerKit`` library can be installed using pip:
+The PokerKit library can be installed using pip:
 
 .. code-block:: bash
 
@@ -23,8 +23,8 @@ The ``PokerKit`` library can be installed using pip:
 * Extensive poker game logic for major and minor poker variants
 * High-speed hand evaluations
 * Customizable game states and parameters
-* Robust implementation with extensive unit tests and doctests
-* Ability to simulate famous hands from poker history
+* Robust implementation with static type checking and extensive unit tests and
+  doctests
 
 **Usage**
 ---------
@@ -371,7 +371,7 @@ Link: https://en.wikipedia.org/wiki/Badugi
 **Testing and Validation**
 --------------------------
 
-``PokerKit`` has extensive test coverage, passes mypy static type checking with
+PokerKit has extensive test coverage, passes mypy static type checking with
 strict parameter, and has been validated through extensive use in real-life
 scenarios.
 
@@ -384,19 +384,19 @@ Contributions are welcome! Please read our
 **License**
 -----------
 
-``PokerKit`` is distributed under the MIT license. See `LICENSE <LICENSE>`_ for
+PokerKit is distributed under the MIT license. See `LICENSE <LICENSE>`_ for
 more information.
 
 **Citing**
 ----------
 
-If you use ``PokerKit`` in your research, please cite our library:
+If you use PokerKit in your research, please cite our library:
 
 .. code-block:: bibtex
 
    @misc{pokerkit,
      title={PokerKit: An Open-Source Python Library for Poker Simulations and Hand Evaluations},
-     author={Your name here},
+     author={Juho Kim},
      year={2023},
      url={https://github.com/uoftcprg/pokerkit}
    }

@@ -86,3 +86,10 @@ Comparing the hand strengths is quite simple... Just compare them!
    >>> h4 = StandardHighHand(Card.parse('TsJsQsKsAs'))
    >>> h0 < h1 < h2 < h3 < h4
    True
+   >>> h0 = StandardLowHand(Card.parse('TsJsQsKsAs'))
+   >>> h1 = StandardLowHand(Card.parse('AcAsAd2s4s'))
+   >>> h2 = StandardLowHand(Card.parse('8c7d6h4s2c'))
+   >>> h3 = StandardLowHand(Card.parse('7c6d4h3s2c'))
+   >>> h4 = StandardLowHand(Card.parse('7c5d4h3s2c'))
+   >>> h0 < h1 < h2 < h3 < h4
+   True
