@@ -154,7 +154,7 @@ Link: https://youtu.be/QlgCcphLjaQ
 
    print(state.stacks)  # [489000, 226000, 684000, 400000, 0, 198000]
 
-Below shows the largest online poker pot every played between
+Below shows the largest online poker pot ever played between
 Patrik Antonius and Viktor Blom.
 
 Link: https://youtu.be/UMBm66Id2AA
