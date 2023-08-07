@@ -16,7 +16,7 @@ from pokerkit.hands import (
     StandardLowHand,
 )
 from pokerkit.state import BettingStructure, Opening, Automation, State, Street
-from pokerkit.utilities import Deck, RankOrder
+from pokerkit.utilities import Deck, RankOrder, clean_values
 
 
 class Poker(ABC):
@@ -32,33 +32,6 @@ class Poker(ABC):
     """The rank orders."""
     button_status: bool
     """The button status."""
-
-    @classmethod
-    def _clean_values(
-            cls,
-            values: int | Iterable[int] | Mapping[int, int] | None,
-            count: int,
-    ) -> tuple[int, ...]:
-        if values is None:
-            return (0,) * count
-        elif isinstance(values, Mapping):
-            parsed_values = [0] * count
-
-            for key, value in values.items():
-                parsed_values[key] = value
-
-            return tuple(parsed_values)
-        elif isinstance(values, Iterable):
-            parsed_values = list(values)
-
-            for i in range(len(parsed_values), count):
-                parsed_values.append(0)
-
-            return tuple(parsed_values)
-        elif isinstance(values, int):
-            return (values,) * count
-        else:
-            raise AssertionError
 
 
 class TexasHoldem(Poker, ABC):
@@ -112,10 +85,10 @@ class FixedLimitTexasHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('AcAs')
-        State.HoleDealing(player_index=0, cards=(Ac, As), statuses=(False, False))
-        >>> state.deal_hole('7h6h')
-        State.HoleDealing(player_index=1, cards=(7h, 6h), statuses=(False, False))
+        >>> state.deal_hole('AcAs')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, As), statuses=(False, F...
+        >>> state.deal_hole('7h6h')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(7h, 6h), statuses=(False, F...
 
         >>> state.complete_bet_or_raise_to()
         State.CompletionBettingOrRaisingTo(player_index=1, amount=4)
@@ -181,10 +154,10 @@ class FixedLimitTexasHoldem(TexasHoldem):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -230,12 +203,12 @@ class NoLimitTexasHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('Ac2d')  # Ivey
-        State.HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, False))
-        >>> state.deal_hole('5h7s')  # Antonius*
-        State.HoleDealing(player_index=1, cards=(5h, 7s), statuses=(False, False))
-        >>> state.deal_hole('7h6h')  # Dwan
-        State.HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, False))
+        >>> state.deal_hole('Ac2d')  # Ivey  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, F...
+        >>> state.deal_hole('5h7s')  # Antonius*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(5h, 7s), statuses=(False, F...
+        >>> state.deal_hole('7h6h')  # Dwan  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, F...
 
         >>> state.complete_bet_or_raise_to(7000)  # Dwan
         State.CompletionBettingOrRaisingTo(player_index=2, amount=7000)
@@ -331,10 +304,10 @@ class NoLimitTexasHoldem(TexasHoldem):
             BettingStructure.NO_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -385,18 +358,18 @@ class NoLimitShortDeckHoldem(TexasHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('Th8h')  # Badziakouski
-        State.HoleDealing(player_index=0, cards=(Th, 8h), statuses=(False, False))
-        >>> state.deal_hole('QsJd')  # Zhong
-        State.HoleDealing(player_index=1, cards=(Qs, Jd), statuses=(False, False))
-        >>> state.deal_hole('QhQd')  # Xuan
-        State.HoleDealing(player_index=2, cards=(Qh, Qd), statuses=(False, False))
-        >>> state.deal_hole('8d7c')  # Jun
-        State.HoleDealing(player_index=3, cards=(8d, 7c), statuses=(False, False))
-        >>> state.deal_hole('KhKs')  # Phua
-        State.HoleDealing(player_index=4, cards=(Kh, Ks), statuses=(False, False))
-        >>> state.deal_hole('8c7h')  # Koon
-        State.HoleDealing(player_index=5, cards=(8c, 7h), statuses=(False, False))
+        >>> state.deal_hole('Th8h')  # Badziakouski  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Th, 8h), statuses=(False, F...
+        >>> state.deal_hole('QsJd')  # Zhong  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Qs, Jd), statuses=(False, F...
+        >>> state.deal_hole('QhQd')  # Xuan  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=2, cards=(Qh, Qd), statuses=(False, F...
+        >>> state.deal_hole('8d7c')  # Jun  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=3, cards=(8d, 7c), statuses=(False, F...
+        >>> state.deal_hole('KhKs')  # Phua  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=4, cards=(Kh, Ks), statuses=(False, F...
+        >>> state.deal_hole('8c7h')  # Koon  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=5, cards=(8c, 7h), statuses=(False, F...
 
         >>> state.check_or_call()  # Badziakouski
         State.CheckingOrCalling(player_index=0, amount=3000)
@@ -488,10 +461,10 @@ class NoLimitShortDeckHoldem(TexasHoldem):
             BettingStructure.NO_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -548,10 +521,10 @@ class PotLimitOmahaHoldem(OmahaHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('Ah3sKsKh')  # Antonius
-        State.HoleDealing(player_index=0, cards=(Ah, 3s, Ks, Kh), statuses=(False, False, False, False))
-        >>> state.deal_hole('6d9s7d8h')  # Blom
-        State.HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False, False, False, False))
+        >>> state.deal_hole('Ah3sKsKh')  # Antonius  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ah, 3s, Ks, Kh), statuses=(...
+        >>> state.deal_hole('6d9s7d8h')  # Blom  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(...
 
         >>> state.complete_bet_or_raise_to(300000)  # Blom
         State.CompletionBettingOrRaisingTo(player_index=1, amount=300000)
@@ -644,10 +617,10 @@ class PotLimitOmahaHoldem(OmahaHoldem):
             BettingStructure.POT_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -725,10 +698,10 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(OmahaHoldem):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -820,10 +793,10 @@ class FixedLimitSevenCardStud(SevenCardStud):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(0, player_count),
+            clean_values(antes, player_count),
+            clean_values(0, player_count),
             bring_in,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -910,10 +883,10 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(SevenCardStud):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(0, player_count),
+            clean_values(antes, player_count),
+            clean_values(0, player_count),
             bring_in,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -997,10 +970,10 @@ class FixedLimitRazz(SevenCardStud):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(0, player_count),
+            clean_values(antes, player_count),
+            clean_values(0, player_count),
             bring_in,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -1064,10 +1037,10 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
             BettingStructure.NO_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -1116,14 +1089,14 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('7h6c4c3d2c')  # Yockey
-        State.HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(False, False, False, False, False))
-        >>> state.deal_hole('JsJcJdJhTs')  # Hui*
-        State.HoleDealing(player_index=1, cards=(Js, Jc, Jd, Jh, Ts), statuses=(False, False, False, False, False))
-        >>> state.deal_hole('KsKcKdKhTh')  # Esposito*
-        State.HoleDealing(player_index=2, cards=(Ks, Kc, Kd, Kh, Th), statuses=(False, False, False, False, False))
-        >>> state.deal_hole('AsQs6s5c3c')  # Arieh
-        State.HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(False, False, False, False, False))
+        >>> state.deal_hole('7h6c4c3d2c')  # Yockey  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), status...
+        >>> state.deal_hole('JsJcJdJhTs')  # Hui*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Js, Jc, Jd, Jh, Ts), status...
+        >>> state.deal_hole('KsKcKdKhTh')  # Esposito*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=2, cards=(Ks, Kc, Kd, Kh, Th), status...
+        >>> state.deal_hole('AsQs6s5c3c')  # Arieh  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), status...
 
         >>> state.fold()  # Esposito
         State.Folding(player_index=2)
@@ -1142,8 +1115,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
         State.StandingPatOrDiscarding(player_index=0, cards=())
         >>> state.stand_pat_or_discard('AsQs')  # Arieh
         State.StandingPatOrDiscarding(player_index=3, cards=(As, Qs))
-        >>> state.deal_hole('2hQh')  # Arieh
-        State.HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, False))
+        >>> state.deal_hole('2hQh')  # Arieh  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, F...
 
         >>> state.complete_bet_or_raise_to()  # Yockey
         State.CompletionBettingOrRaisingTo(player_index=0, amount=150000)
@@ -1235,10 +1208,10 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )
 
 
@@ -1291,14 +1264,14 @@ class FixedLimitBadugi(Poker):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('As4hJcKh')  # Bob*
-        State.HoleDealing(player_index=0, cards=(As, 4h, Jc, Kh), statuses=(False, False, False, False))
-        >>> state.deal_hole('3s5d7s8s')  # Carol*
-        State.HoleDealing(player_index=1, cards=(3s, 5d, 7s, 8s), statuses=(False, False, False, False))
-        >>> state.deal_hole('KsKdQsQd')  # Ted*
-        State.HoleDealing(player_index=2, cards=(Ks, Kd, Qs, Qd), statuses=(False, False, False, False))
-        >>> state.deal_hole('2s4c6dKc')  # Alice*
-        State.HoleDealing(player_index=3, cards=(2s, 4c, 6d, Kc), statuses=(False, False, False, False))
+        >>> state.deal_hole('As4hJcKh')  # Bob*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(As, 4h, Jc, Kh), statuses=(...
+        >>> state.deal_hole('3s5d7s8s')  # Carol*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(3s, 5d, 7s, 8s), statuses=(...
+        >>> state.deal_hole('KsKdQsQd')  # Ted*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=2, cards=(Ks, Kd, Qs, Qd), statuses=(...
+        >>> state.deal_hole('2s4c6dKc')  # Alice*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=3, cards=(2s, 4c, 6d, Kc), statuses=(...
 
         >>> state.fold()  # Ted
         State.Folding(player_index=2)
@@ -1317,10 +1290,10 @@ class FixedLimitBadugi(Poker):
         State.StandingPatOrDiscarding(player_index=1, cards=(7s, 8s))
         >>> state.stand_pat_or_discard('Kc')  # Alice*
         State.StandingPatOrDiscarding(player_index=3, cards=(Kc,))
-        >>> state.deal_hole('TcJs')  # Bob*
-        State.HoleDealing(player_index=0, cards=(Tc, Js), statuses=(False, False))
-        >>> state.deal_hole('7cTh')  # Carol*
-        State.HoleDealing(player_index=1, cards=(7c, Th), statuses=(False, False))
+        >>> state.deal_hole('TcJs')  # Bob*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Tc, Js), statuses=(False, F...
+        >>> state.deal_hole('7cTh')  # Carol*  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(7c, Th), statuses=(False, F...
         >>> state.deal_hole('Qc')  # Alice*
         State.HoleDealing(player_index=3, cards=(Qc,), statuses=(False,))
 
@@ -1430,8 +1403,8 @@ class FixedLimitBadugi(Poker):
             BettingStructure.FIXED_LIMIT,
             automations,
             ante_trimming_status,
-            cls._clean_values(antes, player_count),
-            cls._clean_values(blinds_or_straddles, player_count),
+            clean_values(antes, player_count),
+            clean_values(blinds_or_straddles, player_count),
             0,
-            cls._clean_values(starting_stacks, player_count),
+            clean_values(starting_stacks, player_count),
         )

@@ -4,7 +4,7 @@ utilities.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from enum import Enum, StrEnum, unique
 from functools import partial
@@ -228,37 +228,43 @@ class Card:
     """The suit."""
 
     @classmethod
-    def get_ranks(cls, cards: Iterable[Card]) -> Iterator[Rank]:
+    def get_ranks(
+            cls,
+            cards: Iterable[Card] | str | Card | None,
+    ) -> Iterator[Rank]:
         """Return an iterator of the ranks of each card.
 
-        >>> Card.get_ranks(Card.parse('2sKh'))  # doctest: +ELLIPSIS
+        >>> Card.get_ranks('2sKh')  # doctest: +ELLIPSIS
         <generator object Card.get_ranks at 0x...>
-        >>> list(Card.get_ranks(Card.parse('2sKh')))
+        >>> list(Card.get_ranks('2sKh'))
         [<Rank.DEUCE: '2'>, <Rank.KING: 'K'>]
 
         :param cards: The cards to get ranks from.
         :return: The iterator of the ranks of each card.
         """
-        for card in cards:
+        for card in cls.clean(cards):
             yield card.rank
 
     @classmethod
-    def get_suits(cls, cards: Iterable[Card]) -> Iterator[Suit]:
+    def get_suits(
+            cls,
+            cards: Iterable[Card] | str | Card | None,
+    ) -> Iterator[Suit]:
         """Return an iterator of the suits of each card.
 
-        >>> Card.get_suits(Card.parse('2sKh'))  # doctest: +ELLIPSIS
+        >>> Card.get_suits('2sKh')  # doctest: +ELLIPSIS
         <generator object Card.get_suits at 0x...>
-        >>> list(Card.get_suits(Card.parse('2sKh')))
+        >>> list(Card.get_suits('2sKh'))
         [<Suit.SPADE: 's'>, <Suit.HEART: 'h'>]
 
         :param cards: The cards to get suits from.
         :return: The iterator of the suits of each card.
         """
-        for card in cards:
+        for card in cls.clean(cards):
             yield card.suit
 
     @classmethod
-    def are_paired(cls, cards: Iterable[Card]) -> bool:
+    def are_paired(cls, cards: Iterable[Card] | str | Card | None) -> bool:
         """Return the pairedness of the given cards.
 
         The cards are paired if at least two of the cards share a
@@ -266,11 +272,11 @@ class Card:
 
         >>> Card.are_paired(())
         False
-        >>> Card.are_paired(Card.parse('2sKh'))
+        >>> Card.are_paired('2sKh')
         False
-        >>> Card.are_paired(Card.parse('2sKh2h'))
+        >>> Card.are_paired('2sKh2h')
         True
-        >>> Card.are_paired(Card.parse('2s2c2h'))
+        >>> Card.are_paired('2s2c2h')
         True
 
         :param cards: The cards to determine the pairedness from.
@@ -281,18 +287,18 @@ class Card:
         return len(set(ranks)) != len(ranks)
 
     @classmethod
-    def are_suited(cls, cards: Iterable[Card]) -> bool:
+    def are_suited(cls, cards: Iterable[Card] | str | Card | None) -> bool:
         """Return the suitedness of the given cards.
 
         The cards are suited if all of the cards share a common suit.
 
         >>> Card.are_suited(())
         True
-        >>> Card.are_suited(Card.parse('2s'))
+        >>> Card.are_suited('2s')
         True
-        >>> Card.are_suited(Card.parse('2sKh3s'))
+        >>> Card.are_suited('2sKh3s')
         False
-        >>> Card.are_suited(Card.parse('2hKh3h'))
+        >>> Card.are_suited('2hKh3h')
         True
 
         :param cards: The cards to determine the suitedness from.
@@ -301,18 +307,18 @@ class Card:
         return len(set(cls.get_suits(cards))) <= 1
 
     @classmethod
-    def are_rainbow(cls, cards: Iterable[Card]) -> bool:
+    def are_rainbow(cls, cards: Iterable[Card] | str | Card | None) -> bool:
         """Return whether the cards are rainbow.
 
         The cards are rainbow if no two cards share a common suit.
 
         >>> Card.are_rainbow(())
         True
-        >>> Card.are_rainbow(Card.parse('2s'))
+        >>> Card.are_rainbow('2s')
         True
-        >>> Card.are_rainbow(Card.parse('2sKh3c'))
+        >>> Card.are_rainbow('2sKh3c')
         True
-        >>> Card.are_rainbow(Card.parse('2hKh3c'))
+        >>> Card.are_rainbow('2hKh3c')
         False
 
         :param cards: The cards to determine whether they are rainbow.
@@ -321,6 +327,38 @@ class Card:
         suits = tuple(cls.get_suits(cards))
 
         return len(set(suits)) == len(suits)
+
+    @classmethod
+    def clean(
+            cls,
+            values: Iterable[Card] | str | Card | None,
+    ) -> tuple[Card, ...]:
+        """Clean the cards.
+
+        >>> Card.clean('AsKs')
+        (As, Ks)
+        >>> Card.clean('AsKs')
+        (As, Ks)
+        >>> Card.clean(Card(Rank.ACE, Suit.SPADE))
+        (As,)
+        >>> Card.clean(None)
+        ()
+
+        :param values: The cards.
+        :return: The cleaned cards.
+        """
+        if values is None:
+            values = ()
+        elif isinstance(values, Card):
+            values = (values,)
+        elif isinstance(values, str):
+            values = tuple(Card.parse(values))
+        elif not isinstance(values, tuple) and isinstance(values, Iterable):
+            assert not isinstance(values, str)
+
+            values = tuple(values)
+
+        return values
 
     @classmethod
     def parse(cls, *raw_cards: str) -> Iterator[Card]:
@@ -513,3 +551,52 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
         return max(filter_none(values), key=key)
     except ValueError:
         return None
+
+
+def clean_values(
+        values: Iterable[int] | Mapping[int, int] | int | None,
+        count: int,
+) -> tuple[int, ...]:
+    """Clean the integers.
+
+    >>> clean_values([1, 2, 3, 4], 4)
+    (1, 2, 3, 4)
+    >>> clean_values([1, 2, 3, 4], 6)
+    (1, 2, 3, 4, 0, 0)
+    >>> clean_values({0: 1, -1: 2}, 4)
+    (1, 0, 0, 2)
+    >>> clean_values(4, 4)
+    (4, 4, 4, 4)
+    >>> clean_values(None, 4)
+    (0, 0, 0, 0)
+
+    :param values: The values.
+    :param count: The number of values.
+    :return: The cleaned integers.
+    """
+    if values is None:
+        values = (0,) * count
+    elif isinstance(values, int):
+        values = (values,) * count
+    elif isinstance(values, Mapping):
+        parsed_values = [0] * count
+
+        for key, value in values.items():
+            parsed_values[key] = value
+
+        values = tuple(parsed_values)
+    elif (
+            not (isinstance(values, tuple) and len(values) == count)
+            and isinstance(values, Iterable)
+    ):
+        parsed_values = list(values)
+
+        if len(parsed_values) > count:
+            raise ValueError('too many values')
+
+        while len(parsed_values) < count:
+            parsed_values.append(0)
+
+        values = tuple(parsed_values)
+
+    return values

@@ -811,15 +811,17 @@ class State:
         ... )
         >>> state.hand_type_count
         1
-        >>> state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
-        ...     (),
-        ...     True,
-        ...     1,
-        ...     (1, 2),
-        ...     2,
-        ...     4,
-        ...     100,
-        ...     3,
+        >>> state = (
+        ...     FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
+        ...         (),
+        ...         True,
+        ...         1,
+        ...         (1, 2),
+        ...         2,
+        ...         4,
+        ...         100,
+        ...         3,
+        ...     )
         ... )
         >>> state.hand_type_count
         2
@@ -847,15 +849,17 @@ class State:
         ... )
         >>> state.hand_type_indices
         range(0, 1)
-        >>> state = FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
-        ...     (),
-        ...     True,
-        ...     1,
-        ...     (1, 2),
-        ...     2,
-        ...     4,
-        ...     100,
-        ...     3,
+        >>> state = (
+        ...     FixedLimitOmahaHoldemHighLowSplitEightOrBetter.create_state(
+        ...         (),
+        ...         True,
+        ...         1,
+        ...         (1, 2),
+        ...         2,
+        ...         4,
+        ...         100,
+        ...         3,
+        ...     )
         ... )
         >>> state.hand_type_indices
         range(0, 2)
@@ -1391,10 +1395,10 @@ class State:
         ...     (50, 100),
         ...     2,
         ... )
-        >>> state.deal_hole('AcAdAh')
-        State.HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(False, False, True))
-        >>> state.deal_hole('KcKdKh')
-        State.HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(False, False, True))
+        >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(Fals...
+        >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(Fals...
         >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
         <generator object State.get_down_cards at 0x...>
         >>> tuple(state.get_down_cards(0))
@@ -1443,10 +1447,10 @@ class State:
         ...     (50, 100),
         ...     2,
         ... )
-        >>> state.deal_hole('AcAdAh')
-        State.HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(False, False, True))
-        >>> state.deal_hole('KcKdKh')
-        State.HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(False, False, True))
+        >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(Fals...
+        >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(Fals...
         >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
         <generator object State.get_down_cards at 0x...>
         >>> tuple(state.get_up_cards(0))
@@ -1498,10 +1502,10 @@ class State:
         True
         >>> state.get_hand(1, 0) is None
         True
-        >>> state.deal_hole('AcAd')
-        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
-        >>> state.deal_hole('KsQs')
-        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
+        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, F...
+        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, F...
         >>> state.get_hand(0, 0) is None
         True
         >>> state.get_hand(1, 0) is None
@@ -1595,10 +1599,10 @@ class State:
         True
         >>> state.get_up_hand(1, 0) is None
         True
-        >>> state.deal_hole('AcAd')
-        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
-        >>> state.deal_hole('KsQs')
-        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
+        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, F...
+        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, F...
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
@@ -1685,10 +1689,10 @@ class State:
         <generator object State.get_up_hands at 0x...>
         >>> tuple(state.get_up_hands(0))
         (None, None)
-        >>> state.deal_hole('AcAd')
-        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
-        >>> state.deal_hole('KsQs')
-        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
+        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, F...
+        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, F...
         >>> state.check_or_call()
         State.CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
@@ -1746,10 +1750,10 @@ class State:
         ...     (50, 100),
         ...     2,
         ... )
-        >>> state.deal_hole('KhQh')
-        State.HoleDealing(player_index=0, cards=(Kh, Qh), statuses=(False, False))
-        >>> state.deal_hole('AcKc')
-        State.HoleDealing(player_index=1, cards=(Ac, Kc), statuses=(False, False))
+        >>> state.deal_hole('KhQh')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=0, cards=(Kh, Qh), statuses=(False, F...
+        >>> state.deal_hole('AcKc')  # doctest: +ELLIPSIS
+        State.HoleDealing(player_index=1, cards=(Ac, Kc), statuses=(False, F...
         >>> state.check_or_call()
         State.CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
@@ -2275,41 +2279,7 @@ class State:
 
         self._begin_betting()
 
-    def _clean_cards(
-            self,
-            cards: Iterable[Card] | str | Card | int | None,
-    ) -> tuple[Card, ...]:
-        if cards is None:
-            card_count = 0
-        elif isinstance(cards, int):
-            card_count = cards
-        elif isinstance(cards, Card):
-            card_count = 1
-        elif isinstance(cards, str):
-            cards = tuple(Card.parse(cards))
-            card_count = len(cards)
-        elif isinstance(cards, tuple):
-            card_count = len(cards)
-        else:
-            cards = tuple(cards)
-            card_count = len(cards)
-
-        if isinstance(cards, int):
-            if len(self.deck_cards) < card_count:
-                raise ValueError('too many cards')
-
-            cards = tuple(self.deck_cards)[:cards]
-        elif isinstance(cards, Card):
-            cards = (cards,)
-        elif cards is None:
-            cards = ()
-
-        if len(set(cards)) != len(cards):
-            raise ValueError('duplicate cards')
-
-        return cards
-
-    def _make_available(self, cards: tuple[Card, ...]) -> None:
+    def _make_card_available(self, cards: tuple[Card, ...]) -> None:
         assert len(self.deck_cards) >= len(cards)
 
         for card in cards:
@@ -2334,7 +2304,7 @@ class State:
                 or any(self.hole_dealing_statuses)
                 or self.board_dealing_count
         ):
-            yield from chain(self.burned_cards, self.deck_cards)
+            yield from chain(self.deck_cards, self.burned_cards)
 
     def verify_card_availabilities(
             self,
@@ -2346,11 +2316,14 @@ class State:
         :return: The available cards.
         :raises ValueError: If the card is unavailable.
         """
-        cards = self._clean_cards(cards)
+        if isinstance(cards, int):
+            cards = tuple(islice(self.available_cards, cards))
+        else:
+            cards = Card.clean(cards)
 
-        for card in cards:
-            if card not in tuple(self.available_cards):
-                raise ValueError('unavailable card')
+            for card in cards:
+                if card not in tuple(self.available_cards):
+                    raise ValueError('unavailable card')
 
         return cards
 
@@ -2414,7 +2387,7 @@ class State:
             or self.street.draw_status
         )
 
-        self._make_available((card,))
+        self._make_card_available((card,))
 
         self.card_burning_status = False
         self.burned_cards.append(card)
@@ -2529,7 +2502,7 @@ class State:
         assert player_index is not None
         assert self.hole_dealing_statuses[player_index]
 
-        self._make_available(cards)
+        self._make_card_available(cards)
 
         for card in cards:
             status = self.hole_dealing_statuses[player_index].popleft()
@@ -2609,7 +2582,7 @@ class State:
 
         assert self.board_dealing_count
 
-        self._make_available(cards)
+        self._make_card_available(cards)
 
         self.board_dealing_count -= len(cards)
         self.board_cards.extend(cards)
@@ -2662,7 +2635,7 @@ class State:
         """
         self._verify_standing_pat_or_discarding()
 
-        cards = self._clean_cards(cards)
+        cards = Card.clean(cards)
         player_index = self.stander_pat_or_discarder_index
 
         assert player_index is not None
@@ -3687,7 +3660,10 @@ class State:
 
     # chips pulling
 
-    chips_pulling_statuses: list[bool] = field(default_factory=list, init=False)
+    chips_pulling_statuses: list[bool] = field(
+        default_factory=list,
+        init=False,
+    )
     """The chips pulling statuses."""
 
     def _setup_chips_pulling(self) -> None:

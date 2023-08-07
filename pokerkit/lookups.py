@@ -4,7 +4,7 @@ lookups.
 
 from abc import ABC
 from collections import Counter
-from collections.abc import Iterable, Iterator, Reversible, Sequence
+from collections.abc import Iterable, Reversible, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum, unique
 from functools import partial
@@ -91,8 +91,8 @@ class Lookup(ABC):
     hands, please use one of the hand classes.
 
     >>> lookup = StandardLookup()
-    >>> e0 = lookup.get_entry(Card.parse('As3sQhJsJc'))
-    >>> e1 = lookup.get_entry(Card.parse('2s4sKhKsKc'))
+    >>> e0 = lookup.get_entry('As3sQhJsJc')
+    >>> e1 = lookup.get_entry('2s4sKhKsKc')
     >>> e0 < e1
     True
     >>> e0.label
@@ -142,16 +142,16 @@ class Lookup(ABC):
 
         return hashes
 
-    def has_entry(self, cards: Iterable[Card]) -> bool:
+    def has_entry(self, cards: Iterable[Card] | str | Card | None) -> bool:
         """Return whether the cards can be looked up.
 
         The cards can be looked up if the lookup contains an entry with
         the given cards.
 
         >>> lookup = ShortDeckHoldemLookup()
-        >>> lookup.has_entry(Card.parse('Ah6h7s8c9s'))
+        >>> lookup.has_entry('Ah6h7s8c9s')
         True
-        >>> lookup.has_entry(Card.parse('Ah6h7s8c2s'))
+        >>> lookup.has_entry('Ah6h7s8c2s')
         False
 
         :param cards: The cards to look up.
@@ -160,17 +160,17 @@ class Lookup(ABC):
         """
         return self.__get_key(cards) in self.__entries
 
-    def get_entry(self, cards: Iterable[Card]) -> Entry:
+    def get_entry(self, cards: Iterable[Card] | str | Card | None) -> Entry:
         """Return the corresponding lookup entry of the hand that the
         cards form.
 
         >>> lookup = ShortDeckHoldemLookup()
-        >>> entry = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
+        >>> entry = lookup.get_entry('Ah6h7s8c9s')
         >>> entry.index
         1134
         >>> entry.label
         <Label.STRAIGHT: 'Straight'>
-        >>> entry = lookup.get_entry(Card.parse('Ah6h7s8c2s'))
+        >>> entry = lookup.get_entry('Ah6h7s8c2s')
         Traceback (most recent call last):
             ...
         ValueError: cards form an invalid hand
@@ -186,16 +186,19 @@ class Lookup(ABC):
 
         return self.__entries[key]
 
-    def get_entry_or_none(self, cards: Iterable[Card]) -> Entry | None:
+    def get_entry_or_none(
+            self,
+            cards: Iterable[Card] | str | Card | None,
+    ) -> Entry | None:
         """Return the corresponding lookup entry of the hand that the
         cards form if it exists. Otherwise, return ``None``.
 
         >>> lookup = ShortDeckHoldemLookup()
-        >>> lookup.get_entry(Card.parse('Ah6h7s8c2s'))
+        >>> lookup.get_entry('Ah6h7s8c2s')
         Traceback (most recent call last):
             ...
         ValueError: cards form an invalid hand
-        >>> lookup.get_entry_or_none(Card.parse('Ah6h7s8c2s')) is None
+        >>> lookup.get_entry_or_none('Ah6h7s8c2s') is None
         True
 
         :param cards: The cards to look up.
@@ -203,10 +206,11 @@ class Lookup(ABC):
         """
         return self.__entries.get(self.__get_key(cards))
 
-    def __get_key(self, cards: Iterable[Card]) -> tuple[int, bool]:
-        if isinstance(cards, Iterator):
-            cards = tuple(cards)
-
+    def __get_key(
+            self,
+            cards: Iterable[Card] | str | Card | None,
+    ) -> tuple[int, bool]:
+        cards = Card.clean(cards)
         hash_ = self.__hash(Card.get_ranks(cards))
         suitedness = Card.are_suited(cards)
 
@@ -266,9 +270,9 @@ class StandardLookup(Lookup):
     lookup.
 
     >>> lookup = StandardLookup()
-    >>> e0 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
-    >>> e1 = lookup.get_entry(Card.parse('AhAc6s6hTd'))
-    >>> e2 = lookup.get_entry(Card.parse('AcAdAhAsAc'))
+    >>> e0 = lookup.get_entry('Ah6h7s8c9s')
+    >>> e1 = lookup.get_entry('AhAc6s6hTd')
+    >>> e2 = lookup.get_entry('AcAdAhAsAc')
     Traceback (most recent call last):
         ...
     ValueError: cards form an invalid hand
@@ -342,9 +346,9 @@ class ShortDeckHoldemLookup(Lookup):
     please use :class:`pokerkit.hands.ShortDeckHoldemHand`.
 
     >>> lookup = ShortDeckHoldemLookup()
-    >>> e0 = lookup.get_entry(Card.parse('AhAc6s6hTd'))
-    >>> e1 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
-    >>> e2 = lookup.get_entry(Card.parse('Ah2h3s4c5s'))
+    >>> e0 = lookup.get_entry('AhAc6s6hTd')
+    >>> e1 = lookup.get_entry('Ah6h7s8c9s')
+    >>> e2 = lookup.get_entry('Ah2h3s4c5s')
     Traceback (most recent call last):
         ...
     ValueError: cards form an invalid hand
@@ -440,9 +444,9 @@ class RegularLowLookup(Lookup):
     please use :class:`pokerkit.hands.RegularLowHand`.
 
     >>> lookup = RegularLowLookup()
-    >>> e0 = lookup.get_entry(Card.parse('Ah6h7s8c9s'))
-    >>> e1 = lookup.get_entry(Card.parse('AhAc6s6hTd'))
-    >>> e2 = lookup.get_entry(Card.parse('3s4sQhTc'))
+    >>> e0 = lookup.get_entry('Ah6h7s8c9s')
+    >>> e1 = lookup.get_entry('AhAc6s6hTd')
+    >>> e2 = lookup.get_entry('3s4sQhTc')
     Traceback (most recent call last):
         ...
     ValueError: cards form an invalid hand
@@ -501,9 +505,9 @@ class BadugiLookup(Lookup):
     please use :class:`pokerkit.hands.BadugiHand`.
 
     >>> lookup = BadugiLookup()
-    >>> e0 = lookup.get_entry(Card.parse('2s'))
-    >>> e1 = lookup.get_entry(Card.parse('KhQc'))
-    >>> e2 = lookup.get_entry(Card.parse('AcAdAhAs'))
+    >>> e0 = lookup.get_entry('2s')
+    >>> e1 = lookup.get_entry('KhQc')
+    >>> e2 = lookup.get_entry('AcAdAhAs')
     Traceback (most recent call last):
         ...
     ValueError: cards form an invalid hand
@@ -533,9 +537,9 @@ class KuhnPokerLookup(Lookup):
     please use :class:`pokerkit.hands.KuhnPokerHand`.
 
     >>> lookup = KuhnPokerLookup()
-    >>> e0 = lookup.get_entry(Card.parse('Js'))
-    >>> e1 = lookup.get_entry(Card.parse('Qs'))
-    >>> e2 = lookup.get_entry(Card.parse('2c'))
+    >>> e0 = lookup.get_entry('Js')
+    >>> e1 = lookup.get_entry('Qs')
+    >>> e2 = lookup.get_entry('2c')
     Traceback (most recent call last):
         ...
     ValueError: cards form an invalid hand

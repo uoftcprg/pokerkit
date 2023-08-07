@@ -13,6 +13,7 @@
 
    simulation
    evaluation
+   changelog
    reference
 
 Indices and tables

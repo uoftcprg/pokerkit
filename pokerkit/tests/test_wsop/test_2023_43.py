@@ -110,7 +110,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -157,7 +157,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 6195000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -232,7 +232,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1875000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -299,7 +299,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1000000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -372,7 +372,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1050000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -481,7 +481,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -528,7 +528,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -575,7 +575,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -681,7 +681,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -728,7 +728,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -837,7 +837,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -920,7 +920,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1001,7 +1001,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1057,7 +1057,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1100000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1140,8 +1140,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
-        state.pull_chips(3)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1223,7 +1223,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1304,7 +1304,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1385,8 +1385,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
-        state.pull_chips(3)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1472,7 +1472,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2300000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1532,7 +1532,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 550000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1593,7 +1593,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 900000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1640,7 +1640,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1746,7 +1746,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1836,7 +1836,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2500000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1944,7 +1944,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -1992,7 +1992,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 4600000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2038,7 +2038,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 525000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2084,7 +2084,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 600000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2164,7 +2164,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2242,8 +2242,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
-        state.pull_chips(1)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2300,7 +2300,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1650000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2357,7 +2357,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1025000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2436,7 +2436,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2515,7 +2515,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2558,7 +2558,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 700000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2600,7 +2600,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 300000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2642,7 +2642,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 300000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2705,7 +2705,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1700000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2771,7 +2771,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2700000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2818,7 +2818,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 500000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2865,7 +2865,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1225000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2912,7 +2912,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1375000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -2959,7 +2959,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 825000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3020,7 +3020,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3088,7 +3088,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3138,7 +3138,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2775000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3245,8 +3245,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
-        state.pull_chips(4)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3293,7 +3293,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 575000)
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3399,8 +3399,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
-        state.pull_chips(2)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3507,8 +3507,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(3)
-        state.pull_chips(4)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3568,7 +3568,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1000000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3655,7 +3655,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2750000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3717,7 +3717,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1000000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3809,7 +3809,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3855,7 +3855,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 875000)
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -3957,7 +3957,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4003,7 +4003,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 750000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4049,7 +4049,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 875000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4145,7 +4145,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4237,7 +4237,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4281,7 +4281,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2725000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4325,7 +4325,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2825000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4370,7 +4370,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2875000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4415,7 +4415,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 3200000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4470,7 +4470,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1450000)
 
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4515,7 +4515,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2275000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4582,7 +4582,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(4)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4686,7 +4686,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(3)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4733,7 +4733,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1025000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4795,7 +4795,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2025000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4900,7 +4900,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -4960,7 +4960,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1025000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5045,7 +5045,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 1775000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5125,8 +5125,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
-        state.pull_chips(2)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5209,7 +5209,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(2)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5283,7 +5283,7 @@ class StateTestCase(TestCase):
         state.kill_hand()
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5362,8 +5362,8 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(0)
-        state.pull_chips(2)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5441,8 +5441,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
-        state.pull_chips(1)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5523,8 +5523,8 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(0)
-        state.pull_chips(1)
+        state.pull_chips()
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5603,7 +5603,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5647,7 +5647,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 600000)
 
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5717,7 +5717,7 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 2000000)
 
         state.push_chips()
-        state.pull_chips(0)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,
@@ -5814,7 +5814,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
-        state.pull_chips(1)
+        state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
         self.assertEqual(
             state.stacks,

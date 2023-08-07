@@ -32,9 +32,9 @@ There are two ways of creating hands. They are both very straight forward.
 .. code-block:: pycon
 
    >>> from pokerkit import *
-   >>> h0 = ShortDeckHoldemHand(Card.parse('6s7s8s9sTs'))
-   >>> h1 = ShortDeckHoldemHand(Card.parse('7c8c9cTcJc'))
-   >>> h2 = ShortDeckHoldemHand(Card.parse('2c2d2h2s3h'))
+   >>> h0 = ShortDeckHoldemHand('6s7s8s9sTs')
+   >>> h1 = ShortDeckHoldemHand('7c8c9cTcJc')
+   >>> h2 = ShortDeckHoldemHand('2c2d2h2s3h')
    Traceback (most recent call last):
        ...
    ValueError: invalid hand '2c2d2h2s3h'
@@ -48,22 +48,16 @@ What if you want to evaluate hands from a game setting? No problem.
 .. code-block:: pycon
 
    >>> from pokerkit import *
-   >>> h0 = OmahaHoldemHand.from_game(
-   ...     Card.parse('6c7c8c9c'),
-   ...     Card.parse('8s9sTc'),
-   ... )
-   >>> h1 = OmahaHoldemHand(Card.parse('6c7c8s9sTc'))
+   >>> h0 = OmahaHoldemHand.from_game('6c7c8c9c', '8s9sTc')
+   >>> h1 = OmahaHoldemHand('6c7c8s9sTc')
    >>> h0 == h1
    True
-   >>> h0 = OmahaEightOrBetterLowHand.from_game(
-   ...     Card.parse('As2s3s4s'),
-   ...     Card.parse('2c3c4c5c6c'),
-   ... )
-   >>> h1 = OmahaEightOrBetterLowHand(Card.parse('Ad2d3d4d5d'))
+   >>> h0 = OmahaEightOrBetterLowHand.from_game('As2s3s4s', '2c3c4c5c6c')
+   >>> h1 = OmahaEightOrBetterLowHand('Ad2d3d4d5d')
    >>> h0 == h1
    True
-   >>> hole = Card.parse('AsAc')
-   >>> board = Card.parse('Kh3sAdAh')
+   >>> hole = 'AsAc'
+   >>> board = 'Kh3sAdAh'
    >>> hand = StandardHighHand.from_game(hole, board)
    >>> hand.cards
    (As, Ac, Kh, Ad, Ah)
@@ -79,17 +73,17 @@ Comparing the hand strengths is quite simple... Just compare them!
 
 .. code-block:: pycon
 
-   >>> h0 = StandardHighHand(Card.parse('7c5d4h3s2c'))
-   >>> h1 = StandardHighHand(Card.parse('7c6d4h3s2c'))
-   >>> h2 = StandardHighHand(Card.parse('8c7d6h4s2c'))
-   >>> h3 = StandardHighHand(Card.parse('AcAsAd2s4s'))
-   >>> h4 = StandardHighHand(Card.parse('TsJsQsKsAs'))
+   >>> h0 = StandardHighHand('7c5d4h3s2c')
+   >>> h1 = StandardHighHand('7c6d4h3s2c')
+   >>> h2 = StandardHighHand('8c7d6h4s2c')
+   >>> h3 = StandardHighHand('AcAsAd2s4s')
+   >>> h4 = StandardHighHand('TsJsQsKsAs')
    >>> h0 < h1 < h2 < h3 < h4
    True
-   >>> h0 = StandardLowHand(Card.parse('TsJsQsKsAs'))
-   >>> h1 = StandardLowHand(Card.parse('AcAsAd2s4s'))
-   >>> h2 = StandardLowHand(Card.parse('8c7d6h4s2c'))
-   >>> h3 = StandardLowHand(Card.parse('7c6d4h3s2c'))
-   >>> h4 = StandardLowHand(Card.parse('7c5d4h3s2c'))
+   >>> h0 = StandardLowHand('TsJsQsKsAs')
+   >>> h1 = StandardLowHand('AcAsAd2s4s')
+   >>> h2 = StandardLowHand('8c7d6h4s2c')
+   >>> h3 = StandardLowHand('7c6d4h3s2c')
+   >>> h4 = StandardLowHand('7c5d4h3s2c')
    >>> h0 < h1 < h2 < h3 < h4
    True
