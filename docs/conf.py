@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'PokerKit'
 copyright = '2023, University of Toronto Computer Poker Research Group'
 author = 'University of Toronto Computer Poker Research Group'
-release = '0.0.0'
+release = '0.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -1,6 +1,6 @@
-========================
-Contributing to PokerKit
-========================
+============
+Contributing
+============
 
 Thanks for considering contributing to PokerKit! Your contributions are
 greatly appreciated, and help make PokerKit a better tool for everyone in

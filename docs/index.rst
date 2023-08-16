@@ -5,14 +5,13 @@
 
 .. include:: ../README.rst
 
-.. include:: ../CONTRIBUTING.rst
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    simulation
    evaluation
+   contributing
    changelog
    reference
 

@@ -7,7 +7,7 @@ with open('README.rst', 'r') as file:
 
 setup(
     name='pokerkit',
-    version='0.0.1',
+    version='0.0.2',
     description='A Python package for various poker tools',
     long_description=long_description,
     long_description_content_type='text/x-rst',

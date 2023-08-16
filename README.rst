@@ -378,14 +378,13 @@ scenarios.
 **Contributing**
 ----------------
 
-Contributions are welcome! Please read our
-`Contributing Guide <CONTRIBUTING.rst>`_ for more information.
+Contributions are welcome! Please read our Contributing Guide for more
+information.
 
 **License**
 -----------
 
-PokerKit is distributed under the MIT license. See `LICENSE <LICENSE>`_ for
-more information.
+PokerKit is distributed under the MIT license.
 
 **Citing**
 ----------
