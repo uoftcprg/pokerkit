@@ -12,7 +12,7 @@ from itertools import combinations, filterfalse
 from math import prod
 from operator import contains
 
-from pokerkit.utilities import Card, Rank, RankOrder
+from pokerkit.utilities import Card, CardsLike, Rank, RankOrder
 
 
 @unique
@@ -142,7 +142,7 @@ class Lookup(ABC):
 
         return hashes
 
-    def has_entry(self, cards: Iterable[Card] | str | Card | None) -> bool:
+    def has_entry(self, cards: CardsLike) -> bool:
         """Return whether the cards can be looked up.
 
         The cards can be looked up if the lookup contains an entry with
@@ -160,7 +160,7 @@ class Lookup(ABC):
         """
         return self.__get_key(cards) in self.__entries
 
-    def get_entry(self, cards: Iterable[Card] | str | Card | None) -> Entry:
+    def get_entry(self, cards: CardsLike) -> Entry:
         """Return the corresponding lookup entry of the hand that the
         cards form.
 
@@ -186,10 +186,7 @@ class Lookup(ABC):
 
         return self.__entries[key]
 
-    def get_entry_or_none(
-            self,
-            cards: Iterable[Card] | str | Card | None,
-    ) -> Entry | None:
+    def get_entry_or_none(self, cards: CardsLike) -> Entry | None:
         """Return the corresponding lookup entry of the hand that the
         cards form if it exists. Otherwise, return ``None``.
 
@@ -206,10 +203,7 @@ class Lookup(ABC):
         """
         return self.__entries.get(self.__get_key(cards))
 
-    def __get_key(
-            self,
-            cards: Iterable[Card] | str | Card | None,
-    ) -> tuple[int, bool]:
+    def __get_key(self, cards: CardsLike) -> tuple[int, bool]:
         cards = Card.clean(cards)
         hash_ = self.__hash(Card.get_ranks(cards))
         suitedness = Card.are_suited(cards)

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import Iterable, Mapping
 
 from pokerkit.hands import (
     BadugiHand,
@@ -16,7 +15,7 @@ from pokerkit.hands import (
     StandardLowHand,
 )
 from pokerkit.state import BettingStructure, Opening, Automation, State, Street
-from pokerkit.utilities import Deck, RankOrder, clean_values
+from pokerkit.utilities import Deck, RankOrder, ValuesLike, clean_values
 
 
 class Poker(ABC):
@@ -52,11 +51,11 @@ class FixedLimitTexasHoldem(TexasHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit Texas hold'em game.
@@ -169,10 +168,10 @@ class NoLimitTexasHoldem(TexasHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a no-limit Texas hold'em game.
@@ -325,10 +324,10 @@ class NoLimitShortDeckHoldem(TexasHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a no-limit short-deck hold'em game.
@@ -487,10 +486,10 @@ class PotLimitOmahaHoldem(OmahaHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a pot-limit Omaha hold'em game.
@@ -636,11 +635,11 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(OmahaHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit Omaha hold'em high/low-split eight or better
@@ -724,11 +723,11 @@ class FixedLimitSevenCardStud(SevenCardStud):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
+            antes: ValuesLike,
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit seven card stud game.
@@ -812,11 +811,11 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(SevenCardStud):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
+            antes: ValuesLike,
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit seven card stud high/low-split eight or
@@ -900,11 +899,11 @@ class FixedLimitRazz(SevenCardStud):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
+            antes: ValuesLike,
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit razz game.
@@ -996,10 +995,10 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a no-limit deuce-to-seven lowball single draw game.
@@ -1054,11 +1053,11 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit deuce-to-seven lowball triple draw game.
@@ -1229,11 +1228,11 @@ class FixedLimitBadugi(Poker):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: int | Iterable[int] | Mapping[int, int] | None,
-            blinds_or_straddles: Iterable[int] | Mapping[int, int],
+            antes: ValuesLike,
+            blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: int | Iterable[int],
+            starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit badugi game.

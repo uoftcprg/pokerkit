@@ -10,6 +10,7 @@ __all__ = (
     'BettingStructure',
     'BoardCombinationHand',
     'Card',
+    'CardsLike',
     'CombinationHand',
     'Deck',
     'DeuceToSevenLowball',
@@ -55,6 +56,7 @@ __all__ = (
     'Street',
     'Suit',
     'TexasHoldem',
+    'ValuesLike',
     'clean_values',
     'filter_none',
     'max_or_none',
@@ -117,10 +119,12 @@ from pokerkit.state import (
 )
 from pokerkit.utilities import (
     Card,
+    CardsLike,
     Deck,
     Rank,
     RankOrder,
     Suit,
+    ValuesLike,
     clean_values,
     filter_none,
     max_or_none,

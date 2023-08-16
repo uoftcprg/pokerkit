@@ -1,7 +1,7 @@
 """:mod:`pokerkit.state` implements classes related to poker states."""
 
 from collections import Counter, deque
-from collections.abc import Iterator, Iterable
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from enum import StrEnum, unique
 from functools import partial
@@ -13,6 +13,7 @@ from pokerkit.hands import Hand
 from pokerkit.lookups import Label, Lookup
 from pokerkit.utilities import (
     Card,
+    CardsLike,
     Deck,
     RankOrder,
     Suit,
@@ -2308,7 +2309,7 @@ class State:
 
     def verify_card_availabilities(
             self,
-            cards: Iterable[Card] | str | Card | int | None,
+            cards: CardsLike | int,
     ) -> tuple[Card, ...]:
         """Verify the card availability.
 
@@ -2448,7 +2449,7 @@ class State:
 
     def verify_hole_dealing(
             self,
-            cards: Iterable[Card] | str | Card | int | None = None,
+            cards: CardsLike | int | None = None,
     ) -> tuple[Card, ...]:
         """Verify the hole dealing.
 
@@ -2468,10 +2469,7 @@ class State:
 
         return cards
 
-    def can_deal_hole(
-            self,
-            cards: Iterable[Card] | str | Card | int | None = None,
-    ) -> bool:
+    def can_deal_hole(self, cards: CardsLike | int | None = None) -> bool:
         """Return whether the hole dealing can be done.
 
         :param cards: The optional cards.
@@ -2485,10 +2483,7 @@ class State:
 
         return True
 
-    def deal_hole(
-            self,
-            cards: Iterable[Card] | str | Card | int | None = None,
-    ) -> HoleDealing:
+    def deal_hole(self, cards: CardsLike | int | None = None) -> HoleDealing:
         """Deal the hole.
 
         :param cards: The optional cards.
@@ -2528,7 +2523,7 @@ class State:
 
     def verify_board_dealing(
             self,
-            cards: Iterable[Card] | str | Card | int | None = None,
+            cards: CardsLike | int | None = None,
     ) -> tuple[Card, ...]:
         """Verify the board dealing.
 
@@ -2550,10 +2545,7 @@ class State:
 
         return cards
 
-    def can_deal_board(
-            self,
-            cards: Iterable[Card] | str | Card | int | None = None,
-    ) -> bool:
+    def can_deal_board(self, cards: CardsLike | int | None = None) -> bool:
         """Return whether the board dealing can be done.
 
         :param cards: The optional cards.
@@ -2568,10 +2560,7 @@ class State:
 
         return True
 
-    def deal_board(
-            self,
-            cards: Iterable[Card] | str | Card | int | None = None,
-    ) -> BoardDealing:
+    def deal_board(self, cards: CardsLike | int | None = None) -> BoardDealing:
         """Deal the board.
 
         :param cards: The optional cards.
@@ -2625,7 +2614,7 @@ class State:
 
     def verify_standing_pat_or_discarding(
             self,
-            cards: Iterable[Card] | str | Card | None = None,
+            cards: CardsLike = None,
     ) -> tuple[Card, ...]:
         """Verify the discard.
 
@@ -2645,10 +2634,7 @@ class State:
 
         return cards
 
-    def can_stand_pat_or_discard(
-            self,
-            cards: Iterable[Card] | str | Card | None = None,
-    ) -> bool:
+    def can_stand_pat_or_discard(self, cards: CardsLike = None) -> bool:
         """Return whether the discard can be done.
 
         :param cards: The optional discarded cards.
@@ -2664,7 +2650,7 @@ class State:
 
     def stand_pat_or_discard(
             self,
-            cards: Iterable[Card] | str | Card | None = None,
+            cards: CardsLike = None,
     ) -> StandingPatOrDiscarding:
         """Discard hole cards.
 

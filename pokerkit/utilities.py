@@ -228,10 +228,7 @@ class Card:
     """The suit."""
 
     @classmethod
-    def get_ranks(
-            cls,
-            cards: Iterable[Card] | str | Card | None,
-    ) -> Iterator[Rank]:
+    def get_ranks(cls, cards: CardsLike) -> Iterator[Rank]:
         """Return an iterator of the ranks of each card.
 
         >>> Card.get_ranks('2sKh')  # doctest: +ELLIPSIS
@@ -246,10 +243,7 @@ class Card:
             yield card.rank
 
     @classmethod
-    def get_suits(
-            cls,
-            cards: Iterable[Card] | str | Card | None,
-    ) -> Iterator[Suit]:
+    def get_suits(cls, cards: CardsLike) -> Iterator[Suit]:
         """Return an iterator of the suits of each card.
 
         >>> Card.get_suits('2sKh')  # doctest: +ELLIPSIS
@@ -264,7 +258,7 @@ class Card:
             yield card.suit
 
     @classmethod
-    def are_paired(cls, cards: Iterable[Card] | str | Card | None) -> bool:
+    def are_paired(cls, cards: CardsLike) -> bool:
         """Return the pairedness of the given cards.
 
         The cards are paired if at least two of the cards share a
@@ -287,7 +281,7 @@ class Card:
         return len(set(ranks)) != len(ranks)
 
     @classmethod
-    def are_suited(cls, cards: Iterable[Card] | str | Card | None) -> bool:
+    def are_suited(cls, cards: CardsLike) -> bool:
         """Return the suitedness of the given cards.
 
         The cards are suited if all of the cards share a common suit.
@@ -307,7 +301,7 @@ class Card:
         return len(set(cls.get_suits(cards))) <= 1
 
     @classmethod
-    def are_rainbow(cls, cards: Iterable[Card] | str | Card | None) -> bool:
+    def are_rainbow(cls, cards: CardsLike) -> bool:
         """Return whether the cards are rainbow.
 
         The cards are rainbow if no two cards share a common suit.
@@ -329,10 +323,7 @@ class Card:
         return len(set(suits)) == len(suits)
 
     @classmethod
-    def clean(
-            cls,
-            values: Iterable[Card] | str | Card | None,
-    ) -> tuple[Card, ...]:
+    def clean(cls, values: CardsLike) -> tuple[Card, ...]:
         """Clean the cards.
 
         >>> Card.clean('AsKs')
@@ -403,6 +394,9 @@ class Card:
 
     def __str__(self) -> str:
         return f'{self.rank.name} OF {self.suit.name}S ({repr(self)})'
+
+
+CardsLike = Iterable[Card] | Card | str | None
 
 
 @unique
@@ -553,10 +547,10 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
         return None
 
 
-def clean_values(
-        values: Iterable[int] | Mapping[int, int] | int | None,
-        count: int,
-) -> tuple[int, ...]:
+ValuesLike = Iterable[int] | Mapping[int, int] | int | None
+
+
+def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     """Clean the integers.
 
     >>> clean_values([1, 2, 3, 4], 4)
@@ -569,6 +563,10 @@ def clean_values(
     (4, 4, 4, 4)
     >>> clean_values(None, 4)
     (0, 0, 0, 0)
+    >>> clean_values((1, 2, 3), 2)
+    Traceback (most recent call last):
+        ...
+    ValueError: too many values
 
     :param values: The values.
     :param count: The number of values.

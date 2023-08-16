@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Hashable, Iterable
+from collections.abc import Hashable
 from functools import total_ordering
 from itertools import chain, combinations
 from typing import Any
@@ -18,7 +18,7 @@ from pokerkit.lookups import (
     ShortDeckHoldemLookup,
     StandardLookup,
 )
-from pokerkit.utilities import Card, RankOrder
+from pokerkit.utilities import Card, CardsLike, RankOrder
 
 
 @total_ordering
@@ -66,8 +66,8 @@ class Hand(Hashable, ABC):
     @abstractmethod
     def from_game(
             cls,
-            hole_cards: Iterable[Card] | str | Card | None,
-            board_cards: Iterable[Card] | str | Card | None = (),
+            hole_cards: CardsLike,
+            board_cards: CardsLike = None,
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -79,7 +79,7 @@ class Hand(Hashable, ABC):
         :return: The strongest hand from possible card combinations.
         """
 
-    def __init__(self, cards: Iterable[Card] | str | Card | None) -> None:
+    def __init__(self, cards: CardsLike) -> None:
         self.__cards = Card.clean(cards)
 
         if not self.lookup.has_entry(self.cards):
@@ -151,8 +151,8 @@ class CombinationHand(Hand, ABC):
     @classmethod
     def from_game(
             cls,
-            hole_cards: Iterable[Card] | str | Card | None,
-            board_cards: Iterable[Card] | str | Card | None = (),
+            hole_cards: CardsLike,
+            board_cards: CardsLike = None,
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -391,8 +391,8 @@ class BoardCombinationHand(CombinationHand, ABC):
     @classmethod
     def from_game(
             cls,
-            hole_cards: Iterable[Card] | str | Card | None,
-            board_cards: Iterable[Card] | str | Card | None = (),
+            hole_cards: CardsLike,
+            board_cards: CardsLike = None,
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -465,8 +465,8 @@ class HoleBoardCombinationHand(BoardCombinationHand, ABC):
     @classmethod
     def from_game(
             cls,
-            hole_cards: Iterable[Card] | str | Card | None,
-            board_cards: Iterable[Card] | str | Card | None = (),
+            hole_cards: CardsLike,
+            board_cards: CardsLike = None,
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -600,8 +600,8 @@ class BadugiHand(Hand):
     @classmethod
     def from_game(
             cls,
-            hole_cards: Iterable[Card] | str | Card | None,
-            board_cards: Iterable[Card] | str | Card | None = (),
+            hole_cards: CardsLike,
+            board_cards: CardsLike = None,
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -640,7 +640,7 @@ class BadugiHand(Hand):
 
         return cls(cards)
 
-    def __init__(self, cards: Iterable[Card] | str | Card | None) -> None:
+    def __init__(self, cards: CardsLike) -> None:
         super().__init__(cards)
 
         if not Card.are_rainbow(self.cards):
@@ -668,16 +668,16 @@ class KuhnPokerHand(Hand):
     @classmethod
     def from_game(
             cls,
-            hole_cards: Iterable[Card] | str | Card | None,
-            board_cards: Iterable[Card] | str | Card | None = (),
+            hole_cards: CardsLike,
+            board_cards: CardsLike = None,
     ) -> Hand:
         """Create a poker hand from a game setting.
 
         In a game setting, a player uses private cards from their hole
         and the public cards from the board to make their hand.
 
-        >>> h0 = BadugiHand.from_game('Ks')
-        >>> h1 = BadugiHand('Ks')
+        >>> h0 = KuhnPokerHand.from_game('Ks')
+        >>> h1 = KuhnPokerHand('Ks')
         >>> h0 == h1
         True
 
