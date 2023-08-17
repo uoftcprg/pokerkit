@@ -6,8 +6,8 @@ Thanks for considering contributing to PokerKit! Your contributions are
 greatly appreciated, and help make PokerKit a better tool for everyone in
 the Poker AI and research communities.
 
-**Setting up Your Development Environment**
--------------------------------------------
+Setting up Your Development Environment
+---------------------------------------
 
 1. Fork the PokerKit repository on GitHub.
 2. Clone your fork locally: ``git clone git@github.com:username/pokerkit.git``
@@ -16,8 +16,8 @@ the Poker AI and research communities.
 5. Install requirements: ``pip install -r requirements.txt``
 6. Create a branch for your changes: ``git checkout -b branch-name``
 
-**Making Changes**
-------------------
+Making Changes
+--------------
 
 When making changes, please follow these guidelines:
 
@@ -34,8 +34,8 @@ When making changes, please follow these guidelines:
 3. Run unit tests: ``python -m unittest``
 4. Run doctests: ``python -m doctest pokerkit/*.py``
 
-**Submitting a Pull Request**
------------------------------
+Submitting a Pull Request
+-------------------------
 
 1. Commit your changes: ``git commit -am 'Add some feature'``
 2. Push to the branch: ``git push origin branch-name``
@@ -45,8 +45,8 @@ Before submitting your pull request, please make sure the mypy static type
 checking with ``--strict`` flag, flake8, doctests, unit tests pass, and your
 code adheres to `PEP8 <https://peps.python.org/pep-0008/>`_.
 
-**After Your Pull Request Is Merged**
--------------------------------------
+After Your Pull Request Is Merged
+---------------------------------
 
 After your pull request is merged, you can safely delete your branch and pull
 the changes from the main repository:
