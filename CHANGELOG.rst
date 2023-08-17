@@ -4,7 +4,7 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.0.2 (August 16, 2023)
+Version 0.0.2 (August 17, 2023)
 -------------------------------
 
 **Added**
