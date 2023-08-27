@@ -5,6 +5,7 @@
 from hashlib import md5
 from itertools import combinations
 from unittest import TestCase
+from warnings import resetwarnings, simplefilter
 
 from pokerkit.games import (
     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
@@ -62,6 +63,14 @@ class HighHandOpeningLookupTestCase(LookupTestCaseMixin, TestCase):
 
 
 class StateTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        simplefilter('ignore')
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        resetwarnings()
+
     def test_all_ins(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (

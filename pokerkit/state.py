@@ -1,13 +1,15 @@
 """:mod:`pokerkit.state` implements classes related to poker states."""
 
+from abc import ABC
 from collections import Counter, deque
 from collections.abc import Iterator
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass, field
 from enum import StrEnum, unique
 from functools import partial
 from itertools import chain, islice
 from operator import getitem
 from random import shuffle
+from warnings import warn
 
 from pokerkit.hands import Hand
 from pokerkit.lookups import Label, Lookup
@@ -17,8 +19,11 @@ from pokerkit.utilities import (
     Deck,
     RankOrder,
     Suit,
+    ValuesLike,
+    clean_values,
     max_or_none,
     min_or_none,
+    shuffled,
 )
 
 
@@ -338,6 +343,169 @@ class Pot:
 
 
 @dataclass
+class Operation(ABC):
+    """The abstract base class for operations."""
+
+    pass
+
+
+@dataclass
+class AntePosting(Operation):
+    """The class for ante postings."""
+
+    player_index: int
+    """The player index."""
+    amount: int
+    """The amount."""
+
+
+@dataclass
+class BetCollection(Operation):
+    """The class for bet collections."""
+
+    bets: tuple[int, ...]
+    """The bets."""
+
+    @property
+    def total_bets(self) -> int:
+        """Return the total bets.
+
+        :return: The total bets.
+        """
+        return sum(self.bets)
+
+
+@dataclass
+class BlindOrStraddlePosting(Operation):
+    """The class for blind or straddle postings."""
+
+    player_index: int
+    """The player index."""
+    amount: int
+    """The amount."""
+
+
+@dataclass
+class CardBurning(Operation):
+    """The class for card burnings."""
+
+    card: Card
+    """The card."""
+
+
+@dataclass
+class HoleDealing(Operation):
+    """The class for hole dealings."""
+
+    player_index: int
+    """The player index."""
+    cards: tuple[Card, ...]
+    """The cards."""
+    statuses: tuple[bool, ...]
+    """The statuses."""
+
+
+@dataclass
+class BoardDealing(Operation):
+    """The class for board dealings."""
+
+    cards: tuple[Card, ...]
+    """The cards."""
+
+
+@dataclass
+class StandingPatOrDiscarding(Operation):
+    """The class for standing pat or discardings."""
+
+    player_index: int
+    """The player index."""
+    cards: tuple[Card, ...]
+    """The cards."""
+
+
+@dataclass
+class Folding(Operation):
+    """The class for foldings."""
+
+    player_index: int
+    """The player index."""
+
+
+@dataclass
+class CheckingOrCalling(Operation):
+    """The class for checking or callings."""
+
+    player_index: int
+    """The player index."""
+    amount: int
+    """The amount."""
+
+
+@dataclass
+class BringInPosting(Operation):
+    """The class for bring-in postings."""
+
+    player_index: int
+    """The player index."""
+    amount: int
+    """The amount."""
+
+
+@dataclass
+class CompletionBettingOrRaisingTo(Operation):
+    """The class for completion, betting, or raising tos."""
+
+    player_index: int
+    """The player index."""
+    amount: int
+    """The amount."""
+
+
+@dataclass
+class HoleCardsShowingOrMucking(Operation):
+    """The class for hole cards showing or muckings."""
+
+    player_index: int
+    """The player index."""
+    status: bool
+    """The status."""
+
+
+@dataclass
+class HandKilling(Operation):
+    """The class for hand killings."""
+
+    player_index: int
+    """The player index."""
+
+
+@dataclass
+class ChipsPushing(Operation):
+    """The class for chips pushings."""
+
+    amounts: tuple[int, ...]
+    """The amounts."""
+
+    @property
+    def total_amount(self) -> int:
+        """Return the total amount.
+
+        :return: The total amount.
+        """
+        return sum(self.amounts)
+
+
+@dataclass
+class ChipsPulling(Operation):
+    """The class for chips pullings."""
+
+    player_index: int
+    """The player index."""
+    amount: int
+    """The amount."""
+
+
+@dataclass
 class State:
     """The class for states.
 
@@ -377,6 +545,7 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
+    ...     2,
     ... )
     >>> state.status
     True
@@ -387,19 +556,19 @@ class State:
     >>> state.hole_cards  # doctest: +ELLIPSIS
     [[...s], [...s]]
     >>> state.check_or_call()
-    State.CheckingOrCalling(player_index=0, amount=0)
+    CheckingOrCalling(player_index=0, amount=0)
     >>> state.stacks
     [1, 1]
     >>> state.bets
     [0, 0]
     >>> state.complete_bet_or_raise_to()
-    State.CompletionBettingOrRaisingTo(player_index=1, amount=1)
+    CompletionBettingOrRaisingTo(player_index=1, amount=1)
     >>> state.stacks
     [1, 0]
     >>> state.bets
     [0, 1]
     >>> state.fold()
-    State.Folding(player_index=0)
+    Folding(player_index=0)
     >>> state.stacks
     [1, 3]
     >>> state.bets
@@ -432,31 +601,32 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
+    ...     2,
     ... )
     >>> state.status
     True
     >>> state.post_ante(0)
-    State.AntePosting(player_index=0, amount=1)
+    AntePosting(player_index=0, amount=1)
     >>> state.post_ante(1)
-    State.AntePosting(player_index=1, amount=1)
+    AntePosting(player_index=1, amount=1)
     >>> state.collect_bets()
-    State.BetCollection(bets=(1, 1))
+    BetCollection(bets=(1, 1))
     >>> state.deal_hole('Js')
-    State.HoleDealing(player_index=0, cards=(Js,), statuses=(False,))
+    HoleDealing(player_index=0, cards=(Js,), statuses=(False,))
     >>> state.deal_hole()  # doctest: +ELLIPSIS
-    State.HoleDealing(player_index=1, cards=(...s,), statuses=(False,))
+    HoleDealing(player_index=1, cards=(...s,), statuses=(False,))
     >>> state.check_or_call()
-    State.CheckingOrCalling(player_index=0, amount=0)
+    CheckingOrCalling(player_index=0, amount=0)
     >>> state.complete_bet_or_raise_to()
-    State.CompletionBettingOrRaisingTo(player_index=1, amount=1)
+    CompletionBettingOrRaisingTo(player_index=1, amount=1)
     >>> state.fold()
-    State.Folding(player_index=0)
+    Folding(player_index=0)
     >>> state.collect_bets()
-    State.BetCollection(bets=(0, 0))
+    BetCollection(bets=(0, 0))
     >>> state.push_chips()
-    State.ChipsPushing(amounts=(0, 3))
+    ChipsPushing(amounts=(0, 3))
     >>> state.pull_chips(1)
-    State.ChipsPulling(player_index=1, amount=3)
+    ChipsPulling(player_index=1, amount=3)
     >>> state.status
     False
 
@@ -471,6 +641,7 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -496,6 +667,7 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -521,6 +693,7 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -546,6 +719,7 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2,) * 2,
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -571,6 +745,7 @@ class State:
     ...     (0,) * 2,
     ...     0,
     ...     (2, 0),
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -596,6 +771,7 @@ class State:
     ...     (1,) * 2,
     ...     1,
     ...     (2,) * 2,
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -621,6 +797,7 @@ class State:
     ...     (0,) * 2,
     ...     1,
     ...     (2,) * 2,
+    ...     2,
     ... )
     Traceback (most recent call last):
         ...
@@ -643,34 +820,10 @@ class State:
     ...     (),
     ...     True,
     ...     (1,),
-    ...     (0,) * 2,
-    ...     0,
-    ...     (2,) * 2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: inconsistent number of players
-    >>> state = State(
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
-    ...     True,
-    ...     (1,),
     ...     (0,),
     ...     0,
     ...     (2,),
+    ...     1,
     ... )
     Traceback (most recent call last):
         ...
@@ -696,13 +849,21 @@ class State:
     If you want non-uniform antes like big blind antes, set
     this to ``False``.
     """
-    antes: tuple[int, ...]
-    """The antes."""
-    blinds_or_straddles: tuple[int, ...]
-    """The blinds or straddles."""
+    raw_antes: InitVar[ValuesLike]
+    """The raw antes."""
+    raw_blinds_or_straddles: InitVar[ValuesLike]
+    """The raw blinds or straddles."""
     bring_in: int
     """The bring-in."""
-    starting_stacks: tuple[int, ...]
+    raw_starting_stacks: InitVar[ValuesLike]
+    """The raw starting stacks."""
+    player_count: int
+    """The number of players."""
+    antes: tuple[int, ...] = field(init=False)
+    """The antes."""
+    blinds_or_straddles: tuple[int, ...] = field(init=False)
+    """The blinds or straddles."""
+    starting_stacks: tuple[int, ...] = field(init=False)
     """The starting stacks."""
     deck_cards: deque[Card] = field(default_factory=deque, init=False)
     """The deck cards."""
@@ -710,8 +871,8 @@ class State:
     """The board cards."""
     mucked_cards: list[Card] = field(default_factory=list, init=False)
     """The mucked cards."""
-    burned_cards: list[Card] = field(default_factory=list, init=False)
-    """The burned cards."""
+    burn_cards: list[Card] = field(default_factory=list, init=False)
+    """The burn cards."""
     statuses: list[bool] = field(default_factory=list, init=False)
     """The player statuses."""
     bets: list[int] = field(default_factory=list, init=False)
@@ -725,12 +886,32 @@ class State:
         init=False,
     )
     """The player hole card statuses."""
+    discarded_cards: list[list[Card]] = field(
+        default_factory=list,
+        init=False,
+    )
+    """The discards."""
     street_index: int | None = field(default=None, init=False)
     """The street index."""
     status: bool = field(default=True, init=False)
     """The game status."""
 
-    def __post_init__(self) -> None:
+    def __post_init__(
+            self,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            raw_starting_stacks: ValuesLike,
+    ) -> None:
+        self.antes = clean_values(raw_antes, self.player_count)
+        self.blinds_or_straddles = clean_values(
+            raw_blinds_or_straddles,
+            self.player_count,
+        )
+        self.starting_stacks = clean_values(
+            raw_starting_stacks,
+            self.player_count,
+        )
+
         if not self.streets:
             raise ValueError('empty streets')
         elif not self.streets[0].hole_dealing_statuses:
@@ -779,6 +960,9 @@ class State:
             self.stacks.append(self.starting_stacks[i])
             self.hole_cards.append([])
             self.hole_card_statuses.append([])
+
+        for _ in self.street_indices:
+            self.discarded_cards.append([])
 
         self._setup_ante_posting()
         self._setup_bet_collection()
@@ -908,38 +1092,6 @@ class State:
             yield street.draw_status
 
     @property
-    def player_count(self) -> int:
-        """Return the number of players.
-
-        >>> from pokerkit import NoLimitTexasHoldem
-        >>> state = NoLimitTexasHoldem.create_state(
-        ...     (),
-        ...     False,
-        ...     (0, 2),
-        ...     (1, 2),
-        ...     2,
-        ...     200,
-        ...     2,
-        ... )
-        >>> state.player_count
-        2
-        >>> state = NoLimitTexasHoldem.create_state(
-        ...     (),
-        ...     True,
-        ...     1,
-        ...     (1, 2),
-        ...     2,
-        ...     200,
-        ...     9,
-        ... )
-        >>> state.player_count
-        9
-
-        :return: The number of players.
-        """
-        return len(self.starting_stacks)
-
-    @property
     def player_indices(self) -> range:
         """Return the player indices.
 
@@ -972,6 +1124,22 @@ class State:
         return range(self.player_count)
 
     @property
+    def street_count(self) -> int:
+        """Return the number of streets.
+
+        :return: The number of streets.
+        """
+        return len(self.streets)
+
+    @property
+    def street_indices(self) -> range:
+        """Return the street indices.
+
+        :return: The street indices.
+        """
+        return range(self.street_count)
+
+    @property
     def street(self) -> Street | None:
         """Return the current street.
 
@@ -990,87 +1158,87 @@ class State:
         >>> state.street is None
         True
         >>> state.post_ante(1)
-        State.AntePosting(player_index=1, amount=2)
+        AntePosting(player_index=1, amount=2)
         >>> state.collect_bets()
-        State.BetCollection(bets=(0, 2))
+        BetCollection(bets=(0, 2))
         >>> state.post_blind_or_straddle(0)
-        State.BlindOrStraddlePosting(player_index=0, amount=2)
+        BlindOrStraddlePosting(player_index=0, amount=2)
         >>> state.street is None
         True
         >>> state.post_blind_or_straddle(1)
-        State.BlindOrStraddlePosting(player_index=1, amount=1)
+        BlindOrStraddlePosting(player_index=1, amount=1)
         >>> state.street is state.streets[0]
         True
         >>> state.street  # doctest: +ELLIPSIS
         Street(...)
         >>> state.deal_hole('Ac')
-        State.HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
+        HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
         >>> state.deal_hole('Kc')
-        State.HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
+        HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
         >>> state.deal_hole('Ad')
-        State.HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
+        HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
         >>> state.deal_hole('Kd')
-        State.HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
+        HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.street is state.streets[0]
         True
         >>> state.collect_bets()
-        State.BetCollection(bets=(2, 2))
+        BetCollection(bets=(2, 2))
         >>> state.street is state.streets[1]
         True
         >>> state.burn_card('2c')
-        State.CardBurning(card=2c)
+        CardBurning(card=2c)
         >>> state.deal_board('AhKhAs')
-        State.BoardDealing(cards=(Ah, Kh, As))
+        BoardDealing(cards=(Ah, Kh, As))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.street is state.streets[1]
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.street is state.streets[2]
         True
         >>> state.burn_card('2d')
-        State.CardBurning(card=2d)
+        CardBurning(card=2d)
         >>> state.deal_board('Ks')
-        State.BoardDealing(cards=(Ks,))
+        BoardDealing(cards=(Ks,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.street is state.streets[2]
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.street is state.streets[3]
         True
         >>> state.burn_card('2h')
-        State.CardBurning(card=2h)
+        CardBurning(card=2h)
         >>> state.deal_board('2s')
-        State.BoardDealing(cards=(2s,))
+        BoardDealing(cards=(2s,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.street is state.streets[3]
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.street is None
         True
         >>> state.show_or_muck_hole_cards()
-        State.HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, status=True)
         >>> state.street is None
         True
         >>> state.show_or_muck_hole_cards()
-        State.HoleCardsShowingOrMucking(player_index=1, status=False)
+        HoleCardsShowingOrMucking(player_index=1, status=False)
         >>> state.street is None
         True
         >>> state.push_chips()
-        State.ChipsPushing(amounts=(6, 0))
+        ChipsPushing(amounts=(6, 0))
         >>> state.street is None
         True
         >>> state.pull_chips()
-        State.ChipsPulling(player_index=0, amount=6)
+        ChipsPulling(player_index=0, amount=6)
         >>> state.street is None
         True
 
@@ -1097,7 +1265,7 @@ class State:
         >>> state.street is state.streets[0]
         True
         >>> state.fold()
-        State.Folding(player_index=1)
+        Folding(player_index=1)
         >>> state.street is None
         True
 
@@ -1127,87 +1295,87 @@ class State:
         >>> state.total_pot_amount
         0
         >>> state.post_ante(1)
-        State.AntePosting(player_index=1, amount=2)
+        AntePosting(player_index=1, amount=2)
         >>> state.total_pot_amount
         2
         >>> state.collect_bets()
-        State.BetCollection(bets=(0, 2))
+        BetCollection(bets=(0, 2))
         >>> state.total_pot_amount
         2
         >>> state.post_blind_or_straddle(0)
-        State.BlindOrStraddlePosting(player_index=0, amount=2)
+        BlindOrStraddlePosting(player_index=0, amount=2)
         >>> state.total_pot_amount
         4
         >>> state.post_blind_or_straddle(1)
-        State.BlindOrStraddlePosting(player_index=1, amount=1)
+        BlindOrStraddlePosting(player_index=1, amount=1)
         >>> state.total_pot_amount
         5
         >>> state.deal_hole('Ac')
-        State.HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
+        HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
         >>> state.deal_hole('Kc')
-        State.HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
+        HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
         >>> state.deal_hole('Ad')
-        State.HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
+        HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
         >>> state.deal_hole('Kd')
-        State.HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
+        HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
         >>> state.total_pot_amount
         5
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(player_index=1, amount=1)
         >>> state.total_pot_amount
         6
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.collect_bets()
-        State.BetCollection(bets=(2, 2))
+        BetCollection(bets=(2, 2))
         >>> state.burn_card('2c')
-        State.CardBurning(card=2c)
+        CardBurning(card=2c)
         >>> state.deal_board('AhKhAs')
-        State.BoardDealing(cards=(Ah, Kh, As))
+        BoardDealing(cards=(Ah, Kh, As))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.burn_card('2d')
-        State.CardBurning(card=2d)
+        CardBurning(card=2d)
         >>> state.deal_board('Ks')
-        State.BoardDealing(cards=(Ks,))
+        BoardDealing(cards=(Ks,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.total_pot_amount
         6
         >>> state.complete_bet_or_raise_to(10)
-        State.CompletionBettingOrRaisingTo(player_index=1, amount=10)
+        CompletionBettingOrRaisingTo(player_index=1, amount=10)
         >>> state.total_pot_amount
         16
         >>> state.complete_bet_or_raise_to(30)
-        State.CompletionBettingOrRaisingTo(player_index=0, amount=30)
+        CompletionBettingOrRaisingTo(player_index=0, amount=30)
         >>> state.total_pot_amount
         46
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=20)
+        CheckingOrCalling(player_index=1, amount=20)
         >>> state.collect_bets()
-        State.BetCollection(bets=(30, 30))
+        BetCollection(bets=(30, 30))
         >>> state.total_pot_amount
         66
         >>> state.burn_card('2h')
-        State.CardBurning(card=2h)
+        CardBurning(card=2h)
         >>> state.deal_board('2s')
-        State.BoardDealing(cards=(2s,))
+        BoardDealing(cards=(2s,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.show_or_muck_hole_cards()
-        State.HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, status=True)
         >>> state.show_or_muck_hole_cards()
-        State.HoleCardsShowingOrMucking(player_index=1, status=False)
+        HoleCardsShowingOrMucking(player_index=1, status=False)
         >>> state.push_chips()
-        State.ChipsPushing(amounts=(66, 0))
+        ChipsPushing(amounts=(66, 0))
         >>> state.total_pot_amount
         66
         >>> state.pull_chips()
-        State.ChipsPulling(player_index=0, amount=66)
+        ChipsPulling(player_index=0, amount=66)
         >>> state.total_pot_amount
         0
 
@@ -1234,7 +1402,7 @@ class State:
         >>> state.total_pot_amount
         5
         >>> state.fold()
-        State.Folding(player_index=1)
+        Folding(player_index=1)
         >>> state.total_pot_amount
         0
 
@@ -1283,23 +1451,23 @@ class State:
         >>> tuple(state.pots)  # doctest: +ELLIPSIS
         ()
         >>> state.complete_bet_or_raise_to(200)
-        State.CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        CompletionBettingOrRaisingTo(player_index=2, amount=200)
         >>> state.complete_bet_or_raise_to(1000)
         Traceback (most recent call last):
             ...
         ValueError: irrelevant completion, betting, or raising
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=3, amount=200)
+        CheckingOrCalling(player_index=3, amount=200)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=4, amount=200)
+        CheckingOrCalling(player_index=4, amount=200)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=5, amount=100)
+        CheckingOrCalling(player_index=5, amount=100)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=49)
+        CheckingOrCalling(player_index=0, amount=49)
         >>> tuple(state.pots)
         ()
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=98)
+        CheckingOrCalling(player_index=1, amount=98)
         >>> next(state.pots)
         Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
         >>> pots = tuple(state.pots)
@@ -1312,11 +1480,11 @@ class State:
         >>> pots[2]
         Pot(amount=300, player_indices=(2, 3, 4))
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        State.BoardDealing(cards=(..., ..., ...))
+        BoardDealing(cards=(..., ..., ...))
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        State.BoardDealing(cards=(...,))
+        BoardDealing(cards=(...,))
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        State.BoardDealing(cards=(...,))
+        BoardDealing(cards=(...,))
         >>> next(state.pots)
         Traceback (most recent call last):
             ...
@@ -1397,9 +1565,9 @@ class State:
         ...     2,
         ... )
         >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(Fals...
+        HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(False, Fal...
         >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(Fals...
+        HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(False, Fal...
         >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
         <generator object State.get_down_cards at 0x...>
         >>> tuple(state.get_down_cards(0))
@@ -1407,9 +1575,9 @@ class State:
         >>> tuple(state.get_down_cards(1))
         (Kc, Kd)
         >>> state.post_bring_in()
-        State.BringInPosting(player_index=1, amount=1)
+        BringInPosting(player_index=1, amount=1)
         >>> state.fold()
-        State.Folding(player_index=0)
+        Folding(player_index=0)
         >>> tuple(state.get_down_cards(0))
         ()
         >>> tuple(state.get_down_cards(1))
@@ -1449,9 +1617,9 @@ class State:
         ...     2,
         ... )
         >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(Fals...
+        HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(False, Fal...
         >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(Fals...
+        HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(False, Fal...
         >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
         <generator object State.get_down_cards at 0x...>
         >>> tuple(state.get_up_cards(0))
@@ -1459,9 +1627,9 @@ class State:
         >>> tuple(state.get_up_cards(1))
         (Kh,)
         >>> state.post_bring_in()
-        State.BringInPosting(player_index=1, amount=1)
+        BringInPosting(player_index=1, amount=1)
         >>> state.fold()
-        State.Folding(player_index=0)
+        Folding(player_index=0)
         >>> tuple(state.get_up_cards(0))
         ()
         >>> tuple(state.get_up_cards(1))
@@ -1503,20 +1671,20 @@ class State:
         True
         >>> state.get_hand(1, 0) is None
         True
-        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, F...
-        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, F...
+        >>> state.deal_hole('AcAd')
+        HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
+        >>> state.deal_hole('KsQs')
+        HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
         >>> state.get_hand(0, 0) is None
         True
         >>> state.get_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.deal_board('JsTs2c')
-        State.BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(cards=(Js, Ts, 2c))
         >>> state.get_hand(0, 0)
         AcAdJsTs2c
         >>> str(state.get_hand(0, 0))
@@ -1524,29 +1692,29 @@ class State:
         >>> str(state.get_hand(1, 0))
         'High card (KsQsJsTs2c)'
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('Ah')
-        State.BoardDealing(cards=(Ah,))
+        BoardDealing(cards=(Ah,))
         >>> str(state.get_hand(0, 0))
         'Three of a kind (AcAdJsTsAh)'
         >>> str(state.get_hand(1, 0))
         'Straight (KsQsJsTsAh)'
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('As')
-        State.BoardDealing(cards=(As,))
+        BoardDealing(cards=(As,))
         >>> str(state.get_hand(0, 0))
         'Four of a kind (AcAdJsAhAs)'
         >>> str(state.get_hand(1, 0))
         'Straight flush (KsQsJsTsAs)'
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.get_hand(0, 0) is None
         True
         >>> str(state.get_hand(1, 0))
@@ -1600,48 +1768,48 @@ class State:
         True
         >>> state.get_up_hand(1, 0) is None
         True
-        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, F...
-        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, F...
+        >>> state.deal_hole('AcAd')
+        HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
+        >>> state.deal_hole('KsQs')
+        HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.deal_board('JsTs2c')
-        State.BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(cards=(Js, Ts, 2c))
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('Ah')
-        State.BoardDealing(cards=(Ah,))
+        BoardDealing(cards=(Ah,))
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('As')
-        State.BoardDealing(cards=(As,))
+        BoardDealing(cards=(As,))
         >>> str(state.get_up_hand(0, 0))
         'One pair (JsTs2cAhAs)'
         >>> str(state.get_up_hand(1, 0))
         'One pair (JsTs2cAhAs)'
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.get_up_hand(0, 0) is None
         True
         >>> str(state.get_up_hand(1, 0))
@@ -1691,33 +1859,33 @@ class State:
         >>> tuple(state.get_up_hands(0))
         (None, None)
         >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, F...
+        HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
         >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, F...
+        HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.deal_board('JsTs2c')
-        State.BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(cards=(Js, Ts, 2c))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('Ah')
-        State.BoardDealing(cards=(Ah,))
+        BoardDealing(cards=(Ah,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('As')
-        State.BoardDealing(cards=(As,))
+        BoardDealing(cards=(As,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> tuple(state.get_up_hands(0))
         (JsTs2cAhAs, JsTs2cAhAs)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> tuple(state.get_up_hands(0))
         (None, KsQsJsTsAs)
 
@@ -1752,43 +1920,43 @@ class State:
         ...     2,
         ... )
         >>> state.deal_hole('KhQh')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=0, cards=(Kh, Qh), statuses=(False, F...
+        HoleDealing(player_index=0, cards=(Kh, Qh), statuses=(False, False))
         >>> state.deal_hole('AcKc')  # doctest: +ELLIPSIS
-        State.HoleDealing(player_index=1, cards=(Ac, Kc), statuses=(False, F...
+        HoleDealing(player_index=1, cards=(Ac, Kc), statuses=(False, False))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.deal_board('JsTs2c')
-        State.BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(cards=(Js, Ts, 2c))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('Ah')
-        State.BoardDealing(cards=(Ah,))
+        BoardDealing(cards=(Ah,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.deal_board('As')
-        State.BoardDealing(cards=(As,))
+        BoardDealing(cards=(As,))
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
-        State.CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(player_index=1, amount=0)
         >>> state.can_win_now(0)
         True
         >>> state.can_win_now(1)
         True
         >>> state.show_or_muck_hole_cards()
-        State.HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, status=True)
         >>> state.can_win_now(0)
         True
         >>> state.can_win_now(1)
         False
         >>> state.show_or_muck_hole_cards()
-        State.HoleCardsShowingOrMucking(player_index=1, status=False)
+        HoleCardsShowingOrMucking(player_index=1, status=False)
 
         :param player_index: The player index.
         :return: ``True`` if the player can win, otherwise ``False``.
@@ -1850,15 +2018,6 @@ class State:
         assert not any(self.ante_posting_statuses)
 
         self._begin_bet_collection()
-
-    @dataclass
-    class AntePosting:
-        """The ante posting."""
-
-        player_index: int
-        """The player index."""
-        amount: int
-        """The amount."""
 
     def get_effective_ante(self, player_index: int) -> int:
         """Return the effective ante of the player.
@@ -1942,7 +2101,7 @@ class State:
         if not any(self.ante_posting_statuses):
             self._end_ante_posting()
 
-        return self.AntePosting(player_index, amount)
+        return AntePosting(player_index, amount)
 
     # bet collection
 
@@ -1973,21 +2132,6 @@ class State:
             self._begin_showdown()
         else:
             self._begin_dealing()
-
-    @dataclass
-    class BetCollection:
-        """The bet collection."""
-
-        bets: tuple[int, ...]
-        """The bets."""
-
-        @property
-        def total_bets(self) -> int:
-            """Return the total bets.
-
-            :return: The total bets.
-            """
-            return sum(self.bets)
 
     def verify_bet_collection(self) -> None:
         """Verify the bet collection.
@@ -2047,7 +2191,7 @@ class State:
 
         self._end_bet_collection()
 
-        return self.BetCollection(tuple(bets))
+        return BetCollection(tuple(bets))
 
     # blind or straddle posting
 
@@ -2081,15 +2225,6 @@ class State:
         assert not any(self.blind_or_straddle_posting_statuses)
 
         self._begin_dealing()
-
-    @dataclass
-    class BlindOrStraddlePosting:
-        """The blind or straddle posting."""
-
-        player_index: int
-        """The player index."""
-        amount: int
-        """The amount."""
 
     def get_effective_blind_or_straddle(self, player_index: int) -> int:
         """Return the effective blind or straddle of the player.
@@ -2189,7 +2324,7 @@ class State:
         if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
 
-        return self.BlindOrStraddlePosting(player_index, amount)
+        return BlindOrStraddlePosting(player_index, amount)
 
     # dealing
 
@@ -2280,60 +2415,107 @@ class State:
 
         self._begin_betting()
 
-    def _make_card_available(self, cards: tuple[Card, ...]) -> None:
-        assert len(self.deck_cards) >= len(cards)
-
-        for card in cards:
-            assert card in self.burned_cards or card in self.deck_cards
-
-            if card in self.burned_cards:
-                self.burned_cards[self.burned_cards.index(card)] = (
-                    self.deck_cards.popleft()
-                )
-            else:
-                self.deck_cards.remove(card)
-
-    @property
-    def available_cards(self) -> Iterator[Card]:
+    def get_available_cards(
+            self,
+            deal_count: int,
+    ) -> tuple[tuple[Card, ...], tuple[Card, ...]]:
         """Iterate through the available cards that can be dealt or
         burned.
 
-        :return: The available cards.
+        :param deal_count: The number of dealt cards.
+        :return: The available cards. The first tuple denotes those that
+                 must be all be taken and the second tuple denotes those
+                 that can be sampled from.
         """
         if (
                 self.card_burning_status
                 or any(self.hole_dealing_statuses)
                 or self.board_dealing_count
         ):
-            yield from chain(self.deck_cards, self.burned_cards)
+            if deal_count > len(self.deck_cards):
+                mandatory_cards = tuple(self.deck_cards)
+                optional_cards = tuple(
+                    shuffled(
+                        chain(
+                            self.burn_cards,
+                            self.mucked_cards,
+                            chain.from_iterable(
+                                self.discarded_cards[:self.street_index],
+                            ),
+                        ),
+                    ),
+                )
+            else:
+                mandatory_cards = ()
+                optional_cards = tuple(self.deck_cards)
+        else:
+            mandatory_cards = ()
+            optional_cards = ()
 
-    def verify_card_availabilities(
+        return mandatory_cards, optional_cards
+
+    def verify_card_availability_making(
             self,
             cards: CardsLike | int,
     ) -> tuple[Card, ...]:
-        """Verify the card availability.
+        """Verify the card availability making.
 
         :param cards: The optional cards.
         :return: The available cards.
         :raises ValueError: If the card is unavailable.
         """
         if isinstance(cards, int):
-            cards = tuple(islice(self.available_cards, cards))
+            mandatory_cards, optional_cards = self.get_available_cards(cards)
+            cards = (
+                mandatory_cards
+                + tuple(optional_cards[:cards - len(mandatory_cards)])
+            )
         else:
             cards = Card.clean(cards)
+            mandatory_cards, optional_cards = self.get_available_cards(
+                len(cards),
+            )
+            available_cards = mandatory_cards + optional_cards
+
+            if not set(mandatory_cards) <= set(cards):
+                raise ValueError('must contain all necessary cards')
 
             for card in cards:
-                if card not in tuple(self.available_cards):
-                    raise ValueError('unavailable card')
+                if card not in available_cards:
+                    if card in self.burn_cards:
+                        warn('dealing from burn cards')
+                    else:
+                        raise ValueError('card unavailable')
 
         return cards
 
-    @dataclass
-    class CardBurning:
-        """The card burning."""
+    def _make_card_available(self, cards: tuple[Card, ...]) -> None:
+        assert len(self.deck_cards) >= len(cards)
 
-        card: Card
-        """The card."""
+        if len(cards) > len(self.deck_cards):
+            assert set(cards) > set(self.deck_cards)
+
+            reshuffled_cards = []
+
+            reshuffled_cards.extend(self.mucked_cards)
+            self.mucked_cards.clear()
+            reshuffled_cards.extend(self.burn_cards)
+            self.burn_cards.clear()
+
+            for discarded_cards in self.discarded_cards[:self.street_index]:
+                reshuffled_cards.extend(discarded_cards)
+                discarded_cards.clear()
+
+            shuffle(reshuffled_cards)
+            self.deck_cards.extend(reshuffled_cards)
+
+        for card in cards:
+            assert card in self.burn_cards or card in self.deck_cards
+
+            if card in self.burn_cards:
+                self.burn_cards.remove(card)
+            else:
+                self.deck_cards.remove(card)
 
     def verify_card_burning(
             self,
@@ -2342,10 +2524,12 @@ class State:
         """Verify the card burning.
 
         :param card: The optional card.
-        :return: The burned card.
+        :return: The burn card.
         :raises ValueError: If the card burning cannot be done.
         """
-        cards = self.verify_card_availabilities(1 if card is None else card)
+        cards = self.verify_card_availability_making(
+            1 if card is None else card,
+        )
 
         if len(cards) != 1:
             raise ValueError('expected one card')
@@ -2391,7 +2575,7 @@ class State:
         self._make_card_available((card,))
 
         self.card_burning_status = False
-        self.burned_cards.append(card)
+        self.burn_cards.append(card)
 
         if (
                 not any(self.hole_dealing_statuses)
@@ -2400,18 +2584,7 @@ class State:
         ):
             self._end_dealing()
 
-        return self.CardBurning(card)
-
-    @dataclass
-    class HoleDealing:
-        """The hole dealing."""
-
-        player_index: int
-        """The player index."""
-        cards: tuple[Card, ...]
-        """The cards."""
-        statuses: tuple[bool, ...]
-        """The statuses."""
+        return CardBurning(card)
 
     @property
     def hole_dealee_index(self) -> int | None:
@@ -2459,7 +2632,9 @@ class State:
         """
         self._verify_hole_dealing()
 
-        cards = self.verify_card_availabilities(1 if cards is None else cards)
+        cards = self.verify_card_availability_making(
+            1 if cards is None else cards,
+        )
         player_index = self.hole_dealee_index
 
         assert player_index is not None
@@ -2512,14 +2687,7 @@ class State:
         ):
             self._end_dealing()
 
-        return self.HoleDealing(player_index, cards, tuple(statuses))
-
-    @dataclass
-    class BoardDealing:
-        """The board dealing."""
-
-        cards: tuple[Card, ...]
-        """The cards."""
+        return HoleDealing(player_index, cards, tuple(statuses))
 
     def verify_board_dealing(
             self,
@@ -2536,7 +2704,7 @@ class State:
         elif not self.board_dealing_count:
             raise ValueError('no pending board dealing')
 
-        cards = self.verify_card_availabilities(
+        cards = self.verify_card_availability_making(
             self.board_dealing_count if cards is None else cards,
         )
 
@@ -2583,16 +2751,7 @@ class State:
         ):
             self._end_dealing()
 
-        return self.BoardDealing(cards)
-
-    @dataclass
-    class StandingPatOrDiscarding:
-        """The standing pat or discarding."""
-
-        player_index: int
-        """The player index."""
-        cards: tuple[Card, ...]
-        """The cards."""
+        return BoardDealing(cards)
 
     @property
     def stander_pat_or_discarder_index(self) -> int | None:
@@ -2662,6 +2821,7 @@ class State:
         player_index = self.stander_pat_or_discarder_index
 
         assert player_index is not None
+        assert self.street_index is not None
         assert self.standing_pat_or_discarding_statuses[player_index]
 
         self.standing_pat_or_discarding_statuses[player_index] = False
@@ -2674,6 +2834,7 @@ class State:
             )
             self.hole_cards[player_index].pop(index)
             self.hole_card_statuses[player_index].pop(index)
+            self.discarded_cards[self.street_index].append(card)
 
         if (
                 not self.card_burning_status
@@ -2686,7 +2847,7 @@ class State:
             while any(self.hole_dealing_statuses):
                 self.deal_hole()
 
-        return self.StandingPatOrDiscarding(player_index, cards)
+        return StandingPatOrDiscarding(player_index, cards)
 
     # betting
 
@@ -2865,13 +3026,6 @@ class State:
             max(0, effective_stacks[-2] - self.bets[player_index]),
         )
 
-    @dataclass
-    class Folding:
-        """The folding."""
-
-        player_index: int
-        """The player index."""
-
     def verify_folding(self) -> None:
         """Verify the folding.
 
@@ -2922,16 +3076,7 @@ class State:
         if not self.actor_indices or sum(self.statuses) <= 1:
             self._end_betting()
 
-        return self.Folding(player_index)
-
-    @dataclass
-    class CheckingOrCalling:
-        """The checking or calling."""
-
-        player_index: int
-        """The player index."""
-        amount: int
-        """The amount."""
+        return Folding(player_index)
 
     @property
     def checking_or_calling_amount(self) -> int | None:
@@ -2998,16 +3143,7 @@ class State:
         if not self.actor_indices:
             self._end_betting()
 
-        return self.CheckingOrCalling(player_index, amount)
-
-    @dataclass
-    class BringInPosting:
-        """The bring-in posting."""
-
-        player_index: int
-        """The player index."""
-        amount: int
-        """The amount."""
+        return CheckingOrCalling(player_index, amount)
 
     @property
     def effective_bring_in_amount(self) -> int | None:
@@ -3073,16 +3209,7 @@ class State:
         self.bets[player_index] += amount
         self.bring_in_status = False
 
-        return self.BringInPosting(player_index, amount)
-
-    @dataclass
-    class CompletionBettingOrRaisingTo:
-        """The completion, betting, or raising to."""
-
-        player_index: int
-        """The player index."""
-        amount: int
-        """The amount."""
+        return BringInPosting(player_index, amount)
 
     @property
     def min_completion_betting_or_raising_to_amount(self) -> int | None:
@@ -3298,7 +3425,7 @@ class State:
 
         assert self.actor_indices
 
-        return self.CompletionBettingOrRaisingTo(player_index, amount)
+        return CompletionBettingOrRaisingTo(player_index, amount)
 
     # showdown
 
@@ -3328,15 +3455,6 @@ class State:
         assert not self.showdown_indices
 
         self._begin_hand_killing()
-
-    @dataclass
-    class HoleCardsShowingOrMucking:
-        """The hole cards showing or mucking."""
-
-        player_index: int
-        """The player index."""
-        status: bool
-        """The status."""
 
     @property
     def showdown_index(self) -> int | None:
@@ -3418,7 +3536,7 @@ class State:
         if not self.showdown_indices:
             self._end_showdown()
 
-        return self.HoleCardsShowingOrMucking(player_index, status)
+        return HoleCardsShowingOrMucking(player_index, status)
 
     # hand killing
 
@@ -3453,13 +3571,6 @@ class State:
             self.hand_killing_statuses[i] = False
 
         self._begin_chips_pushing()
-
-    @dataclass
-    class HandKilling:
-        """The hand killing."""
-
-        player_index: int
-        """The player index."""
 
     @property
     def hand_killing_indices(self) -> Iterator[int]:
@@ -3526,7 +3637,7 @@ class State:
         if not any(self.hand_killing_statuses):
             self._end_hand_killing()
 
-        return self.HandKilling(player_index)
+        return HandKilling(player_index)
 
     # chips pushing
 
@@ -3546,21 +3657,6 @@ class State:
         self.chips_pushing_status = False
 
         self._begin_chips_pulling()
-
-    @dataclass
-    class ChipsPushing:
-        """The chips pushing."""
-
-        amounts: tuple[int, ...]
-        """The amounts."""
-
-        @property
-        def total_amount(self) -> int:
-            """Return the total amount.
-
-            :return: The total amount.
-            """
-            return sum(self.amounts)
 
     def verify_chips_pushing(self) -> None:
         """Verify the chips pushing.
@@ -3642,7 +3738,7 @@ class State:
 
         self._end_chips_pushing()
 
-        return self.ChipsPushing(tuple(self.bets))
+        return ChipsPushing(tuple(self.bets))
 
     # chips pulling
 
@@ -3675,15 +3771,6 @@ class State:
             self.chips_pulling_statuses[i] = False
 
         self._end()
-
-    @dataclass
-    class ChipsPulling:
-        """The chips pulling."""
-
-        player_index: int
-        """The player index."""
-        amount: int
-        """The amount."""
 
     @property
     def chips_pulling_indices(self) -> Iterator[int]:
@@ -3752,4 +3839,4 @@ class State:
         if not any(self.chips_pulling_statuses):
             self._end_chips_pulling()
 
-        return self.ChipsPulling(player_index, amount)
+        return ChipsPulling(player_index, amount)

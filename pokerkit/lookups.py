@@ -429,15 +429,15 @@ class EightOrBetterLookup(Lookup):
 
 
 @dataclass
-class RegularLowLookup(Lookup):
-    """The class for regular low hand lookups.
+class RegularLookup(Lookup):
+    """The class for regular hand lookups.
 
     Here, flushes are ignored.
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
     please use :class:`pokerkit.hands.RegularLowHand`.
 
-    >>> lookup = RegularLowLookup()
+    >>> lookup = RegularLookup()
     >>> e0 = lookup.get_entry('Ah6h7s8c9s')
     >>> e1 = lookup.get_entry('AhAc6s6hTd')
     >>> e2 = lookup.get_entry('3s4sQhTc')

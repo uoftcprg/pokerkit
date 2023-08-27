@@ -10,6 +10,7 @@ from enum import Enum, StrEnum, unique
 from functools import partial
 from itertools import product, starmap
 from operator import is_not
+from random import shuffle
 from typing import Any
 
 
@@ -598,3 +599,18 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
         values = tuple(parsed_values)
 
     return values
+
+
+def shuffled(cards: CardsLike) -> list[Card]:
+    """Return the shuffled cards.
+
+    The shuffling is not done in-place.
+
+    :param: The cards to shuffle.
+    :return: The shuffled cards.
+    """
+    cards = list(Card.clean(cards))
+
+    shuffle(cards)
+
+    return cards

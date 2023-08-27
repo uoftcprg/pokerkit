@@ -10,7 +10,7 @@ from unittest import TestCase
 from pokerkit.lookups import (
     BadugiLookup,
     EightOrBetterLookup,
-    RegularLowLookup,
+    RegularLookup,
     ShortDeckHoldemLookup,
     StandardLookup,
 )
@@ -81,9 +81,9 @@ class EightOrBetterLookupTestCase(LookupTestCaseMixin, TestCase):
         )
 
 
-class RegularLowLookupTestCase(LookupTestCaseMixin, TestCase):
+class RegularLookupTestCase(LookupTestCaseMixin, TestCase):
     def test_get_entry(self) -> None:
-        lookup = RegularLowLookup()
+        lookup = RegularLookup()
         combinations_ = sorted(
             combinations(Deck.STANDARD, 5),
             key=lookup.get_entry,

@@ -14,7 +14,7 @@ from pokerkit.lookups import (
     Entry,
     KuhnPokerLookup,
     Lookup,
-    RegularLowLookup,
+    RegularLookup,
     ShortDeckHoldemLookup,
     StandardLookup,
 )
@@ -377,7 +377,7 @@ class RegularLowHand(CombinationHand):
     ValueError: invalid hand ''
     """
 
-    lookup = RegularLowLookup()
+    lookup = RegularLookup()
     low = True
     card_count = 5
 
