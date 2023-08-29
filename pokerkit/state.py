@@ -2490,8 +2490,6 @@ class State:
         return cards
 
     def _make_card_available(self, cards: tuple[Card, ...]) -> None:
-        assert len(self.deck_cards) >= len(cards)
-
         if len(cards) > len(self.deck_cards):
             assert set(cards) > set(self.deck_cards)
 
@@ -2619,6 +2617,8 @@ class State:
             raise ValueError('card must be burnt')
         elif not any(self.hole_dealing_statuses):
             raise ValueError('nobody can be dealt hole cards')
+        elif any(self.standing_pat_or_discarding_statuses):
+            raise ValueError('not all have stood pat or discarded')
 
     def verify_hole_dealing(
             self,
@@ -2843,7 +2843,10 @@ class State:
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
-        elif Automation.HOLE_DEALING in self.automations:
+        elif (
+                not any(self.standing_pat_or_discarding_statuses)
+                and Automation.HOLE_DEALING in self.automations
+        ):
             while any(self.hole_dealing_statuses):
                 self.deal_hole()
 

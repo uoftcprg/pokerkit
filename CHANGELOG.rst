@@ -4,6 +4,19 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.1.1 (August 29, 2023)
+-------------------------------
+
+**Bugfixes**
+
+- Fix ``AssertionError`` being raised in certain scenarios after discards are
+  made when the state was configured to automatically deal hole cards.
+
+**Changed**
+
+- When the dealer deals hole cards after standing pat or discarding, an explicit
+  ``ValueError`` is raised unless every player has stood pat or discarded.
+
 Version 0.1.0 (August 27, 2023)
 -------------------------------
 
