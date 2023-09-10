@@ -4,6 +4,25 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.2.0 (September 10, 2023)
+----------------------------------
+
+**Changed**
+
+- Limit maximum number of completions, bets, or raises to 4 in the
+  pre-configured Fixed-limit deuce-to-seven triple draw and Fixed-limit badugi
+  variants.
+- Flip antes just like blinds during heads-up play (in case of big blind antes).
+- Also reshuffle all discarded cards (including from current draw round) along
+  with mucked and burn cards when the deck runs out. Previously, discarded cards
+  from the same draw round was excluded.
+- Rename ``pokerkit.state.State.verify_card_availability_making`` to
+  ``pokerkit.state.State.verify_cards_availability_making``.
+
+**Added**
+
+- Add more unittests and doctests to achieve 99% code coverage.
+
 Version 0.1.1 (August 29, 2023)
 -------------------------------
 

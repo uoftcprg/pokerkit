@@ -370,6 +370,10 @@ class BetCollection(Operation):
     def total_bets(self) -> int:
         """Return the total bets.
 
+        >>> bet_collection = BetCollection((1, 2, 3))
+        >>> bet_collection.total_bets
+        6
+
         :return: The total bets.
         """
         return sum(self.bets)
@@ -489,6 +493,10 @@ class ChipsPushing(Operation):
     @property
     def total_amount(self) -> int:
         """Return the total amount.
+
+        >>> chips_pushing = ChipsPushing((1, 2, 3))
+        >>> chips_pushing.total_amount
+        6
 
         :return: The total amount.
         """
@@ -937,12 +945,6 @@ class State:
                 >= self.streets[0].min_completion_betting_or_raising_amount
         ):
             raise ValueError('bring-in must be less than the min bet')
-        elif not (
-                len(self.antes)
-                == len(self.blinds_or_straddles)
-                == len(self.starting_stacks)
-        ):
-            raise ValueError('inconsistent number of players')
         elif self.player_count < 2:
             raise ValueError('not enough players')
 
@@ -1157,10 +1159,10 @@ class State:
         ... )
         >>> state.street is None
         True
-        >>> state.post_ante(1)
-        AntePosting(player_index=1, amount=2)
+        >>> state.post_ante(0)
+        AntePosting(player_index=0, amount=2)
         >>> state.collect_bets()
-        BetCollection(bets=(0, 2))
+        BetCollection(bets=(2, 0))
         >>> state.post_blind_or_straddle(0)
         BlindOrStraddlePosting(player_index=0, amount=2)
         >>> state.street is None
@@ -1294,12 +1296,12 @@ class State:
         ... )
         >>> state.total_pot_amount
         0
-        >>> state.post_ante(1)
-        AntePosting(player_index=1, amount=2)
+        >>> state.post_ante(0)
+        AntePosting(player_index=0, amount=2)
         >>> state.total_pot_amount
         2
         >>> state.collect_bets()
-        BetCollection(bets=(0, 2))
+        BetCollection(bets=(2, 0))
         >>> state.total_pot_amount
         2
         >>> state.post_blind_or_straddle(0)
@@ -2025,14 +2027,53 @@ class State:
         :param player_index: The player index.
         :return: The effective ante.
         """
-        return min(
-            self.antes[player_index],
-            self.starting_stacks[player_index],
-        )
+        if self.player_count == 2:
+            ante = self.antes[not player_index]
+        else:
+            ante = self.antes[player_index]
+
+        return min(ante, self.starting_stacks[player_index])
 
     @property
     def ante_poster_indices(self) -> Iterator[int]:
         """Iterate through players who can post antes.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> state.ante_poster_indices  # doctest: +ELLIPSIS
+        <generator object State.ante_poster_indices at 0x...>
+        >>> tuple(state.ante_poster_indices)
+        (0,)
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     2,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> tuple(state.ante_poster_indices)
+        (0, 1)
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> tuple(state.ante_poster_indices)
+        ()
 
         :return: The ante posters.
         """
@@ -2068,6 +2109,38 @@ class State:
 
     def can_post_ante(self, player_index: int | None = None) -> bool:
         """Return whether the ante posting can be done.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> state.can_post_ante()
+        True
+        >>> state.can_post_ante(0)
+        True
+        >>> state.can_post_ante(1)
+        False
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> state.can_post_ante()
+        False
+        >>> state.can_post_ante(0)
+        False
+        >>> state.can_post_ante(1)
+        False
 
         :param player_index: The optional player index.
         :return: ``True`` if the ante posting can be done, otherwise
@@ -2144,6 +2217,23 @@ class State:
 
     def can_collect_bets(self) -> bool:
         """Return whether the bet collection can be done.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> state.can_collect_bets()
+        False
+        >>> state.post_ante()
+        AntePosting(player_index=0, amount=2)
+        >>> state.can_collect_bets()
+        True
 
         :return: ``True`` if the bet collection can be done, otherwise
                  ``False``.
@@ -2247,6 +2337,27 @@ class State:
     def blind_or_straddle_poster_indices(self) -> Iterator[int]:
         """Iterate through players who can post blinds or straddles.
 
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     4,
+        ... )
+        >>> state.blind_or_straddle_poster_indices  # doctest: +ELLIPSIS
+        <generator object State.blind_or_straddle_poster_indices at 0x...>
+        >>> tuple(state.blind_or_straddle_poster_indices)
+        ()
+        >>> state.post_ante(1)
+        AntePosting(player_index=1, amount=2)
+        >>> state.collect_bets()
+        BetCollection(bets=(0, 2, 0, 0))
+        >>> tuple(state.blind_or_straddle_poster_indices)
+        (0, 1)
+
         :return: The blind or straddle posters.
         """
         try:
@@ -2287,6 +2398,33 @@ class State:
             player_index: int | None = None,
     ) -> bool:
         """Return whether the blind or straddle posting can be done.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     4,
+        ... )
+        >>> state.can_post_blind_or_straddle()
+        False
+        >>> state.post_ante(1)
+        AntePosting(player_index=1, amount=2)
+        >>> state.collect_bets()
+        BetCollection(bets=(0, 2, 0, 0))
+        >>> state.can_post_blind_or_straddle()
+        True
+        >>> state.can_post_blind_or_straddle(0)
+        True
+        >>> state.can_post_blind_or_straddle(1)
+        True
+        >>> state.can_post_blind_or_straddle(2)
+        False
+        >>> state.can_post_blind_or_straddle(3)
+        False
 
         :param player_index: The optional player index.
         :return: ``True`` if the blind or straddle posting can be done,
@@ -2439,9 +2577,7 @@ class State:
                         chain(
                             self.burn_cards,
                             self.mucked_cards,
-                            chain.from_iterable(
-                                self.discarded_cards[:self.street_index],
-                            ),
+                            chain.from_iterable(self.discarded_cards),
                         ),
                     ),
                 )
@@ -2454,7 +2590,7 @@ class State:
 
         return mandatory_cards, optional_cards
 
-    def verify_card_availability_making(
+    def verify_cards_availability_making(
             self,
             cards: CardsLike | int,
     ) -> tuple[Card, ...]:
@@ -2489,7 +2625,7 @@ class State:
 
         return cards
 
-    def _make_card_available(self, cards: tuple[Card, ...]) -> None:
+    def _make_cards_available(self, cards: tuple[Card, ...]) -> None:
         if len(cards) > len(self.deck_cards):
             assert set(cards) > set(self.deck_cards)
 
@@ -2500,7 +2636,7 @@ class State:
             reshuffled_cards.extend(self.burn_cards)
             self.burn_cards.clear()
 
-            for discarded_cards in self.discarded_cards[:self.street_index]:
+            for discarded_cards in self.discarded_cards:
                 reshuffled_cards.extend(discarded_cards)
                 discarded_cards.clear()
 
@@ -2525,7 +2661,7 @@ class State:
         :return: The burn card.
         :raises ValueError: If the card burning cannot be done.
         """
-        cards = self.verify_card_availability_making(
+        cards = self.verify_cards_availability_making(
             1 if card is None else card,
         )
 
@@ -2570,7 +2706,7 @@ class State:
             or self.street.draw_status
         )
 
-        self._make_card_available((card,))
+        self._make_cards_available((card,))
 
         self.card_burning_status = False
         self.burn_cards.append(card)
@@ -2632,7 +2768,7 @@ class State:
         """
         self._verify_hole_dealing()
 
-        cards = self.verify_card_availability_making(
+        cards = self.verify_cards_availability_making(
             1 if cards is None else cards,
         )
         player_index = self.hole_dealee_index
@@ -2672,7 +2808,7 @@ class State:
         assert player_index is not None
         assert self.hole_dealing_statuses[player_index]
 
-        self._make_card_available(cards)
+        self._make_cards_available(cards)
 
         for card in cards:
             status = self.hole_dealing_statuses[player_index].popleft()
@@ -2704,7 +2840,7 @@ class State:
         elif not self.board_dealing_count:
             raise ValueError('no pending board dealing')
 
-        cards = self.verify_card_availability_making(
+        cards = self.verify_cards_availability_making(
             self.board_dealing_count if cards is None else cards,
         )
 
@@ -2739,7 +2875,7 @@ class State:
 
         assert self.board_dealing_count
 
-        self._make_card_available(cards)
+        self._make_cards_available(cards)
 
         self.board_dealing_count -= len(cards)
         self.board_cards.extend(cards)
@@ -3050,6 +3186,46 @@ class State:
     def can_fold(self) -> bool:
         """Return whether theing fold can be done.
 
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     True,
+        ...     0,
+        ...     (1, 2),
+        ...     2,
+        ...     (100, 100, 200),
+        ...     3,
+        ... )
+        >>> state.can_fold()
+        True
+        >>> state.fold()
+        Folding(player_index=2)
+        >>> state.can_fold()
+        True
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=1)
+        >>> state.can_fold()
+        False
+        >>> state.complete_bet_or_raise_to(4)
+        CompletionBettingOrRaisingTo(player_index=1, amount=4)
+        >>> state.fold()
+        Folding(player_index=0)
+        >>> state.status
+        False
+        >>> state.can_fold()
+        False
+
         :return: ``True`` if the folding can be done, otherwise
                  ``False``.
         """
@@ -3115,6 +3291,40 @@ class State:
 
     def can_check_or_call(self) -> bool:
         """Return whether the checking or calling can be done.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     True,
+        ...     0,
+        ...     (1, 2),
+        ...     2,
+        ...     (100, 100, 200),
+        ...     3,
+        ... )
+        >>> state.can_check_or_call()
+        True
+        >>> state.fold()
+        Folding(player_index=2)
+        >>> state.can_check_or_call()
+        True
+        >>> state.fold()
+        Folding(player_index=0)
+        >>> state.status
+        False
+        >>> state.can_check_or_call()
+        False
 
         :return: ``True`` if the checking or calling can be done,
                  otherwise ``False``.
@@ -3378,6 +3588,98 @@ class State:
         """Return whether the completion, betting, or raising can be
         done.
 
+        >>> from pokerkit import (
+        ...     NoLimitTexasHoldem,
+        ...     FixedLimitDeuceToSevenLowballTripleDraw,
+        ... )
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     True,
+        ...     0,
+        ...     (1, 2),
+        ...     2,
+        ...     (100, 100, 200),
+        ...     3,
+        ... )
+        >>> state.can_complete_bet_or_raise_to()
+        True
+        >>> state.can_complete_bet_or_raise_to(4)
+        True
+        >>> state.can_complete_bet_or_raise_to(200)
+        True
+        >>> state.can_complete_bet_or_raise_to(3)
+        False
+        >>> state.can_complete_bet_or_raise_to(201)
+        False
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=2)
+        >>> state.complete_bet_or_raise_to(100)
+        CompletionBettingOrRaisingTo(player_index=0, amount=100)
+        >>> state.fold()
+        Folding(player_index=1)
+        >>> state.can_complete_bet_or_raise_to(200)
+        False
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=98)
+        >>> state.status
+        False
+        >>> state.can_complete_bet_or_raise_to()
+        False
+        >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     True,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     4,
+        ...     200,
+        ...     6,
+        ... )
+        >>> state.can_complete_bet_or_raise_to()
+        True
+        >>> state.complete_bet_or_raise_to()
+        CompletionBettingOrRaisingTo(player_index=2, amount=4)
+        >>> state.can_complete_bet_or_raise_to()
+        True
+        >>> state.complete_bet_or_raise_to()
+        CompletionBettingOrRaisingTo(player_index=3, amount=6)
+        >>> state.can_complete_bet_or_raise_to()
+        True
+        >>> state.complete_bet_or_raise_to()
+        CompletionBettingOrRaisingTo(player_index=4, amount=8)
+        >>> state.can_complete_bet_or_raise_to()
+        True
+        >>> state.complete_bet_or_raise_to()
+        CompletionBettingOrRaisingTo(player_index=5, amount=10)
+        >>> state.can_complete_bet_or_raise_to()
+        False
+        >>> state.complete_bet_or_raise_to()
+        Traceback (most recent call last):
+            ...
+        ValueError: no more completion, betting, or raising permitted
+
         :param amount: The optional completion, betting, or raising to
                        amount.
         :return: ``True`` if the completion, betting, or raising can be
@@ -3463,6 +3765,72 @@ class State:
     def showdown_index(self) -> int | None:
         """Return the showdown index.
 
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.deal_hole('JcJd')
+        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
+        >>> state.deal_hole('KcKd')
+        HoleDealing(player_index=1, cards=(Kc, Kd), statuses=(False, False))
+        >>> state.deal_hole('QcQd')
+        HoleDealing(player_index=2, cards=(Qc, Qd), statuses=(False, False))
+        >>> state.complete_bet_or_raise_to(6)
+        CompletionBettingOrRaisingTo(player_index=2, amount=6)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=5)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=4)
+        >>> state.deal_board('AcAdAh')
+        BoardDealing(cards=(Ac, Ad, Ah))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=0)
+        >>> state.deal_board('2c')
+        BoardDealing(cards=(2c,))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=0)
+        >>> state.deal_board('2d')
+        BoardDealing(cards=(2d,))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+        >>> state.showdown_index is None
+        True
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=0)
+        >>> state.showdown_index
+        0
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=0, status=True)
+        >>> state.showdown_index
+        1
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=1, status=True)
+        >>> state.showdown_index
+        2
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=2, status=False)
+
         :return: The showdown index if applicable, otherwise ``None``.
         """
         try:
@@ -3503,6 +3871,72 @@ class State:
 
     def can_show_or_muck_hole_cards(self, status: bool | None = None) -> bool:
         """Return whether the hole card showing or mucking can be done.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.deal_hole('JcJd')
+        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
+        >>> state.deal_hole('KcKd')
+        HoleDealing(player_index=1, cards=(Kc, Kd), statuses=(False, False))
+        >>> state.deal_hole('QcQd')
+        HoleDealing(player_index=2, cards=(Qc, Qd), statuses=(False, False))
+        >>> state.complete_bet_or_raise_to(6)
+        CompletionBettingOrRaisingTo(player_index=2, amount=6)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=5)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=4)
+        >>> state.deal_board('AcAdAh')
+        BoardDealing(cards=(Ac, Ad, Ah))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=0)
+        >>> state.deal_board('2c')
+        BoardDealing(cards=(2c,))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=0)
+        >>> state.deal_board('2d')
+        BoardDealing(cards=(2d,))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+        >>> state.can_show_or_muck_hole_cards()
+        False
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=2, amount=0)
+        >>> state.can_show_or_muck_hole_cards()
+        True
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=0, status=True)
+        >>> state.can_show_or_muck_hole_cards(False)
+        True
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=1, status=True)
+        >>> state.can_show_or_muck_hole_cards(True)
+        True
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=2, status=False)
 
         :param status: The optional status.
         :return: ``True`` if the hole crad showing or mucking can be
@@ -3579,6 +4013,47 @@ class State:
     def hand_killing_indices(self) -> Iterator[int]:
         """Iterate through players who can post antes.
 
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.deal_hole('JcJd')
+        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
+        >>> state.deal_hole('QcQd')
+        HoleDealing(player_index=1, cards=(Qc, Qd), statuses=(False, False))
+        >>> state.deal_hole('KcKd')
+        HoleDealing(player_index=2, cards=(Kc, Kd), statuses=(False, False))
+        >>> state.complete_bet_or_raise_to(200)
+        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=199)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=198)
+        >>> state.deal_board('AcAdAh')
+        BoardDealing(cards=(Ac, Ad, Ah))
+        >>> state.deal_board('2c')
+        BoardDealing(cards=(2c,))
+        >>> state.hand_killing_indices  # doctest: +ELLIPSIS
+        <generator object State.hand_killing_indices at 0x...>
+        >>> tuple(state.hand_killing_indices)
+        ()
+        >>> state.deal_board('2d')
+        BoardDealing(cards=(2d,))
+        >>> tuple(state.hand_killing_indices)
+        (0, 1)
+
         :return: The ante posters.
         """
         try:
@@ -3613,6 +4088,51 @@ class State:
 
     def can_kill_hand(self, player_index: int | None = None) -> bool:
         """Return whether the hand killing can be done.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.deal_hole('JcJd')
+        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
+        >>> state.deal_hole('QcQd')
+        HoleDealing(player_index=1, cards=(Qc, Qd), statuses=(False, False))
+        >>> state.deal_hole('KcKd')
+        HoleDealing(player_index=2, cards=(Kc, Kd), statuses=(False, False))
+        >>> state.complete_bet_or_raise_to(200)
+        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=199)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=198)
+        >>> state.deal_board('AcAdAh')
+        BoardDealing(cards=(Ac, Ad, Ah))
+        >>> state.deal_board('2c')
+        BoardDealing(cards=(2c,))
+        >>> state.can_kill_hand()
+        False
+        >>> state.deal_board('2d')
+        BoardDealing(cards=(2d,))
+        >>> state.can_kill_hand()
+        True
+        >>> state.can_kill_hand(0)
+        True
+        >>> state.can_kill_hand(1)
+        True
+        >>> state.can_kill_hand(2)
+        False
 
         :param player_index: The optional player index.
         :return: ``True`` if the hand killing can be done, otherwise
@@ -3672,6 +4192,35 @@ class State:
 
     def can_push_chips(self) -> bool:
         """Return whether the chips pushing can be done.
+
+        >>> from pokerkit import FixedLimitDeuceToSevenLowballTripleDraw
+        >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     4,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.can_push_chips()
+        False
+        >>> state.fold()
+        Folding(player_index=2)
+        >>> state.fold()
+        Folding(player_index=0)
+        >>> state.can_push_chips()
+        True
 
         :return: ``True`` if the chips pushing can be done, otherwise
                  ``False``.
@@ -3779,6 +4328,38 @@ class State:
     def chips_pulling_indices(self) -> Iterator[int]:
         """Iterate through players who can pull chips.
 
+        >>> from pokerkit import FixedLimitDeuceToSevenLowballTripleDraw
+        >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     4,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.chips_pulling_indices  # doctest: +ELLIPSIS
+        <generator object State.chips_pulling_indices at 0x...>
+        >>> tuple(state.chips_pulling_indices)
+        ()
+        >>> state.fold()
+        Folding(player_index=2)
+        >>> state.fold()
+        Folding(player_index=0)
+        >>> tuple(state.chips_pulling_indices)
+        (1,)
+
         :return: The chips pullers.
         """
         try:
@@ -3813,6 +4394,42 @@ class State:
 
     def can_pull_chips(self, player_index: int | None = None) -> bool:
         """Return whether the chips pulling can be done.
+
+        >>> from pokerkit import FixedLimitDeuceToSevenLowballTripleDraw
+        >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...     ),
+        ...     False,
+        ...     None,
+        ...     (1, 2),
+        ...     2,
+        ...     4,
+        ...     200,
+        ...     3,
+        ... )
+        >>> state.can_pull_chips()
+        False
+        >>> state.fold()
+        Folding(player_index=2)
+        >>> state.fold()
+        Folding(player_index=0)
+        >>> state.can_pull_chips()
+        True
+        >>> state.can_pull_chips(0)
+        False
+        >>> state.can_pull_chips(1)
+        True
+        >>> state.can_pull_chips(2)
+        False
 
         :param player_index: The optional player index.
         :return: ``True`` if the chips pulling can be done, otherwise

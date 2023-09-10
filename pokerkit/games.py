@@ -1183,7 +1183,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
                     False,
                     Opening.POSITION,
                     small_bet,
-                    None,
+                    4,
                 ),
                 Street(
                     True,
@@ -1192,7 +1192,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
                     True,
                     Opening.POSITION,
                     small_bet,
-                    None,
+                    4,
                 ),
                 Street(
                     True,
@@ -1201,7 +1201,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
                     True,
                     Opening.POSITION,
                     big_bet,
-                    None,
+                    4,
                 ),
                 Street(
                     True,
@@ -1210,7 +1210,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
                     True,
                     Opening.POSITION,
                     big_bet,
-                    None,
+                    4,
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
@@ -1379,7 +1379,7 @@ class FixedLimitBadugi(Poker):
                     False,
                     Opening.POSITION,
                     small_bet,
-                    None,
+                    4,
                 ),
                 Street(
                     True,
@@ -1388,7 +1388,7 @@ class FixedLimitBadugi(Poker):
                     True,
                     Opening.POSITION,
                     small_bet,
-                    None,
+                    4,
                 ),
                 Street(
                     True,
@@ -1397,7 +1397,7 @@ class FixedLimitBadugi(Poker):
                     True,
                     Opening.POSITION,
                     big_bet,
-                    None,
+                    4,
                 ),
                 Street(
                     True,
@@ -1406,7 +1406,7 @@ class FixedLimitBadugi(Poker):
                     True,
                     Opening.POSITION,
                     big_bet,
-                    None,
+                    4,
                 ),
             ),
             BettingStructure.FIXED_LIMIT,

@@ -606,6 +606,10 @@ def shuffled(cards: CardsLike) -> list[Card]:
 
     The shuffling is not done in-place.
 
+    >>> cards = shuffled(Card.parse('AcAdAhAs'))
+    >>> cards  # doctest: +ELLIPSIS
+    [A..., A..., A..., A...]
+
     :param: The cards to shuffle.
     :return: The shuffled cards.
     """

@@ -8,10 +8,11 @@ from unittest import TestCase
 from warnings import resetwarnings, simplefilter
 
 from pokerkit.games import (
+    FixedLimitDeuceToSevenLowballTripleDraw,
     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
     FixedLimitSevenCardStud,
-    NoLimitTexasHoldem,
     NoLimitShortDeckHoldem,
+    NoLimitTexasHoldem,
 )
 from pokerkit.state import (
     Automation,
@@ -505,3 +506,72 @@ class StateTestCase(TestCase):
         state.deal_hole('4h')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [525, 0, 0])
+
+    def test_reshuffling(self) -> None:
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.CARD_BURNING,
+                Automation.HOLE_DEALING,
+                Automation.BOARD_DEALING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            None,
+            (1, 2),
+            2,
+            4,
+            200,
+            6,
+        )
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.stand_pat_or_discard(state.hole_cards[0])
+        state.stand_pat_or_discard(state.hole_cards[1])
+        state.stand_pat_or_discard(state.hole_cards[2])
+        state.stand_pat_or_discard(state.hole_cards[3])
+        state.stand_pat_or_discard(state.hole_cards[4])
+        state.stand_pat_or_discard(state.hole_cards[5])
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.stand_pat_or_discard(state.hole_cards[0])
+        state.stand_pat_or_discard(state.hole_cards[1])
+        state.stand_pat_or_discard(state.hole_cards[2])
+        state.stand_pat_or_discard(state.hole_cards[3])
+        state.stand_pat_or_discard(state.hole_cards[4])
+        state.stand_pat_or_discard(state.hole_cards[5])
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.stand_pat_or_discard(state.hole_cards[0])
+        state.stand_pat_or_discard(state.hole_cards[1])
+        state.stand_pat_or_discard(state.hole_cards[2])
+        state.stand_pat_or_discard(state.hole_cards[3])
+        state.stand_pat_or_discard(state.hole_cards[4])
+        state.stand_pat_or_discard(state.hole_cards[5])
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
