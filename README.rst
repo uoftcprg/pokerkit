@@ -393,9 +393,11 @@ If you use PokerKit in your research, please cite our library:
 
 .. code-block:: bibtex
 
-   @misc{pokerkit,
-     title={PokerKit: An Open-Source Python Library for Poker Simulations and Hand Evaluations},
+   @misc{kim2023pokerkit,
+     title={PokerKit: A Comprehensive Python Library for Fine-Grained Multi-Variant Poker Game Simulations}, 
      author={Juho Kim},
      year={2023},
-     url={https://github.com/uoftcprg/pokerkit}
+     eprint={2308.07327},
+     archivePrefix={arXiv},
+     primaryClass={cs.AI}
    }
