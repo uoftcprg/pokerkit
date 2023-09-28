@@ -4,6 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.2.1 (September 27, 2023)
+----------------------------------
+
+**Changed**
+
+- Make ``pokerkit.state.Operation`` available as ``pokerkit.Operation`` by
+  importing it in ``pokerkit.__init__``.
+
 Version 0.2.0 (September 10, 2023)
 ----------------------------------
 
