@@ -1,40 +1,48 @@
 Poker Simulation
 ================
 
-PokerKit is a very powerful tool you can use to simulate games. It allows you to
-play any poker games and modify the state at any level. It also gives you a handy
-programmatic API to query if you can do something or get information such as
-maximum completion/betting/raising to amount, or checking/calling amount.
+The functionalities of PokerKit primarily fall into two categories: game
+simulations and hand evaluations. Game simulations encompass creating an
+environment where poker games can be played out programmatically, simulating
+real-world scenarios with high fidelity. On the other hand, hand evaluations are
+concerned with determining the strength of particular poker hands.
 
-All poker games progresses as follows:
+Introduction
+------------
 
-1. Ante posting
-2. Bet collection (if anyone anted)
-3. Blind/straddle posting
-4. Dealing (if hand is still on) (burning card, hole, board, stand pat or
-   discard)
-5. Betting (if hand is still on and people are not all in) (fold, check, call,
-   bring-in, complete, bet, raise to)
-6. Bet collection (if anyone bet)
-7. Go back to Step 4 if any street remains and the hand is on
-8. Showdown (if there are still people in the pot)
-9. Hand killing (if anyone has shown hands that cannot win anything)
-10. Chips pushing (move chips from center to the winner(s))
-11. Chips pulling (winner(s) pull the chips they won into the pot)
+PokerKit is a very powerful tool you can use to simulate games. It's
+customizability allow users to define and utilize almost every poker variant
+that exists.
 
-Depending on the use cases, many of these phases can be automated without any
-user input, as user can specify which operations they want to be manual and
-automatic.
+Each poker variant often introduces unique game rules and hand types not seen in
+other variants. The versatility of PokerKit allows for the customization of
+poker variants, allowing users to define their own unique games, adapt an
+existing variant, or implement a variant not currently supported by PokerKit out
+of the box. This flexibility is achieved without compromising the robustness of
+the implementation, backed by extensive unit tests and doctests to ensure
+error-free operations. Naturally, common variants are already defined out of the
+box, so, for most use cases, users will not have to define their own variants.
 
-Initialization
---------------
+PokerKit stands out with its ability to cater to an assortment of use cases,
+offering varying degrees of control over the game state. For instance, in use
+cases for poker AI agent development, where the agents' focus lies primarily
+in action selection during betting rounds, minute details such as showdown
+order, posting blinds, posting antes, and bet collection may not be pertinent.
+On the other hand, an online poker casino requires granular control over each
+game aspect. These include dealing hole cards one by one, burning cards,
+deciding to muck or show during the showdown (even when unnecessary), killing
+hands after the showdown, pushing chips to the winner's stack, and even the
+winner collecting the chips into their stack. PokerKit rises to this challenge,
+providing users with varying levels of automation tailored to their specific
+needs.
+
+State Initialization
+--------------------
 
 PokerKit offers virtually unlimited poker variants to be played. However,
 defining poker variants can be quite an overwhelming task for a new user. We
 offer pre-defined poker variants where user can just supply arguments such as
-antes, blinds, starting stacks, et cetera.
-
-Pre-defined poker variants:
+antes, blinds, starting stacks, et cetera, which are as follows:
 
 - Fixed-limit badugi: :class:`pokerkit.games.FixedLimitBadugi`
 - Fixed-limit deuce-to-seven lowball triple draw:
@@ -52,9 +60,7 @@ Pre-defined poker variants:
 - No-limit Texas hold'em: :class:`pokerkit.games.NoLimitTexasHoldem`
 - Pot-limit Omaha hold'em: :class:`pokerkit.games.PotLimitOmahaHoldem`
 
-Not finding what you are looking for? Define your own or create an issue!
-
-They can be created as shown below:
+These pre-defined games can be used as shown below:
 
 .. code-block:: python
 
@@ -105,7 +111,20 @@ They can be created as shown below:
        3,  # number of players
    )
 
-You can define your own variant as shown below:
+What exactly is a variant then? These are described by various definitions:
+
+- **Deck**: Most variants use a 52-card deck.
+- **Hand Types**: Most variants have one, but high/low-split games have two.
+- **Streets**: Each specifies whether to burn a card, deal the board, deal the
+  players, draw cards, the opener, the minimum bet, and the maximum number of
+  bets or raises.
+- **Betting Structure**: Betting limits such as no-limit, pot- limit, or
+  fixed-limit.
+
+In addition to the parameters related to the variants, users can supply
+additional values such as antes (uniform antes or non-uniform antes such as
+big blind antes), blinds/straddles, bring-ins, and starting stacks as is the
+case for pre-defined variants. Below is a Kuhn poker variant:
 
 .. code-block:: python
 
@@ -158,61 +177,98 @@ You can define your own variant as shown below:
 
 There is a lot to specify and you will have to experiment to get it right.
 
-These are two different ways to create a state. Now that we have a state, we
-can play around with it!
+State Attributes
+----------------
 
-Attributes
-----------
+PokerKit's poker simulations are architected around the concept of states,
+encapsulating all the vital information about the current game through its
+attributes.
 
-You can access various things about the state by accessing the following
-attributes and methods.
-
-- Cards in deck: :attr:`pokerkit.state.State.deck_cards`
-- Community cards: :attr:`pokerkit.state.State.board_cards`
-- Cards in muck: :attr:`pokerkit.state.State.mucked_cards`
-- Burn cards (if user wants to, they can also deal burnt cards):
+- **Cards in deck**: :attr:`pokerkit.state.State.deck_cards`
+- **Community cards**: :attr:`pokerkit.state.State.board_cards`
+- **Cards in muck**: :attr:`pokerkit.state.State.mucked_cards`
+- **Burn cards (if user wants to, they can also deal burnt cards)**:
   :attr:`pokerkit.state.State.burn_cards`
-- Player statuses (are they still in?): :attr:`pokerkit.state.State.statuses`
-- Bets: :attr:`pokerkit.state.State.bets`
-- Stacks: :attr:`pokerkit.state.State.stacks`
-- Hole cards: :attr:`pokerkit.state.State.hole_cards`
-- Hole card statuses (up or down?):
+- **Player statuses (are they still in?)**: :attr:`pokerkit.state.State.statuses`
+- **Bets**: :attr:`pokerkit.state.State.bets`
+- **Stacks**: :attr:`pokerkit.state.State.stacks`
+- **Hole cards**: :attr:`pokerkit.state.State.hole_cards`
+- **Hole card statuses (up or down?)**:
   :attr:`pokerkit.state.State.hole_card_statuses`
-- Street index: :attr:`pokerkit.state.State.street_index`
-- Status (is the game over?): :attr:`pokerkit.state.State.status`
-- Total pot amount: :attr:`pokerkit.state.State.total_pot_amount`
-- Pots (main + all sides): :attr:`pokerkit.state.State.pots`
+- **Street index**: :attr:`pokerkit.state.State.street_index`
+- **Status (is the game over?)**: :attr:`pokerkit.state.State.status`
+- **Total pot amount**: :attr:`pokerkit.state.State.total_pot_amount`
+- **Pots (main + all sides)**: :attr:`pokerkit.state.State.pots`
+- And more...
 
 There are more, such as the initial game parameters and attributes that keep
-track of who is acting, et cetera. You can look at :class:`pokerkit.state.State`
-for a complete list.
+track of who is in turn, what phase the game is in, and et cetera. You can look
+at :class:`pokerkit.state.State` for a complete list.
 
-Operations
-----------
+State Phases
+------------
 
-The wide selection you have is not the only thing that will overwhelm you. We
-also offer fine-grained poker state modifications. Depending on your use case,
-many of our operations will not be of concern.
+PokerKit structures the game flow into distinct phases, each supporting a
+different set of operations. Depending on the game state, each phase may be
+skipped. For instance, if the user has specified no antes, the ante posting
+phase will be omitted. Likewise, if no bets were placed during the betting
+phase, the bet collection phase will be bypassed. A phase transition occurs upon
+the completion of a phase. This transition is internally managed by the game
+framework, facilitating a seamless game flow to the end user. During each phase
+of PokerKit’s game simulation, the user can invoke various methods to execute
+operations. Each operation belongs to a specific phase and can only be enacted
+when the corresponding phase is active.
 
-All operations:
+1. **Ante Posting**: During the ante posting phase, each player has the option
+   to execute an ante-posting operation. The parameters supplied to the state
+   during its creation may dictate no antes, uniform antes, or non-uniform
+   antes, such as big blind antes. If no player is due to post an ante, this
+   phase is bypassed.
+2. **Bet Collection**: The collection of bets on the table occurs after any phase
+   that allow players to bet. If any bet is present, the bet collection
+   operation must be performed before proceeding to the subsequent phase. This
+   phase only occurs after ante posting or betting. When no bets are pending
+   collection, this phase is skipped.
+3. **Blind or Straddle Posting**: Forced bets like blinds or straddles must be
+   posted before the start of the first street. PokerKit accommodates a variety
+   of blind or straddle config- urations, ranging from small and big blinds, to
+   button blinds, or even no blind at all. If the state is configured to exclude
+   any forced bets, this phase is skipped.
+4. **Dealing**: The dealing phase precedes a betting phase. During this phase,
+   the user can deal board or hole cards, contingent upon the state's
+   configuration. Options to burn a card or discard and draw cards are also
+   available when applicable. This phase is bypassed if only one player remains
+   in the hand.
+5. **Betting**: During betting, players can execute the actions such as folding,
+   checking, calling, posting a bring-in, completing, betting, or raising.
+   During state creation, the user must specify how to select the first player
+   to act and the betting limits. This phase is bypassed if all players are
+   all-in or if only one player remains in the hand.
+6. **Showdown**: During the showdown, players reveal or muck their hands in
+   accordance with the showdown order. The first to show is typically the last
+   aggressor in the final street. If no one bet, the player who was the first
+   to act in the final betting round must show first. Players can opt to show a
+   losing hand or muck a winning hand, even though this is often
+   disadvantageous. When dealing with all-in pots, players are obligated to show
+   their hands in order to prevent chip-dumping. If this is the case, or if only
+   one player remains in the pot, the showdown phase is bypassed.
+7. **Hand Killing**: The dealer is responsible for "killing," or discarding,
+   hands that cannot win any portion of the pot. If no hand should be killed,
+   this phase is bypassed.
+8. **Chips Pushing**: The dealer is charged with pushing the chips to the
+   winners. In poker games, the pot size is always non-zero due to the mandatory
+   presence of antes, forced bets, or bring-ins (as enforced by PokerKit). Thus,
+   this phase is always carried out.
+9. **Chips Pulling**: Players may incorporate the chips they've won back into
+   their stack. In poker, at least one player is guaranteed to win the pot.
+   Consequently, this phase is never skipped.
 
-- Ante posting: :meth:`pokerkit.state.State.post_ante`
-- Bet collection: :meth:`pokerkit.state.State.collect_bets`
-- Blind/straddle posting: :meth:`pokerkit.state.State.post_blind_or_straddle`
-- Card burning: :meth:`pokerkit.state.State.burn_card`
-- Hole dealing: :meth:`pokerkit.state.State.deal_hole`
-- Board dealing: :meth:`pokerkit.state.State.deal_board`
-- Standing pat/discarding: :meth:`pokerkit.state.State.stand_pat_or_discard`
-- Folding: :meth:`pokerkit.state.State.fold`
-- Checking/calling: :meth:`pokerkit.state.State.check_or_call`
-- Bring-in posting: :meth:`pokerkit.state.State.post_bring_in`
-- Completion/betting/raising to:
-  :meth:`pokerkit.state.State.complete_bet_or_raise_to`
-- Hole cards showing/mucking:
-  :meth:`pokerkit.state.State.show_or_muck_hole_cards`
-- Hand killing: :meth:`pokerkit.state.State.kill_hand`
-- Chips pushing: :meth:`pokerkit.state.State.push_chips`
-- Chips pulling: :meth:`pokerkit.state.State.pull_chips`
+Note that, depending on the number of betting rounds, the **Dealing**,
+**Betting**, and **Bet Collection** phases may be repeated.
+
+Depending on the use cases, many of these phases can be automated without any
+user input, as user can specify which operations they want to be manual and
+automatic.
 
 For example, if you are trying to create a poker AI, you are not worried about
 mucking the best hand or showing the worse hand, burning a card, pushing the
@@ -265,6 +321,41 @@ Sample automations:
    # Automate nothing
    automations = ()
 
+
+State Operations
+----------------
+
+Each operation is coupled with two associated methods: a verification method and
+an action query. The verification method validates if a move can be executed
+within the rules, considering the current game state and the variant in play. It
+raises an error if any discrepancy is detected. Users can directly invoke this
+or use a corresponding action query method (with optional arguments), which
+simply checks if the verification method triggers an error and returns a boolean
+value indicating the validity of the action. The method that performs the
+operation initially runs the verification method, executing the operation only
+if no errors are raised. If the verification fails, the state remains unchanged.
+
+Below list all the operations supported by PokerKit. Depending on your use case,
+many of these operations will not be of concern and can be automated.
+
+- Ante posting: :meth:`pokerkit.state.State.post_ante`
+- Bet collection: :meth:`pokerkit.state.State.collect_bets`
+- Blind/straddle posting: :meth:`pokerkit.state.State.post_blind_or_straddle`
+- Card burning: :meth:`pokerkit.state.State.burn_card`
+- Hole dealing: :meth:`pokerkit.state.State.deal_hole`
+- Board dealing: :meth:`pokerkit.state.State.deal_board`
+- Standing pat/discarding: :meth:`pokerkit.state.State.stand_pat_or_discard`
+- Folding: :meth:`pokerkit.state.State.fold`
+- Checking/calling: :meth:`pokerkit.state.State.check_or_call`
+- Bring-in posting: :meth:`pokerkit.state.State.post_bring_in`
+- Completion/betting/raising to:
+  :meth:`pokerkit.state.State.complete_bet_or_raise_to`
+- Hole cards showing/mucking:
+  :meth:`pokerkit.state.State.show_or_muck_hole_cards`
+- Hand killing: :meth:`pokerkit.state.State.kill_hand`
+- Chips pushing: :meth:`pokerkit.state.State.push_chips`
+- Chips pulling: :meth:`pokerkit.state.State.pull_chips`
+
 Now, let's say you know what operations you should worry about. How do you know
 when to invoke them? PokerKit has handy methods to query whether you can perform
 an operation:
@@ -288,7 +379,7 @@ an operation:
 - Chips pulling?: :meth:`pokerkit.state.State.can_pull_chips`
 
 These methods return ``True`` if you can perform such an operation (with
-specified arguments, if any)  or ``False`` if otherwise.
+specified arguments, if any) or ``False`` if otherwise.
 
 Most of the operations can optionally accept arguments. Some are more important
 than others. Let's see what we can specify for each action.
@@ -315,8 +406,9 @@ than others. Let's see what we can specify for each action.
   the pot
 
 How do you know what the minimum bets are? How do you know to whom the hole card
-will be dealt next? How do you know the call amount? Whose action is it? You can
-access all these information through the following methods or properties
+will be dealt next? How do you know the call amount? Whose action is it?
+
+You can access all these information through the following methods or properties:
 
 - Effective ante: :meth:`poker.state.State.get_effective_ante`
 - Ante poster indices: :attr:`poker.state.State.ante_poster_indices`
@@ -329,7 +421,7 @@ access all these information through the following methods or properties
 - Next stander pat or discarder:
   :attr:`poker.state.State.stander_pat_or_discarder_index`
 - Next actor (fold, check, ...): :attr:`poker.state.State.actor_index`
-- Effective stack:  :attr:`poker.state.State.get_effective_stack`
+- Effective stack: :attr:`poker.state.State.get_effective_stack`
 - Checking/Calling amount: :attr:`poker.state.State.checking_or_calling_amount`
 - Effective bring-in amount: :attr:`poker.state.State.effective_bring_in_amount`
 - Min completion/bet/raise to amount:
@@ -365,6 +457,12 @@ were collected, et cetera are returned. The types of these are as shown:
 - Hand killing: :class:`pokerkit.state.HandKilling`
 - Chips pushing: :class:`pokerkit.state.ChipsPushing`
 - Chips pulling: :class:`pokerkit.state.ChipsPulling`
+
+Again, if an operation is not valid, errors will be raised. PokerKit’s
+philosophy is that it should focus on maintaining the game state and enforcing
+rules. Error handling is left to the user, who may need to handle errors
+differently depending on the application. All the errors raised are
+``ValueError``.
 
 Interactions
 ------------

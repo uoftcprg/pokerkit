@@ -4,21 +4,16 @@ PokerKit
 
 PokerKit is an open-source Python library for simulating poker games and
 evaluating poker hands, developed by the University of Toronto Computer Poker
-Research Group. It provides extensive support for all major and minor poker
-variants, offers a high level of control over game states, and supports
-high-speed hand evaluations.
+Research Group. PokerKit supports an extensive array of poker variants and it
+provides a flexible architecture for users to define their custom games. These
+facilities are exposed via an intuitive unified high-level programmatic API. The
+library can be used in a variety of use cases, from poker AI development, tool
+creation, to online poker casino implementation. PokerKit’s reliability has been
+established through static type checking, extensive doctests, and unit tests,
+achieving 99% code coverage.
 
-**Installation**
-----------------
-
-The PokerKit library can be installed using pip:
-
-.. code-block:: bash
-
-   pip install pokerkit
-
-**Features**
-------------
+Features
+--------
 
 * Extensive poker game logic for major and minor poker variants
 * High-speed hand evaluations
@@ -26,8 +21,17 @@ The PokerKit library can be installed using pip:
 * Robust implementation with static type checking and extensive unit tests and
   doctests
 
-**Usage**
----------
+Installation
+------------
+
+The PokerKit library can be installed using pip:
+
+.. code-block:: bash
+
+   pip install pokerkit
+
+Usage
+-----
 
 Below shows the first televised million dollar pot between Tom Dwan and Phil
 Ivey.
@@ -368,26 +372,26 @@ Link: https://en.wikipedia.org/wiki/Badugi
 
    print(state.stacks)  # [196, 220, 200, 184]
 
-**Testing and Validation**
---------------------------
+Testing and Validation
+----------------------
 
 PokerKit has extensive test coverage, passes mypy static type checking with
 strict parameter, and has been validated through extensive use in real-life
 scenarios.
 
-**Contributing**
-----------------
+Contributing
+------------
 
 Contributions are welcome! Please read our Contributing Guide for more
 information.
 
-**License**
------------
+License
+-------
 
 PokerKit is distributed under the MIT license.
 
-**Citing**
-----------
+Citing
+------
 
 If you use PokerKit in your research, please cite our library:
 

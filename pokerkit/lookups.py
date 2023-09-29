@@ -109,8 +109,9 @@ class Lookup(ABC):
     __entries: dict[tuple[int, bool], Entry] = field(
         default_factory=dict,
         init=False,
+        repr=False,
     )
-    __entry_count: int = field(default=0, init=False)
+    __entry_count: int = field(default=0, init=False, repr=False)
 
     @classmethod
     def __hash(cls, ranks: Iterable[Rank]) -> int:

@@ -1,9 +1,12 @@
 Hand Evaluation
 ===============
 
-Not every poker software involve game simulations. If you just want to
-evaluate poker hands, we provide facilities to do so. As we support a wide
-selection of games, we also support a wide selection of hand types.
+Not every poker software involve game simulations. Beyond its use of providing
+a simulated poker environment, PokerKit serves as a valuable resource for
+evaluating poker hands. It supports the largest selection of hand types in any
+mainstream open-source poker library. This makes it an invaluable tool for users
+interested in studying the statistical properties of poker, regardless of their
+interest in game simulations.
 
 - Badugi hands: :class:`pokerkit.hands.BadugiHand`
 - 8 or better low hands: :class:`pokerkit.hands.EightOrBetterLowHand`
@@ -18,7 +21,7 @@ selection of games, we also support a wide selection of hand types.
 
 Standard high hands are used for games like Texas hold'em. When something
 contains ``low`` it means it is a low hand. Lots of these types have the same
-base lookup. They just differ in the way the hands are evaluated.  For example,
+base lookup. They just differ in the way the hands are evaluated. For example,
 Standard high hands and Omaha hold'em hands uses the same lookup.
 
 Our hand evaluators are optimized for speed while giving a convenient high
@@ -87,3 +90,20 @@ Comparing the hand strengths is quite simple... Just compare them!
    >>> h4 = StandardLowHand('7c5d4h3s2c')
    >>> h0 < h1 < h2 < h3 < h4
    True
+
+Algorithm
+---------
+
+The library generates a lookup table for each hand type. The hands are generated
+in the order or reverse order of strength and assigned indices, which are used
+to compare hands. High-level interfaces allow users to construct hands by
+passing in the necessary cards and using standard comparison operators to
+compare the hand strengths. It's worth noting that "strength" in poker hands
+does not necessarily mean "low" or "high" hands. Each hand type in PokerKit
+handles this distinction internally, making it transparent to the end user.
+
+In the lookup process, cards are converted into unique integers that represent
+their ranks. Each rank corresponds to a unique prime number and the converted
+integers are multiplied together. The suitedness of the cards is then checked.
+Using the product and the suitedness, the library looks for the matching hand
+entries which are then used to compare hands.
