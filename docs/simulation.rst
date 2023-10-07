@@ -139,6 +139,19 @@ case for pre-defined variants. Below is a Kuhn poker variant:
    )
 
    state = State(
+       # automations
+       (
+           Automation.ANTE_POSTING,
+           Automation.BET_COLLECTION,
+           Automation.BLIND_OR_STRADDLE_POSTING,
+           Automation.CARD_BURNING,
+           Automation.HOLE_DEALING,
+           Automation.BOARD_DEALING,
+           Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+           Automation.HAND_KILLING,
+           Automation.CHIPS_PUSHING,
+           Automation.CHIPS_PULLING,
+       ),
        Deck.KUHN_POKER,  # deck
        (KuhnPokerHand,),  # hand types (high/low-split will have two types)
        # streets
@@ -154,19 +167,6 @@ case for pre-defined variants. Below is a Kuhn poker variant:
            ),
        ),
        BettingStructure.FIXED_LIMIT,  # betting structure
-       # automations
-       (
-           Automation.ANTE_POSTING,
-           Automation.BET_COLLECTION,
-           Automation.BLIND_OR_STRADDLE_POSTING,
-           Automation.CARD_BURNING,
-           Automation.HOLE_DEALING,
-           Automation.BOARD_DEALING,
-           Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
-           Automation.HAND_KILLING,
-           Automation.CHIPS_PUSHING,
-           Automation.CHIPS_PULLING,
-       ),
        True,  # ``False`` for big blind ante, otherwise ``True``
        (1,) * 2,  # ante
        (0,) * 2,  # blind or straddles

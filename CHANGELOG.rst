@@ -4,13 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.2.2 (Planned)
------------------------
+Version 0.3.0 (October 7, 2023)
+-------------------------------
 
 **Changed**
 
-- Execute ``unittest.main`` for each unit test files when executed as
-  ``__main__``.
+- Call ``unittest.main`` in unit test files when executed as ``__main__``.
+- Move the ``automations`` parameter to be the first parameter of
+  ``pokerkit.state.State``.
 
 Version 0.2.1 (September 27, 2023)
 ----------------------------------

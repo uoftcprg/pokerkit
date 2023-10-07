@@ -110,6 +110,7 @@ class FixedLimitTexasHoldem(TexasHoldem):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (StandardHighHand,),
             (
@@ -151,7 +152,6 @@ class FixedLimitTexasHoldem(TexasHoldem):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -261,6 +261,7 @@ class NoLimitTexasHoldem(TexasHoldem):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (StandardHighHand,),
             (
@@ -302,7 +303,6 @@ class NoLimitTexasHoldem(TexasHoldem):
                 ),
             ),
             BettingStructure.NO_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -419,6 +419,7 @@ class NoLimitShortDeckHoldem(TexasHoldem):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.SHORT_DECK_HOLDEM,
             (ShortDeckHoldemHand,),
             (
@@ -460,7 +461,6 @@ class NoLimitShortDeckHoldem(TexasHoldem):
                 ),
             ),
             BettingStructure.NO_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -576,6 +576,7 @@ class PotLimitOmahaHoldem(OmahaHoldem):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (OmahaHoldemHand,),
             (
@@ -617,7 +618,6 @@ class PotLimitOmahaHoldem(OmahaHoldem):
                 ),
             ),
             BettingStructure.POT_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -658,6 +658,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(OmahaHoldem):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (OmahaHoldemHand, OmahaEightOrBetterLowHand),
             (
@@ -699,7 +700,6 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(OmahaHoldem):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -746,6 +746,7 @@ class FixedLimitSevenCardStud(SevenCardStud):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (StandardHighHand,),
             (
@@ -795,7 +796,6 @@ class FixedLimitSevenCardStud(SevenCardStud):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             None,
@@ -836,6 +836,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(SevenCardStud):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (StandardHighHand, EightOrBetterLowHand),
             (
@@ -886,7 +887,6 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(SevenCardStud):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             None,
@@ -924,6 +924,7 @@ class FixedLimitRazz(SevenCardStud):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.REGULAR,
             (RegularLowHand,),
             (
@@ -974,7 +975,6 @@ class FixedLimitRazz(SevenCardStud):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             None,
@@ -1019,6 +1019,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (StandardLowHand,),
             (
@@ -1042,7 +1043,6 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
                 ),
             ),
             BettingStructure.NO_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -1173,6 +1173,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.STANDARD,
             (StandardLowHand,),
             (
@@ -1214,7 +1215,6 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,
@@ -1369,6 +1369,7 @@ class FixedLimitBadugi(Poker):
         :return: The created state.
         """
         return State(
+            automations,
             Deck.REGULAR,
             (BadugiHand,),
             (
@@ -1410,7 +1411,6 @@ class FixedLimitBadugi(Poker):
                 ),
             ),
             BettingStructure.FIXED_LIMIT,
-            automations,
             ante_trimming_status,
             antes,
             blinds_or_straddles,

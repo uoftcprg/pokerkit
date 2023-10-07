@@ -522,6 +522,18 @@ class State:
 
     >>> from pokerkit import KuhnPokerHand
     >>> state = State(
+    ...     (
+    ...         Automation.ANTE_POSTING,
+    ...         Automation.BET_COLLECTION,
+    ...         Automation.BLIND_OR_STRADDLE_POSTING,
+    ...         Automation.CARD_BURNING,
+    ...         Automation.HOLE_DEALING,
+    ...         Automation.BOARD_DEALING,
+    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+    ...         Automation.HAND_KILLING,
+    ...         Automation.CHIPS_PUSHING,
+    ...         Automation.CHIPS_PULLING,
+    ...     ),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -536,18 +548,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (
-    ...         Automation.ANTE_POSTING,
-    ...         Automation.BET_COLLECTION,
-    ...         Automation.BLIND_OR_STRADDLE_POSTING,
-    ...         Automation.CARD_BURNING,
-    ...         Automation.HOLE_DEALING,
-    ...         Automation.BOARD_DEALING,
-    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
-    ...         Automation.HAND_KILLING,
-    ...         Automation.CHIPS_PUSHING,
-    ...         Automation.CHIPS_PULLING,
-    ...     ),
     ...     True,
     ...     (1,) * 2,
     ...     (0,) * 2,
@@ -589,6 +589,7 @@ class State:
     Below shows the identical game, but without any automation.
 
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -603,7 +604,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (1,) * 2,
     ...     (0,) * 2,
@@ -639,11 +639,11 @@ class State:
     False
 
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (1,) * 2,
     ...     (0,) * 2,
@@ -655,6 +655,7 @@ class State:
         ...
     ValueError: empty streets
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -669,7 +670,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (1,) * 2,
     ...     (0,) * 2,
@@ -681,6 +681,7 @@ class State:
         ...
     ValueError: first street not hole dealing
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -695,7 +696,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (-1,) * 2,
     ...     (0,) * 2,
@@ -707,6 +707,7 @@ class State:
         ...
     ValueError: negative antes, blinds, straddles, or bring-in
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -721,7 +722,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (0,) * 2,
     ...     (0,) * 2,
@@ -733,6 +733,7 @@ class State:
         ...
     ValueError: no antes, blinds, straddles, or bring-in
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -747,7 +748,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (1,) * 2,
     ...     (0,) * 2,
@@ -759,6 +759,7 @@ class State:
         ...
     ValueError: non-positive starting stacks
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -773,7 +774,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (0,) * 2,
     ...     (1,) * 2,
@@ -785,6 +785,7 @@ class State:
         ...
     ValueError: both bring-in and blinds or straddles specified
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -799,7 +800,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (0,) * 2,
     ...     (0,) * 2,
@@ -811,6 +811,7 @@ class State:
         ...
     ValueError: bring-in must be less than the min bet
     >>> state = State(
+    ...     (),
     ...     Deck.KUHN_POKER,
     ...     (KuhnPokerHand,),
     ...     (
@@ -825,7 +826,6 @@ class State:
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,
-    ...     (),
     ...     True,
     ...     (1,),
     ...     (0,),
@@ -840,6 +840,8 @@ class State:
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
     __high_hand_opening_lookup = _HighHandOpeningLookup()
+    automations: tuple[Automation, ...]
+    """The automations."""
     deck: Deck
     """The deck."""
     hand_types: tuple[type[Hand], ...]
@@ -848,8 +850,6 @@ class State:
     """The streets."""
     betting_structure: BettingStructure
     """The betting structure."""
-    automations: tuple[Automation, ...]
-    """The automations."""
     ante_trimming_status: bool
     """The ante trimming status.
 
