@@ -17,7 +17,7 @@ Game order (in WSOP notations):
 """
 
 from collections import deque
-from unittest import TestCase
+from unittest import main, TestCase
 
 from pokerkit.games import (
     FixedLimitDeuceToSevenLowballTripleDraw,
@@ -5820,3 +5820,7 @@ class StateTestCase(TestCase):
             state.stacks,
             [0, 29700000],
         )
+
+
+if __name__ == '__main__':
+    main()

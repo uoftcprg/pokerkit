@@ -2,7 +2,7 @@
 :mod:`pokerkit.utilities`.
 """
 
-from unittest import TestCase
+from unittest import main, TestCase
 
 from pokerkit.utilities import Card, Deck, Rank, RankOrder, Suit
 
@@ -57,3 +57,7 @@ class DeckTestCase(TestCase):
                 'As2s3s4s5s6s7s8s9sTsJsQsKs',
             ),
         )
+
+
+if __name__ == '__main__':
+    main()

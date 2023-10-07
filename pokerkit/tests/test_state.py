@@ -4,7 +4,7 @@
 
 from hashlib import md5
 from itertools import combinations
-from unittest import TestCase
+from unittest import main, TestCase
 from warnings import resetwarnings, simplefilter
 
 from pokerkit.games import (
@@ -575,3 +575,7 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
+
+
+if __name__ == '__main__':
+    main()

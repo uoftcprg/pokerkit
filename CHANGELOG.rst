@@ -4,6 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.2.2 (Planned)
+-----------------------
+
+**Changed**
+
+- Execute ``unittest.main`` for each unit test files when executed as
+  ``__main__``.
+
 Version 0.2.1 (September 27, 2023)
 ----------------------------------
 

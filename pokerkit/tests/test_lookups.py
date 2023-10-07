@@ -5,7 +5,7 @@
 from collections.abc import Iterable
 from hashlib import md5
 from itertools import combinations
-from unittest import TestCase
+from unittest import main, TestCase
 
 from pokerkit.lookups import (
     BadugiLookup,
@@ -123,3 +123,7 @@ class BadugiLookupTestCase(LookupTestCaseMixin, TestCase):
             algorithm.hexdigest(),
             'c284d3bf45c87707f62cd7fc6699c31a',
         )
+
+
+if __name__ == '__main__':
+    main()
