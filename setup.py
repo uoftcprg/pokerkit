@@ -58,7 +58,7 @@ setup(
         'Source': 'https://github.com/uoftcprg/pokerkit',
         'Tracker': 'https://github.com/uoftcprg/pokerkit/issues',
     },
-    package_data={'pokerkit': ['py.typed']},
     packages=find_packages(),
     python_requires='>=3.11',
+    package_data={'pokerkit': ['py.typed']},
 )
