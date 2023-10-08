@@ -2,14 +2,11 @@
 
 from setuptools import find_packages, setup
 
-with open('README.rst', 'r') as file:
-    long_description = file.read()
-
 setup(
     name='pokerkit',
     version='0.3.0',
     description='A Python package for various poker tools',
-    long_description=long_description,
+    long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
     url='https://github.com/uoftcprg/pokerkit',
     author='University of Toronto Computer Poker Research Group',
