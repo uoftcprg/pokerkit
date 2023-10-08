@@ -40,11 +40,3 @@ pokerkit.utilities module
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pokerkit
-   :members:
-   :undoc-members:
-   :show-inheritance:
