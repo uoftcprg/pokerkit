@@ -397,11 +397,12 @@ If you use PokerKit in your research, please cite our library:
 
 .. code-block:: bibtex
 
-   @misc{kim2023pokerkit,
+   @ARTICLE{10287546,
+     author={Kim, Juho},
+     journal={IEEE Transactions on Games}, 
      title={PokerKit: A Comprehensive Python Library for Fine-Grained Multi-Variant Poker Game Simulations}, 
-     author={Juho Kim},
      year={2023},
-     eprint={2308.07327},
-     archivePrefix={arXiv},
-     primaryClass={cs.AI}
-   }
+     volume={},
+     number={},
+     pages={1-8},
+     doi={10.1109/TG.2023.3325637}}
