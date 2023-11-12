@@ -5,12 +5,12 @@ from setuptools import find_packages, setup
 setup(
     name='pokerkit',
     version='0.3.0',
-    description='A Python package for various poker tools',
+    description='An open-source Python library for poker simulations and hand evaluations',
     long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
     url='https://github.com/uoftcprg/pokerkit',
     author='University of Toronto Computer Poker Research Group',
-    author_email='uoftcprg@outlook.com',
+    author_email='uoftcprg@studentorg.utoronto.ca',
     license='MIT',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
