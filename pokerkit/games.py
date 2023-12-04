@@ -17,7 +17,7 @@ from pokerkit.hands import (
     StandardLowHand,
 )
 from pokerkit.state import BettingStructure, Opening, Automation, State, Street
-from pokerkit.utilities import clean_values, Deck, RankOrder, ValuesLike
+from pokerkit.utilities import Deck, RankOrder, ValuesLike
 
 
 class Poker(ABC):
@@ -29,7 +29,6 @@ class Poker(ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param bring_in: The bring-in.
-    :param player_count: The number of players.
     """
 
     deck: ClassVar[Deck]
@@ -47,7 +46,6 @@ class Poker(ABC):
             raw_antes: ValuesLike,
             raw_blinds_or_straddles: ValuesLike,
             bring_in: int,
-            player_count: int,
     ) -> None:
         self.automations: tuple[Automation, ...] = automations
         """The automations."""
@@ -60,19 +58,18 @@ class Poker(ABC):
         If you want non-uniform antes like big blind antes, set
         this to ``False``.
         """
-        self.antes: tuple[int, ...] = clean_values(raw_antes, player_count)
-        """The antes."""
-        self.blinds_or_straddles: tuple[int, ...] = clean_values(
-            raw_blinds_or_straddles,
-            player_count,
-        )
-        """The blinds or straddles."""
+        self.raw_antes: ValuesLike = raw_antes
+        """The raw antes."""
+        self.raw_blinds_or_straddles: ValuesLike = raw_blinds_or_straddles
+        """The raw blinds or straddles."""
         self.bring_in: int = bring_in
         """The bring-in."""
-        self.player_count: int = player_count
-        """The number of players."""
 
-    def __call__(self, raw_starting_stacks: ValuesLike) -> State:
+    def __call__(
+            self,
+            raw_starting_stacks: ValuesLike,
+            player_count: int,
+    ) -> State:
         return State(
             self.automations,
             self.deck,
@@ -80,11 +77,11 @@ class Poker(ABC):
             self.streets,
             self.betting_structure,
             self.ante_trimming_status,
-            self.antes,
-            self.blinds_or_straddles,
+            self.raw_antes,
+            self.raw_blinds_or_straddles,
             self.bring_in,
             raw_starting_stacks,
-            self.player_count,
+            player_count,
         )
 
     @property
@@ -180,7 +177,6 @@ class Holdem(Poker, ABC):
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
-    :param player_count: The number of players.
     """
 
     hole_dealing_count: ClassVar[int]
@@ -196,7 +192,6 @@ class Holdem(Poker, ABC):
             raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            player_count: int,
     ) -> None:
         super().__init__(
             automations,
@@ -242,7 +237,6 @@ class Holdem(Poker, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
-            player_count,
         )
 
 
@@ -254,7 +248,6 @@ class UnfixedLimitHoldem(Holdem, ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param min_bet: The minimum bet.
-    :param player_count: The number of players.
     """
 
     max_completion_betting_or_raising_count: ClassVar[int | None] = None
@@ -266,7 +259,6 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_antes: ValuesLike,
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
-            player_count: int,
     ) -> None:
         super().__init__(
             automations,
@@ -275,7 +267,6 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_blinds_or_straddles,
             min_bet,
             min_bet,
-            player_count,
         )
 
 
@@ -362,8 +353,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class NoLimitTexasHoldem(
@@ -477,8 +467,7 @@ class NoLimitTexasHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
@@ -593,8 +582,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class OmahaHoldemMixin:
@@ -712,8 +700,7 @@ class PotLimitOmahaHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
@@ -762,8 +749,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class SevenCardStud(Poker, ABC):
@@ -775,7 +761,6 @@ class SevenCardStud(Poker, ABC):
     :param bring_in: The bring-in.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
-    :param player_count: The number of players.
     """
 
     max_completion_betting_or_raising_count: ClassVar[int | None]
@@ -791,7 +776,6 @@ class SevenCardStud(Poker, ABC):
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            player_count: int,
     ) -> None:
         super().__init__(
             automations,
@@ -846,7 +830,6 @@ class SevenCardStud(Poker, ABC):
             raw_antes,
             None,
             bring_in,
-            player_count,
         )
 
 
@@ -888,8 +871,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
@@ -939,8 +921,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             bring_in,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
@@ -981,8 +962,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class Draw(Poker, ABC):
@@ -1002,7 +982,6 @@ class SingleDraw(Draw, ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param min_bet: The min bet.
-    :param player_count: The number of players.
     """
 
     def __init__(
@@ -1012,7 +991,6 @@ class SingleDraw(Draw, ABC):
             raw_antes: ValuesLike,
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
-            player_count: int,
     ) -> None:
         super().__init__(
             automations,
@@ -1040,7 +1018,6 @@ class SingleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
-            player_count,
         )
 
 
@@ -1053,7 +1030,6 @@ class TripleDraw(Draw, ABC):
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
-    :param player_count: The number of players.
     """
 
     def __init__(
@@ -1064,7 +1040,6 @@ class TripleDraw(Draw, ABC):
             raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            player_count: int,
     ) -> None:
         super().__init__(
             automations,
@@ -1110,7 +1085,6 @@ class TripleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
-            player_count,
         )
 
 
@@ -1158,8 +1132,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class FixedLimitDeuceToSevenLowballTripleDraw(
@@ -1295,8 +1268,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)
 
 
 class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
@@ -1450,5 +1422,4 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            player_count,
-        )(raw_starting_stacks)
+        )(raw_starting_stacks, player_count)

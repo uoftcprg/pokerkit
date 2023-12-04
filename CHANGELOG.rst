@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.3.2 (December 4, 2023)
+-------------------------------
+
+**Changed**
+
+- When saving state configuration, ``player_count`` is not saved.
+
 Version 0.3.1 (December 4, 2023)
 -------------------------------
 
