@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='pokerkit',
-    version='0.3.0',
+    version='0.3.1',
     description='An open-source Python library for poker simulations and hand evaluations',
     long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
@@ -28,6 +28,7 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
     ],
     keywords=[
         'artificial-intelligence',

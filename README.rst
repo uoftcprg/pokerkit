@@ -8,7 +8,7 @@ Research Group. PokerKit supports an extensive array of poker variants and it
 provides a flexible architecture for users to define their custom games. These
 facilities are exposed via an intuitive unified high-level programmatic API. The
 library can be used in a variety of use cases, from poker AI development, tool
-creation, to online poker casino implementation. PokerKit’s reliability has been
+creation, to online poker casino implementation. PokerKit's reliability has been
 established through static type checking, extensive doctests, and unit tests,
 achieving 99% code coverage.
 

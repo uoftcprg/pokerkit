@@ -11,6 +11,7 @@ from functools import partial
 from itertools import combinations, filterfalse
 from math import prod
 from operator import contains
+from typing import ClassVar
 
 from pokerkit.utilities import Card, CardsLike, Rank, RankOrder
 
@@ -106,6 +107,8 @@ class Lookup(ABC):
     assert len(__primes) >= len(tuple(Rank))
 
     __multipliers = dict(zip(Rank, __primes))
+    rank_order: ClassVar[RankOrder]
+    """The rank order."""
     __entries: dict[tuple[int, bool], Entry] = field(
         default_factory=dict,
         init=False,
@@ -213,32 +216,30 @@ class Lookup(ABC):
 
     def _add_multisets(
             self,
-            rank_order: RankOrder,
             counter: Counter[int],
             suitednesses: tuple[bool, ...],
             label: Label,
     ) -> None:
-        hashes = self.__hash_multisets(rank_order, counter)
+        hashes = self.__hash_multisets(self.rank_order, counter)
 
         for hash_ in reversed(hashes):
             self.__add(hash_, suitednesses, label)
 
     def _add_straights(
             self,
-            rank_order: RankOrder,
             count: int,
             suitednesses: tuple[bool, ...],
             label: Label,
     ) -> None:
         self.__add(
-            self.__hash(rank_order[-1:] + rank_order[: count - 1]),
+            self.__hash(self.rank_order[-1:] + self.rank_order[: count - 1]),
             suitednesses,
             label,
         )
 
-        for i in range(len(rank_order) - count + 1):
+        for i in range(len(self.rank_order) - count + 1):
             self.__add(
-                self.__hash(rank_order[i:i + count]),
+                self.__hash(self.rank_order[i:i + count]),
                 suitednesses,
                 label,
             )
@@ -279,56 +280,26 @@ class StandardLookup(Lookup):
     <Label.TWO_PAIR: 'Two pair'>
     """
 
+    rank_order: ClassVar[RankOrder] = RankOrder.STANDARD
+
     def __post_init__(self) -> None:
+        self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
+        self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
+        self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
         self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({1: 5}),
-            (False,),
-            Label.HIGH_CARD,
-        )
-        self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({2: 1, 1: 3}),
-            (False,),
-            Label.ONE_PAIR,
-        )
-        self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({2: 2, 1: 1}),
-            (False,),
-            Label.TWO_PAIR,
-        )
-        self._add_multisets(
-            RankOrder.STANDARD,
             Counter({3: 1, 1: 2}),
             (False,),
             Label.THREE_OF_A_KIND,
         )
-        self._add_straights(RankOrder.STANDARD, 5, (False,), Label.STRAIGHT)
+        self._add_straights(5, (False,), Label.STRAIGHT)
+        self._add_multisets(Counter({1: 5}), (True,), Label.FLUSH)
+        self._add_multisets(Counter({3: 1, 2: 1}), (False,), Label.FULL_HOUSE)
         self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({1: 5}),
-            (True,),
-            Label.FLUSH,
-        )
-        self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({3: 1, 2: 1}),
-            (False,),
-            Label.FULL_HOUSE,
-        )
-        self._add_multisets(
-            RankOrder.STANDARD,
             Counter({4: 1, 1: 1}),
             (False,),
             Label.FOUR_OF_A_KIND,
         )
-        self._add_straights(
-            RankOrder.STANDARD,
-            5,
-            (True,),
-            Label.STRAIGHT_FLUSH,
-        )
+        self._add_straights(5, (True,), Label.STRAIGHT_FLUSH)
 
 
 @dataclass
@@ -355,61 +326,26 @@ class ShortDeckHoldemLookup(Lookup):
     <Label.STRAIGHT: 'Straight'>
     """
 
+    rank_order: ClassVar[RankOrder] = RankOrder.SHORT_DECK_HOLDEM
+
     def __post_init__(self) -> None:
+        self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
+        self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
+        self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
         self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
-            Counter({1: 5}),
-            (False,),
-            Label.HIGH_CARD,
-        )
-        self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
-            Counter({2: 1, 1: 3}),
-            (False,),
-            Label.ONE_PAIR,
-        )
-        self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
-            Counter({2: 2, 1: 1}),
-            (False,),
-            Label.TWO_PAIR,
-        )
-        self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
             Counter({3: 1, 1: 2}),
             (False,),
             Label.THREE_OF_A_KIND,
         )
-        self._add_straights(
-            RankOrder.SHORT_DECK_HOLDEM,
-            5,
-            (False,),
-            Label.STRAIGHT,
-        )
+        self._add_straights(5, (False,), Label.STRAIGHT)
+        self._add_multisets(Counter({3: 1, 2: 1}), (False,), Label.FULL_HOUSE)
+        self._add_multisets(Counter({1: 5}), (True,), Label.FLUSH)
         self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
-            Counter({3: 1, 2: 1}),
-            (False,),
-            Label.FULL_HOUSE,
-        )
-        self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
-            Counter({1: 5}),
-            (True,),
-            Label.FLUSH,
-        )
-        self._add_multisets(
-            RankOrder.SHORT_DECK_HOLDEM,
             Counter({4: 1, 1: 1}),
             (False,),
             Label.FOUR_OF_A_KIND,
         )
-        self._add_straights(
-            RankOrder.SHORT_DECK_HOLDEM,
-            5,
-            (True,),
-            Label.STRAIGHT_FLUSH,
-        )
+        self._add_straights(5, (True,), Label.STRAIGHT_FLUSH)
 
 
 @dataclass
@@ -420,13 +356,10 @@ class EightOrBetterLookup(Lookup):
     please use :class:`pokerkit.hands.EightOrBetterLowHand`.
     """
 
+    rank_order: ClassVar[RankOrder] = RankOrder.EIGHT_OR_BETTER_LOW
+
     def __post_init__(self) -> None:
-        self._add_multisets(
-            RankOrder.EIGHT_OR_BETTER_LOW,
-            Counter({1: 5}),
-            (False, True),
-            Label.HIGH_CARD,
-        )
+        self._add_multisets(Counter({1: 5}), (False, True), Label.HIGH_CARD)
 
 
 @dataclass
@@ -453,39 +386,19 @@ class RegularLookup(Lookup):
     <Label.TWO_PAIR: 'Two pair'>
     """
 
+    rank_order: ClassVar[RankOrder] = RankOrder.REGULAR
+
     def __post_init__(self) -> None:
+        self._add_multisets(Counter({1: 5}), (False, True), Label.HIGH_CARD)
+        self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
+        self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
         self._add_multisets(
-            RankOrder.REGULAR,
-            Counter({1: 5}),
-            (False, True),
-            Label.HIGH_CARD,
-        )
-        self._add_multisets(
-            RankOrder.REGULAR,
-            Counter({2: 1, 1: 3}),
-            (False,),
-            Label.ONE_PAIR,
-        )
-        self._add_multisets(
-            RankOrder.REGULAR,
-            Counter({2: 2, 1: 1}),
-            (False,),
-            Label.TWO_PAIR,
-        )
-        self._add_multisets(
-            RankOrder.REGULAR,
             Counter({3: 1, 1: 2}),
             (False,),
             Label.THREE_OF_A_KIND,
         )
+        self._add_multisets(Counter({3: 1, 2: 1}), (False,), Label.FULL_HOUSE)
         self._add_multisets(
-            RankOrder.REGULAR,
-            Counter({3: 1, 2: 1}),
-            (False,),
-            Label.FULL_HOUSE,
-        )
-        self._add_multisets(
-            RankOrder.REGULAR,
             Counter({4: 1, 1: 1}),
             (False,),
             Label.FOUR_OF_A_KIND,
@@ -514,14 +427,11 @@ class BadugiLookup(Lookup):
     <Label.HIGH_CARD: 'High card'>
     """
 
+    rank_order: ClassVar[RankOrder] = RankOrder.REGULAR
+
     def __post_init__(self) -> None:
         for i in range(4, 0, -1):
-            self._add_multisets(
-                RankOrder.REGULAR,
-                Counter({1: i}),
-                (i == 1,),
-                Label.HIGH_CARD,
-            )
+            self._add_multisets(Counter({1: i}), (i == 1,), Label.HIGH_CARD)
 
 
 @dataclass
@@ -546,10 +456,7 @@ class KuhnPokerLookup(Lookup):
     <Label.HIGH_CARD: 'High card'>
     """
 
+    rank_order: ClassVar[RankOrder] = RankOrder.KUHN_POKER
+
     def __post_init__(self) -> None:
-        self._add_multisets(
-            RankOrder.KUHN_POKER,
-            Counter({1: 1}),
-            (True,),
-            Label.HIGH_CARD,
-        )
+        self._add_multisets(Counter({1: 1}), (True,), Label.HIGH_CARD)

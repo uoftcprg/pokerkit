@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.3.1 (December 4, 2023)
+-------------------------------
+
+**Added**
+
+- Allow state configuration to be saved.
+
 Version 0.3.0 (October 7, 2023)
 -------------------------------
 

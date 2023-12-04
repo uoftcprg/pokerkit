@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from abc import ABC
+from typing import ClassVar
 
 from pokerkit.hands import (
     BadugiHand,
     EightOrBetterLowHand,
+    Hand,
     OmahaEightOrBetterLowHand,
     OmahaHoldemHand,
     RegularLowHand,
@@ -15,35 +17,277 @@ from pokerkit.hands import (
     StandardLowHand,
 )
 from pokerkit.state import BettingStructure, Opening, Automation, State, Street
-from pokerkit.utilities import Deck, RankOrder, ValuesLike
+from pokerkit.utilities import clean_values, Deck, RankOrder, ValuesLike
 
 
 class Poker(ABC):
-    """The abstract base class for poker games."""
+    """The abstract base class for poker games.
 
-    max_down_card_count: int
-    """The maximum number of down cards."""
-    max_up_card_count: int
-    """The maximum number of up cards."""
-    max_board_card_count: int
-    """The maximum number of board cards."""
-    rank_orders: tuple[RankOrder, ...]
-    """The rank orders."""
-    button_status: bool
-    """The button status."""
+    :param automations: The automations.
+    :param streets: The streets.
+    :param ante_trimming_status: The ante trimming status.
+    :param raw_antes: The raw antes.
+    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param bring_in: The bring-in.
+    :param player_count: The number of players.
+    """
+
+    deck: ClassVar[Deck]
+    """The deck."""
+    hand_types: ClassVar[tuple[type[Hand], ...]]
+    """The hand types."""
+    betting_structure: ClassVar[BettingStructure]
+    """The betting structure."""
+
+    def __init__(
+            self,
+            automations: tuple[Automation, ...],
+            streets: tuple[Street, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            bring_in: int,
+            player_count: int,
+    ) -> None:
+        self.automations: tuple[Automation, ...] = automations
+        """The automations."""
+        self.streets: tuple[Street, ...] = streets
+        """The streets."""
+        self.ante_trimming_status: bool = ante_trimming_status
+        """The ante trimming status.
+
+        Usually, if you want uniform antes, set this to ``True``.
+        If you want non-uniform antes like big blind antes, set
+        this to ``False``.
+        """
+        self.antes: tuple[int, ...] = clean_values(raw_antes, player_count)
+        """The antes."""
+        self.blinds_or_straddles: tuple[int, ...] = clean_values(
+            raw_blinds_or_straddles,
+            player_count,
+        )
+        """The blinds or straddles."""
+        self.bring_in: int = bring_in
+        """The bring-in."""
+        self.player_count: int = player_count
+        """The number of players."""
+
+    def __call__(self, raw_starting_stacks: ValuesLike) -> State:
+        return State(
+            self.automations,
+            self.deck,
+            self.hand_types,
+            self.streets,
+            self.betting_structure,
+            self.ante_trimming_status,
+            self.antes,
+            self.blinds_or_straddles,
+            self.bring_in,
+            raw_starting_stacks,
+            self.player_count,
+        )
+
+    @property
+    def button_status(self) -> bool:
+        """Return the button status.
+
+        :return: The button status.
+        """
+        return any(
+            street.opening == Opening.POSITION for street in self.streets
+        )
+
+    @property
+    def max_hole_card_count(self) -> int:
+        """Return the maximum number of hole cards.
+
+        :return: The maximum number of hole cards.
+        """
+        return sum(
+            len(street.hole_dealing_statuses) for street in self.streets
+        )
+
+    @property
+    def max_down_card_count(self) -> int:
+        """Return the maximum number of down cards.
+
+        :return: The maximum number of down cards.
+        """
+        return sum(
+            street.hole_dealing_statuses.count(
+                False,
+            ) for street in self.streets
+        )
+
+    @property
+    def max_up_card_count(self) -> int:
+        """Return the maximum number of up cards.
+
+        :return: The maximum number of up cards.
+        """
+        return sum(
+            street.hole_dealing_statuses.count(True) for street in self.streets
+        )
+
+    @property
+    def max_board_card_count(self) -> int:
+        """Return the maximum number of board cards.
+
+        :return: The maximum number of board cards.
+        """
+        return sum(street.board_dealing_count for street in self.streets)
+
+    @property
+    def rank_orders(self) -> tuple[RankOrder, ...]:
+        """Return the rank orders.
+
+        :return: The rank orders.
+        """
+        return tuple(
+            hand_type.lookup.rank_order for hand_type in self.hand_types
+        )
 
 
-class TexasHoldem(Poker, ABC):
-    """The abstract base class for Texas hold'em games."""
+class FixedLimitPokerMixin:
+    """The mixin for fixed-limit poker games."""
 
-    max_down_card_count = 2
-    max_up_card_count = 0
-    max_board_card_count = 5
-    rank_orders = (RankOrder.STANDARD,)
-    button_status = True
+    betting_structure: ClassVar[BettingStructure] = (
+        BettingStructure.FIXED_LIMIT
+    )
+    max_completion_betting_or_raising_count: ClassVar[int | None] = 4
 
 
-class FixedLimitTexasHoldem(TexasHoldem):
+class PotLimitPokerMixin:
+    """The mixin for pot-limit poker games."""
+
+    betting_structure: ClassVar[BettingStructure] = BettingStructure.POT_LIMIT
+    max_completion_betting_or_raising_count: ClassVar[int | None] = None
+
+
+class NoLimitPokerMixin:
+    """The mixin for no-limit poker games."""
+
+    betting_structure: ClassVar[BettingStructure] = BettingStructure.NO_LIMIT
+    max_completion_betting_or_raising_count: ClassVar[int | None] = None
+
+
+class Holdem(Poker, ABC):
+    """The abstract base class for hold'em games.
+
+    :param automations: The automations.
+    :param ante_trimming_status: The ante trimming status.
+    :param raw_antes: The raw antes.
+    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param small_bet: The small bet.
+    :param big_bet: The big bet.
+    :param player_count: The number of players.
+    """
+
+    hole_dealing_count: ClassVar[int]
+    """The number of hole dealings."""
+    max_completion_betting_or_raising_count: ClassVar[int | None]
+    """The maximum number of completions, bettings, or raisings."""
+
+    def __init__(
+            self,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            small_bet: int,
+            big_bet: int,
+            player_count: int,
+    ) -> None:
+        super().__init__(
+            automations,
+            (
+                Street(
+                    False,
+                    (False,) * self.hole_dealing_count,
+                    0,
+                    False,
+                    Opening.POSITION,
+                    small_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    3,
+                    False,
+                    Opening.POSITION,
+                    small_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    1,
+                    False,
+                    Opening.POSITION,
+                    big_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    1,
+                    False,
+                    Opening.POSITION,
+                    big_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+            ),
+            ante_trimming_status,
+            raw_antes,
+            raw_blinds_or_straddles,
+            0,
+            player_count,
+        )
+
+
+class UnfixedLimitHoldem(Holdem, ABC):
+    """The abstract base class for unfixed-limit hold'em games.
+
+    :param automations: The automations.
+    :param ante_trimming_status: The ante trimming status.
+    :param raw_antes: The raw antes.
+    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param min_bet: The minimum bet.
+    :param player_count: The number of players.
+    """
+
+    max_completion_betting_or_raising_count: ClassVar[int | None] = None
+
+    def __init__(
+            self,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            min_bet: int,
+            player_count: int,
+    ) -> None:
+        super().__init__(
+            automations,
+            ante_trimming_status,
+            raw_antes,
+            raw_blinds_or_straddles,
+            min_bet,
+            min_bet,
+            player_count,
+        )
+
+
+class TexasHoldemMixin:
+    """The mixin for Texas hold'em games."""
+
+    deck: ClassVar[Deck] = Deck.STANDARD
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (StandardHighHand,)
+    hole_dealing_count: ClassVar[int] = 2
+
+
+class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
     """The class for fixed-limit Texas hold'em games."""
 
     @classmethod
@@ -51,11 +295,11 @@ class FixedLimitTexasHoldem(TexasHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit Texas hold'em game.
@@ -101,67 +345,32 @@ class FixedLimitTexasHoldem(TexasHoldem):
         >>> state.stacks
         [204, 196]
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The antes.
+        :param raw_blinds_or_straddles: The blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (StandardHighHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 2,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    3,
-                    False,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-            ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            small_bet,
+            big_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class NoLimitTexasHoldem(TexasHoldem):
+class NoLimitTexasHoldem(
+        NoLimitPokerMixin,
+        TexasHoldemMixin,
+        UnfixedLimitHoldem,
+):
     """The class for no-limit Texas hold'em games."""
 
     @classmethod
@@ -169,10 +378,10 @@ class NoLimitTexasHoldem(TexasHoldem):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a no-limit Texas hold'em game.
@@ -253,83 +462,41 @@ class NoLimitTexasHoldem(TexasHoldem):
         >>> state.stacks
         [572100, 1997500, 1109500]
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The antes.
+        :param raw_blinds_or_straddles: The blinds or straddles.
         :param min_bet: The min bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (StandardHighHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 2,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    3,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-            ),
-            BettingStructure.NO_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            min_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class NoLimitShortDeckHoldem(TexasHoldem):
+class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
     """The class for no-limit short-deck hold'em games."""
 
-    max_down_card_count = 2
-    max_up_card_count = 0
-    max_board_card_count = 5
-    rank_orders = (RankOrder.SHORT_DECK_HOLDEM,)
-    button_status = True
+    deck: ClassVar[Deck] = Deck.SHORT_DECK_HOLDEM
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (ShortDeckHoldemHand,)
+    hole_dealing_count: ClassVar[int] = 2
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a no-limit short-deck hold'em game.
@@ -411,88 +578,50 @@ class NoLimitShortDeckHoldem(TexasHoldem):
         >>> state.stacks
         [489000, 226000, 684000, 400000, 0, 198000]
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param raw_blinds_or_straddles: The raw blinds or straddles.
         :param min_bet: The min bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.SHORT_DECK_HOLDEM,
-            (ShortDeckHoldemHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 2,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    3,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-            ),
-            BettingStructure.NO_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            min_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class OmahaHoldem(Poker, ABC):
-    """The abstract base class for Omaha hold'em games."""
+class OmahaHoldemMixin:
+    """The mixin for Omaha hold'em games."""
 
-    max_down_card_count = 4
-    max_up_card_count = 0
-    max_board_card_count = 5
-    button_status = True
+    deck: ClassVar[Deck] = Deck.STANDARD
+    hole_dealing_count: ClassVar[int] = 4
 
 
-class PotLimitOmahaHoldem(OmahaHoldem):
+class PotLimitOmahaHoldem(
+        PotLimitPokerMixin,
+        OmahaHoldemMixin,
+        UnfixedLimitHoldem,
+):
     """The class for pot-limit Omaha hold'em games."""
 
-    rank_orders = (RankOrder.STANDARD,)
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (OmahaHoldemHand,)
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a pot-limit Omaha hold'em game.
@@ -568,433 +697,436 @@ class PotLimitOmahaHoldem(OmahaHoldem):
         >>> state.stacks
         [193792375, 0]
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param raw_blinds_or_straddles: The raw blinds or straddles.
         :param min_bet: The min bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (OmahaHoldemHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 4,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    3,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-            ),
-            BettingStructure.POT_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            min_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(OmahaHoldem):
+class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
+        PotLimitPokerMixin,
+        OmahaHoldemMixin,
+        Holdem,
+):
     """The class for fixed-limit Omaha hold'em high/low-split eight or
     better low games.
     """
 
-    rank_orders = RankOrder.STANDARD, RankOrder.EIGHT_OR_BETTER_LOW
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (
+        OmahaHoldemHand,
+        OmahaEightOrBetterLowHand,
+    )
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit Omaha hold'em high/low-split eight or better
         low game.
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param raw_blinds_or_straddles: The raw blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (OmahaHoldemHand, OmahaEightOrBetterLowHand),
-            (
-                Street(
-                    False,
-                    (False,) * 4,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    3,
-                    False,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    1,
-                    False,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-            ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            small_bet,
+            big_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
 class SevenCardStud(Poker, ABC):
-    """The abstract base class for seven card stud games."""
+    """The abstract base class for seven card stud games.
 
-    max_down_card_count = 3
-    max_up_card_count = 4
-    max_board_card_count = 0
-    button_status = False
+    :param automations: The automations.
+    :param ante_trimming_status: The ante trimming status.
+    :param raw_antes: The raw antes.
+    :param bring_in: The bring-in.
+    :param small_bet: The small bet.
+    :param big_bet: The big bet.
+    :param player_count: The number of players.
+    """
 
+    max_completion_betting_or_raising_count: ClassVar[int | None]
+    """The maximum number of completions, bettings, or raisings."""
+    low: ClassVar[bool]
+    """The low status."""
 
-class FixedLimitSevenCardStud(SevenCardStud):
-    """The class for fixed-limit seven card stud games."""
-
-    rank_orders = (RankOrder.STANDARD,)
-
-    @classmethod
-    def create_state(
-            cls,
+    def __init__(
+            self,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
+            raw_antes: ValuesLike,
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
             player_count: int,
-    ) -> State:
-        """Create a fixed-limit seven card stud game.
-
-        :param antes: The antes.
-        :param bring_in: The bring-in.
-        :param small_bet: The small bet.
-        :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
-        :param player_count: The number of players.
-        :return: The created state.
-        """
-        return State(
+    ) -> None:
+        super().__init__(
             automations,
-            Deck.STANDARD,
-            (StandardHighHand,),
             (
                 Street(
                     False,
                     (False, False, True),
                     0,
                     False,
-                    Opening.LOW_CARD,
+                    Opening.HIGH_CARD if self.low else Opening.LOW_CARD,
                     small_bet,
-                    4,
-                ),
-                Street(
-                    True, (True,),
-                    0,
-                    False,
-                    Opening.HIGH_HAND,
-                    small_bet,
-                    4,
+                    self.max_completion_betting_or_raising_count,
                 ),
                 Street(
                     True,
                     (True,),
                     0,
                     False,
-                    Opening.HIGH_HAND,
-                    big_bet,
-                    4,
+                    Opening.LOW_HAND if self.low else Opening.HIGH_HAND,
+                    small_bet,
+                    self.max_completion_betting_or_raising_count,
                 ),
                 Street(
                     True,
                     (True,),
                     0,
                     False,
-                    Opening.HIGH_HAND,
+                    Opening.LOW_HAND if self.low else Opening.HIGH_HAND,
                     big_bet,
-                    4,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (True,),
+                    0,
+                    False,
+                    Opening.LOW_HAND if self.low else Opening.HIGH_HAND,
+                    big_bet,
+                    self.max_completion_betting_or_raising_count,
                 ),
                 Street(
                     True,
                     (False,),
                     0,
                     False,
-                    Opening.HIGH_HAND,
+                    Opening.LOW_HAND if self.low else Opening.HIGH_HAND,
                     big_bet,
-                    4,
+                    self.max_completion_betting_or_raising_count,
                 ),
             ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
+            raw_antes,
             None,
             bring_in,
-            starting_stacks,
             player_count,
         )
 
 
-class FixedLimitSevenCardStudHighLowSplitEightOrBetter(SevenCardStud):
-    """The class for fixed-limit seven card stud high/low-split eight or
-    better low games.
-    """
+class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
+    """The class for fixed-limit seven card stud games."""
 
-    rank_orders = RankOrder.STANDARD, RankOrder.EIGHT_OR_BETTER_LOW
+    deck: ClassVar[Deck] = Deck.STANDARD
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (StandardHighHand,)
+    low: ClassVar[bool] = False
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
+            raw_antes: ValuesLike,
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
+            player_count: int,
+    ) -> State:
+        """Create a fixed-limit seven card stud game.
+
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param bring_in: The bring-in.
+        :param small_bet: The small bet.
+        :param big_bet: The big bet.
+        :param raw_starting_stacks: The raw starting stacks.
+        :param player_count: The number of players.
+        :return: The created state.
+        """
+        return cls(
+            automations,
+            ante_trimming_status,
+            raw_antes,
+            bring_in,
+            small_bet,
+            big_bet,
+            player_count,
+        )(raw_starting_stacks)
+
+
+class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
+        FixedLimitPokerMixin,
+        SevenCardStud,
+):
+    """The class for fixed-limit seven card stud high/low-split eight or
+    better low games.
+    """
+
+    deck: ClassVar[Deck] = Deck.STANDARD
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (
+        StandardHighHand,
+        EightOrBetterLowHand,
+    )
+    low: ClassVar[bool] = False
+
+    @classmethod
+    def create_state(
+            cls,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            bring_in: int,
+            small_bet: int,
+            big_bet: int,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit seven card stud high/low-split eight or
         better low game.
 
-        :param antes: The antes.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
         :param bring_in: The bring-in.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (StandardHighHand, EightOrBetterLowHand),
-            (
-                Street(
-                    False,
-                    (False, False, True),
-                    0,
-                    False,
-                    Opening.LOW_CARD,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (True,),
-                    0,
-                    False,
-                    Opening.HIGH_HAND,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (True,),
-                    0,
-                    False,
-                    Opening.HIGH_HAND,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (True,),
-                    0,
-                    False,
-                    Opening.HIGH_HAND,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (False,),
-                    0,
-                    False,
-                    Opening.HIGH_HAND,
-                    big_bet,
-                    4,
-                ),
-            ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
-            None,
+            raw_antes,
             bring_in,
-            starting_stacks,
+            small_bet,
+            big_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class FixedLimitRazz(SevenCardStud):
+class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
     """The class for fixed-limit razz games."""
 
-    rank_orders = (RankOrder.REGULAR,)
+    deck: ClassVar[Deck] = Deck.REGULAR
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (RegularLowHand,)
+    low: ClassVar[bool] = True
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
+            raw_antes: ValuesLike,
             bring_in: int,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit razz game.
 
-        :param antes: The antes.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
         :param bring_in: The bring-in.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.REGULAR,
-            (RegularLowHand,),
+            ante_trimming_status,
+            raw_antes,
+            bring_in,
+            small_bet,
+            big_bet,
+            player_count,
+        )(raw_starting_stacks)
+
+
+class Draw(Poker, ABC):
+    """The abstract base class for draw games."""
+
+    hole_dealing_count: ClassVar[int]
+    """The number of hole dealings."""
+    max_completion_betting_or_raising_count: ClassVar[int | None]
+    """The maximum number of completions, bettings, or raisings."""
+
+
+class SingleDraw(Draw, ABC):
+    """The abstract base class for single draw games.
+
+    :param automations: The automations.
+    :param ante_trimming_status: The ante trimming status.
+    :param raw_antes: The raw antes.
+    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param min_bet: The min bet.
+    :param player_count: The number of players.
+    """
+
+    def __init__(
+            self,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            min_bet: int,
+            player_count: int,
+    ) -> None:
+        super().__init__(
+            automations,
             (
                 Street(
                     False,
-                    (False, False, True),
+                    (False,) * self.hole_dealing_count,
                     0,
                     False,
-                    Opening.HIGH_CARD,
-                    small_bet,
-                    4,
+                    Opening.POSITION,
+                    min_bet,
+                    self.max_completion_betting_or_raising_count,
                 ),
                 Street(
                     True,
-                    (True,),
+                    (),
                     0,
-                    False,
-                    Opening.LOW_HAND,
-                    small_bet,
-                    4,
-                ),
-                Street(
                     True,
-                    (True,),
-                    0,
-                    False,
-                    Opening.LOW_HAND,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (True,),
-                    0,
-                    False,
-                    Opening.LOW_HAND,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (False,),
-                    0,
-                    False,
-                    Opening.LOW_HAND,
-                    big_bet,
-                    4,
+                    Opening.POSITION,
+                    min_bet,
+                    self.max_completion_betting_or_raising_count,
                 ),
             ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
-            None,
-            bring_in,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            0,
             player_count,
         )
 
 
-class DeuceToSevenLowball(Poker, ABC):
+class TripleDraw(Draw, ABC):
+    """The abstract base class for triple draw games.
+
+    :param automations: The automations.
+    :param ante_trimming_status: The ante trimming status.
+    :param raw_antes: The raw antes.
+    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param small_bet: The small bet.
+    :param big_bet: The big bet.
+    :param player_count: The number of players.
+    """
+
+    def __init__(
+            self,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            small_bet: int,
+            big_bet: int,
+            player_count: int,
+    ) -> None:
+        super().__init__(
+            automations,
+            (
+                Street(
+                    False,
+                    (False,) * self.hole_dealing_count,
+                    0,
+                    False,
+                    Opening.POSITION,
+                    small_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    0,
+                    True,
+                    Opening.POSITION,
+                    small_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    0,
+                    True,
+                    Opening.POSITION,
+                    big_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    0,
+                    True,
+                    Opening.POSITION,
+                    big_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+            ),
+            ante_trimming_status,
+            raw_antes,
+            raw_blinds_or_straddles,
+            0,
+            player_count,
+        )
+
+
+class DeuceToSevenLowballMixin:
     """The abstract base class for deuce-to-seven lowball games."""
 
-    max_down_card_count = 5
-    max_up_card_count = 0
-    max_board_card_count = 0
-    rank_orders = (RankOrder.STANDARD,)
-    button_status = True
+    deck: ClassVar[Deck] = Deck.STANDARD
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (StandardLowHand,)
+    hole_dealing_count: ClassVar[int] = 5
 
 
-class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
+class NoLimitDeuceToSevenLowballSingleDraw(
+        NoLimitPokerMixin,
+        DeuceToSevenLowballMixin,
+        SingleDraw,
+):
     """The class for no-limit deuce-to-seven lowball single draw games.
     """
 
@@ -1003,56 +1135,38 @@ class NoLimitDeuceToSevenLowballSingleDraw(DeuceToSevenLowball):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a no-limit deuce-to-seven lowball single draw game.
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param raw_blinds_or_straddles: The raw blinds or straddles.
         :param min_bet: The min bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (StandardLowHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 5,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    min_bet,
-                    None,
-                ),
-            ),
-            BettingStructure.NO_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            min_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
+class FixedLimitDeuceToSevenLowballTripleDraw(
+        FixedLimitPokerMixin,
+        DeuceToSevenLowballMixin,
+        TripleDraw,
+):
     """The class for fixed-limit deuce-to-seven lowball triple draw
     games.
     """
@@ -1062,11 +1176,11 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit deuce-to-seven lowball triple draw game.
@@ -1164,85 +1278,44 @@ class FixedLimitDeuceToSevenLowballTripleDraw(DeuceToSevenLowball):
         >>> state.stacks
         [0, 4190000, 5910000, 12095000]
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param raw_blinds_or_straddles: The raw blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.STANDARD,
-            (StandardLowHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 5,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-            ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            small_bet,
+            big_bet,
             player_count,
-        )
+        )(raw_starting_stacks)
 
 
-class FixedLimitBadugi(Poker):
+class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
     """The class for fixed-limit badugi games."""
 
-    max_down_card_count = 4
-    max_up_card_count = 0
-    max_board_card_count = 0
-    rank_orders = (RankOrder.REGULAR,)
-    button_status = True
+    deck: ClassVar[Deck] = Deck.REGULAR
+    hand_types: ClassVar[tuple[type[Hand], ...]] = (BadugiHand,)
+    hole_dealing_count: ClassVar[int] = 4
 
     @classmethod
     def create_state(
             cls,
             automations: tuple[Automation, ...],
             ante_trimming_status: bool,
-            antes: ValuesLike,
-            blinds_or_straddles: ValuesLike,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
-            starting_stacks: ValuesLike,
+            raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
         """Create a fixed-limit badugi game.
@@ -1360,61 +1433,22 @@ class FixedLimitBadugi(Poker):
         >>> state.stacks
         [196, 220, 200, 184]
 
-        :param antes: The antes.
-        :param blinds_or_straddles: The blinds or straddles.
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The raw antes.
+        :param raw_blinds_or_straddles: The raw blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param starting_stacks: The starting stacks.
+        :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
         :return: The created state.
         """
-        return State(
+        return cls(
             automations,
-            Deck.REGULAR,
-            (BadugiHand,),
-            (
-                Street(
-                    False,
-                    (False,) * 4,
-                    0,
-                    False,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    small_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-                Street(
-                    True,
-                    (),
-                    0,
-                    True,
-                    Opening.POSITION,
-                    big_bet,
-                    4,
-                ),
-            ),
-            BettingStructure.FIXED_LIMIT,
             ante_trimming_status,
-            antes,
-            blinds_or_straddles,
-            0,
-            starting_stacks,
+            raw_antes,
+            raw_blinds_or_straddles,
+            small_bet,
+            big_bet,
             player_count,
-        )
+        )(raw_starting_stacks)

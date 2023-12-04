@@ -76,10 +76,11 @@ class Opening(StrEnum):
 
 @dataclass
 class _LowHandOpeningLookup(Lookup):
+    rank_order = RankOrder.REGULAR
+
     def __post_init__(self) -> None:
         for i in range(1, 5):
             self._add_multisets(
-                RankOrder.REGULAR,
                 Counter({1: i}),
                 (False, True),
                 Label.HIGH_CARD,
@@ -87,41 +88,30 @@ class _LowHandOpeningLookup(Lookup):
 
         for i in range(3):
             self._add_multisets(
-                RankOrder.REGULAR,
                 Counter({2: 1, 1: i}),
                 (False,),
                 Label.ONE_PAIR,
             )
 
-        self._add_multisets(
-            RankOrder.REGULAR,
-            Counter({2: 2}),
-            (False,),
-            Label.TWO_PAIR,
-        )
+        self._add_multisets(Counter({2: 2}), (False,), Label.TWO_PAIR)
 
         for i in range(2):
             self._add_multisets(
-                RankOrder.REGULAR,
                 Counter({3: 1, 1: i}),
                 (False,),
                 Label.THREE_OF_A_KIND,
             )
 
-        self._add_multisets(
-            RankOrder.REGULAR,
-            Counter({4: 1}),
-            (False,),
-            Label.FOUR_OF_A_KIND,
-        )
+        self._add_multisets(Counter({4: 1}), (False,), Label.FOUR_OF_A_KIND)
 
 
 @dataclass
 class _HighHandOpeningLookup(Lookup):
+    rank_order = RankOrder.STANDARD
+
     def __post_init__(self) -> None:
         for i in range(1, 5):
             self._add_multisets(
-                RankOrder.STANDARD,
                 Counter({1: i}),
                 (False, True),
                 Label.HIGH_CARD,
@@ -129,33 +119,21 @@ class _HighHandOpeningLookup(Lookup):
 
         for i in range(3):
             self._add_multisets(
-                RankOrder.STANDARD,
                 Counter({2: 1, 1: i}),
                 (False,),
                 Label.ONE_PAIR,
             )
 
-        self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({2: 2}),
-            (False,),
-            Label.TWO_PAIR,
-        )
+        self._add_multisets(Counter({2: 2}), (False,), Label.TWO_PAIR)
 
         for i in range(2):
             self._add_multisets(
-                RankOrder.STANDARD,
                 Counter({3: 1, 1: i}),
                 (False,),
                 Label.THREE_OF_A_KIND,
             )
 
-        self._add_multisets(
-            RankOrder.STANDARD,
-            Counter({4: 1}),
-            (False,),
-            Label.FOUR_OF_A_KIND,
-        )
+        self._add_multisets(Counter({4: 1}), (False,), Label.FOUR_OF_A_KIND)
 
 
 @dataclass(frozen=True)
@@ -3023,26 +3001,38 @@ class State:
                 min_up_cards = [
                     min_or_none(
                         self.get_up_cards(i),
-                        key=partial(card_key, RankOrder.STANDARD),
+                        key=partial(
+                            card_key,
+                            _HighHandOpeningLookup.rank_order,
+                        ),
                     ) for i in self.player_indices
                 ]
                 self.opener_index = min_up_cards.index(
                     min_or_none(
                         min_up_cards,
-                        key=partial(card_key, RankOrder.STANDARD),
+                        key=partial(
+                            card_key,
+                            _HighHandOpeningLookup.rank_order,
+                        ),
                     ),
                 )
             case Opening.HIGH_CARD:
                 max_up_cards = [
                     max_or_none(
                         self.get_up_cards(i),
-                        key=partial(card_key, RankOrder.REGULAR),
+                        key=partial(
+                            card_key,
+                            _LowHandOpeningLookup.rank_order,
+                        ),
                     ) for i in self.player_indices
                 ]
                 self.opener_index = max_up_cards.index(
                     max_or_none(
                         max_up_cards,
-                        key=partial(card_key, RankOrder.REGULAR),
+                        key=partial(
+                            card_key,
+                            _LowHandOpeningLookup.rank_order,
+                        ),
                     ),
                 )
             case Opening.LOW_HAND:
