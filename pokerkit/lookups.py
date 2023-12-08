@@ -3,8 +3,8 @@ lookups.
 """
 
 from abc import ABC
-from collections import Counter
 from collections.abc import Iterable, Reversible, Sequence
+from collections import Counter
 from dataclasses import dataclass, field
 from enum import StrEnum, unique
 from functools import partial
@@ -104,7 +104,7 @@ class Lookup(ABC):
 
     __primes = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41
 
-    assert len(__primes) >= len(tuple(Rank))
+    assert len(__primes) >= len(tuple(Rank)) - 1  # except unknown
 
     __multipliers = dict(zip(Rank, __primes))
     rank_order: ClassVar[RankOrder]
@@ -442,9 +442,9 @@ class KuhnPokerLookup(Lookup):
     please use :class:`pokerkit.hands.KuhnPokerHand`.
 
     >>> lookup = KuhnPokerLookup()
-    >>> e0 = lookup.get_entry('Js')
-    >>> e1 = lookup.get_entry('Qs')
-    >>> e2 = lookup.get_entry('2c')
+    >>> e0 = lookup.get_entry('J?')
+    >>> e1 = lookup.get_entry('Q?')
+    >>> e2 = lookup.get_entry('2?')
     Traceback (most recent call last):
         ...
     ValueError: cards form an invalid hand

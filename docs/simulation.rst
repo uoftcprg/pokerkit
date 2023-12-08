@@ -536,8 +536,8 @@ Link: https://youtu.be/GnxFohpljqM
    >>> # Below shows the pre-flop dealings and actions.
    >>> state.deal_hole('Ac2d')  # Ivey
    HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, False))
-   >>> state.deal_hole('5h7s')  # Antonius*
-   HoleDealing(player_index=1, cards=(5h, 7s), statuses=(False, False))
+   >>> state.deal_hole('????')  # Antonius*
+   HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
    >>> state.deal_hole('7h6h')  # Dwan
    HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, False))
    >>> state.complete_bet_or_raise_to(7000)  # Dwan
@@ -730,10 +730,10 @@ Link: https://youtu.be/pChCqb2FNxY
    >>> # Below shows the pre-flop dealings and actions.
    >>> state.deal_hole('7h6c4c3d2c')  # Yockey
    HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(False, False, False, False, False))
-   >>> state.deal_hole('JsJcJdJhTs')  # Hui*
-   HoleDealing(player_index=1, cards=(Js, Jc, Jd, Jh, Ts), statuses=(False, False, False, False, False))
-   >>> state.deal_hole('KsKcKdKhTh')  # Esposito*
-   HoleDealing(player_index=2, cards=(Ks, Kc, Kd, Kh, Th), statuses=(False, False, False, False, False))
+   >>> state.deal_hole('??????????')  # Hui*
+   HoleDealing(player_index=1, cards=(??, ??, ??, ??, ??), statuses=(False, False, False, False, False))
+   >>> state.deal_hole('??????????')  # Esposito*
+   HoleDealing(player_index=2, cards=(??, ??, ??, ??, ??), statuses=(False, False, False, False, False))
    >>> state.deal_hole('AsQs6s5c3c')  # Arieh
    HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(False, False, False, False, False))
    >>> state.fold()  # Esposito

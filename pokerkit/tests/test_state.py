@@ -5,11 +5,11 @@
 from hashlib import md5
 from itertools import combinations
 from unittest import main, TestCase
-from warnings import resetwarnings, simplefilter
 
 from pokerkit.games import (
     FixedLimitDeuceToSevenLowballTripleDraw,
     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
+    FixedLimitRazz,
     FixedLimitSevenCardStud,
     NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
@@ -64,21 +64,12 @@ class HighHandOpeningLookupTestCase(LookupTestCaseMixin, TestCase):
 
 
 class StateTestCase(TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        simplefilter('ignore')
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        resetwarnings()
-
     def test_all_ins(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -99,8 +90,11 @@ class StateTestCase(TestCase):
         state.check_or_call()
         self.assertRaises(ValueError, state.complete_bet_or_raise_to)
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs2c')
+        state.burn_card('??')
         state.deal_board('3c')
+        state.burn_card('??')
         state.deal_board('4c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [6, 0, 5])
@@ -110,7 +104,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -129,8 +122,11 @@ class StateTestCase(TestCase):
         state.deal_hole('QcQd')
         self.assertRaises(ValueError, state.complete_bet_or_raise_to)
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs2c')
+        state.burn_card('??')
         state.deal_board('3c')
+        state.burn_card('??')
         state.deal_board('4c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [8, 0, 3])
@@ -140,7 +136,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -157,8 +152,11 @@ class StateTestCase(TestCase):
         state.deal_hole('AcAd')
         state.deal_hole('KcKd')
         state.deal_hole('QcQd')
+        state.burn_card('??')
         state.deal_board('QhQs2c')
+        state.burn_card('??')
         state.deal_board('3c')
+        state.burn_card('??')
         state.deal_board('4c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [4, 1, 3])
@@ -168,7 +166,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -190,8 +187,11 @@ class StateTestCase(TestCase):
         state.deal_hole('9c9d')
         self.assertRaises(ValueError, state.complete_bet_or_raise_to)
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs2c')
+        state.burn_card('??')
         state.deal_board('3c')
+        state.burn_card('??')
         state.deal_board('4c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 18, 0, 0, 0])
@@ -201,7 +201,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -220,10 +219,13 @@ class StateTestCase(TestCase):
         state.deal_hole('QcQd')
         state.complete_bet_or_raise_to(100)
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs2c')
         state.complete_bet_or_raise_to(100)
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('3c')
+        state.burn_card('??')
         state.deal_board('4c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 402])
@@ -233,7 +235,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -254,10 +255,13 @@ class StateTestCase(TestCase):
         self.assertRaises(ValueError, state.complete_bet_or_raise_to)
         state.check_or_call()
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs2c')
         state.complete_bet_or_raise_to(100)
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('3c')
+        state.burn_card('??')
         state.deal_board('4c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 402])
@@ -267,7 +271,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -287,8 +290,11 @@ class StateTestCase(TestCase):
         state.deal_hole('JcJd')
         state.deal_hole('TcTd')
         state.deal_hole('9c9d')
+        state.burn_card('??')
         state.deal_board('QhQs6c')
+        state.burn_card('??')
         state.deal_board('7c')
+        state.burn_card('??')
         state.deal_board('8c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 12, 0, 0, 4])
@@ -298,7 +304,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -320,8 +325,11 @@ class StateTestCase(TestCase):
         state.deal_hole('9c9d')
         state.check_or_call()
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs6c')
+        state.burn_card('??')
         state.deal_board('7c')
+        state.burn_card('??')
         state.deal_board('8c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 15, 0, 0, 3])
@@ -331,7 +339,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -353,8 +360,11 @@ class StateTestCase(TestCase):
         state.deal_hole('9c9d')
         state.check_or_call()
         state.fold()
+        state.burn_card('??')
         state.deal_board('QhQs6c')
+        state.burn_card('??')
         state.deal_board('7c')
+        state.burn_card('??')
         state.deal_board('8c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 14, 1, 0, 3])
@@ -364,7 +374,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -388,8 +397,11 @@ class StateTestCase(TestCase):
         state.fold()
         state.complete_bet_or_raise_to()
         state.check_or_call()
+        state.burn_card('??')
         state.deal_board('QhQs6c')
+        state.burn_card('??')
         state.deal_board('7c')
+        state.burn_card('??')
         state.deal_board('8c')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [0, 0, 18, 1, 0, 1])
@@ -399,7 +411,6 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
@@ -416,8 +427,11 @@ class StateTestCase(TestCase):
 
         state.deal_hole('AcAdAhAs')
         state.deal_hole('KcKdKhKs')
+        state.burn_card('??')
         state.deal_board('JcJdJh')
+        state.burn_card('??')
         state.deal_board('Js')
+        state.burn_card('??')
         state.deal_board('Tc')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [300, 0])
@@ -427,14 +441,13 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
             True,
-            None,
+            0,
             50,
             200,
             400,
@@ -448,15 +461,19 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to()
         state.check_or_call()
         state.check_or_call()
+        state.burn_card('??')
         state.deal_hole('As')
         state.deal_hole('Ks')
         state.deal_hole('Qs')
+        state.burn_card('??')
         state.deal_hole('2c')
         state.deal_hole('2d')
         state.deal_hole('2h')
+        state.burn_card('??')
         state.deal_hole('3c')
         state.deal_hole('3d')
         state.deal_hole('3h')
+        state.burn_card('??')
         state.deal_hole('4c')
         state.deal_hole('4d')
         state.deal_hole('4h')
@@ -468,14 +485,13 @@ class StateTestCase(TestCase):
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
                 Automation.BLIND_OR_STRADDLE_POSTING,
-                Automation.CARD_BURNING,
                 Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
                 Automation.HAND_KILLING,
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
             True,
-            None,
+            0,
             50,
             200,
             400,
@@ -492,20 +508,62 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.complete_bet_or_raise_to()
         state.check_or_call()
+        state.burn_card('??')
         state.deal_hole('As')
         state.deal_hole('Ks')
         state.deal_hole('Qs')
+        state.burn_card('??')
         state.deal_hole('2c')
         state.deal_hole('2d')
         state.deal_hole('2h')
+        state.burn_card('??')
         state.deal_hole('3c')
         state.deal_hole('3d')
         state.deal_hole('3h')
+        state.burn_card('??')
         state.deal_hole('4c')
         state.deal_hole('4d')
         state.deal_hole('4h')
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [525, 0, 0])
+
+    def test_automated_dealing(self) -> None:
+        state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_DEALING,
+                Automation.BOARD_DEALING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            4,
+            200,
+            6,
+        )
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.stand_pat_or_discard(state.hole_cards[0])
+        state.stand_pat_or_discard(state.hole_cards[1])
+        state.stand_pat_or_discard(state.hole_cards[2])
+        state.stand_pat_or_discard(state.hole_cards[3])
+        state.stand_pat_or_discard(state.hole_cards[4])
+        state.stand_pat_or_discard(state.hole_cards[5])
+        state.burn_card('??')
+        state.check_or_call()
 
     def test_reshuffling(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
@@ -522,7 +580,7 @@ class StateTestCase(TestCase):
                 Automation.CHIPS_PULLING,
             ),
             True,
-            None,
+            0,
             (1, 2),
             2,
             4,
@@ -575,6 +633,63 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
+
+    def test_hole_to_board_dealing(self) -> None:
+        state = FixedLimitRazz.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.CARD_BURNING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            1,
+            2,
+            4,
+            200,
+            9,
+        )
+
+        for _ in range(3 * state.player_count):
+            state.deal_hole()
+
+        state.complete_bet_or_raise_to()
+
+        for _ in range(state.player_count - 1):
+            state.check_or_call()
+
+        for _ in range(state.player_count):
+            state.deal_hole()
+
+        for _ in range(state.player_count):
+            state.check_or_call()
+
+        for _ in range(state.player_count):
+            state.deal_hole()
+
+        for _ in range(state.player_count):
+            state.check_or_call()
+
+        self.assertFalse(state.can_deal_hole())
+        self.assertRaises(ValueError, state.deal_hole)
+        self.assertTrue(state.can_deal_board())
+        state.deal_board()
+
+        for _ in range(state.player_count):
+            state.check_or_call()
+
+        self.assertFalse(state.can_deal_hole())
+        self.assertRaises(ValueError, state.deal_hole)
+        self.assertTrue(state.can_deal_board())
+        state.deal_board()
+
+        for _ in range(state.player_count):
+            state.check_or_call()
 
 
 if __name__ == '__main__':

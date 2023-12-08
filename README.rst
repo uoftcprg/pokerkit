@@ -64,7 +64,7 @@ Link: https://youtu.be/GnxFohpljqM
    # Below shows the pre-flop dealings and actions.
 
    state.deal_hole('Ac2d')  # Ivey
-   state.deal_hole('5h7s')  # Antonius*
+   state.deal_hole('????')  # Antonius*
    state.deal_hole('7h6h')  # Dwan
 
    state.complete_bet_or_raise_to(7000)  # Dwan
@@ -238,7 +238,7 @@ Link: https://youtu.be/pChCqb2FNxY
            Automation.CHIPS_PULLING,
        ),
        True,
-       None,
+       0,
        (75000, 150000),
        150000,
        300000,
@@ -249,8 +249,8 @@ Link: https://youtu.be/pChCqb2FNxY
    # Below shows the pre-flop dealings and actions.
 
    state.deal_hole('7h6c4c3d2c')  # Yockey
-   state.deal_hole('JsJcJdJhTs')  # Hui*
-   state.deal_hole('KsKcKdKhTh')  # Esposito*
+   state.deal_hole('??????????')  # Hui*
+   state.deal_hole('??????????')  # Esposito*
    state.deal_hole('AsQs6s5c3c')  # Arieh
 
    state.fold()  # Esposito
@@ -310,7 +310,7 @@ Link: https://en.wikipedia.org/wiki/Badugi
            Automation.CHIPS_PULLING,
        ),
        True,
-       None,
+       0,
        (1, 2),
        2,
        4,
@@ -320,10 +320,10 @@ Link: https://en.wikipedia.org/wiki/Badugi
 
    # Below shows the pre-flop dealings and actions.
 
-   state.deal_hole('As4hJcKh')  # Bob*
-   state.deal_hole('3s5d7s8s')  # Carol*
-   state.deal_hole('KsKdQsQd')  # Ted*
-   state.deal_hole('2s4c6dKc')  # Alice*
+   state.deal_hole('????????')  # Bob*
+   state.deal_hole('????????')  # Carol*
+   state.deal_hole('????????')  # Ted*
+   state.deal_hole('????????')  # Alice*
 
    state.fold()  # Ted
    state.check_or_call()  # Alice
@@ -332,9 +332,9 @@ Link: https://en.wikipedia.org/wiki/Badugi
 
    # Below shows the first draw and actions.
 
-   state.stand_pat_or_discard('JcKh')  # Bob*
-   state.stand_pat_or_discard('7s8s')  # Carol*
-   state.stand_pat_or_discard('Kc')  # Alice*
+   state.stand_pat_or_discard('????')  # Bob*
+   state.stand_pat_or_discard('????')  # Carol*
+   state.stand_pat_or_discard('??')  # Alice*
    state.deal_hole('TcJs')  # Bob*
    state.deal_hole('7cTh')  # Carol*
    state.deal_hole('Qc')  # Alice*

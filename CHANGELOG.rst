@@ -4,15 +4,38 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.0 (Planned)
+-----------------------
+
+**Changed**
+
+- ``None`` IS NO LONGER ``CardsLike`` or ``ValuesLike``. Using ``None`` as
+  antes, etc. will raise an error!
+- When not enough card to deal everybody hole cards, a board dealing is done.
+- Showdown can specify what cards the player showed.
+- More generous state operations when it comes to cards. Some things that were
+  errors are now warnings.
+
+**Added**
+
+- Cards with unknown rank or suit.
+
+**Planned**
+
+- Tables and seats.
+- Controllers (real-time table manipulation).
+- Poker notation support.
+- Poker hand history (.phh) support.
+
 Version 0.3.2 (December 4, 2023)
--------------------------------
+--------------------------------
 
 **Changed**
 
 - When saving state configuration, ``player_count`` is not saved.
 
 Version 0.3.1 (December 4, 2023)
--------------------------------
+--------------------------------
 
 **Added**
 

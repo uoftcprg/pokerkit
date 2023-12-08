@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Hashable
 from functools import total_ordering
 from itertools import chain, combinations
-from typing import Any
+from typing import Any, ClassVar
 
 from pokerkit.lookups import (
     BadugiLookup,
@@ -57,9 +57,9 @@ class Hand(Hashable, ABC):
     >>> hands = {h0, h1}
     """
 
-    lookup: Lookup
+    lookup: ClassVar[Lookup]
     """The hand lookup."""
-    low: bool
+    low: ClassVar[bool]
     """The low status."""
 
     @classmethod
@@ -67,7 +67,7 @@ class Hand(Hashable, ABC):
     def from_game(
             cls,
             hole_cards: CardsLike,
-            board_cards: CardsLike = None,
+            board_cards: CardsLike = (),
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -78,6 +78,7 @@ class Hand(Hashable, ABC):
         :param board_cards: The optional board cards.
         :return: The strongest hand from possible card combinations.
         """
+        pass  # pragma: no cover
 
     def __init__(self, cards: CardsLike) -> None:
         self.__cards = Card.clean(cards)
@@ -86,7 +87,7 @@ class Hand(Hashable, ABC):
             raise ValueError(f'invalid hand \'{repr(self)}\'')
 
     def __eq__(self, other: Any) -> bool:
-        if type(self) != type(other):
+        if type(self) != type(other):  # noqa: E721
             return NotImplemented
 
         assert isinstance(other, Hand)
@@ -97,15 +98,17 @@ class Hand(Hashable, ABC):
         return hash(self.entry)
 
     def __lt__(self, other: Hand) -> bool:
-        if type(self) != type(other):
+        if type(self) != type(other):  # noqa: E721
             return NotImplemented
 
         assert isinstance(other, Hand)
 
         if self.low:
-            return self.entry > other.entry
+            ordering = self.entry > other.entry
         else:
-            return self.entry < other.entry
+            ordering = self.entry < other.entry
+
+        return ordering
 
     def __repr__(self) -> str:
         return ''.join(map(repr, self.cards))
@@ -145,14 +148,14 @@ class Hand(Hashable, ABC):
 class CombinationHand(Hand, ABC):
     """The abstract base class for combination hands."""
 
-    card_count: int
+    card_count: ClassVar[int]
     """The number of cards."""
 
     @classmethod
     def from_game(
             cls,
             hole_cards: CardsLike,
-            board_cards: CardsLike = None,
+            board_cards: CardsLike = (),
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -385,14 +388,14 @@ class RegularLowHand(CombinationHand):
 class BoardCombinationHand(CombinationHand, ABC):
     """The abstract base class for board-combination hands."""
 
-    board_card_count: int
+    board_card_count: ClassVar[int]
     """The number of board cards."""
 
     @classmethod
     def from_game(
             cls,
             hole_cards: CardsLike,
-            board_cards: CardsLike = None,
+            board_cards: CardsLike = (),
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -438,8 +441,8 @@ class BoardCombinationHand(CombinationHand, ABC):
 class GreekHoldemHand(BoardCombinationHand):
     """The class for Greek hold'em hands.
 
-    In Greek hold'em, the player must use all of his or her hole cards
-    to make a hand.
+    In Greek hold'em, the player must use all of their hole cards to
+    make a hand.
 
     >>> h0 = GreekHoldemHand('7c5d4h3s2c')
     >>> h1 = GreekHoldemHand('7c6d4h3s2c')
@@ -459,14 +462,14 @@ class GreekHoldemHand(BoardCombinationHand):
 class HoleBoardCombinationHand(BoardCombinationHand, ABC):
     """The abstract base class for hole-board-combination hands."""
 
-    hole_card_count: int
+    hole_card_count: ClassVar[int]
     """The number of hole cards."""
 
     @classmethod
     def from_game(
             cls,
             hole_cards: CardsLike,
-            board_cards: CardsLike = None,
+            board_cards: CardsLike = (),
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -525,8 +528,8 @@ class HoleBoardCombinationHand(BoardCombinationHand, ABC):
 class OmahaHoldemHand(HoleBoardCombinationHand):
     """The class for Omaha hold'em hands.
 
-    In Omaha hold'em, the player must use a fixed number of his or her
-    hole cards to make a hand.
+    In Omaha hold'em, the player must use a fixed number of their hole
+    cards to make a hand.
 
     >>> h0 = OmahaHoldemHand('7c5d4h3s2c')
     >>> h1 = OmahaHoldemHand('7c6d4h3s2c')
@@ -601,7 +604,7 @@ class BadugiHand(Hand):
     def from_game(
             cls,
             hole_cards: CardsLike,
-            board_cards: CardsLike = None,
+            board_cards: CardsLike = (),
     ) -> Hand:
         """Create a poker hand from a game setting.
 
@@ -669,7 +672,7 @@ class KuhnPokerHand(Hand):
     def from_game(
             cls,
             hole_cards: CardsLike,
-            board_cards: CardsLike = None,
+            board_cards: CardsLike = (),
     ) -> Hand:
         """Create a poker hand from a game setting.
 

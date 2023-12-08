@@ -88,6 +88,14 @@ class Poker(ABC):
     def button_status(self) -> bool:
         """Return the button status.
 
+        >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
+        >>> game.button_status
+        True
+
+        >>> game = FixedLimitRazz((), True, 1, 1, 2, 4)
+        >>> game.button_status
+        False
+
         :return: The button status.
         """
         return any(
@@ -98,6 +106,14 @@ class Poker(ABC):
     def max_hole_card_count(self) -> int:
         """Return the maximum number of hole cards.
 
+        >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
+        >>> game.max_hole_card_count
+        2
+
+        >>> game = FixedLimitRazz((), True, 1, 1, 2, 4)
+        >>> game.max_hole_card_count
+        7
+
         :return: The maximum number of hole cards.
         """
         return sum(
@@ -107,6 +123,14 @@ class Poker(ABC):
     @property
     def max_down_card_count(self) -> int:
         """Return the maximum number of down cards.
+
+        >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
+        >>> game.max_down_card_count
+        2
+
+        >>> game = FixedLimitRazz((), True, 1, 1, 2, 4)
+        >>> game.max_down_card_count
+        3
 
         :return: The maximum number of down cards.
         """
@@ -120,6 +144,14 @@ class Poker(ABC):
     def max_up_card_count(self) -> int:
         """Return the maximum number of up cards.
 
+        >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
+        >>> game.max_up_card_count
+        0
+
+        >>> game = FixedLimitRazz((), True, 1, 1, 2, 4)
+        >>> game.max_up_card_count
+        4
+
         :return: The maximum number of up cards.
         """
         return sum(
@@ -130,6 +162,14 @@ class Poker(ABC):
     def max_board_card_count(self) -> int:
         """Return the maximum number of board cards.
 
+        >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
+        >>> game.max_board_card_count
+        5
+
+        >>> game = FixedLimitRazz((), True, 1, 1, 2, 4)
+        >>> game.max_board_card_count
+        0
+
         :return: The maximum number of board cards.
         """
         return sum(street.board_dealing_count for street in self.streets)
@@ -137,6 +177,14 @@ class Poker(ABC):
     @property
     def rank_orders(self) -> tuple[RankOrder, ...]:
         """Return the rank orders.
+
+        >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
+        >>> game.rank_orders  # doctest: +ELLIPSIS
+        (<RankOrder.STANDARD: (<Rank.DEUCE: '2'>, <Rank.TREY: '3'>, <Rank.FO...
+
+        >>> game = FixedLimitRazz((), True, 1, 1, 2, 4)
+        >>> game.rank_orders  # doctest: +ELLIPSIS
+        (<RankOrder.REGULAR: (<Rank.ACE: 'A'>, <Rank.DEUCE: '2'>, <Rank.TREY...
 
         :return: The rank orders.
         """
@@ -309,7 +357,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     4,
@@ -386,7 +434,6 @@ class NoLimitTexasHoldem(
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
@@ -404,8 +451,8 @@ class NoLimitTexasHoldem(
 
         >>> state.deal_hole('Ac2d')  # Ivey
         HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, False))
-        >>> state.deal_hole('5h7s')  # Antonius*
-        HoleDealing(player_index=1, cards=(5h, 7s), statuses=(False, False))
+        >>> state.deal_hole('????')  # Antonius
+        HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
         >>> state.deal_hole('7h6h')  # Dwan
         HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, False))
 
@@ -420,6 +467,8 @@ class NoLimitTexasHoldem(
 
         Below shows the flop dealing and actions.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Jc3d5c')
         BoardDealing(cards=(Jc, 3d, 5c))
 
@@ -430,6 +479,8 @@ class NoLimitTexasHoldem(
 
         Below shows the turn dealing and actions.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('4h')
         BoardDealing(cards=(4h,))
 
@@ -444,6 +495,8 @@ class NoLimitTexasHoldem(
 
         Below shows the river dealing.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Jh')
         BoardDealing(cards=(Jh,))
 
@@ -473,9 +526,9 @@ class NoLimitTexasHoldem(
 class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
     """The class for no-limit short-deck hold'em games."""
 
-    deck: ClassVar[Deck] = Deck.SHORT_DECK_HOLDEM
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (ShortDeckHoldemHand,)
-    hole_dealing_count: ClassVar[int] = 2
+    deck = Deck.SHORT_DECK_HOLDEM
+    hand_types = (ShortDeckHoldemHand,)
+    hole_dealing_count = 2
 
     @classmethod
     def create_state(
@@ -499,7 +552,6 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
@@ -549,16 +601,22 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
 
         Below shows the flop dealing.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('9h6cKc')
         BoardDealing(cards=(9h, 6c, Kc))
 
         Below shows the turn dealing.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Jh')
         BoardDealing(cards=(Jh,))
 
         Below shows the river dealing.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Ts')
         BoardDealing(cards=(Ts,))
 
@@ -599,7 +657,7 @@ class PotLimitOmahaHoldem(
 ):
     """The class for pot-limit Omaha hold'em games."""
 
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (OmahaHoldemHand,)
+    hand_types = (OmahaHoldemHand,)
 
     @classmethod
     def create_state(
@@ -624,14 +682,13 @@ class PotLimitOmahaHoldem(
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (50000, 100000),
         ...     2000,
         ...     (125945025, 67847350),
@@ -658,6 +715,8 @@ class PotLimitOmahaHoldem(
 
         Below shows the flop dealing and actions.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('4s5c2h')
         BoardDealing(cards=(4s, 5c, 2h))
 
@@ -672,11 +731,15 @@ class PotLimitOmahaHoldem(
 
         Below shows the turn dealing.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('5h')
         BoardDealing(cards=(5h,))
 
         Below shows the river dealing.
 
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('9c')
         BoardDealing(cards=(9c,))
 
@@ -712,7 +775,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
     better low games.
     """
 
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (
+    hand_types = (
         OmahaHoldemHand,
         OmahaEightOrBetterLowHand,
     )
@@ -828,7 +891,7 @@ class SevenCardStud(Poker, ABC):
             ),
             ante_trimming_status,
             raw_antes,
-            None,
+            0,
             bring_in,
         )
 
@@ -836,9 +899,9 @@ class SevenCardStud(Poker, ABC):
 class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
     """The class for fixed-limit seven card stud games."""
 
-    deck: ClassVar[Deck] = Deck.STANDARD
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (StandardHighHand,)
-    low: ClassVar[bool] = False
+    deck = Deck.STANDARD
+    hand_types = (StandardHighHand,)
+    low = False
 
     @classmethod
     def create_state(
@@ -882,12 +945,12 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
     better low games.
     """
 
-    deck: ClassVar[Deck] = Deck.STANDARD
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (
+    deck = Deck.STANDARD
+    hand_types = (
         StandardHighHand,
         EightOrBetterLowHand,
     )
-    low: ClassVar[bool] = False
+    low = False
 
     @classmethod
     def create_state(
@@ -927,9 +990,9 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
 class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
     """The class for fixed-limit razz games."""
 
-    deck: ClassVar[Deck] = Deck.REGULAR
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (RegularLowHand,)
-    low: ClassVar[bool] = True
+    deck = Deck.REGULAR
+    hand_types = (RegularLowHand,)
+    low = True
 
     @classmethod
     def create_state(
@@ -1167,14 +1230,13 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (75000, 150000),
         ...     150000,
         ...     300000,
@@ -1186,10 +1248,10 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
 
         >>> state.deal_hole('7h6c4c3d2c')  # Yockey  # doctest: +ELLIPSIS
         HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(Fa...
-        >>> state.deal_hole('JsJcJdJhTs')  # Hui*  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(Js, Jc, Jd, Jh, Ts), statuses=(Fa...
-        >>> state.deal_hole('KsKcKdKhTh')  # Esposito*  # doctest: +ELLIPSIS
-        HoleDealing(player_index=2, cards=(Ks, Kc, Kd, Kh, Th), statuses=(Fa...
+        >>> state.deal_hole('??????????')  # Hui  # doctest: +ELLIPSIS
+        HoleDealing(player_index=1, cards=(??, ??, ??, ??, ??), statuses=(Fa...
+        >>> state.deal_hole('??????????')  # Esposito  # doctest: +ELLIPSIS
+        HoleDealing(player_index=2, cards=(??, ??, ??, ??, ??), statuses=(Fa...
         >>> state.deal_hole('AsQs6s5c3c')  # Arieh  # doctest: +ELLIPSIS
         HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(Fa...
 
@@ -1210,6 +1272,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         StandingPatOrDiscarding(player_index=0, cards=())
         >>> state.stand_pat_or_discard('AsQs')  # Arieh
         StandingPatOrDiscarding(player_index=3, cards=(As, Qs))
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_hole('2hQh')  # Arieh
         HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, False))
 
@@ -1224,6 +1288,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         StandingPatOrDiscarding(player_index=0, cards=())
         >>> state.stand_pat_or_discard('Qh')  # Arieh
         StandingPatOrDiscarding(player_index=3, cards=(Qh,))
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_hole('4d')  # Arieh
         HoleDealing(player_index=3, cards=(4d,), statuses=(False,))
 
@@ -1238,6 +1304,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         StandingPatOrDiscarding(player_index=0, cards=())
         >>> state.stand_pat_or_discard('6s')  # Arieh
         StandingPatOrDiscarding(player_index=3, cards=(6s,))
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_hole('7c')  # Arieh
         HoleDealing(player_index=3, cards=(7c,), statuses=(False,))
 
@@ -1274,9 +1342,9 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
 class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
     """The class for fixed-limit badugi games."""
 
-    deck: ClassVar[Deck] = Deck.REGULAR
-    hand_types: ClassVar[tuple[type[Hand], ...]] = (BadugiHand,)
-    hole_dealing_count: ClassVar[int] = 4
+    deck = Deck.REGULAR
+    hand_types = (BadugiHand,)
+    hole_dealing_count = 4
 
     @classmethod
     def create_state(
@@ -1301,14 +1369,12 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
-        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     4,
@@ -1318,14 +1384,14 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('As4hJcKh')  # Bob*  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(As, 4h, Jc, Kh), statuses=(False,...
-        >>> state.deal_hole('3s5d7s8s')  # Carol*  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(3s, 5d, 7s, 8s), statuses=(False,...
-        >>> state.deal_hole('KsKdQsQd')  # Ted*  # doctest: +ELLIPSIS
-        HoleDealing(player_index=2, cards=(Ks, Kd, Qs, Qd), statuses=(False,...
-        >>> state.deal_hole('2s4c6dKc')  # Alice*  # doctest: +ELLIPSIS
-        HoleDealing(player_index=3, cards=(2s, 4c, 6d, Kc), statuses=(False,...
+        >>> state.deal_hole('????????')  # Bob  # doctest: +ELLIPSIS
+        HoleDealing(player_index=0, cards=(??, ??, ??, ??), statuses=(False,...
+        >>> state.deal_hole('????????')  # Carol  # doctest: +ELLIPSIS
+        HoleDealing(player_index=1, cards=(??, ??, ??, ??), statuses=(False,...
+        >>> state.deal_hole('????????')  # Ted  # doctest: +ELLIPSIS
+        HoleDealing(player_index=2, cards=(??, ??, ??, ??), statuses=(False,...
+        >>> state.deal_hole('????????')  # Alice  # doctest: +ELLIPSIS
+        HoleDealing(player_index=3, cards=(??, ??, ??, ??), statuses=(False,...
 
         >>> state.fold()  # Ted
         Folding(player_index=2)
@@ -1338,18 +1404,20 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
 
         Below shows the first draw and actions.
 
-        >>> state.stand_pat_or_discard('JcKh')  # Bob*
-        StandingPatOrDiscarding(player_index=0, cards=(Jc, Kh))
-        >>> state.stand_pat_or_discard('7s8s')  # Carol*
-        StandingPatOrDiscarding(player_index=1, cards=(7s, 8s))
-        >>> state.stand_pat_or_discard('Kc')  # Alice*
-        StandingPatOrDiscarding(player_index=3, cards=(Kc,))
-        >>> state.deal_hole('TcJs')  # Bob*
-        HoleDealing(player_index=0, cards=(Tc, Js), statuses=(False, False))
-        >>> state.deal_hole('7cTh')  # Carol*
-        HoleDealing(player_index=1, cards=(7c, Th), statuses=(False, False))
-        >>> state.deal_hole('Qc')  # Alice*
-        HoleDealing(player_index=3, cards=(Qc,), statuses=(False,))
+        >>> state.stand_pat_or_discard('????')  # Bob
+        StandingPatOrDiscarding(player_index=0, cards=(??, ??))
+        >>> state.stand_pat_or_discard('????')  # Carol
+        StandingPatOrDiscarding(player_index=1, cards=(??, ??))
+        >>> state.stand_pat_or_discard('??')  # Alice
+        StandingPatOrDiscarding(player_index=3, cards=(??,))
+        >>> state.burn_card('??')
+        CardBurning(card=??)
+        >>> state.deal_hole('????')  # Bob
+        HoleDealing(player_index=0, cards=(??, ??), statuses=(False, False))
+        >>> state.deal_hole('????')  # Carol
+        HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
+        >>> state.deal_hole('??')  # Alice
+        HoleDealing(player_index=3, cards=(??,), statuses=(False,))
 
         >>> state.check_or_call()  # Bob
         CheckingOrCalling(player_index=0, amount=0)
@@ -1362,16 +1430,18 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
 
         Below shows the second draw and actions.
 
-        >>> state.stand_pat_or_discard('Js')  # Bob*
-        StandingPatOrDiscarding(player_index=0, cards=(Js,))
-        >>> state.stand_pat_or_discard()  # Carol*
+        >>> state.stand_pat_or_discard('??')  # Bob
+        StandingPatOrDiscarding(player_index=0, cards=(??,))
+        >>> state.stand_pat_or_discard()  # Carol
         StandingPatOrDiscarding(player_index=1, cards=())
-        >>> state.stand_pat_or_discard('Qc')  # Alice*
-        StandingPatOrDiscarding(player_index=3, cards=(Qc,))
-        >>> state.deal_hole('Ts')  # Bob*
-        HoleDealing(player_index=0, cards=(Ts,), statuses=(False,))
-        >>> state.deal_hole('9h')  # Alice*
-        HoleDealing(player_index=3, cards=(9h,), statuses=(False,))
+        >>> state.stand_pat_or_discard('??')  # Alice
+        StandingPatOrDiscarding(player_index=3, cards=(??,))
+        >>> state.burn_card('??')
+        CardBurning(card=??)
+        >>> state.deal_hole('??')  # Bob
+        HoleDealing(player_index=0, cards=(??,), statuses=(False,))
+        >>> state.deal_hole('??')  # Alice
+        HoleDealing(player_index=3, cards=(??,), statuses=(False,))
 
         >>> state.check_or_call()  # Bob
         CheckingOrCalling(player_index=0, amount=0)
@@ -1386,12 +1456,14 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
 
         Below shows the third draw and actions.
 
-        >>> state.stand_pat_or_discard('Th')  # Carol*
-        StandingPatOrDiscarding(player_index=1, cards=(Th,))
-        >>> state.stand_pat_or_discard()  # Alice*
+        >>> state.stand_pat_or_discard('??')  # Carol
+        StandingPatOrDiscarding(player_index=1, cards=(??,))
+        >>> state.stand_pat_or_discard()  # Alice
         StandingPatOrDiscarding(player_index=3, cards=())
-        >>> state.deal_hole('8h')  # Carol*
-        HoleDealing(player_index=1, cards=(8h,), statuses=(False,))
+        >>> state.burn_card('??')
+        CardBurning(card=??)
+        >>> state.deal_hole('??')  # Carol
+        HoleDealing(player_index=1, cards=(??,), statuses=(False,))
 
         >>> state.check_or_call()  # Carol
         CheckingOrCalling(player_index=1, amount=0)
@@ -1399,6 +1471,13 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         CompletionBettingOrRaisingTo(player_index=3, amount=4)
         >>> state.check_or_call()  # Carol
         CheckingOrCalling(player_index=1, amount=4)
+
+        Below show the showdown.
+
+        >>> state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
+        HoleCardsShowingOrMucking(player_index=3, hole_cards=(2s, 4c, 6d, 9h))
+        >>> state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=(3s, 5d, 7c, 8h))
 
         Below show the final stacks.
 

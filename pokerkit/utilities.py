@@ -58,6 +58,8 @@ class Rank(StrEnum):
     """The rank of Queens."""
     KING: str = 'K'
     """The rank of Kings."""
+    UNKNOWN: str = '?'
+    """The unknown rank."""
 
 
 @unique
@@ -187,6 +189,8 @@ class Suit(StrEnum):
     """The suit of hearts."""
     SPADE: str = 's'
     """The suit of spades."""
+    UNKNOWN: str = '?'
+    """The unknown suit."""
 
 
 @dataclass(frozen=True)
@@ -333,15 +337,11 @@ class Card:
         (As, Ks)
         >>> Card.clean(Card(Rank.ACE, Suit.SPADE))
         (As,)
-        >>> Card.clean(None)
-        ()
 
         :param values: The cards.
         :return: The cleaned cards.
         """
-        if values is None:
-            values = ()
-        elif isinstance(values, Card):
+        if isinstance(values, Card):
             values = (values,)
         elif isinstance(values, str):
             values = tuple(Card.parse(values))
@@ -396,8 +396,12 @@ class Card:
     def __str__(self) -> str:
         return f'{self.rank.name} OF {self.suit.name}S ({repr(self)})'
 
+    @property
+    def unknown_status(self) -> bool:
+        return self.rank == Rank.UNKNOWN or self.suit == Suit.UNKNOWN
 
-CardsLike = Iterable[Card] | Card | str | None
+
+CardsLike = Iterable[Card] | Card | str
 
 
 @unique
@@ -486,7 +490,9 @@ class Deck(tuple[Card, ...], Enum):
 
     The ranks are ordered from aces to kings.
     """
-    KUHN_POKER: tuple[Card, ...] = tuple(Card.parse('JsQsKs'))
+    KUHN_POKER: tuple[Card, ...] = tuple(
+        starmap(Card, product(RankOrder.KUHN_POKER, (Suit.SPADE,))),
+    )
     """The 3-card Kuhn poker deck cards.
 
     The cards in it are jack of spades, queen of spades, and king of
@@ -548,7 +554,7 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
         return None
 
 
-ValuesLike = Iterable[int] | Mapping[int, int] | int | None
+ValuesLike = Iterable[int] | Mapping[int, int] | int
 
 
 def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
@@ -562,20 +568,14 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     (1, 0, 0, 2)
     >>> clean_values(4, 4)
     (4, 4, 4, 4)
-    >>> clean_values(None, 4)
-    (0, 0, 0, 0)
     >>> clean_values((1, 2, 3), 2)
-    Traceback (most recent call last):
-        ...
-    ValueError: too many values
+    (1, 2)
 
     :param values: The values.
     :param count: The number of values.
     :return: The cleaned integers.
     """
-    if values is None:
-        values = (0,) * count
-    elif isinstance(values, int):
+    if isinstance(values, int):
         values = (values,) * count
     elif isinstance(values, Mapping):
         parsed_values = [0] * count
@@ -588,10 +588,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
             not (isinstance(values, tuple) and len(values) == count)
             and isinstance(values, Iterable)
     ):
-        parsed_values = list(values)
-
-        if len(parsed_values) > count:
-            raise ValueError('too many values')
+        parsed_values = list(values)[:count]
 
         while len(parsed_values) < count:
             parsed_values.append(0)

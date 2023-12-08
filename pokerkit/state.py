@@ -1,12 +1,12 @@
 """:mod:`pokerkit.state` implements classes related to poker states."""
 
 from abc import ABC
+from collections.abc import Iterable, Iterator
 from collections import Counter, deque
-from collections.abc import Iterator
 from dataclasses import InitVar, dataclass, field
 from enum import StrEnum, unique
 from functools import partial
-from itertools import chain, islice
+from itertools import chain, filterfalse, islice
 from operator import getitem
 from random import shuffle
 from warnings import warn
@@ -16,14 +16,14 @@ from pokerkit.lookups import Label, Lookup
 from pokerkit.utilities import (
     Card,
     CardsLike,
-    Deck,
-    RankOrder,
-    Suit,
-    ValuesLike,
     clean_values,
+    Deck,
     max_or_none,
     min_or_none,
+    RankOrder,
     shuffled,
+    Suit,
+    ValuesLike,
 )
 
 
@@ -251,8 +251,10 @@ class Street:
                 and self.max_completion_betting_or_raising_count < 0
         ):
             raise ValueError(
-                'negative maximum number of completions, bettings, or '
-                'raisings',
+                (
+                    'negative maximum number of completions, bettings, or '
+                    'raisings'
+                ),
             )
 
 
@@ -320,14 +322,14 @@ class Pot:
             raise ValueError('empty player indices')
 
 
-@dataclass
+@dataclass(frozen=True)
 class Operation(ABC):
     """The abstract base class for operations."""
 
     pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class AntePosting(Operation):
     """The class for ante postings."""
 
@@ -337,7 +339,7 @@ class AntePosting(Operation):
     """The amount."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class BetCollection(Operation):
     """The class for bet collections."""
 
@@ -357,7 +359,7 @@ class BetCollection(Operation):
         return sum(self.bets)
 
 
-@dataclass
+@dataclass(frozen=True)
 class BlindOrStraddlePosting(Operation):
     """The class for blind or straddle postings."""
 
@@ -367,7 +369,7 @@ class BlindOrStraddlePosting(Operation):
     """The amount."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class CardBurning(Operation):
     """The class for card burnings."""
 
@@ -375,7 +377,7 @@ class CardBurning(Operation):
     """The card."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class HoleDealing(Operation):
     """The class for hole dealings."""
 
@@ -387,7 +389,7 @@ class HoleDealing(Operation):
     """The statuses."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class BoardDealing(Operation):
     """The class for board dealings."""
 
@@ -395,7 +397,7 @@ class BoardDealing(Operation):
     """The cards."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class StandingPatOrDiscarding(Operation):
     """The class for standing pat or discardings."""
 
@@ -405,7 +407,7 @@ class StandingPatOrDiscarding(Operation):
     """The cards."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class Folding(Operation):
     """The class for foldings."""
 
@@ -413,7 +415,7 @@ class Folding(Operation):
     """The player index."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class CheckingOrCalling(Operation):
     """The class for checking or callings."""
 
@@ -423,7 +425,7 @@ class CheckingOrCalling(Operation):
     """The amount."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class BringInPosting(Operation):
     """The class for bring-in postings."""
 
@@ -433,7 +435,7 @@ class BringInPosting(Operation):
     """The amount."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class CompletionBettingOrRaisingTo(Operation):
     """The class for completion, betting, or raising tos."""
 
@@ -443,17 +445,17 @@ class CompletionBettingOrRaisingTo(Operation):
     """The amount."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class HoleCardsShowingOrMucking(Operation):
     """The class for hole cards showing or muckings."""
 
     player_index: int
     """The player index."""
-    status: bool
-    """The status."""
+    hole_cards: tuple[Card, ...] | None
+    """The hole cards."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class HandKilling(Operation):
     """The class for hand killings."""
 
@@ -461,7 +463,7 @@ class HandKilling(Operation):
     """The player index."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class ChipsPushing(Operation):
     """The class for chips pushings."""
 
@@ -481,7 +483,7 @@ class ChipsPushing(Operation):
         return sum(self.amounts)
 
 
-@dataclass
+@dataclass(frozen=True)
 class ChipsPulling(Operation):
     """The class for chips pullings."""
 
@@ -533,6 +535,9 @@ class State:
     ...     (2,) * 2,
     ...     2,
     ... )
+
+    The game is active with the following stacks, bets, and hole cards.
+
     >>> state.status
     True
     >>> state.stacks
@@ -541,18 +546,27 @@ class State:
     [0, 0]
     >>> state.hole_cards  # doctest: +ELLIPSIS
     [[...s], [...s]]
+
+    First player checks.
+
     >>> state.check_or_call()
     CheckingOrCalling(player_index=0, amount=0)
     >>> state.stacks
     [1, 1]
     >>> state.bets
     [0, 0]
+
+    The second player bets 1.
+
     >>> state.complete_bet_or_raise_to()
     CompletionBettingOrRaisingTo(player_index=1, amount=1)
     >>> state.stacks
     [1, 0]
     >>> state.bets
     [0, 1]
+
+    The first player folds.
+
     >>> state.fold()
     Folding(player_index=0)
     >>> state.stacks
@@ -591,28 +605,43 @@ class State:
     ... )
     >>> state.status
     True
+
+    Antes are collected.
+
     >>> state.post_ante(0)
     AntePosting(player_index=0, amount=1)
     >>> state.post_ante(1)
     AntePosting(player_index=1, amount=1)
     >>> state.collect_bets()
     BetCollection(bets=(1, 1))
+
+    Hole cards are dealt.
+
     >>> state.deal_hole('Js')
     HoleDealing(player_index=0, cards=(Js,), statuses=(False,))
     >>> state.deal_hole()  # doctest: +ELLIPSIS
     HoleDealing(player_index=1, cards=(...s,), statuses=(False,))
+
+    The actions are carried out.
+
     >>> state.check_or_call()
     CheckingOrCalling(player_index=0, amount=0)
     >>> state.complete_bet_or_raise_to()
     CompletionBettingOrRaisingTo(player_index=1, amount=1)
     >>> state.fold()
     Folding(player_index=0)
+
+    The bets are collected and distributed to the winner.
+
     >>> state.collect_bets()
     BetCollection(bets=(0, 0))
     >>> state.push_chips()
     ChipsPushing(amounts=(0, 3))
     >>> state.pull_chips(1)
     ChipsPulling(player_index=1, amount=3)
+
+    The game has terminated.
+
     >>> state.status
     False
 
@@ -1137,6 +1166,9 @@ class State:
         ... )
         >>> state.street is None
         True
+
+        Setup.
+
         >>> state.post_ante(0)
         AntePosting(player_index=0, amount=2)
         >>> state.collect_bets()
@@ -1150,7 +1182,10 @@ class State:
         >>> state.street is state.streets[0]
         True
         >>> state.street  # doctest: +ELLIPSIS
-        Street(...)
+        Street(card_burning_status=False, hole_dealing_statuses=(False, Fals...
+
+        Pre-flop.
+
         >>> state.deal_hole('Ac')
         HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
         >>> state.deal_hole('Kc')
@@ -1169,6 +1204,9 @@ class State:
         BetCollection(bets=(2, 2))
         >>> state.street is state.streets[1]
         True
+
+        Flop.
+
         >>> state.burn_card('2c')
         CardBurning(card=2c)
         >>> state.deal_board('AhKhAs')
@@ -1181,6 +1219,9 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.street is state.streets[2]
         True
+
+        Turn.
+
         >>> state.burn_card('2d')
         CardBurning(card=2d)
         >>> state.deal_board('Ks')
@@ -1193,6 +1234,9 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.street is state.streets[3]
         True
+
+        River.
+
         >>> state.burn_card('2h')
         CardBurning(card=2h)
         >>> state.deal_board('2s')
@@ -1205,14 +1249,20 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.street is None
         True
+
+        Showdown.
+
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
         >>> state.street is None
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, status=False)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=None)
         >>> state.street is None
         True
+
+        Teardown.
+
         >>> state.push_chips()
         ChipsPushing(amounts=(6, 0))
         >>> state.street is None
@@ -1274,6 +1324,9 @@ class State:
         ... )
         >>> state.total_pot_amount
         0
+
+        Setup.
+
         >>> state.post_ante(0)
         AntePosting(player_index=0, amount=2)
         >>> state.total_pot_amount
@@ -1290,6 +1343,9 @@ class State:
         BlindOrStraddlePosting(player_index=1, amount=1)
         >>> state.total_pot_amount
         5
+
+        Pre-flop.
+
         >>> state.deal_hole('Ac')
         HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
         >>> state.deal_hole('Kc')
@@ -1308,6 +1364,9 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.collect_bets()
         BetCollection(bets=(2, 2))
+
+        Flop.
+
         >>> state.burn_card('2c')
         CardBurning(card=2c)
         >>> state.deal_board('AhKhAs')
@@ -1316,6 +1375,9 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Turn.
+
         >>> state.burn_card('2d')
         CardBurning(card=2d)
         >>> state.deal_board('Ks')
@@ -1338,6 +1400,9 @@ class State:
         BetCollection(bets=(30, 30))
         >>> state.total_pot_amount
         66
+
+        River.
+
         >>> state.burn_card('2h')
         CardBurning(card=2h)
         >>> state.deal_board('2s')
@@ -1346,10 +1411,16 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Showdown.
+
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, status=False)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=None)
+
+        Teardown.
+
         >>> state.push_chips()
         ChipsPushing(amounts=(66, 0))
         >>> state.total_pot_amount
@@ -1416,7 +1487,7 @@ class State:
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     (50, 100, 200, 1000, 200, 100),
@@ -1430,6 +1501,9 @@ class State:
         StopIteration
         >>> tuple(state.pots)  # doctest: +ELLIPSIS
         ()
+
+        Pre-flop.
+
         >>> state.complete_bet_or_raise_to(200)
         CompletionBettingOrRaisingTo(player_index=2, amount=200)
         >>> state.complete_bet_or_raise_to(1000)
@@ -1459,10 +1533,19 @@ class State:
         Pot(amount=250, player_indices=(1, 2, 3, 4, 5))
         >>> pots[2]
         Pot(amount=300, player_indices=(2, 3, 4))
+
+        Flop.
+
         >>> state.deal_board()  # doctest: +ELLIPSIS
         BoardDealing(cards=(..., ..., ...))
+
+        Turn.
+
         >>> state.deal_board()  # doctest: +ELLIPSIS
         BoardDealing(cards=(...,))
+
+        River.
+
         >>> state.deal_board()  # doctest: +ELLIPSIS
         BoardDealing(cards=(...,))
         >>> next(state.pots)
@@ -1537,7 +1620,7 @@ class State:
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     1,
         ...     2,
         ...     4,
@@ -1589,7 +1672,7 @@ class State:
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     1,
         ...     2,
         ...     4,
@@ -1634,14 +1717,13 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     (50, 100),
@@ -1651,6 +1733,9 @@ class State:
         True
         >>> state.get_hand(1, 0) is None
         True
+
+        Pre-flop.
+
         >>> state.deal_hole('AcAd')
         HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
         >>> state.deal_hole('KsQs')
@@ -1663,6 +1748,11 @@ class State:
         CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('JsTs2c')
         BoardDealing(cards=(Js, Ts, 2c))
         >>> state.get_hand(0, 0)
@@ -1675,6 +1765,11 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Ah')
         BoardDealing(cards=(Ah,))
         >>> str(state.get_hand(0, 0))
@@ -1685,6 +1780,11 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('As')
         BoardDealing(cards=(As,))
         >>> str(state.get_hand(0, 0))
@@ -1731,14 +1831,13 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     (50, 100),
@@ -1748,6 +1847,9 @@ class State:
         True
         >>> state.get_up_hand(1, 0) is None
         True
+
+        Pre-flop.
+
         >>> state.deal_hole('AcAd')
         HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
         >>> state.deal_hole('KsQs')
@@ -1760,6 +1862,11 @@ class State:
         CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('JsTs2c')
         BoardDealing(cards=(Js, Ts, 2c))
         >>> state.get_up_hand(0, 0) is None
@@ -1770,6 +1877,11 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Ah')
         BoardDealing(cards=(Ah,))
         >>> state.get_up_hand(0, 0) is None
@@ -1780,6 +1892,11 @@ class State:
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('As')
         BoardDealing(cards=(As,))
         >>> str(state.get_up_hand(0, 0))
@@ -1821,14 +1938,13 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     (50, 100),
@@ -1838,6 +1954,9 @@ class State:
         <generator object State.get_up_hands at 0x...>
         >>> tuple(state.get_up_hands(0))
         (None, None)
+
+        Pre-flop.
+
         >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
         HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
         >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
@@ -1846,18 +1965,33 @@ class State:
         CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('JsTs2c')
         BoardDealing(cards=(Js, Ts, 2c))
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Ah')
         BoardDealing(cards=(Ah,))
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('As')
         BoardDealing(cards=(As,))
         >>> state.check_or_call()
@@ -1887,18 +2021,20 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HAND_KILLING,
         ...         Automation.CHIPS_PUSHING,
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     (50, 100),
         ...     2,
         ... )
+
+        Pre-flop.
+
         >>> state.deal_hole('KhQh')  # doctest: +ELLIPSIS
         HoleDealing(player_index=0, cards=(Kh, Qh), statuses=(False, False))
         >>> state.deal_hole('AcKc')  # doctest: +ELLIPSIS
@@ -1907,36 +2043,54 @@ class State:
         CheckingOrCalling(player_index=1, amount=1)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('JsTs2c')
         BoardDealing(cards=(Js, Ts, 2c))
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('Ah')
         BoardDealing(cards=(Ah,))
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('As')
         BoardDealing(cards=(As,))
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Showdown.
+
         >>> state.can_win_now(0)
         True
         >>> state.can_win_now(1)
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Kh, Qh))
         >>> state.can_win_now(0)
         True
         >>> state.can_win_now(1)
         False
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, status=False)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=None)
 
         :param player_index: The player index.
         :return: ``True`` if the player can win, otherwise ``False``.
@@ -1970,6 +2124,86 @@ class State:
 
         for i in range(len(self.hole_cards[player_index])):
             self.hole_card_statuses[player_index][i] = True
+
+    @property
+    def _backup_cards(self) -> tuple[Card, ...]:
+        return tuple(
+            filterfalse(
+                Card.unknown_status.__get__,
+                chain(
+                    self.burn_cards,
+                    self.mucked_cards,
+                    chain.from_iterable(self.discarded_cards),
+                ),
+            ),
+        )
+
+    def _produce_cards(self, cards: Iterable[Card]) -> None:
+        self.deck_cards.extend(
+            filterfalse(
+                self.deck_cards.__contains__,
+                filterfalse(Card.unknown_status.__get__, cards),
+            ),
+        )
+
+    def _verify_cards_consumption(
+            self,
+            cards: CardsLike | int,
+    ) -> tuple[Card, ...]:
+        if isinstance(cards, int):
+            cards = self.get_dealable_cards(cards)[:cards]
+        else:
+            cards = Card.clean(cards)
+            dealable_cards = self.get_dealable_cards(len(cards))
+
+            for card in cards:
+                if card not in dealable_cards and not card.unknown_status:
+                    warn(f'dealing {card} that is not recommended to be dealt')
+
+        return cards
+
+    def _consume_cards(self, cards: tuple[Card, ...]) -> None:
+        if len(cards) > len(self.deck_cards):
+            assert set(cards) > set(self.deck_cards)
+
+            self._produce_cards(shuffled(self._backup_cards))
+
+            self.mucked_cards.clear()
+            self.burn_cards.clear()
+
+            for discarded_cards in self.discarded_cards:
+                discarded_cards.clear()
+
+        for card in cards:
+            if card in self.deck_cards:
+                self.deck_cards.remove(card)
+
+            if card in self.burn_cards:
+                self.burn_cards.remove(card)
+
+            if card in self.mucked_cards:
+                self.mucked_cards.remove(card)
+
+            for discarded_cards in self.discarded_cards:
+                if card in discarded_cards:
+                    discarded_cards.remove(card)
+
+    def get_dealable_cards(
+            self,
+            deal_count: int | None = None,
+    ) -> tuple[Card, ...]:
+        """Iterate through the available cards that can be dealt or
+        burned.
+
+        :param deal_count: The number of dealt cards.
+        :return: The recommended dealable cards, from deck and backup.
+        """
+        cards = tuple(self.deck_cards)
+
+        if deal_count is None or deal_count > len(self.deck_cards):
+            cards += tuple(shuffled(self._backup_cards))
+
+        return cards
 
     # ante posting
 
@@ -2030,6 +2264,7 @@ class State:
         <generator object State.ante_poster_indices at 0x...>
         >>> tuple(state.ante_poster_indices)
         (0,)
+
         >>> state = NoLimitTexasHoldem.create_state(
         ...     (),
         ...     False,
@@ -2044,7 +2279,7 @@ class State:
         >>> state = NoLimitTexasHoldem.create_state(
         ...     (),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     200,
@@ -2104,10 +2339,11 @@ class State:
         True
         >>> state.can_post_ante(1)
         False
+
         >>> state = NoLimitTexasHoldem.create_state(
         ...     (),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     200,
@@ -2493,6 +2729,15 @@ class State:
                     self.street.draw_status
                 )
 
+        if (
+                sum(map(len, self.hole_dealing_statuses))
+                > len(self.get_dealable_cards())
+        ):
+            self.board_dealing_count += len(self.street.hole_dealing_statuses)
+
+            for i in self.player_indices:
+                self.hole_dealing_statuses[i].clear()
+
         assert (
             any(self.hole_dealing_statuses)
             or self.board_dealing_count
@@ -2507,21 +2752,7 @@ class State:
         ):
             self._end_dealing()
         else:
-            if (
-                    Automation.CARD_BURNING in self.automations
-                    and self.card_burning_status
-            ):
-                self.burn_card()
-
-            if Automation.HOLE_DEALING in self.automations:
-                while any(self.hole_dealing_statuses):
-                    self.deal_hole()
-
-            if (
-                    Automation.BOARD_DEALING in self.automations
-                    and self.board_dealing_count
-            ):
-                self.deal_board()
+            self._automate_dealing()
 
     def _end_dealing(self) -> None:
         assert not self.card_burning_status
@@ -2531,103 +2762,23 @@ class State:
 
         self._begin_betting()
 
-    def get_available_cards(
-            self,
-            deal_count: int,
-    ) -> tuple[tuple[Card, ...], tuple[Card, ...]]:
-        """Iterate through the available cards that can be dealt or
-        burned.
-
-        :param deal_count: The number of dealt cards.
-        :return: The available cards. The first tuple denotes those that
-                 must be all be taken and the second tuple denotes those
-                 that can be sampled from.
-        """
+    def _automate_dealing(self) -> None:
         if (
-                self.card_burning_status
-                or any(self.hole_dealing_statuses)
-                or self.board_dealing_count
+                Automation.CARD_BURNING in self.automations
+                and self.card_burning_status
         ):
-            if deal_count > len(self.deck_cards):
-                mandatory_cards = tuple(self.deck_cards)
-                optional_cards = tuple(
-                    shuffled(
-                        chain(
-                            self.burn_cards,
-                            self.mucked_cards,
-                            chain.from_iterable(self.discarded_cards),
-                        ),
-                    ),
-                )
-            else:
-                mandatory_cards = ()
-                optional_cards = tuple(self.deck_cards)
-        else:
-            mandatory_cards = ()
-            optional_cards = ()
+            self.burn_card()
 
-        return mandatory_cards, optional_cards
+        if not self.card_burning_status:
+            if Automation.HOLE_DEALING in self.automations:
+                while any(self.hole_dealing_statuses):
+                    self.deal_hole()
 
-    def verify_cards_availability_making(
-            self,
-            cards: CardsLike | int,
-    ) -> tuple[Card, ...]:
-        """Verify the card availability making.
-
-        :param cards: The optional cards.
-        :return: The available cards.
-        :raises ValueError: If the card is unavailable.
-        """
-        if isinstance(cards, int):
-            mandatory_cards, optional_cards = self.get_available_cards(cards)
-            cards = (
-                mandatory_cards
-                + tuple(optional_cards[:cards - len(mandatory_cards)])
-            )
-        else:
-            cards = Card.clean(cards)
-            mandatory_cards, optional_cards = self.get_available_cards(
-                len(cards),
-            )
-            available_cards = mandatory_cards + optional_cards
-
-            if not set(mandatory_cards) <= set(cards):
-                raise ValueError('must contain all necessary cards')
-
-            for card in cards:
-                if card not in available_cards:
-                    if card in self.burn_cards:
-                        warn('dealing from burn cards')
-                    else:
-                        raise ValueError('card unavailable')
-
-        return cards
-
-    def _make_cards_available(self, cards: tuple[Card, ...]) -> None:
-        if len(cards) > len(self.deck_cards):
-            assert set(cards) > set(self.deck_cards)
-
-            reshuffled_cards = []
-
-            reshuffled_cards.extend(self.mucked_cards)
-            self.mucked_cards.clear()
-            reshuffled_cards.extend(self.burn_cards)
-            self.burn_cards.clear()
-
-            for discarded_cards in self.discarded_cards:
-                reshuffled_cards.extend(discarded_cards)
-                discarded_cards.clear()
-
-            shuffle(reshuffled_cards)
-            self.deck_cards.extend(reshuffled_cards)
-
-        for card in cards:
-            assert card in self.burn_cards or card in self.deck_cards
-
-            if card in self.burn_cards:
-                self.burn_cards.remove(card)
-            else:
-                self.deck_cards.remove(card)
+            if (
+                    Automation.BOARD_DEALING in self.automations
+                    and self.board_dealing_count
+            ):
+                self.deal_board()
 
     def verify_card_burning(
             self,
@@ -2639,7 +2790,7 @@ class State:
         :return: The burn card.
         :raises ValueError: If the card burning cannot be done.
         """
-        cards = self.verify_cards_availability_making(
+        cards = self._verify_cards_consumption(
             1 if card is None else card,
         )
 
@@ -2684,7 +2835,7 @@ class State:
             or self.street.draw_status
         )
 
-        self._make_cards_available((card,))
+        self._consume_cards((card,))
 
         self.card_burning_status = False
         self.burn_cards.append(card)
@@ -2695,6 +2846,8 @@ class State:
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
+        else:
+            self._automate_dealing()
 
         return CardBurning(card)
 
@@ -2746,7 +2899,7 @@ class State:
         """
         self._verify_hole_dealing()
 
-        cards = self.verify_cards_availability_making(
+        cards = self._verify_cards_consumption(
             1 if cards is None else cards,
         )
         player_index = self.hole_dealee_index
@@ -2786,7 +2939,7 @@ class State:
         assert player_index is not None
         assert self.hole_dealing_statuses[player_index]
 
-        self._make_cards_available(cards)
+        self._consume_cards(cards)
 
         for card in cards:
             status = self.hole_dealing_statuses[player_index].popleft()
@@ -2800,6 +2953,8 @@ class State:
                 and not self.board_dealing_count
         ):
             self._end_dealing()
+        else:
+            self._automate_dealing()
 
         return HoleDealing(player_index, cards, tuple(statuses))
 
@@ -2818,7 +2973,7 @@ class State:
         elif not self.board_dealing_count:
             raise ValueError('no pending board dealing')
 
-        cards = self.verify_cards_availability_making(
+        cards = self._verify_cards_consumption(
             self.board_dealing_count if cards is None else cards,
         )
 
@@ -2853,7 +3008,7 @@ class State:
 
         assert self.board_dealing_count
 
-        self._make_cards_available(cards)
+        self._consume_cards(cards)
 
         self.board_dealing_count -= len(cards)
         self.board_cards.extend(cards)
@@ -2864,6 +3019,8 @@ class State:
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
+        else:
+            self._automate_dealing()
 
         return BoardDealing(cards)
 
@@ -2887,11 +3044,11 @@ class State:
 
     def verify_standing_pat_or_discarding(
             self,
-            cards: CardsLike = None,
+            cards: CardsLike = (),
     ) -> tuple[Card, ...]:
         """Verify the discard.
 
-        :param cards: The optional discarded cards.
+        :param cards: The discarded cards, defaults to empty.
         :return: The discarded cards.
         :raises ValueError: If the discard cannot be done.
         """
@@ -2907,10 +3064,10 @@ class State:
 
         return cards
 
-    def can_stand_pat_or_discard(self, cards: CardsLike = None) -> bool:
+    def can_stand_pat_or_discard(self, cards: CardsLike = ()) -> bool:
         """Return whether the discard can be done.
 
-        :param cards: The optional discarded cards.
+        :param cards: The optional discarded cards, defaults to empty.
         :return: ``True`` if the discard can be done, otherwise
                  ``False``.
         """
@@ -2923,12 +3080,12 @@ class State:
 
     def stand_pat_or_discard(
             self,
-            cards: CardsLike = None,
+            cards: CardsLike = (),
     ) -> StandingPatOrDiscarding:
         """Discard hole cards.
 
         :param cards: The optional discarded cards.
-        :return: The standing pat or discarding.
+        :return: The standing pat or discarding, defaults to empty.
         :raises ValueError: If the discard cannot be done.
         """
         cards = self.verify_standing_pat_or_discarding(cards)
@@ -2957,12 +3114,8 @@ class State:
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
-        elif (
-                not any(self.standing_pat_or_discarding_statuses)
-                and Automation.HOLE_DEALING in self.automations
-        ):
-            while any(self.hole_dealing_statuses):
-                self.deal_hole()
+        elif not any(self.standing_pat_or_discarding_statuses):
+            self._automate_dealing()
 
         return StandingPatOrDiscarding(player_index, cards)
 
@@ -3049,8 +3202,8 @@ class State:
                     ) for i in self.player_indices
                 ]
                 self.opener_index = entries.index(max_or_none(entries))
-            case _:
-                raise ValueError('unknown opening')
+            case _:  # pragma: no cover
+                raise NotImplementedError
 
         assert self.opener_index is not None
 
@@ -3495,8 +3648,8 @@ class State:
                     self.stacks[self.actor_index]
                     + self.bets[self.actor_index]
                 )
-            case _:
-                raise AssertionError
+            case _:  # pragma: no cover
+                raise NotImplementedError
 
         assert amount is not None
         assert (
@@ -3626,6 +3779,7 @@ class State:
         False
         >>> state.can_complete_bet_or_raise_to()
         False
+
         >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -3640,7 +3794,7 @@ class State:
         ...         Automation.CHIPS_PULLING,
         ...     ),
         ...     True,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     4,
@@ -3761,15 +3915,17 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     200,
         ...     3,
         ... )
+
+        Pre-flop.
+
         >>> state.deal_hole('JcJd')
         HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
         >>> state.deal_hole('KcKd')
@@ -3782,6 +3938,11 @@ class State:
         CheckingOrCalling(player_index=0, amount=5)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=4)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('AcAdAh')
         BoardDealing(cards=(Ac, Ad, Ah))
         >>> state.check_or_call()
@@ -3790,6 +3951,11 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=2, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2c')
         BoardDealing(cards=(2c,))
         >>> state.check_or_call()
@@ -3798,12 +3964,20 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=2, amount=0)
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2d')
         BoardDealing(cards=(2d,))
         >>> state.check_or_call()
         CheckingOrCalling(player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=0)
+
+        Showdown.
+
         >>> state.showdown_index is None
         True
         >>> state.check_or_call()
@@ -3811,15 +3985,15 @@ class State:
         >>> state.showdown_index
         0
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Jc, Jd))
         >>> state.showdown_index
         1
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, status=True)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=(Kc, Kd))
         >>> state.showdown_index
         2
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=2, status=False)
+        HoleCardsShowingOrMucking(player_index=2, hole_cards=None)
 
         :return: The showdown index if applicable, otherwise ``None``.
         """
@@ -3839,11 +4013,11 @@ class State:
 
     def verify_hole_cards_showing_or_mucking(
             self,
-            status: bool | None = None,
-    ) -> bool:
+            status_or_hole_cards: bool | CardsLike | None = None,
+    ) -> tuple[bool, tuple[Card, ...] | None]:
         """Verify the hole card showing or mucking.
 
-        :param status: The optional status.
+        :param status_or_hole_cards: The optional status or hole cards.
         :return: The status.
         :raises ValueError: If hole card showing or mucking cannot be
                             done.
@@ -3854,12 +4028,32 @@ class State:
 
         assert player_index is not None
 
-        if status is None:
+        if isinstance(status_or_hole_cards, bool):
+            status = status_or_hole_cards
+            hole_cards = None
+        elif status_or_hole_cards is None:
             status = self.can_win_now(player_index)
+            hole_cards = None
+        else:
+            status = True
+            hole_cards = Card.clean(status_or_hole_cards)
 
-        return status
+            self._verify_cards_consumption(
+                filterfalse(
+                    self.hole_cards[player_index].__contains__,
+                    hole_cards,
+                ),
+            )
 
-    def can_show_or_muck_hole_cards(self, status: bool | None = None) -> bool:
+        if hole_cards is None and status:
+            hole_cards = tuple(self.hole_cards[player_index])
+
+        return status, hole_cards
+
+    def can_show_or_muck_hole_cards(
+            self,
+            status_or_hole_cards: bool | CardsLike | None = None,
+    ) -> bool:
         """Return whether the hole card showing or mucking can be done.
 
         >>> from pokerkit import NoLimitTexasHoldem
@@ -3868,15 +4062,17 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     200,
         ...     3,
         ... )
+
+        Pre-flop.
+
         >>> state.deal_hole('JcJd')
         HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
         >>> state.deal_hole('KcKd')
@@ -3889,6 +4085,11 @@ class State:
         CheckingOrCalling(player_index=0, amount=5)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=4)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('AcAdAh')
         BoardDealing(cards=(Ac, Ad, Ah))
         >>> state.check_or_call()
@@ -3897,6 +4098,11 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=2, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2c')
         BoardDealing(cards=(2c,))
         >>> state.check_or_call()
@@ -3905,6 +4111,11 @@ class State:
         CheckingOrCalling(player_index=1, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=2, amount=0)
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2d')
         BoardDealing(cards=(2d,))
         >>> state.check_or_call()
@@ -3915,25 +4126,28 @@ class State:
         False
         >>> state.check_or_call()
         CheckingOrCalling(player_index=2, amount=0)
+
+        Showdown.
+
         >>> state.can_show_or_muck_hole_cards()
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, status=True)
+        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Jc, Jd))
         >>> state.can_show_or_muck_hole_cards(False)
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, status=True)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=(Kc, Kd))
         >>> state.can_show_or_muck_hole_cards(True)
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=2, status=False)
+        HoleCardsShowingOrMucking(player_index=2, hole_cards=None)
 
-        :param status: The optional status.
+        :param status_or_hole_cards: The optional status or hole cards.
         :return: ``True`` if the hole crad showing or mucking can be
                  done, otherwise ``False``.
         """
         try:
-            self.verify_hole_cards_showing_or_mucking(status)
+            self.verify_hole_cards_showing_or_mucking(status_or_hole_cards)
         except ValueError:
             return False
 
@@ -3941,7 +4155,7 @@ class State:
 
     def show_or_muck_hole_cards(
             self,
-            status: bool | None = None,
+            status_or_hole_cards: bool | CardsLike | None = None,
     ) -> HoleCardsShowingOrMucking:
         """Show or muck hole cards.
 
@@ -3949,13 +4163,29 @@ class State:
         only if there is chance of winning the pot. Otherwise, the hand
         will be mucked.
 
-        :param status: The optional status.
+        :param status_or_hole_cards: The optional status or hole cards.
         :return: The hole cards showing or mucking.
         """
-        status = self.verify_hole_cards_showing_or_mucking(status)
+        status, hole_cards = self.verify_hole_cards_showing_or_mucking(
+            status_or_hole_cards,
+        )
         player_index = self._pop_showdown_index()
 
         if status:
+            assert (
+                (
+                    not isinstance(status_or_hole_cards, bool)
+                    and status_or_hole_cards is not None
+                )
+                or tuple(self.hole_cards[player_index]) == hole_cards
+            )
+
+            if hole_cards is not None:
+                self._produce_cards(self.hole_cards[player_index])
+                self.hole_cards[player_index].clear()
+                self._consume_cards(hole_cards)
+                self.hole_cards[player_index].extend(hole_cards)
+
             self._show_hole_cards(player_index)
         else:
             self._muck_hole_cards(player_index)
@@ -3963,7 +4193,7 @@ class State:
         if not self.showdown_indices:
             self._end_showdown()
 
-        return HoleCardsShowingOrMucking(player_index, status)
+        return HoleCardsShowingOrMucking(player_index, hole_cards)
 
     # hand killing
 
@@ -4009,16 +4239,18 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     200,
         ...     3,
         ... )
+
+        Pre-flop.
+
         >>> state.deal_hole('JcJd')
         HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
         >>> state.deal_hole('QcQd')
@@ -4031,14 +4263,29 @@ class State:
         CheckingOrCalling(player_index=0, amount=199)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=198)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('AcAdAh')
         BoardDealing(cards=(Ac, Ad, Ah))
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2c')
         BoardDealing(cards=(2c,))
         >>> state.hand_killing_indices  # doctest: +ELLIPSIS
         <generator object State.hand_killing_indices at 0x...>
         >>> tuple(state.hand_killing_indices)
         ()
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2d')
         BoardDealing(cards=(2d,))
         >>> tuple(state.hand_killing_indices)
@@ -4057,7 +4304,7 @@ class State:
 
     def _verify_hand_killing(self) -> None:
         if not any(self.hand_killing_statuses):
-            raise ValueError('nobody can kill his or her hand')
+            raise ValueError('nobody can kill their hand')
 
     def verify_hand_killing(self, player_index: int | None = None) -> int:
         """Verify the hand killing.
@@ -4072,7 +4319,7 @@ class State:
             player_index = next(self.hand_killing_indices)
 
         if not self.hand_killing_statuses[player_index]:
-            raise ValueError('player cannot kill his or her hand')
+            raise ValueError('player cannot kill their hand')
 
         return player_index
 
@@ -4085,16 +4332,18 @@ class State:
         ...         Automation.ANTE_POSTING,
         ...         Automation.BET_COLLECTION,
         ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
         ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     200,
         ...     3,
         ... )
+
+        Pre-flop.
+
         >>> state.deal_hole('JcJd')
         HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
         >>> state.deal_hole('QcQd')
@@ -4107,12 +4356,27 @@ class State:
         CheckingOrCalling(player_index=0, amount=199)
         >>> state.check_or_call()
         CheckingOrCalling(player_index=1, amount=198)
+
+        Flop.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('AcAdAh')
         BoardDealing(cards=(Ac, Ad, Ah))
+
+        Turn.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2c')
         BoardDealing(cards=(2c,))
         >>> state.can_kill_hand()
         False
+
+        River.
+
+        >>> state.burn_card('??')
+        CardBurning(card=??)
         >>> state.deal_board('2d')
         BoardDealing(cards=(2d,))
         >>> state.can_kill_hand()
@@ -4196,7 +4460,7 @@ class State:
         ...         Automation.HAND_KILLING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     4,
@@ -4258,6 +4522,7 @@ class State:
                 for hand in self.get_up_hands(i):
                     if hand is not None:
                         hand_type_indices.append(i)
+
                         break
 
             hand_type_count = len(hand_type_indices)
@@ -4332,7 +4597,7 @@ class State:
         ...         Automation.CHIPS_PUSHING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     4,
@@ -4399,7 +4664,7 @@ class State:
         ...         Automation.CHIPS_PUSHING,
         ...     ),
         ...     False,
-        ...     None,
+        ...     0,
         ...     (1, 2),
         ...     2,
         ...     4,
@@ -4433,7 +4698,7 @@ class State:
         return True
 
     def pull_chips(self, player_index: int | None = None) -> ChipsPulling:
-        """Pull chips..
+        """Pull chips.
 
         :param player_index: The optional player index.
         :return: The chips pulling.

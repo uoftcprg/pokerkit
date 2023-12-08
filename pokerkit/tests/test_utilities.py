@@ -9,7 +9,7 @@ from pokerkit.utilities import Card, Deck, Rank, RankOrder, Suit
 
 class RankTestCase(TestCase):
     def test_members(self) -> None:
-        self.assertEqual(''.join(Rank), 'A23456789TJQK')
+        self.assertEqual(''.join(Rank), 'A23456789TJQK?')
 
 
 class RankOrderTestCase(TestCase):
@@ -22,7 +22,7 @@ class RankOrderTestCase(TestCase):
 
 class SuitTestCase(TestCase):
     def test_members(self) -> None:
-        self.assertEqual(''.join(Suit), 'cdhs')
+        self.assertEqual(''.join(Suit), 'cdhs?')
 
 
 class DeckTestCase(TestCase):
@@ -57,6 +57,8 @@ class DeckTestCase(TestCase):
                 'As2s3s4s5s6s7s8s9sTsJsQsKs',
             ),
         )
+        self.assertEqual(len(Deck.KUHN_POKER), 3)
+        self.assertCountEqual(Deck.KUHN_POKER, Card.parse('JsQsKs'))
 
 
 if __name__ == '__main__':

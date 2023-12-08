@@ -10,6 +10,7 @@ from unittest import main, TestCase
 from pokerkit.lookups import (
     BadugiLookup,
     EightOrBetterLookup,
+    KuhnPokerLookup,
     RegularLookup,
     ShortDeckHoldemLookup,
     StandardLookup,
@@ -122,6 +123,23 @@ class BadugiLookupTestCase(LookupTestCaseMixin, TestCase):
         self.assertEqual(
             algorithm.hexdigest(),
             'c284d3bf45c87707f62cd7fc6699c31a',
+        )
+
+
+class KuhnPokerLookupTestCase(LookupTestCaseMixin, TestCase):
+    def test_get_entry(self) -> None:
+        lookup = KuhnPokerLookup()
+        combinations_ = sorted(
+            combinations(Deck.KUHN_POKER, 1),
+            key=lookup.get_entry,
+        )
+        string = self.serialize_combinations(combinations_)
+        algorithm = md5()
+        algorithm.update(string.encode())
+
+        self.assertEqual(
+            algorithm.hexdigest(),
+            'bb7d5e9f8fe4f404fd1551d8995ca1a2',
         )
 
 
