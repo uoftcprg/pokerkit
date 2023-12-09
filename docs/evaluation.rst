@@ -76,6 +76,7 @@ Comparing the hand strengths is quite simple... Just compare them!
 
 .. code-block:: pycon
 
+   >>> from pokerkit import *
    >>> h0 = StandardHighHand('7c5d4h3s2c')
    >>> h1 = StandardHighHand('7c6d4h3s2c')
    >>> h2 = StandardHighHand('8c7d6h4s2c')
@@ -83,6 +84,10 @@ Comparing the hand strengths is quite simple... Just compare them!
    >>> h4 = StandardHighHand('TsJsQsKsAs')
    >>> h0 < h1 < h2 < h3 < h4
    True
+
+.. code-block:: pycon
+
+   >>> from pokerkit import *
    >>> h0 = StandardLowHand('TsJsQsKsAs')
    >>> h1 = StandardLowHand('AcAsAd2s4s')
    >>> h2 = StandardLowHand('8c7d6h4s2c')

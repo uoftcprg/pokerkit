@@ -83,7 +83,7 @@ These pre-defined games can be used as shown below:
            Automation.CHIPS_PULLING,
        ),
        True,  # False for big blind ante, True otherwise
-       None,  # ante
+       0,  # ante
        (75000, 150000),  # blinds or straddles
        150000,  # small bet
        300000,  # big bet
@@ -471,6 +471,8 @@ Now, let's look at some sample interactions!
 
 This is a simple interaction.
 
+**An example hand in fixed-limit Texas hold'em.**
+
 .. code-block:: pycon
 
    >>> from pokerkit import *
@@ -486,41 +488,50 @@ This is a simple interaction.
    ...         Automation.CHIPS_PULLING,
    ...     ),
    ...     True,
-   ...     None,
+   ...     0,
    ...     (1, 2),
    ...     2,
    ...     4,
    ...     200,
    ...     2,
    ... )
-   >>> # Below shows the pre-flop dealings and actions.
+
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: pycon
+
    >>> state.deal_hole('AcAs')
    HoleDealing(player_index=0, cards=(Ac, As), statuses=(False, False))
    >>> state.deal_hole('7h6h')
    HoleDealing(player_index=1, cards=(7h, 6h), statuses=(False, False))
+
    >>> state.complete_bet_or_raise_to()
    CompletionBettingOrRaisingTo(player_index=1, amount=4)
    >>> state.complete_bet_or_raise_to()
    CompletionBettingOrRaisingTo(player_index=0, amount=6)
    >>> state.fold()
    Folding(player_index=1)
-   >>> # Below show the final stacks.
+
+Below show the final stacks.
+
+.. code-block:: pycon
+
    >>> state.stacks
    [204, 196]
 
-Below shows the first televised million dollar pot between Tom Dwan and Phil
-Ivey.
+**The first televised million dollar pot between Tom Dwan and Phil
+Ivey.**
 
 Link: https://youtu.be/GnxFohpljqM
 
 .. code-block:: pycon
 
+   >>> from pokerkit import *
    >>> state = NoLimitTexasHoldem.create_state(
    ...     (
    ...         Automation.ANTE_POSTING,
    ...         Automation.BET_COLLECTION,
    ...         Automation.BLIND_OR_STRADDLE_POSTING,
-   ...         Automation.CARD_BURNING,
    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
    ...         Automation.HAND_KILLING,
    ...         Automation.CHIPS_PUSHING,
@@ -533,13 +544,18 @@ Link: https://youtu.be/GnxFohpljqM
    ...     (1125600, 2000000, 553500),
    ...     3,
    ... )
-   >>> # Below shows the pre-flop dealings and actions.
+
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: pycon
+
    >>> state.deal_hole('Ac2d')  # Ivey
    HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, False))
-   >>> state.deal_hole('????')  # Antonius*
+   >>> state.deal_hole('????')  # Antonius
    HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
    >>> state.deal_hole('7h6h')  # Dwan
    HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, False))
+
    >>> state.complete_bet_or_raise_to(7000)  # Dwan
    CompletionBettingOrRaisingTo(player_index=2, amount=7000)
    >>> state.complete_bet_or_raise_to(23000)  # Ivey
@@ -548,16 +564,30 @@ Link: https://youtu.be/GnxFohpljqM
    Folding(player_index=1)
    >>> state.check_or_call()  # Dwan
    CheckingOrCalling(player_index=2, amount=16000)
-   >>> # Below shows the flop dealing and actions.
+
+Below shows the flop dealing and actions.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('Jc3d5c')
    BoardDealing(cards=(Jc, 3d, 5c))
+
    >>> state.complete_bet_or_raise_to(35000)  # Ivey
    CompletionBettingOrRaisingTo(player_index=0, amount=35000)
    >>> state.check_or_call()  # Dwan
    CheckingOrCalling(player_index=2, amount=35000)
-   >>> # Below shows the turn dealing and actions.
+
+Below shows the turn dealing and actions.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('4h')
    BoardDealing(cards=(4h,))
+
    >>> state.complete_bet_or_raise_to(90000)  # Ivey
    CompletionBettingOrRaisingTo(player_index=0, amount=90000)
    >>> state.complete_bet_or_raise_to(232600)  # Dwan
@@ -566,25 +596,35 @@ Link: https://youtu.be/GnxFohpljqM
    CompletionBettingOrRaisingTo(player_index=0, amount=1067100)
    >>> state.check_or_call()  # Dwan
    CheckingOrCalling(player_index=2, amount=262400)
-   >>> # Below shows the river dealing.
+
+Below shows the river dealing.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('Jh')
    BoardDealing(cards=(Jh,))
-   >>> # Below show the final stacks.
+
+Below show the final stacks.
+
+.. code-block:: pycon
+
    >>> state.stacks
    [572100, 1997500, 1109500]
 
-Below shows an all-in hand between Xuan and Phua.
+**An all-in hand between Xuan and Phua.**
 
 Link: https://youtu.be/QlgCcphLjaQ
 
 .. code-block:: pycon
 
+   >>> from pokerkit import *
    >>> state = NoLimitShortDeckHoldem.create_state(
    ...     (
    ...         Automation.ANTE_POSTING,
    ...         Automation.BET_COLLECTION,
    ...         Automation.BLIND_OR_STRADDLE_POSTING,
-   ...         Automation.CARD_BURNING,
    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
    ...         Automation.HAND_KILLING,
    ...         Automation.CHIPS_PUSHING,
@@ -597,7 +637,11 @@ Link: https://youtu.be/QlgCcphLjaQ
    ...     (495000, 232000, 362000, 403000, 301000, 204000),
    ...     6,
    ... )
-   >>> # Below shows the pre-flop dealings and actions.
+
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: pycon
+
    >>> state.deal_hole('Th8h')  # Badziakouski
    HoleDealing(player_index=0, cards=(Th, 8h), statuses=(False, False))
    >>> state.deal_hole('QsJd')  # Zhong
@@ -610,6 +654,7 @@ Link: https://youtu.be/QlgCcphLjaQ
    HoleDealing(player_index=4, cards=(Kh, Ks), statuses=(False, False))
    >>> state.deal_hole('8c7h')  # Koon
    HoleDealing(player_index=5, cards=(8c, 7h), statuses=(False, False))
+
    >>> state.check_or_call()  # Badziakouski
    CheckingOrCalling(player_index=0, amount=3000)
    >>> state.check_or_call()  # Zhong
@@ -628,16 +673,38 @@ Link: https://youtu.be/QlgCcphLjaQ
    Folding(player_index=1)
    >>> state.check_or_call()  # Xuan
    CheckingOrCalling(player_index=2, amount=263000)
-   >>> # Below shows the flop dealing.
+
+Below shows the flop dealing.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('9h6cKc')
    BoardDealing(cards=(9h, 6c, Kc))
-   >>> # Below shows the turn dealing.
+
+Below shows the turn dealing.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('Jh')
    BoardDealing(cards=(Jh,))
-   >>> # Below shows the river dealing.
+
+Below shows the river dealing.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('Ts')
    BoardDealing(cards=(Ts,))
-   >>> # Below show the final stacks.
+
+Below show the final stacks.
+
+.. code-block:: pycon
+
    >>> state.stacks
    [489000, 226000, 684000, 400000, 0, 198000]
 
@@ -648,29 +715,34 @@ Link: https://youtu.be/UMBm66Id2AA
 
 .. code-block:: pycon
 
+   >>> from pokerkit import *
    >>> state = PotLimitOmahaHoldem.create_state(
    ...     (
    ...         Automation.ANTE_POSTING,
    ...         Automation.BET_COLLECTION,
    ...         Automation.BLIND_OR_STRADDLE_POSTING,
-   ...         Automation.CARD_BURNING,
    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
    ...         Automation.HAND_KILLING,
    ...         Automation.CHIPS_PUSHING,
    ...         Automation.CHIPS_PULLING,
    ...     ),
    ...     True,
-   ...     None,
+   ...     0,
    ...     (50000, 100000),
    ...     2000,
    ...     (125945025, 67847350),
    ...     2,
    ... )
-   >>> # Below shows the pre-flop dealings and actions.
-   >>> state.deal_hole('Ah3sKsKh')  # Antonius
-   HoleDealing(player_index=0, cards=(Ah, 3s, Ks, Kh), statuses=(False, False, False, False))
-   >>> state.deal_hole('6d9s7d8h')  # Blom
-   HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False, False, False, False))
+
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: pycon
+
+   >>> state.deal_hole('Ah3sKsKh')  # Antonius  # doctest: +ELLIPSIS
+   HoleDealing(player_index=0, cards=(Ah, 3s, Ks, Kh), statuses=(False,...
+   >>> state.deal_hole('6d9s7d8h')  # Blom  # doctest: +ELLIPSIS
+   HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False,...
+
    >>> state.complete_bet_or_raise_to(300000)  # Blom
    CompletionBettingOrRaisingTo(player_index=1, amount=300000)
    >>> state.complete_bet_or_raise_to(900000)  # Antonius
@@ -681,9 +753,16 @@ Link: https://youtu.be/UMBm66Id2AA
    CompletionBettingOrRaisingTo(player_index=0, amount=8100000)
    >>> state.check_or_call()  # Blom
    CheckingOrCalling(player_index=1, amount=5400000)
-   >>> # Below shows the flop dealing and actions.
+
+Below shows the flop dealing and actions.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('4s5c2h')
    BoardDealing(cards=(4s, 5c, 2h))
+
    >>> state.complete_bet_or_raise_to(9100000)  # Antonius
    CompletionBettingOrRaisingTo(player_index=0, amount=9100000)
    >>> state.complete_bet_or_raise_to(43500000)  # Blom
@@ -692,22 +771,39 @@ Link: https://youtu.be/UMBm66Id2AA
    CompletionBettingOrRaisingTo(player_index=0, amount=77900000)
    >>> state.check_or_call()  # Blom
    CheckingOrCalling(player_index=1, amount=16247350)
-   >>> # Below shows the turn dealing.
+
+Below shows the turn dealing.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('5h')
    BoardDealing(cards=(5h,))
-   >>> # Below shows the river dealing.
+
+Below shows the river dealing.
+
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(card=??)
    >>> state.deal_board('9c')
    BoardDealing(cards=(9c,))
-   >>> # Below show the final stacks.
+
+Below show the final stacks.
+
+.. code-block:: pycon
+
    >>> state.stacks
    [193792375, 0]
 
-Below shows a bad beat between Yockey and Arieh.
+**A bad beat between Yockey and Arieh.**
 
 Link: https://youtu.be/pChCqb2FNxY
 
 .. code-block:: pycon
 
+   >>> from pokerkit import *
    >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
    ...     (
    ...         Automation.ANTE_POSTING,
@@ -720,7 +816,7 @@ Link: https://youtu.be/pChCqb2FNxY
    ...         Automation.CHIPS_PULLING,
    ...     ),
    ...     True,
-   ...     None,
+   ...     0,
    ...     (75000, 150000),
    ...     150000,
    ...     300000,
@@ -783,106 +879,116 @@ Link: https://youtu.be/pChCqb2FNxY
    >>> state.stacks
    [0, 4190000, 5910000, 12095000]
 
-Below shows an example badugi hand from Wikipedia.
+**An example badugi hand from Wikipedia.**
 
 Link: https://en.wikipedia.org/wiki/Badugi
 
 .. code-block:: pycon
 
-   >>> state = FixedLimitBadugi.create_state(
+   >>> from pokerkit import *
+   >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
    ...     (
    ...         Automation.ANTE_POSTING,
    ...         Automation.BET_COLLECTION,
    ...         Automation.BLIND_OR_STRADDLE_POSTING,
-   ...         Automation.CARD_BURNING,
    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
    ...         Automation.HAND_KILLING,
    ...         Automation.CHIPS_PUSHING,
    ...         Automation.CHIPS_PULLING,
    ...     ),
    ...     True,
-   ...     None,
-   ...     (1, 2),
-   ...     2,
-   ...     4,
-   ...     200,
+   ...     0,
+   ...     (75000, 150000),
+   ...     150000,
+   ...     300000,
+   ...     (1180000, 4340000, 5910000, 10765000),
    ...     4,
    ... )
-   >>> # Below shows the pre-flop dealings and actions.
-   >>> state.deal_hole('As4hJcKh')  # Bob*
-   HoleDealing(player_index=0, cards=(As, 4h, Jc, Kh), statuses=(False, False, False, False))
-   >>> state.deal_hole('3s5d7s8s')  # Carol*
-   HoleDealing(player_index=1, cards=(3s, 5d, 7s, 8s), statuses=(False, False, False, False))
-   >>> state.deal_hole('KsKdQsQd')  # Ted*
-   HoleDealing(player_index=2, cards=(Ks, Kd, Qs, Qd), statuses=(False, False, False, False))
-   >>> state.deal_hole('2s4c6dKc')  # Alice*
-   HoleDealing(player_index=3, cards=(2s, 4c, 6d, Kc), statuses=(False, False, False, False))
-   >>> state.fold()  # Ted
+
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: pycon
+
+   >>> state.deal_hole('7h6c4c3d2c')  # Yockey  # doctest: +ELLIPSIS
+   HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(Fa...
+   >>> state.deal_hole('??????????')  # Hui  # doctest: +ELLIPSIS
+   HoleDealing(player_index=1, cards=(??, ??, ??, ??, ??), statuses=(Fa...
+   >>> state.deal_hole('??????????')  # Esposito  # doctest: +ELLIPSIS
+   HoleDealing(player_index=2, cards=(??, ??, ??, ??, ??), statuses=(Fa...
+   >>> state.deal_hole('AsQs6s5c3c')  # Arieh  # doctest: +ELLIPSIS
+   HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(Fa...
+
+   >>> state.fold()  # Esposito
    Folding(player_index=2)
-   >>> state.check_or_call()  # Alice
-   CheckingOrCalling(player_index=3, amount=2)
-   >>> state.check_or_call()  # Bob
-   CheckingOrCalling(player_index=0, amount=1)
-   >>> state.check_or_call()  # Carol
-   CheckingOrCalling(player_index=1, amount=0)
-   >>> # Below shows the first draw and actions.
-   >>> state.stand_pat_or_discard('JcKh')  # Bob*
-   StandingPatOrDiscarding(player_index=0, cards=(Jc, Kh))
-   >>> state.stand_pat_or_discard('7s8s')  # Carol*
-   StandingPatOrDiscarding(player_index=1, cards=(7s, 8s))
-   >>> state.stand_pat_or_discard('Kc')  # Alice*
-   StandingPatOrDiscarding(player_index=3, cards=(Kc,))
-   >>> state.deal_hole('TcJs')  # Bob*
-   HoleDealing(player_index=0, cards=(Tc, Js), statuses=(False, False))
-   >>> state.deal_hole('7cTh')  # Carol*
-   HoleDealing(player_index=1, cards=(7c, Th), statuses=(False, False))
-   >>> state.deal_hole('Qc')  # Alice*
-   HoleDealing(player_index=3, cards=(Qc,), statuses=(False,))
-   >>> state.check_or_call()  # Bob
-   CheckingOrCalling(player_index=0, amount=0)
-   >>> state.complete_bet_or_raise_to()  # Carol
-   CompletionBettingOrRaisingTo(player_index=1, amount=2)
-   >>> state.check_or_call()  # Alice
-   CheckingOrCalling(player_index=3, amount=2)
-   >>> state.check_or_call()  # Bob
-   CheckingOrCalling(player_index=0, amount=2)
-   >>> # Below shows the second draw and actions.
-   >>> state.stand_pat_or_discard('Js')  # Bob*
-   StandingPatOrDiscarding(player_index=0, cards=(Js,))
-   >>> state.stand_pat_or_discard()  # Carol*
-   StandingPatOrDiscarding(player_index=1, cards=())
-   >>> state.stand_pat_or_discard('Qc')  # Alice*
-   StandingPatOrDiscarding(player_index=3, cards=(Qc,))
-   >>> state.deal_hole('Ts')  # Bob*
-   HoleDealing(player_index=0, cards=(Ts,), statuses=(False,))
-   >>> state.deal_hole('9h')  # Alice*
-   HoleDealing(player_index=3, cards=(9h,), statuses=(False,))
-   >>> state.check_or_call()  # Bob
-   CheckingOrCalling(player_index=0, amount=0)
-   >>> state.complete_bet_or_raise_to()  # Carol
-   CompletionBettingOrRaisingTo(player_index=1, amount=4)
-   >>> state.complete_bet_or_raise_to()  # Alice
-   CompletionBettingOrRaisingTo(player_index=3, amount=8)
-   >>> state.fold()  # Bob
-   Folding(player_index=0)
-   >>> state.check_or_call()  # Carol
-   CheckingOrCalling(player_index=1, amount=4)
-   >>> # Below shows the third draw and actions.
-   >>> state.stand_pat_or_discard('Th')  # Carol*
-   StandingPatOrDiscarding(player_index=1, cards=(Th,))
-   >>> state.stand_pat_or_discard()  # Alice*
-   StandingPatOrDiscarding(player_index=3, cards=())
-   >>> state.deal_hole('8h')  # Carol*
-   HoleDealing(player_index=1, cards=(8h,), statuses=(False,))
-   >>> state.check_or_call()  # Carol
-   CheckingOrCalling(player_index=1, amount=0)
-   >>> state.complete_bet_or_raise_to()  # Alice
-   CompletionBettingOrRaisingTo(player_index=3, amount=4)
-   >>> state.check_or_call()  # Carol
-   CheckingOrCalling(player_index=1, amount=4)
-   >>> # Below show the final stacks.
+   >>> state.complete_bet_or_raise_to()  # Arieh
+   CompletionBettingOrRaisingTo(player_index=3, amount=300000)
+   >>> state.complete_bet_or_raise_to()  # Yockey
+   CompletionBettingOrRaisingTo(player_index=0, amount=450000)
+   >>> state.fold()  # Hui
+   Folding(player_index=1)
+   >>> state.check_or_call()  # Arieh
+   CheckingOrCalling(player_index=3, amount=150000)
+
+Below shows the first draw and actions.
+
+.. code-block:: pycon
+
+   >>> state.stand_pat_or_discard()  # Yockey
+   StandingPatOrDiscarding(player_index=0, cards=())
+   >>> state.stand_pat_or_discard('AsQs')  # Arieh
+   StandingPatOrDiscarding(player_index=3, cards=(As, Qs))
+   >>> state.burn_card('??')
+   CardBurning(card=??)
+   >>> state.deal_hole('2hQh')  # Arieh
+   HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, False))
+
+   >>> state.complete_bet_or_raise_to()  # Yockey
+   CompletionBettingOrRaisingTo(player_index=0, amount=150000)
+   >>> state.check_or_call()  # Arieh
+   CheckingOrCalling(player_index=3, amount=150000)
+
+Below shows the second draw and actions.
+
+.. code-block:: pycon
+
+   >>> state.stand_pat_or_discard()  # Yockey
+   StandingPatOrDiscarding(player_index=0, cards=())
+   >>> state.stand_pat_or_discard('Qh')  # Arieh
+   StandingPatOrDiscarding(player_index=3, cards=(Qh,))
+   >>> state.burn_card('??')
+   CardBurning(card=??)
+   >>> state.deal_hole('4d')  # Arieh
+   HoleDealing(player_index=3, cards=(4d,), statuses=(False,))
+
+   >>> state.complete_bet_or_raise_to()  # Yockey
+   CompletionBettingOrRaisingTo(player_index=0, amount=300000)
+   >>> state.check_or_call()  # Arieh
+   CheckingOrCalling(player_index=3, amount=300000)
+
+Below shows the third draw and actions.
+
+.. code-block:: pycon
+
+   >>> state.stand_pat_or_discard()  # Yockey
+   StandingPatOrDiscarding(player_index=0, cards=())
+   >>> state.stand_pat_or_discard('6s')  # Arieh
+   StandingPatOrDiscarding(player_index=3, cards=(6s,))
+   >>> state.burn_card('??')
+   CardBurning(card=??)
+   >>> state.deal_hole('7c')  # Arieh
+   HoleDealing(player_index=3, cards=(7c,), statuses=(False,))
+
+   >>> state.complete_bet_or_raise_to()  # Yockey
+   CompletionBettingOrRaisingTo(player_index=0, amount=280000)
+   >>> state.check_or_call()  # Arieh
+   CheckingOrCalling(player_index=3, amount=280000)
+
+Below show the final stacks.
+
+.. code-block:: pycon
+
    >>> state.stacks
-   [196, 220, 200, 184]
+   [0, 4190000, 5910000, 12095000]
 
 There are more example hands in the unit tests. Please take a look at the
 repository to learn more.

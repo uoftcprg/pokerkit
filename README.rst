@@ -15,11 +15,11 @@ achieving 99% code coverage.
 Features
 --------
 
-* Extensive poker game logic for major and minor poker variants
-* High-speed hand evaluations
-* Customizable game states and parameters
+* Extensive poker game logic for major and minor poker variants.
+* High-speed hand evaluations.
+* Customizable game states and parameters.
 * Robust implementation with static type checking and extensive unit tests and
-  doctests
+  doctests.
 
 Installation
 ------------
@@ -33,10 +33,12 @@ The PokerKit library can be installed using pip:
 Usage
 -----
 
-Below shows the first televised million dollar pot between Tom Dwan and Phil
-Ivey.
+**The first televised million dollar pot between Tom Dwan and Phil
+Ivey.**
 
 Link: https://youtu.be/GnxFohpljqM
+
+Setup the game.
 
 .. code-block:: python
 
@@ -47,7 +49,6 @@ Link: https://youtu.be/GnxFohpljqM
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
            Automation.BLIND_OR_STRADDLE_POSTING,
-           Automation.CARD_BURNING,
            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
            Automation.CHIPS_PUSHING,
@@ -61,10 +62,12 @@ Link: https://youtu.be/GnxFohpljqM
        3,
    )
 
-   # Below shows the pre-flop dealings and actions.
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: python
 
    state.deal_hole('Ac2d')  # Ivey
-   state.deal_hole('????')  # Antonius*
+   state.deal_hole('????')  # Antonius
    state.deal_hole('7h6h')  # Dwan
 
    state.complete_bet_or_raise_to(7000)  # Dwan
@@ -72,15 +75,21 @@ Link: https://youtu.be/GnxFohpljqM
    state.fold()  # Antonius
    state.check_or_call()  # Dwan
 
-   # Below shows the flop dealing and actions.
+Below shows the flop dealing and actions.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('Jc3d5c')
 
    state.complete_bet_or_raise_to(35000)  # Ivey
    state.check_or_call()  # Dwan
 
-   # Below shows the turn dealing and actions.
+Below shows the turn dealing and actions.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('4h')
 
    state.complete_bet_or_raise_to(90000)  # Ivey
@@ -88,15 +97,20 @@ Link: https://youtu.be/GnxFohpljqM
    state.complete_bet_or_raise_to(1067100)  # Ivey
    state.check_or_call()  # Dwan
 
-   # Below shows the river dealing.
+Below shows the river dealing.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('Jh')
 
-   # Below shows the final stacks.
+Below show the final stacks.
+
+.. code-block:: python
 
    print(state.stacks)  # [572100, 1997500, 1109500]
 
-Below shows an all-in hand between Xuan and Phua.
+**An all-in hand between Xuan and Phua.**
 
 Link: https://youtu.be/QlgCcphLjaQ
 
@@ -109,7 +123,6 @@ Link: https://youtu.be/QlgCcphLjaQ
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
            Automation.BLIND_OR_STRADDLE_POSTING,
-           Automation.CARD_BURNING,
            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
            Automation.CHIPS_PUSHING,
@@ -123,7 +136,9 @@ Link: https://youtu.be/QlgCcphLjaQ
        6,
    )
 
-   # Below shows the pre-flop dealings and actions.
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: python
 
    state.deal_hole('Th8h')  # Badziakouski
    state.deal_hole('QsJd')  # Zhong
@@ -142,24 +157,35 @@ Link: https://youtu.be/QlgCcphLjaQ
    state.fold()  # Zhong
    state.check_or_call()  # Xuan
 
-   # Below shows the flop dealing.
+Below shows the flop dealing.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('9h6cKc')
 
-   # Below shows the turn dealing.
+Below shows the turn dealing.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('Jh')
 
-   # Below shows the river dealing.
+Below shows the river dealing.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('Ts')
 
-   # Below show the final stacks.
+Below show the final stacks.
+
+.. code-block:: python
 
    print(state.stacks)  # [489000, 226000, 684000, 400000, 0, 198000]
 
-Below shows the largest online poker pot ever played between
-Patrik Antonius and Viktor Blom.
+**The largest online poker pot every played between Patrik Antonius and Viktor
+Blom.**
 
 Link: https://youtu.be/UMBm66Id2AA
 
@@ -172,21 +198,22 @@ Link: https://youtu.be/UMBm66Id2AA
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
            Automation.BLIND_OR_STRADDLE_POSTING,
-           Automation.CARD_BURNING,
            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
        ),
        True,
-       None,
+       0,
        (50000, 100000),
        2000,
        (125945025, 67847350),
        2,
    )
 
-   # Below shows the pre-flop dealings and actions.
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: python
 
    state.deal_hole('Ah3sKsKh')  # Antonius
    state.deal_hole('6d9s7d8h')  # Blom
@@ -197,8 +224,11 @@ Link: https://youtu.be/UMBm66Id2AA
    state.complete_bet_or_raise_to(8100000)  # Antonius
    state.check_or_call()  # Blom
 
-   # Below shows the flop dealing and actions.
+Below shows the flop dealing and actions.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('4s5c2h')
 
    state.complete_bet_or_raise_to(9100000)  # Antonius
@@ -206,19 +236,27 @@ Link: https://youtu.be/UMBm66Id2AA
    state.complete_bet_or_raise_to(77900000)  # Antonius
    state.check_or_call()  # Blom
 
-   # Below shows the turn dealing.
+Below shows the turn dealing.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('5h')
 
-   # Below shows the river dealing.
+Below shows the river dealing.
 
+.. code-block:: python
+
+   state.burn_card('??')
    state.deal_board('9c')
 
-   # Below show the final stacks.
+Below show the final stacks.
+
+.. code-block:: python
 
    print(state.stacks)  # [193792375, 0]
 
-Below shows a bad beat between Yockey and Arieh.
+**A bad beat between Yockey and Arieh.**
 
 Link: https://youtu.be/pChCqb2FNxY
 
@@ -231,7 +269,6 @@ Link: https://youtu.be/pChCqb2FNxY
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
            Automation.BLIND_OR_STRADDLE_POSTING,
-           Automation.CARD_BURNING,
            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
            Automation.CHIPS_PUSHING,
@@ -246,11 +283,13 @@ Link: https://youtu.be/pChCqb2FNxY
        4,
    )
 
-   # Below shows the pre-flop dealings and actions.
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: python
 
    state.deal_hole('7h6c4c3d2c')  # Yockey
-   state.deal_hole('??????????')  # Hui*
-   state.deal_hole('??????????')  # Esposito*
+   state.deal_hole('??????????')  # Hui
+   state.deal_hole('??????????')  # Esposito
    state.deal_hole('AsQs6s5c3c')  # Arieh
 
    state.fold()  # Esposito
@@ -259,38 +298,49 @@ Link: https://youtu.be/pChCqb2FNxY
    state.fold()  # Hui
    state.check_or_call()  # Arieh
 
-   # Below shows the first draw and actions.
+Below shows the first draw and actions.
+
+.. code-block:: python
 
    state.stand_pat_or_discard()  # Yockey
    state.stand_pat_or_discard('AsQs')  # Arieh
+   state.burn_card('??')
    state.deal_hole('2hQh')  # Arieh
 
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-   # Below shows the second draw and actions.
+Below shows the second draw and actions.
+
+.. code-block:: python
 
    state.stand_pat_or_discard()  # Yockey
    state.stand_pat_or_discard('Qh')  # Arieh
+   state.burn_card('??')
    state.deal_hole('4d')  # Arieh
 
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-   # Below shows the third draw and actions.
+Below shows the third draw and actions.
+
+.. code-block:: python
 
    state.stand_pat_or_discard()  # Yockey
    state.stand_pat_or_discard('6s')  # Arieh
+   state.burn_card('??')
    state.deal_hole('7c')  # Arieh
 
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-   # Below show the final stacks.
+Below show the final stacks.
+
+.. code-block:: python
 
    print(state.stacks)  # [0, 4190000, 5910000, 12095000]
 
-Below shows an example badugi hand from Wikipedia.
+**An example badugi hand from Wikipedia.**
 
 Link: https://en.wikipedia.org/wiki/Badugi
 
@@ -303,8 +353,6 @@ Link: https://en.wikipedia.org/wiki/Badugi
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
            Automation.BLIND_OR_STRADDLE_POSTING,
-           Automation.CARD_BURNING,
-           Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
            Automation.HAND_KILLING,
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
@@ -318,39 +366,47 @@ Link: https://en.wikipedia.org/wiki/Badugi
        4,
    )
 
-   # Below shows the pre-flop dealings and actions.
+Below shows the pre-flop dealings and actions.
 
-   state.deal_hole('????????')  # Bob*
-   state.deal_hole('????????')  # Carol*
-   state.deal_hole('????????')  # Ted*
-   state.deal_hole('????????')  # Alice*
+.. code-block:: python
+
+   state.deal_hole('????????')  # Bob
+   state.deal_hole('????????')  # Carol
+   state.deal_hole('????????')  # Ted
+   state.deal_hole('????????')  # Alice
 
    state.fold()  # Ted
    state.check_or_call()  # Alice
    state.check_or_call()  # Bob
    state.check_or_call()  # Carol
 
-   # Below shows the first draw and actions.
+Below shows the first draw and actions.
 
-   state.stand_pat_or_discard('????')  # Bob*
-   state.stand_pat_or_discard('????')  # Carol*
-   state.stand_pat_or_discard('??')  # Alice*
-   state.deal_hole('TcJs')  # Bob*
-   state.deal_hole('7cTh')  # Carol*
-   state.deal_hole('Qc')  # Alice*
+.. code-block:: python
+
+   state.stand_pat_or_discard('????')  # Bob
+   state.stand_pat_or_discard('????')  # Carol
+   state.stand_pat_or_discard('??')  # Alice
+   state.burn_card('??')
+   state.deal_hole('????')  # Bob
+   state.deal_hole('????')  # Carol
+   state.deal_hole('??')  # Alice
 
    state.check_or_call()  # Bob
    state.complete_bet_or_raise_to()  # Carol
    state.check_or_call()  # Alice
    state.check_or_call()  # Bob
 
-   # Below shows the second draw and actions.
+Below shows the second draw and actions.
 
-   state.stand_pat_or_discard('Js')  # Bob*
-   state.stand_pat_or_discard()  # Carol*
-   state.stand_pat_or_discard('Qc')  # Alice*
-   state.deal_hole('Ts')  # Bob*
-   state.deal_hole('9h')  # Alice*
+.. code-block:: python
+
+   state.stand_pat_or_discard('??')  # Bob
+   state.stand_pat_or_discard()  # Carol
+   state.stand_pat_or_discard('??')  # Alice
+   state.burn_card('??')
+   state.deal_hole('??')  # Bob
+   state.deal_hole('??')  # Alice
 
    state.check_or_call()  # Bob
    state.complete_bet_or_raise_to()  # Carol
@@ -358,17 +414,29 @@ Link: https://en.wikipedia.org/wiki/Badugi
    state.fold()  # Bob
    state.check_or_call()  # Carol
 
-   # Below shows the third draw and actions.
+Below shows the third draw and actions.
 
-   state.stand_pat_or_discard('Th')  # Carol*
-   state.stand_pat_or_discard()  # Alice*
-   state.deal_hole('8h')  # Carol*
+.. code-block:: python
+
+   state.stand_pat_or_discard('??')  # Carol
+   state.stand_pat_or_discard()  # Alice
+   state.burn_card('??')
+   state.deal_hole('??')  # Carol
 
    state.check_or_call()  # Carol
    state.complete_bet_or_raise_to()  # Alice
    state.check_or_call()  # Carol
 
-   # Below show the final stacks.
+Below show the showdown.
+
+.. code-block:: python
+
+   state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
+   state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
+
+Below show the final stacks.
+
+.. code-block:: python
 
    print(state.stacks)  # [196, 220, 200, 184]
 
