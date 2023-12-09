@@ -9,8 +9,6 @@ Version 0.4.0 (Planned)
 
 **Changed**
 
-- ``None`` IS NO LONGER ``CardsLike`` or ``ValuesLike``. Using ``None`` as
-  antes, etc. will raise an error!
 - When not enough card to deal everybody hole cards, a board dealing is done.
 - Showdown can specify what cards the player showed.
 - More generous state operations when it comes to cards. Some things that were

@@ -337,11 +337,15 @@ class Card:
         (As, Ks)
         >>> Card.clean(Card(Rank.ACE, Suit.SPADE))
         (As,)
+        >>> Card.clean(None)
+        ()
 
         :param values: The cards.
         :return: The cleaned cards.
         """
-        if isinstance(values, Card):
+        if values is None:
+            values = ()
+        elif isinstance(values, Card):
             values = (values,)
         elif isinstance(values, str):
             values = tuple(Card.parse(values))
@@ -401,7 +405,7 @@ class Card:
         return self.rank == Rank.UNKNOWN or self.suit == Suit.UNKNOWN
 
 
-CardsLike = Iterable[Card] | Card | str
+CardsLike = Iterable[Card] | Card | str | None
 
 
 @unique
@@ -554,7 +558,7 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
         return None
 
 
-ValuesLike = Iterable[int] | Mapping[int, int] | int
+ValuesLike = Iterable[int] | Mapping[int, int] | int | None
 
 
 def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
@@ -568,6 +572,8 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     (1, 0, 0, 2)
     >>> clean_values(4, 4)
     (4, 4, 4, 4)
+    >>> clean_values(None, 4)
+    (0, 0, 0, 0)
     >>> clean_values((1, 2, 3), 2)
     (1, 2)
 
@@ -575,13 +581,15 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     :param count: The number of values.
     :return: The cleaned integers.
     """
-    if isinstance(values, int):
+    if values is None:
+        values = (0,) * count
+    elif isinstance(values, int):
         values = (values,) * count
     elif isinstance(values, Mapping):
         parsed_values = [0] * count
 
         for key, value in values.items():
-            parsed_values[key] = value
+            parsed_values[key] += value
 
         values = tuple(parsed_values)
     elif (
