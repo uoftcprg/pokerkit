@@ -189,7 +189,8 @@ attributes.
 - **Cards in muck**: :attr:`pokerkit.state.State.mucked_cards`
 - **Burn cards (if user wants to, they can also deal burnt cards)**:
   :attr:`pokerkit.state.State.burn_cards`
-- **Player statuses (are they still in?)**: :attr:`pokerkit.state.State.statuses`
+- **Player statuses (are they still in?)**:
+  :attr:`pokerkit.state.State.statuses`
 - **Bets**: :attr:`pokerkit.state.State.bets`
 - **Stacks**: :attr:`pokerkit.state.State.stacks`
 - **Hole cards**: :attr:`pokerkit.state.State.hole_cards`
@@ -224,8 +225,8 @@ when the corresponding phase is active.
    during its creation may dictate no antes, uniform antes, or non-uniform
    antes, such as big blind antes. If no player is due to post an ante, this
    phase is bypassed.
-2. **Bet Collection**: The collection of bets on the table occurs after any phase
-   that allow players to bet. If any bet is present, the bet collection
+2. **Bet Collection**: The collection of bets on the table occurs after any
+   phase that allow players to bet. If any bet is present, the bet collection
    operation must be performed before proceeding to the subsequent phase. This
    phase only occurs after ante posting or betting. When no bets are pending
    collection, this phase is skipped.
@@ -362,11 +363,13 @@ an operation:
 
 - Ante posting?: :meth:`pokerkit.state.State.can_post_ante`
 - Bet collection?: :meth:`pokerkit.state.State.can_collect_bets`
-- Blind/straddle posting?: :meth:`pokerkit.state.State.can_post_blind_or_straddle`
+- Blind/straddle posting?:
+  :meth:`pokerkit.state.State.can_post_blind_or_straddle`
 - Card burning?: :meth:`pokerkit.state.State.can_burn_card`
 - Hole dealing?: :meth:`pokerkit.state.State.can_deal_hole`
 - Board dealing?: :meth:`pokerkit.state.State.can_deal_board`
-- Standing pat/discarding?: :meth:`pokerkit.state.State.can_stand_pat_or_discard`
+- Standing pat/discarding?:
+  :meth:`pokerkit.state.State.can_stand_pat_or_discard`
 - Folding?: :meth:`pokerkit.state.State.can_fold`
 - Checking/calling?: :meth:`pokerkit.state.State.can_check_or_call`
 - Bring-in posting?: :meth:`pokerkit.state.State.can_post_bring_in`
@@ -390,7 +393,8 @@ than others. Let's see what we can specify for each action.
   post the blind or straddle
 - Card burning: card, defaults to randomly drawing from the deck
 - Hole dealing: cards, defaults to randomly drawing a single card from the deck
-- Board dealing: cards, defaults to randomly drawing required cards from the deck
+- Board dealing: cards, defaults to randomly drawing required cards from the
+  deck
 - Standing pat/discarding: cards, defaults to standing pat
 - Folding: N/A
 - Checking/calling: N/A
@@ -408,33 +412,36 @@ than others. Let's see what we can specify for each action.
 How do you know what the minimum bets are? How do you know to whom the hole card
 will be dealt next? How do you know the call amount? Whose action is it?
 
-You can access all these information through the following methods or properties:
+You can access all these information through the following methods or
+properties:
 
-- Effective ante: :meth:`poker.state.State.get_effective_ante`
-- Ante poster indices: :attr:`poker.state.State.ante_poster_indices`
+- Effective ante: :meth:`pokerkit.state.State.get_effective_ante`
+- Ante poster indices: :attr:`pokerkit.state.State.ante_poster_indices`
 - Effective blind/straddle:
-  :meth:`poker.state.State.get_effective_blind_or_straddle`
+  :meth:`pokerkit.state.State.get_effective_blind_or_straddle`
 - Blind/straddle poster indices:
-  :attr:`poker.state.State.blind_or_straddle_poster_indices`
-- Available cards to be dealt: :attr:`poker.state.State.available_cards`
-- Next default hole dealee: :attr:`poker.state.State.hole_dealee_index`
+  :attr:`pokerkit.state.State.blind_or_straddle_poster_indices`
+- Available cards to be dealt: :attr:`pokerkit.state.State.available_cards`
+- Next default hole dealee: :attr:`pokerkit.state.State.hole_dealee_index`
 - Next stander pat or discarder:
-  :attr:`poker.state.State.stander_pat_or_discarder_index`
-- Next actor (fold, check, ...): :attr:`poker.state.State.actor_index`
-- Effective stack: :attr:`poker.state.State.get_effective_stack`
-- Checking/Calling amount: :attr:`poker.state.State.checking_or_calling_amount`
-- Effective bring-in amount: :attr:`poker.state.State.effective_bring_in_amount`
+  :attr:`pokerkit.state.State.stander_pat_or_discarder_index`
+- Next actor (fold, check, ...): :attr:`pokerkit.state.State.actor_index`
+- Effective stack: :attr:`pokerkit.state.State.get_effective_stack`
+- Checking/Calling amount:
+  :attr:`pokerkit.state.State.checking_or_calling_amount`
+- Effective bring-in amount:
+  :attr:`pokerkit.state.State.effective_bring_in_amount`
 - Min completion/bet/raise to amount:
-  :attr:`poker.state.State.min_completion_betting_or_raising_to_amount`
+  :attr:`pokerkit.state.State.min_completion_betting_or_raising_to_amount`
 - Pot completion/bet/raise to amount:
-  :attr:`poker.state.State.pot_completion_betting_or_raising_to_amount`
+  :attr:`pokerkit.state.State.pot_completion_betting_or_raising_to_amount`
 - Max completion/bet/raise to amount:
-  :attr:`poker.state.State.max_completion_betting_or_raising_to_amount`
-- Person who is in showdown: :attr:`poker.state.State.showdown_index`
+  :attr:`pokerkit.state.State.max_completion_betting_or_raising_to_amount`
+- Person who is in showdown: :attr:`pokerkit.state.State.showdown_index`
 - Indices of players who cannot win and whose hand is about to be killed:
-  :attr:`poker.state.State.hand_killing_indices`
+  :attr:`pokerkit.state.State.hand_killing_indices`
 - Players who won but has not taken back the chips into their stack yet:
-  :attr:`poker.state.State.chips_pulling_indices``
+  :attr:`pokerkit.state.State.chips_pulling_indices``
 
 After each action is performed, description of which player was involved,
 what was the amount, what card was burnt, what cards were dealt, how much bets
@@ -809,88 +816,6 @@ Link: https://youtu.be/pChCqb2FNxY
    ...         Automation.ANTE_POSTING,
    ...         Automation.BET_COLLECTION,
    ...         Automation.BLIND_OR_STRADDLE_POSTING,
-   ...         Automation.CARD_BURNING,
-   ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
-   ...         Automation.HAND_KILLING,
-   ...         Automation.CHIPS_PUSHING,
-   ...         Automation.CHIPS_PULLING,
-   ...     ),
-   ...     True,
-   ...     0,
-   ...     (75000, 150000),
-   ...     150000,
-   ...     300000,
-   ...     (1180000, 4340000, 5910000, 10765000),
-   ...     4,
-   ... )
-   >>> # Below shows the pre-flop dealings and actions.
-   >>> state.deal_hole('7h6c4c3d2c')  # Yockey
-   HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(False, False, False, False, False))
-   >>> state.deal_hole('??????????')  # Hui*
-   HoleDealing(player_index=1, cards=(??, ??, ??, ??, ??), statuses=(False, False, False, False, False))
-   >>> state.deal_hole('??????????')  # Esposito*
-   HoleDealing(player_index=2, cards=(??, ??, ??, ??, ??), statuses=(False, False, False, False, False))
-   >>> state.deal_hole('AsQs6s5c3c')  # Arieh
-   HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(False, False, False, False, False))
-   >>> state.fold()  # Esposito
-   Folding(player_index=2)
-   >>> state.complete_bet_or_raise_to()  # Arieh
-   CompletionBettingOrRaisingTo(player_index=3, amount=300000)
-   >>> state.complete_bet_or_raise_to()  # Yockey
-   CompletionBettingOrRaisingTo(player_index=0, amount=450000)
-   >>> state.fold()  # Hui
-   Folding(player_index=1)
-   >>> state.check_or_call()  # Arieh
-   CheckingOrCalling(player_index=3, amount=150000)
-   >>> # Below shows the first draw and actions.
-   >>> state.stand_pat_or_discard()  # Yockey
-   StandingPatOrDiscarding(player_index=0, cards=())
-   >>> state.stand_pat_or_discard('AsQs')  # Arieh
-   StandingPatOrDiscarding(player_index=3, cards=(As, Qs))
-   >>> state.deal_hole('2hQh')  # Arieh
-   HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, False))
-   >>> state.complete_bet_or_raise_to()  # Yockey
-   CompletionBettingOrRaisingTo(player_index=0, amount=150000)
-   >>> state.check_or_call()  # Arieh
-   CheckingOrCalling(player_index=3, amount=150000)
-   >>> # Below shows the second draw and actions.
-   >>> state.stand_pat_or_discard()  # Yockey
-   StandingPatOrDiscarding(player_index=0, cards=())
-   >>> state.stand_pat_or_discard('Qh')  # Arieh
-   StandingPatOrDiscarding(player_index=3, cards=(Qh,))
-   >>> state.deal_hole('4d')  # Arieh
-   HoleDealing(player_index=3, cards=(4d,), statuses=(False,))
-   >>> state.complete_bet_or_raise_to()  # Yockey
-   CompletionBettingOrRaisingTo(player_index=0, amount=300000)
-   >>> state.check_or_call()  # Arieh
-   CheckingOrCalling(player_index=3, amount=300000)
-   >>> # Below shows the third draw and actions.
-   >>> state.stand_pat_or_discard()  # Yockey
-   StandingPatOrDiscarding(player_index=0, cards=())
-   >>> state.stand_pat_or_discard('6s')  # Arieh
-   StandingPatOrDiscarding(player_index=3, cards=(6s,))
-   >>> state.deal_hole('7c')  # Arieh
-   HoleDealing(player_index=3, cards=(7c,), statuses=(False,))
-   >>> state.complete_bet_or_raise_to()  # Yockey
-   CompletionBettingOrRaisingTo(player_index=0, amount=280000)
-   >>> state.check_or_call()  # Arieh
-   CheckingOrCalling(player_index=3, amount=280000)
-   >>> # Below show the final stacks.
-   >>> state.stacks
-   [0, 4190000, 5910000, 12095000]
-
-**An example badugi hand from Wikipedia.**
-
-Link: https://en.wikipedia.org/wiki/Badugi
-
-.. code-block:: pycon
-
-   >>> from pokerkit import *
-   >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
-   ...     (
-   ...         Automation.ANTE_POSTING,
-   ...         Automation.BET_COLLECTION,
-   ...         Automation.BLIND_OR_STRADDLE_POSTING,
    ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
    ...         Automation.HAND_KILLING,
    ...         Automation.CHIPS_PUSHING,
@@ -989,6 +914,145 @@ Below show the final stacks.
 
    >>> state.stacks
    [0, 4190000, 5910000, 12095000]
+
+**An example badugi hand from Wikipedia.**
+
+Link: https://en.wikipedia.org/wiki/Badugi
+
+.. code-block:: pycon
+
+   >>> from pokerkit import *
+   >>> state = FixedLimitBadugi.create_state(
+   ...     (
+   ...         Automation.ANTE_POSTING,
+   ...         Automation.BET_COLLECTION,
+   ...         Automation.BLIND_OR_STRADDLE_POSTING,
+   ...         Automation.HAND_KILLING,
+   ...         Automation.CHIPS_PUSHING,
+   ...         Automation.CHIPS_PULLING,
+   ...     ),
+   ...     True,
+   ...     0,
+   ...     (1, 2),
+   ...     2,
+   ...     4,
+   ...     200,
+   ...     4,
+   ... )
+
+Below shows the pre-flop dealings and actions.
+
+.. code-block:: pycon
+
+   >>> state.deal_hole('????????')  # Bob  # doctest: +ELLIPSIS
+   HoleDealing(player_index=0, cards=(??, ??, ??, ??), statuses=(False,...
+   >>> state.deal_hole('????????')  # Carol  # doctest: +ELLIPSIS
+   HoleDealing(player_index=1, cards=(??, ??, ??, ??), statuses=(False,...
+   >>> state.deal_hole('????????')  # Ted  # doctest: +ELLIPSIS
+   HoleDealing(player_index=2, cards=(??, ??, ??, ??), statuses=(False,...
+   >>> state.deal_hole('????????')  # Alice  # doctest: +ELLIPSIS
+   HoleDealing(player_index=3, cards=(??, ??, ??, ??), statuses=(False,...
+
+   >>> state.fold()  # Ted
+   Folding(player_index=2)
+   >>> state.check_or_call()  # Alice
+   CheckingOrCalling(player_index=3, amount=2)
+   >>> state.check_or_call()  # Bob
+   CheckingOrCalling(player_index=0, amount=1)
+   >>> state.check_or_call()  # Carol
+   CheckingOrCalling(player_index=1, amount=0)
+
+Below shows the first draw and actions.
+
+.. code-block:: pycon
+
+   >>> state.stand_pat_or_discard('????')  # Bob
+   StandingPatOrDiscarding(player_index=0, cards=(??, ??))
+   >>> state.stand_pat_or_discard('????')  # Carol
+   StandingPatOrDiscarding(player_index=1, cards=(??, ??))
+   >>> state.stand_pat_or_discard('??')  # Alice
+   StandingPatOrDiscarding(player_index=3, cards=(??,))
+   >>> state.burn_card('??')
+   CardBurning(card=??)
+   >>> state.deal_hole('????')  # Bob
+   HoleDealing(player_index=0, cards=(??, ??), statuses=(False, False))
+   >>> state.deal_hole('????')  # Carol
+   HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
+   >>> state.deal_hole('??')  # Alice
+   HoleDealing(player_index=3, cards=(??,), statuses=(False,))
+
+   >>> state.check_or_call()  # Bob
+   CheckingOrCalling(player_index=0, amount=0)
+   >>> state.complete_bet_or_raise_to()  # Carol
+   CompletionBettingOrRaisingTo(player_index=1, amount=2)
+   >>> state.check_or_call()  # Alice
+   CheckingOrCalling(player_index=3, amount=2)
+   >>> state.check_or_call()  # Bob
+   CheckingOrCalling(player_index=0, amount=2)
+
+Below shows the second draw and actions.
+
+.. code-block:: pycon
+
+   >>> state.stand_pat_or_discard('??')  # Bob
+   StandingPatOrDiscarding(player_index=0, cards=(??,))
+   >>> state.stand_pat_or_discard()  # Carol
+   StandingPatOrDiscarding(player_index=1, cards=())
+   >>> state.stand_pat_or_discard('??')  # Alice
+   StandingPatOrDiscarding(player_index=3, cards=(??,))
+   >>> state.burn_card('??')
+   CardBurning(card=??)
+   >>> state.deal_hole('??')  # Bob
+   HoleDealing(player_index=0, cards=(??,), statuses=(False,))
+   >>> state.deal_hole('??')  # Alice
+   HoleDealing(player_index=3, cards=(??,), statuses=(False,))
+
+   >>> state.check_or_call()  # Bob
+   CheckingOrCalling(player_index=0, amount=0)
+   >>> state.complete_bet_or_raise_to()  # Carol
+   CompletionBettingOrRaisingTo(player_index=1, amount=4)
+   >>> state.complete_bet_or_raise_to()  # Alice
+   CompletionBettingOrRaisingTo(player_index=3, amount=8)
+   >>> state.fold()  # Bob
+   Folding(player_index=0)
+   >>> state.check_or_call()  # Carol
+   CheckingOrCalling(player_index=1, amount=4)
+
+Below shows the third draw and actions.
+
+.. code-block:: pycon
+
+   >>> state.stand_pat_or_discard('??')  # Carol
+   StandingPatOrDiscarding(player_index=1, cards=(??,))
+   >>> state.stand_pat_or_discard()  # Alice
+   StandingPatOrDiscarding(player_index=3, cards=())
+   >>> state.burn_card('??')
+   CardBurning(card=??)
+   >>> state.deal_hole('??')  # Carol
+   HoleDealing(player_index=1, cards=(??,), statuses=(False,))
+
+   >>> state.check_or_call()  # Carol
+   CheckingOrCalling(player_index=1, amount=0)
+   >>> state.complete_bet_or_raise_to()  # Alice
+   CompletionBettingOrRaisingTo(player_index=3, amount=4)
+   >>> state.check_or_call()  # Carol
+   CheckingOrCalling(player_index=1, amount=4)
+
+Below show the showdown.
+
+.. code-block:: pycon
+
+   >>> state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
+   HoleCardsShowingOrMucking(player_index=3, hole_cards=(2s, 4c, 6d, 9h))
+   >>> state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
+   HoleCardsShowingOrMucking(player_index=1, hole_cards=(3s, 5d, 7c, 8h))
+
+Below show the final stacks.
+
+.. code-block:: pycon
+
+   >>> state.stacks
+   [196, 220, 200, 184]
 
 There are more example hands in the unit tests. Please take a look at the
 repository to learn more.
