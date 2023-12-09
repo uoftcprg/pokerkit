@@ -2163,9 +2163,7 @@ class State:
         return cards
 
     def _consume_cards(self, cards: tuple[Card, ...]) -> None:
-        if len(cards) > len(self.deck_cards):
-            assert set(cards) > set(self.deck_cards)
-
+        if set(cards) > set(self.deck_cards):
             self._produce_cards(shuffled(self._backup_cards))
 
             self.mucked_cards.clear()
