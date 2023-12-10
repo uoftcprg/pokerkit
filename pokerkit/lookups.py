@@ -280,7 +280,7 @@ class StandardLookup(Lookup):
     <Label.TWO_PAIR: 'Two pair'>
     """
 
-    rank_order: ClassVar[RankOrder] = RankOrder.STANDARD
+    rank_order = RankOrder.STANDARD
 
     def __post_init__(self) -> None:
         self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
@@ -326,7 +326,7 @@ class ShortDeckHoldemLookup(Lookup):
     <Label.STRAIGHT: 'Straight'>
     """
 
-    rank_order: ClassVar[RankOrder] = RankOrder.SHORT_DECK_HOLDEM
+    rank_order = RankOrder.SHORT_DECK_HOLDEM
 
     def __post_init__(self) -> None:
         self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
@@ -356,7 +356,7 @@ class EightOrBetterLookup(Lookup):
     please use :class:`pokerkit.hands.EightOrBetterLowHand`.
     """
 
-    rank_order: ClassVar[RankOrder] = RankOrder.EIGHT_OR_BETTER_LOW
+    rank_order = RankOrder.EIGHT_OR_BETTER_LOW
 
     def __post_init__(self) -> None:
         self._add_multisets(Counter({1: 5}), (False, True), Label.HIGH_CARD)
@@ -386,7 +386,7 @@ class RegularLookup(Lookup):
     <Label.TWO_PAIR: 'Two pair'>
     """
 
-    rank_order: ClassVar[RankOrder] = RankOrder.REGULAR
+    rank_order = RankOrder.REGULAR
 
     def __post_init__(self) -> None:
         self._add_multisets(Counter({1: 5}), (False, True), Label.HIGH_CARD)
@@ -427,7 +427,7 @@ class BadugiLookup(Lookup):
     <Label.HIGH_CARD: 'High card'>
     """
 
-    rank_order: ClassVar[RankOrder] = RankOrder.REGULAR
+    rank_order = RankOrder.REGULAR
 
     def __post_init__(self) -> None:
         for i in range(4, 0, -1):
@@ -456,7 +456,7 @@ class KuhnPokerLookup(Lookup):
     <Label.HIGH_CARD: 'High card'>
     """
 
-    rank_order: ClassVar[RankOrder] = RankOrder.KUHN_POKER
+    rank_order = RankOrder.KUHN_POKER
 
     def __post_init__(self) -> None:
         self._add_multisets(Counter({1: 1}), (True,), Label.HIGH_CARD)

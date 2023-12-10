@@ -3017,6 +3017,11 @@ class StateTestCase(TestCase):
         state.deal_hole()
         self.assertEqual(state.total_pot_amount, 1850000)
 
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
         state.kill_hand()
         state.push_chips()
         state.pull_chips()
@@ -3801,6 +3806,11 @@ class StateTestCase(TestCase):
         state.deal_hole()
         self.assertEqual(state.total_pot_amount, 3000000)
 
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
         state.kill_hand()
         state.push_chips()
         state.pull_chips()
@@ -4556,6 +4566,11 @@ class StateTestCase(TestCase):
         state.collect_bets()
         self.assertEqual(state.total_pot_amount, 7000000)
 
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
         # Flop
 
         state.burn_card()
@@ -5274,6 +5289,12 @@ class StateTestCase(TestCase):
         state.check_or_call()
         self.assertEqual(state.total_pot_amount, 1625000)
 
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
         state.kill_hand()
         state.kill_hand()
         state.push_chips()
@@ -5353,6 +5374,12 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.collect_bets()
         self.assertEqual(state.total_pot_amount, 5900000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
 
         state.kill_hand()
         state.push_chips()
@@ -5797,6 +5824,11 @@ class StateTestCase(TestCase):
         state.collect_bets()
         self.assertEqual(state.total_pot_amount, 5300000)
 
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+
         # Seventh Street
 
         state.burn_card()
@@ -5805,6 +5837,11 @@ class StateTestCase(TestCase):
             state.deal_hole()
 
         self.assertEqual(state.total_pot_amount, 5300000)
+
+        # Showdown
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
 
         state.kill_hand()
         state.push_chips()
