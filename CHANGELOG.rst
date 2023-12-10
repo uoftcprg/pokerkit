@@ -14,6 +14,7 @@ Version 0.4.0 (Planned)
 - More generous state operations when it comes to cards. Some things that were
   errors are now warnings.
 - When all-in, cards are shown via ``show_or_muck_hole_cards``.
+- ``None`` is no longer ``ValuesLike`` or ``CardsLike``.
 
 **Added**
 

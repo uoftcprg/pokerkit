@@ -339,21 +339,23 @@ class Card:
         >>> Card.clean(Card(Rank.ACE, Suit.SPADE))
         (As,)
         >>> Card.clean(None)
-        ()
+        Traceback (most recent call last):
+            ...
+        ValueError: invalid values
 
         :param values: The cards.
         :return: The cleaned cards.
         """
-        if values is None:
-            values = ()
-        elif isinstance(values, Card):
+        if isinstance(values, Card):
             values = (values,)
         elif isinstance(values, str):
             values = tuple(Card.parse(values))
-        elif not isinstance(values, tuple) and isinstance(values, Iterable):
+        elif isinstance(values, Iterable):
             assert not isinstance(values, str)
 
             values = tuple(values)
+        elif not isinstance(values, tuple):
+            raise ValueError('invalid values')
 
         return values
 
@@ -406,7 +408,7 @@ class Card:
         return self.rank == Rank.UNKNOWN or self.suit == Suit.UNKNOWN
 
 
-CardsLike = Iterable[Card] | Card | str | None
+CardsLike = Iterable[Card] | Card | str
 
 
 @unique
@@ -559,7 +561,7 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
         return None
 
 
-ValuesLike = Iterable[int] | Mapping[int, int] | int | None
+ValuesLike = Iterable[int] | Mapping[int, int] | int
 
 
 def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
@@ -573,18 +575,18 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     (1, 0, 0, 2)
     >>> clean_values(4, 4)
     (4, 4, 4, 4)
-    >>> clean_values(None, 4)
-    (0, 0, 0, 0)
     >>> clean_values((1, 2, 3), 2)
     (1, 2)
+    >>> clean_values(None, 2)
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid values
 
     :param values: The values.
     :param count: The number of values.
     :return: The cleaned integers.
     """
-    if values is None:
-        values = (0,) * count
-    elif isinstance(values, int):
+    if isinstance(values, int):
         values = (values,) * count
     elif isinstance(values, Mapping):
         parsed_values = [0] * count
@@ -593,16 +595,15 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
             parsed_values[key] += value
 
         values = tuple(parsed_values)
-    elif (
-            not (isinstance(values, tuple) and len(values) == count)
-            and isinstance(values, Iterable)
-    ):
+    elif isinstance(values, Iterable):
         parsed_values = list(values)[:count]
 
         while len(parsed_values) < count:
             parsed_values.append(0)
 
         values = tuple(parsed_values)
+    else:
+        raise ValueError('invalid values')
 
     return values
 
