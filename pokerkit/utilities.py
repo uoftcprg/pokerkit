@@ -9,9 +9,10 @@ from dataclasses import dataclass
 from enum import Enum, StrEnum, unique
 from functools import partial
 from itertools import product, starmap
+from numbers import Integral
 from operator import is_not
 from random import shuffle
-from typing import Any
+from typing import Any, cast
 
 
 @unique
@@ -615,7 +616,7 @@ def shuffled(cards: CardsLike) -> list[Card]:
     >>> cards  # doctest: +ELLIPSIS
     [A..., A..., A..., A...]
 
-    :param: The cards to shuffle.
+    :param cards: The cards to shuffle.
     :return: The shuffled cards.
     """
     cards = list(Card.clean(cards))
@@ -623,3 +624,27 @@ def shuffled(cards: CardsLike) -> list[Card]:
     shuffle(cards)
 
     return cards
+
+
+_divmod = divmod
+
+
+def divmod(dividend: Any, divisor: int) -> tuple[Any, Any]:
+    """Divide the pot amount.
+
+    >>> divmod(11, 3)
+    (3, 2)
+    >>> divmod(11.0, 3)  # doctest: +ELLIPSIS
+    (3.666666666666666..., 0.0)
+
+    :param dividend: The pot amount.
+    :param divisor: The number of players.
+    :return: The quotient and the remainder.
+    """
+    if isinstance(dividend, Integral):
+        return cast(tuple[Any, Any], _divmod(dividend, divisor))
+
+    quotient = dividend / divisor
+    remainder = dividend - quotient * divisor
+
+    return quotient, remainder

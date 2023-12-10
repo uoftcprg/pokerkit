@@ -205,9 +205,9 @@ Link: https://youtu.be/UMBm66Id2AA
        ),
        True,
        0,
-       (50000, 100000),
+       (500, 1000),
        2000,
-       (125945025, 67847350),
+       (1259450.25, 678473.5),
        2,
    )
 
@@ -218,10 +218,10 @@ Below shows the pre-flop dealings and actions.
    state.deal_hole('Ah3sKsKh')  # Antonius
    state.deal_hole('6d9s7d8h')  # Blom
 
-   state.complete_bet_or_raise_to(300000)  # Blom
-   state.complete_bet_or_raise_to(900000)  # Antonius
-   state.complete_bet_or_raise_to(2700000)  # Blom
-   state.complete_bet_or_raise_to(8100000)  # Antonius
+   state.complete_bet_or_raise_to(3000)  # Blom
+   state.complete_bet_or_raise_to(9000)  # Antonius
+   state.complete_bet_or_raise_to(27000)  # Blom
+   state.complete_bet_or_raise_to(81000)  # Antonius
    state.check_or_call()  # Blom
 
 Below shows the flop dealing and actions.
@@ -231,9 +231,9 @@ Below shows the flop dealing and actions.
    state.burn_card('??')
    state.deal_board('4s5c2h')
 
-   state.complete_bet_or_raise_to(9100000)  # Antonius
-   state.complete_bet_or_raise_to(43500000)  # Blom
-   state.complete_bet_or_raise_to(77900000)  # Antonius
+   state.complete_bet_or_raise_to(91000)  # Antonius
+   state.complete_bet_or_raise_to(435000)  # Blom
+   state.complete_bet_or_raise_to(779000)  # Antonius
    state.check_or_call()  # Blom
 
 Below shows the turn dealing.
@@ -254,7 +254,7 @@ Below show the final stacks.
 
 .. code-block:: python
 
-   print(state.stacks)  # [193792375, 0]
+   print(state.stacks)  # [1937923.75, 0.0]
 
 **A bad beat between Yockey and Arieh.**
 

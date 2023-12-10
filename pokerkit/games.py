@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Callable
 from typing import ClassVar
 
 from pokerkit.hands import (
@@ -17,7 +18,7 @@ from pokerkit.hands import (
     StandardLowHand,
 )
 from pokerkit.state import BettingStructure, Opening, Automation, State, Street
-from pokerkit.utilities import Deck, RankOrder, ValuesLike
+from pokerkit.utilities import Deck, divmod, RankOrder, ValuesLike
 
 
 class Poker(ABC):
@@ -29,6 +30,7 @@ class Poker(ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param bring_in: The bring-in.
+    :param divmod: The divmod function.
     """
 
     deck: ClassVar[Deck]
@@ -46,6 +48,7 @@ class Poker(ABC):
             raw_antes: ValuesLike,
             raw_blinds_or_straddles: ValuesLike,
             bring_in: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> None:
         self.automations: tuple[Automation, ...] = automations
         """The automations."""
@@ -64,6 +67,8 @@ class Poker(ABC):
         """The raw blinds or straddles."""
         self.bring_in: int = bring_in
         """The bring-in."""
+        self.divmod: Callable[[int, int], tuple[int, int]] = divmod
+        """The divmod function."""
 
     def __call__(
             self,
@@ -82,6 +87,7 @@ class Poker(ABC):
             self.bring_in,
             raw_starting_stacks,
             player_count,
+            self.divmod,
         )
 
     @property
@@ -225,6 +231,7 @@ class Holdem(Poker, ABC):
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
+    :param divmod: The divmod function.
     """
 
     hole_dealing_count: ClassVar[int]
@@ -240,6 +247,7 @@ class Holdem(Poker, ABC):
             raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> None:
         super().__init__(
             automations,
@@ -285,6 +293,7 @@ class Holdem(Poker, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
+            divmod,
         )
 
 
@@ -296,6 +305,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param min_bet: The minimum bet.
+    :param divmod: The divmod function.
     """
 
     max_completion_betting_or_raising_count: ClassVar[int | None] = None
@@ -307,6 +317,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_antes: ValuesLike,
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> None:
         super().__init__(
             automations,
@@ -315,6 +326,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_blinds_or_straddles,
             min_bet,
             min_bet,
+            divmod,
         )
 
 
@@ -340,6 +352,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit Texas hold'em game.
 
@@ -392,6 +405,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -401,6 +415,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -421,6 +436,7 @@ class NoLimitTexasHoldem(
             min_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a no-limit Texas hold'em game.
 
@@ -512,6 +528,7 @@ class NoLimitTexasHoldem(
         :param min_bet: The min bet.
         :param raw_starting_stacks: The starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -520,6 +537,7 @@ class NoLimitTexasHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -540,6 +558,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             min_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a no-limit short-deck hold'em game.
 
@@ -632,6 +651,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
         :param min_bet: The min bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -640,6 +660,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -669,6 +690,7 @@ class PotLimitOmahaHoldem(
             min_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a pot-limit Omaha hold'em game.
 
@@ -689,9 +711,9 @@ class PotLimitOmahaHoldem(
         ...     ),
         ...     True,
         ...     0,
-        ...     (50000, 100000),
+        ...     (500, 1000),
         ...     2000,
-        ...     (125945025, 67847350),
+        ...     (1259450.25, 678473.5),
         ...     2,
         ... )
 
@@ -702,16 +724,16 @@ class PotLimitOmahaHoldem(
         >>> state.deal_hole('6d9s7d8h')  # Blom  # doctest: +ELLIPSIS
         HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False,...
 
-        >>> state.complete_bet_or_raise_to(300000)  # Blom
-        CompletionBettingOrRaisingTo(player_index=1, amount=300000)
-        >>> state.complete_bet_or_raise_to(900000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=900000)
-        >>> state.complete_bet_or_raise_to(2700000)  # Blom
-        CompletionBettingOrRaisingTo(player_index=1, amount=2700000)
-        >>> state.complete_bet_or_raise_to(8100000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=8100000)
+        >>> state.complete_bet_or_raise_to(3000)  # Blom
+        CompletionBettingOrRaisingTo(player_index=1, amount=3000)
+        >>> state.complete_bet_or_raise_to(9000)  # Antonius
+        CompletionBettingOrRaisingTo(player_index=0, amount=9000)
+        >>> state.complete_bet_or_raise_to(27000)  # Blom
+        CompletionBettingOrRaisingTo(player_index=1, amount=27000)
+        >>> state.complete_bet_or_raise_to(81000)  # Antonius
+        CompletionBettingOrRaisingTo(player_index=0, amount=81000)
         >>> state.check_or_call()  # Blom
-        CheckingOrCalling(player_index=1, amount=5400000)
+        CheckingOrCalling(player_index=1, amount=54000)
 
         Below shows the flop dealing and actions.
 
@@ -720,14 +742,14 @@ class PotLimitOmahaHoldem(
         >>> state.deal_board('4s5c2h')
         BoardDealing(cards=(4s, 5c, 2h))
 
-        >>> state.complete_bet_or_raise_to(9100000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=9100000)
-        >>> state.complete_bet_or_raise_to(43500000)  # Blom
-        CompletionBettingOrRaisingTo(player_index=1, amount=43500000)
-        >>> state.complete_bet_or_raise_to(77900000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=77900000)
+        >>> state.complete_bet_or_raise_to(91000)  # Antonius
+        CompletionBettingOrRaisingTo(player_index=0, amount=91000)
+        >>> state.complete_bet_or_raise_to(435000)  # Blom
+        CompletionBettingOrRaisingTo(player_index=1, amount=435000)
+        >>> state.complete_bet_or_raise_to(779000)  # Antonius
+        CompletionBettingOrRaisingTo(player_index=0, amount=779000)
         >>> state.check_or_call()  # Blom
-        CheckingOrCalling(player_index=1, amount=16247350)
+        CheckingOrCalling(player_index=1, amount=162473.5)
 
         Below shows the turn dealing.
 
@@ -746,7 +768,7 @@ class PotLimitOmahaHoldem(
         Below show the final stacks.
 
         >>> state.stacks
-        [193792375, 0]
+        [1937923.75, 0.0]
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
@@ -755,6 +777,7 @@ class PotLimitOmahaHoldem(
         :param min_bet: The min bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -763,6 +786,7 @@ class PotLimitOmahaHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -791,6 +815,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit Omaha hold'em high/low-split eight or better
         low game.
@@ -803,6 +828,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -812,6 +838,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -824,6 +851,7 @@ class SevenCardStud(Poker, ABC):
     :param bring_in: The bring-in.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
+    :param divmod: The divmod function.
     """
 
     max_completion_betting_or_raising_count: ClassVar[int | None]
@@ -839,6 +867,7 @@ class SevenCardStud(Poker, ABC):
             bring_in: int,
             small_bet: int,
             big_bet: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> None:
         super().__init__(
             automations,
@@ -893,6 +922,7 @@ class SevenCardStud(Poker, ABC):
             raw_antes,
             0,
             bring_in,
+            divmod,
         )
 
 
@@ -914,6 +944,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit seven card stud game.
 
@@ -925,6 +956,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -934,6 +966,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -963,6 +996,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit seven card stud high/low-split eight or
         better low game.
@@ -975,6 +1009,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -984,6 +1019,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             bring_in,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -1005,6 +1041,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit razz game.
 
@@ -1016,6 +1053,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -1025,6 +1063,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -1045,6 +1084,7 @@ class SingleDraw(Draw, ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param min_bet: The min bet.
+    :param divmod: The divmod function.
     """
 
     def __init__(
@@ -1054,6 +1094,7 @@ class SingleDraw(Draw, ABC):
             raw_antes: ValuesLike,
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> None:
         super().__init__(
             automations,
@@ -1081,6 +1122,7 @@ class SingleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
+            divmod,
         )
 
 
@@ -1093,6 +1135,7 @@ class TripleDraw(Draw, ABC):
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
+    :param divmod: The divmod function.
     """
 
     def __init__(
@@ -1103,6 +1146,7 @@ class TripleDraw(Draw, ABC):
             raw_blinds_or_straddles: ValuesLike,
             small_bet: int,
             big_bet: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> None:
         super().__init__(
             automations,
@@ -1148,6 +1192,7 @@ class TripleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
+            divmod,
         )
 
 
@@ -1177,6 +1222,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             min_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a no-limit deuce-to-seven lowball single draw game.
 
@@ -1187,6 +1233,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
         :param min_bet: The min bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -1195,6 +1242,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -1218,6 +1266,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit deuce-to-seven lowball triple draw game.
 
@@ -1327,6 +1376,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -1336,6 +1386,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)
 
 
@@ -1357,6 +1408,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             big_bet: int,
             raw_starting_stacks: ValuesLike,
             player_count: int,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
     ) -> State:
         """Create a fixed-limit badugi game.
 
@@ -1492,6 +1544,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param divmod: The divmod function.
         :return: The created state.
         """
         return cls(
@@ -1501,4 +1554,5 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            divmod,
         )(raw_starting_stacks, player_count)

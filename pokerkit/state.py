@@ -1,7 +1,7 @@
 """:mod:`pokerkit.state` implements classes related to poker states."""
 
 from abc import ABC
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from collections import Counter, deque
 from dataclasses import InitVar, dataclass, field
 from enum import StrEnum, unique
@@ -18,6 +18,7 @@ from pokerkit.utilities import (
     CardsLike,
     clean_values,
     Deck,
+    divmod,
     max_or_none,
     min_or_none,
     RankOrder,
@@ -850,6 +851,8 @@ class State:
     """The raw starting stacks."""
     player_count: int
     """The number of players."""
+    divmod: Callable[[int, int], tuple[int, int]] = field(default=divmod)
+    """The divmod function."""
     antes: tuple[int, ...] = field(init=False)
     """The antes."""
     blinds_or_straddles: tuple[int, ...] = field(init=False)
@@ -4494,10 +4497,14 @@ class State:
                 for j, k in enumerate(player_indices):
                     assert self.statuses[k]
 
-                    sub_amount = amount // len(player_indices)
+                    quotient, remainder = self.divmod(
+                        amount,
+                        len(player_indices),
+                    )
+                    sub_amount = quotient
 
                     if not j:
-                        sub_amount += amount % len(player_indices)
+                        sub_amount += remainder
 
                     self.bets[k] += sub_amount
 
@@ -4521,10 +4528,14 @@ class State:
                     player_indices = [
                         j for j in pot.player_indices if hands[j] == max_hand
                     ]
-                    amount = pot.amount // hand_type_count
+                    quotient, remainder = self.divmod(
+                        pot.amount,
+                        hand_type_count,
+                    )
+                    amount = quotient
 
                     if not i:
-                        amount += pot.amount % hand_type_count
+                        amount += remainder
 
                     push(player_indices, amount)
 

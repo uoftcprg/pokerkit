@@ -722,7 +722,6 @@ Link: https://youtu.be/UMBm66Id2AA
 
 .. code-block:: pycon
 
-   >>> from pokerkit import *
    >>> state = PotLimitOmahaHoldem.create_state(
    ...     (
    ...         Automation.ANTE_POSTING,
@@ -735,9 +734,9 @@ Link: https://youtu.be/UMBm66Id2AA
    ...     ),
    ...     True,
    ...     0,
-   ...     (50000, 100000),
+   ...     (500, 1000),
    ...     2000,
-   ...     (125945025, 67847350),
+   ...     (1259450.25, 678473.5),
    ...     2,
    ... )
 
@@ -750,16 +749,16 @@ Below shows the pre-flop dealings and actions.
    >>> state.deal_hole('6d9s7d8h')  # Blom  # doctest: +ELLIPSIS
    HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False,...
 
-   >>> state.complete_bet_or_raise_to(300000)  # Blom
-   CompletionBettingOrRaisingTo(player_index=1, amount=300000)
-   >>> state.complete_bet_or_raise_to(900000)  # Antonius
-   CompletionBettingOrRaisingTo(player_index=0, amount=900000)
-   >>> state.complete_bet_or_raise_to(2700000)  # Blom
-   CompletionBettingOrRaisingTo(player_index=1, amount=2700000)
-   >>> state.complete_bet_or_raise_to(8100000)  # Antonius
-   CompletionBettingOrRaisingTo(player_index=0, amount=8100000)
+   >>> state.complete_bet_or_raise_to(3000)  # Blom
+   CompletionBettingOrRaisingTo(player_index=1, amount=3000)
+   >>> state.complete_bet_or_raise_to(9000)  # Antonius
+   CompletionBettingOrRaisingTo(player_index=0, amount=9000)
+   >>> state.complete_bet_or_raise_to(27000)  # Blom
+   CompletionBettingOrRaisingTo(player_index=1, amount=27000)
+   >>> state.complete_bet_or_raise_to(81000)  # Antonius
+   CompletionBettingOrRaisingTo(player_index=0, amount=81000)
    >>> state.check_or_call()  # Blom
-   CheckingOrCalling(player_index=1, amount=5400000)
+   CheckingOrCalling(player_index=1, amount=54000)
 
 Below shows the flop dealing and actions.
 
@@ -770,14 +769,14 @@ Below shows the flop dealing and actions.
    >>> state.deal_board('4s5c2h')
    BoardDealing(cards=(4s, 5c, 2h))
 
-   >>> state.complete_bet_or_raise_to(9100000)  # Antonius
-   CompletionBettingOrRaisingTo(player_index=0, amount=9100000)
-   >>> state.complete_bet_or_raise_to(43500000)  # Blom
-   CompletionBettingOrRaisingTo(player_index=1, amount=43500000)
-   >>> state.complete_bet_or_raise_to(77900000)  # Antonius
-   CompletionBettingOrRaisingTo(player_index=0, amount=77900000)
+   >>> state.complete_bet_or_raise_to(91000)  # Antonius
+   CompletionBettingOrRaisingTo(player_index=0, amount=91000)
+   >>> state.complete_bet_or_raise_to(435000)  # Blom
+   CompletionBettingOrRaisingTo(player_index=1, amount=435000)
+   >>> state.complete_bet_or_raise_to(779000)  # Antonius
+   CompletionBettingOrRaisingTo(player_index=0, amount=779000)
    >>> state.check_or_call()  # Blom
-   CheckingOrCalling(player_index=1, amount=16247350)
+   CheckingOrCalling(player_index=1, amount=162473.5)
 
 Below shows the turn dealing.
 
@@ -802,7 +801,7 @@ Below show the final stacks.
 .. code-block:: pycon
 
    >>> state.stacks
-   [193792375, 0]
+   [1937923.75, 0.0]
 
 **A bad beat between Yockey and Arieh.**
 

@@ -18,11 +18,12 @@ Version 0.4.0 (Planned)
 **Added**
 
 - Cards with unknown rank or suit.
+- ``float`` compatibility (without static typing support).
 
 **Planned**
 
-- Poker notation support.
-- Poker hand history (.phh) support.
+- Poker action notation support.
+- Poker hand history file format (.phh) support.
 
 Version 0.3.2 (December 4, 2023)
 --------------------------------
