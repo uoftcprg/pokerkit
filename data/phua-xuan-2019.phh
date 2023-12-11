@@ -48,12 +48,5 @@ author = "Juho Kim"
 event = "Triton London 2019"
 address = "Les Ambassadeurs Club. London, England"
 year = 2019
-players = [
-  "Mikita Badziakouski",
-  "Liu Ming Zhong",
-  "Tan Xuan",
-  "Wang Jun",
-  "Paul Phua",
-  "Jason Koon",
-]
+players = ["Mikita Badziakouski", "Liu Ming Zhong", "Tan Xuan", "Wang Jun", "Paul Phua", "Jason Koon"]
 currency = "GBP"

@@ -55,15 +55,9 @@ actions = [
   "p4 sm 2h4d7c5c3c",  # Arieh
 ]
 author = "Juho Kim"
-event = """2019 World Series of Poker Event #58: $50,000 Poker \\
-Players Championship"""
+event = "2019 World Series of Poker Event #58: $50,000 Poker Players Championship"
 address = "Las Vegas, Nevada, USA"
 day = 28
 month = 6
 year = 2019
-players = [
-  "Bryce Yockey",
-  "Phil Hui",
-  "John Esposito",
-  "Josh Arieh",
-]
+players = ["Bryce Yockey", "Phil Hui", "John Esposito", "Josh Arieh"]
