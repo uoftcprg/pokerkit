@@ -20,9 +20,6 @@ Version 0.4.0 (Planned)
 
 - Cards with unknown rank or suit.
 - ``float`` compatibility (without static typing support).
-
-**Planned**
-
 - Poker action notation support.
 - Poker hand history file format (.phh) support.
 

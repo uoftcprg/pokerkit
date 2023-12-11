@@ -12,7 +12,9 @@ from itertools import product, starmap
 from numbers import Integral
 from operator import is_not
 from random import shuffle
-from typing import Any, cast
+from typing import Any, cast, TypeVar
+
+_T = TypeVar('_T')
 
 
 @unique
@@ -354,7 +356,7 @@ class Card:
             assert not isinstance(values, str)
 
             values = tuple(values)
-        elif not isinstance(values, tuple):
+        else:
             raise ValueError('invalid values')
 
         return values
@@ -608,8 +610,8 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     return values
 
 
-def shuffled(cards: CardsLike) -> list[Card]:
-    """Return the shuffled cards.
+def shuffled(values: Iterable[_T]) -> list[_T]:
+    """Return the shuffled values.
 
     The shuffling is not done in-place.
 
@@ -617,21 +619,21 @@ def shuffled(cards: CardsLike) -> list[Card]:
     >>> cards  # doctest: +ELLIPSIS
     [A..., A..., A..., A...]
 
-    :param cards: The cards to shuffle.
-    :return: The shuffled cards.
+    :param values: The values to shuffle.
+    :return: The shuffled values.
     """
-    cards = list(Card.clean(cards))
+    values = list(values)
 
-    shuffle(cards)
+    shuffle(values)
 
-    return cards
+    return values
 
 
 _divmod = divmod
 
 
-def divmod(dividend: Any, divisor: int) -> tuple[Any, Any]:
-    """Divide the pot amount.
+def divmod(dividend: int, divisor: int) -> tuple[int, int]:
+    """Divide the amount.
 
     >>> divmod(11, 3)
     (3, 2)
@@ -643,9 +645,32 @@ def divmod(dividend: Any, divisor: int) -> tuple[Any, Any]:
     :return: The quotient and the remainder.
     """
     if isinstance(dividend, Integral):
-        return cast(tuple[Any, Any], _divmod(dividend, divisor))
+        return _divmod(dividend, divisor)
 
     quotient = dividend / divisor
     remainder = dividend - quotient * divisor
 
-    return quotient, remainder
+    return cast(tuple[int, int], (quotient, remainder))
+
+
+def parse_value(raw_value: str) -> int:
+    """Convert ``str`` to a number.
+
+    >>> parse_value('3')
+    3
+    >>> parse_value('3.0')
+    3.0
+    >>> parse_value('3.5')
+    3.5
+
+    :param raw_value: The raw value.
+    :return: The converted value.
+    """
+    value: int | float
+
+    try:
+        value = int(raw_value)
+    except ValueError:
+        value = float(raw_value)
+
+    return cast(int, value)

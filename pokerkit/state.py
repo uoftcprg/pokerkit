@@ -428,7 +428,7 @@ class HoleCardsShowingOrMucking(Operation):
 
     player_index: int
     """The player index."""
-    hole_cards: tuple[Card, ...] | None
+    hole_cards: tuple[Card, ...]
     """The hole cards."""
 
 
@@ -891,6 +891,8 @@ class State:
     """The all-in show status."""
     status: bool = field(default=True, init=False)
     """The game status."""
+    operations: list[Operation] = field(default_factory=list, init=False)
+    """The operations."""
 
     def __post_init__(
             self,
@@ -966,6 +968,12 @@ class State:
 
     def _begin(self) -> None:
         self._begin_ante_posting()
+
+        self._update()
+
+    def _update(self, operation: Operation | None = None) -> None:
+        if operation is not None:
+            self.operations.append(operation)
 
     def _end(self) -> None:
         self.status = False
@@ -1241,7 +1249,7 @@ class State:
         >>> state.street is state.streets[3]
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=None)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
         >>> state.street is None
         True
 
@@ -1401,7 +1409,7 @@ class State:
         >>> state.show_or_muck_hole_cards()
         HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=None)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
 
         Teardown.
 
@@ -2071,7 +2079,7 @@ class State:
         >>> state.can_win_now(1)
         False
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=None)
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
 
         :param player_index: The player index.
         :return: ``True`` if the player can win, otherwise ``False``.
@@ -2208,7 +2216,9 @@ class State:
 
         self._update_ante_posting()
 
-    def _update_ante_posting(self) -> None:
+    def _update_ante_posting(self, operation: Operation | None = None) -> None:
+        self._update(operation)
+
         if not any(self.ante_posting_statuses):
             self._end_ante_posting()
         elif Automation.ANTE_POSTING in self.automations:
@@ -2372,9 +2382,11 @@ class State:
         self.bets[player_index] = amount
         self.stacks[player_index] -= amount
 
-        self._update_ante_posting()
+        operation = AntePosting(player_index, amount)
 
-        return AntePosting(player_index, amount)
+        self._update_ante_posting(operation)
+
+        return operation
 
     # bet collection
 
@@ -2391,7 +2403,12 @@ class State:
 
         self._update_bet_collection()
 
-    def _update_bet_collection(self) -> None:
+    def _update_bet_collection(
+            self,
+            operation: Operation | None = None,
+    ) -> None:
+        self._update(operation)
+
         if not self.bet_collection_status:
             self._end_bet_collection()
         elif Automation.BET_COLLECTION in self.automations:
@@ -2483,9 +2500,11 @@ class State:
         for i in player_indices:
             self.bets[i] = 0
 
-        self._update_bet_collection()
+        operation = BetCollection(tuple(bets))
 
-        return BetCollection(tuple(bets))
+        self._update_bet_collection(operation)
+
+        return operation
 
     # blind or straddle posting
 
@@ -2511,7 +2530,12 @@ class State:
 
         self._update_blind_or_straddle_posting()
 
-    def _update_blind_or_straddle_posting(self) -> None:
+    def _update_blind_or_straddle_posting(
+            self,
+            operation: Operation | None = None,
+    ) -> None:
+        self._update(operation)
+
         if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
         elif Automation.BLIND_OR_STRADDLE_POSTING in self.automations:
@@ -2666,9 +2690,11 @@ class State:
         self.bets[player_index] = amount
         self.stacks[player_index] -= amount
 
-        self._update_blind_or_straddle_posting()
+        operation = BlindOrStraddlePosting(player_index, amount)
 
-        return BlindOrStraddlePosting(player_index, amount)
+        self._update_blind_or_straddle_posting(operation)
+
+        return operation
 
     # dealing
 
@@ -2738,7 +2764,9 @@ class State:
 
         self._update_dealing()
 
-    def _update_dealing(self) -> None:
+    def _update_dealing(self, operation: Operation | None = None) -> None:
+        self._update(operation)
+
         if (
                 not self.card_burning_status
                 and not any(self.hole_dealing_statuses)
@@ -2833,9 +2861,11 @@ class State:
         self.card_burning_status = False
         self.burn_cards.append(card)
 
-        self._update_dealing()
+        operation = CardBurning(card)
 
-        return CardBurning(card)
+        self._update_dealing(operation)
+
+        return operation
 
     @property
     def hole_dealee_index(self) -> int | None:
@@ -2934,9 +2964,11 @@ class State:
             self.hole_cards[player_index].append(card)
             self.hole_card_statuses[player_index].append(status)
 
-        self._update_dealing()
+        operation = HoleDealing(player_index, cards, tuple(statuses))
 
-        return HoleDealing(player_index, cards, tuple(statuses))
+        self._update_dealing(operation)
+
+        return operation
 
     def verify_board_dealing(
             self,
@@ -2995,9 +3027,11 @@ class State:
         self.board_dealing_count -= len(cards)
         self.board_cards.extend(cards)
 
-        self._update_dealing()
+        operation = BoardDealing(cards)
 
-        return BoardDealing(cards)
+        self._update_dealing(operation)
+
+        return operation
 
     @property
     def stander_pat_or_discarder_index(self) -> int | None:
@@ -3082,9 +3116,11 @@ class State:
             self.hole_card_statuses[player_index].pop(index)
             self.discarded_cards[self.street_index].append(card)
 
-        self._update_dealing()
+        operation = StandingPatOrDiscarding(player_index, cards)
 
-        return StandingPatOrDiscarding(player_index, cards)
+        self._update_dealing(operation)
+
+        return operation
 
     # betting
 
@@ -3198,13 +3234,19 @@ class State:
         self.completion_betting_or_raising_count = 0
 
         self._update_betting(
-            (
+            status=(
                 len(self.actor_indices) == 1
                 and self.bets[self.actor_indices[0]] >= max(self.bets)
             )
         )
 
-    def _update_betting(self, status: bool = False) -> None:
+    def _update_betting(
+            self,
+            operation: Operation | None = None,
+            status: bool = False,
+    ) -> None:
+        self._update(operation)
+
         if not self.actor_indices or sum(self.statuses) <= 1 or status:
             self._end_betting()
 
@@ -3360,9 +3402,11 @@ class State:
 
         assert any(self.statuses)
 
-        self._update_betting()
+        operation = Folding(player_index)
 
-        return Folding(player_index)
+        self._update_betting(operation)
+
+        return operation
 
     @property
     def checking_or_calling_amount(self) -> int | None:
@@ -3460,9 +3504,11 @@ class State:
         self.stacks[player_index] -= amount
         self.bets[player_index] += amount
 
-        self._update_betting()
+        operation = CheckingOrCalling(player_index, amount)
 
-        return CheckingOrCalling(player_index, amount)
+        self._update_betting(operation)
+
+        return operation
 
     @property
     def effective_bring_in_amount(self) -> int | None:
@@ -3528,9 +3574,11 @@ class State:
         self.bets[player_index] += amount
         self.bring_in_status = False
 
-        self._update_betting()
+        operation = BringInPosting(player_index, amount)
 
-        return BringInPosting(player_index, amount)
+        self._update_betting(operation)
+
+        return operation
 
     @property
     def min_completion_betting_or_raising_to_amount(self) -> int | None:
@@ -3839,9 +3887,11 @@ class State:
 
         assert self.actor_indices
 
-        self._update_betting()
+        operation = CompletionBettingOrRaisingTo(player_index, amount)
 
-        return CompletionBettingOrRaisingTo(player_index, amount)
+        self._update_betting(operation)
+
+        return operation
 
     # showdown
 
@@ -3865,7 +3915,9 @@ class State:
 
         self._update_showdown()
 
-    def _update_showdown(self) -> None:
+    def _update_showdown(self, operation: Operation | None = None) -> None:
+        self._update(operation)
+
         if not self.showdown_indices:
             self._end_showdown()
         elif Automation.HOLE_CARDS_SHOWING_OR_MUCKING in self.automations:
@@ -3968,7 +4020,7 @@ class State:
         >>> state.showdown_index
         2
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=2, hole_cards=None)
+        HoleCardsShowingOrMucking(player_index=2, hole_cards=())
 
         :return: The showdown index if applicable, otherwise ``None``.
         """
@@ -4118,7 +4170,7 @@ class State:
         >>> state.can_show_or_muck_hole_cards(True)
         True
         >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=2, hole_cards=None)
+        HoleCardsShowingOrMucking(player_index=2, hole_cards=())
 
         :param status_or_hole_cards: The optional status or hole cards.
         :return: ``True`` if the hole crad showing or mucking can be
@@ -4168,9 +4220,14 @@ class State:
         else:
             self._muck_hole_cards(player_index)
 
-        self._update_showdown()
+        operation = HoleCardsShowingOrMucking(
+            player_index,
+            tuple(self.hole_cards[player_index]),
+        )
 
-        return HoleCardsShowingOrMucking(player_index, hole_cards)
+        self._update_showdown(operation)
+
+        return operation
 
     # hand killing
 
@@ -4196,7 +4253,9 @@ class State:
 
         self._update_hand_killing()
 
-    def _update_hand_killing(self) -> None:
+    def _update_hand_killing(self, operation: Operation | None = None) -> None:
+        self._update(operation)
+
         if not any(self.hand_killing_statuses):
             self._end_hand_killing()
         elif Automation.HAND_KILLING in self.automations:
@@ -4391,9 +4450,11 @@ class State:
 
         self._muck_hole_cards(player_index)
 
-        self._update_hand_killing()
+        operation = HandKilling(player_index)
 
-        return HandKilling(player_index)
+        self._update_hand_killing(operation)
+
+        return operation
 
     # chips pushing
 
@@ -4411,7 +4472,12 @@ class State:
 
         self._update_chips_pushing()
 
-    def _update_chips_pushing(self) -> None:
+    def _update_chips_pushing(
+            self,
+            operation: Operation | None = None,
+    ) -> None:
+        self._update(operation)
+
         if not self.chips_pushing_status:
             self._end_chips_pushing()
         elif Automation.CHIPS_PUSHING in self.automations:
@@ -4539,9 +4605,11 @@ class State:
 
                     push(player_indices, amount)
 
-        self._update_chips_pushing()
+        operation = ChipsPushing(tuple(self.bets))
 
-        return ChipsPushing(tuple(self.bets))
+        self._update_chips_pushing(operation)
+
+        return operation
 
     # chips pulling
 
@@ -4567,7 +4635,12 @@ class State:
 
         self._update_chips_pulling()
 
-    def _update_chips_pulling(self) -> None:
+    def _update_chips_pulling(
+            self,
+            operation: Operation | None = None,
+    ) -> None:
+        self._update(operation)
+
         if not any(self.chips_pulling_statuses):
             self._end_chips_pulling()
         elif Automation.CHIPS_PULLING in self.automations:
@@ -4712,6 +4785,8 @@ class State:
         self.bets[player_index] = 0
         self.chips_pulling_statuses[player_index] = False
 
-        self._update_chips_pulling()
+        operation = ChipsPulling(player_index, amount)
 
-        return ChipsPulling(player_index, amount)
+        self._update_chips_pulling(operation)
+
+        return operation

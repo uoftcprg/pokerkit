@@ -198,6 +198,30 @@ class Poker(ABC):
             hand_type.lookup.rank_order for hand_type in self.hand_types
         )
 
+    @property
+    def small_bet(self) -> int:
+        """Return the small bet.
+
+        :return: The small bet.
+        """
+        return self.streets[0].min_completion_betting_or_raising_amount
+
+    @property
+    def big_bet(self) -> int:
+        """Return the big bet.
+
+        :return: The big bet.
+        """
+        return self.streets[-1].min_completion_betting_or_raising_amount
+
+    @property
+    def min_bet(self) -> int:
+        """Return the min bet.
+
+        :return: The min bet.
+        """
+        return self.small_bet
+
 
 class FixedLimitPokerMixin:
     """The mixin for fixed-limit poker games."""
@@ -712,7 +736,7 @@ class PotLimitOmahaHoldem(
         ...     True,
         ...     0,
         ...     (500, 1000),
-        ...     2000,
+        ...     1000,
         ...     (1259450.25, 678473.5),
         ...     2,
         ... )

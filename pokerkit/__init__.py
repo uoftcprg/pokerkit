@@ -42,6 +42,7 @@ __all__ = (
     'Folding',
     'GreekHoldemHand',
     'Hand',
+    'HandHistory',
     'HandKilling',
     'Holdem',
     'HoleBoardCombinationHand',
@@ -62,6 +63,8 @@ __all__ = (
     'OmahaHoldemMixin',
     'Opening',
     'Operation',
+    'parse_action',
+    'parse_value',
     'Poker',
     'Pot',
     'PotLimitOmahaHoldem',
@@ -143,6 +146,7 @@ from pokerkit.lookups import (
     ShortDeckHoldemLookup,
     StandardLookup,
 )
+from pokerkit.notation import HandHistory, parse_action
 from pokerkit.state import (
     AntePosting,
     Automation,
@@ -176,6 +180,7 @@ from pokerkit.utilities import (
     filter_none,
     max_or_none,
     min_or_none,
+    parse_value,
     Rank,
     RankOrder,
     shuffled,

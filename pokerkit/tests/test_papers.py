@@ -2,8 +2,11 @@
 papers and documentations on PokerKit.
 """
 
+from textwrap import dedent
 from unittest import TestCase, main
 from warnings import resetwarnings, simplefilter
+
+from pokerkit.notation import HandHistory
 
 
 class Kim2023TestCase(TestCase):
@@ -141,11 +144,430 @@ class Kim2023TestCase(TestCase):
         self.assertEqual(h0, h1)  # True
 
 
+class Kim2024TestCase(TestCase):
+    def test_dwan_ivey_2009(self) -> None:
+        s = dedent(
+            '''\
+            # The first televised million dollar pot between Tom Dwan and Phil
+            # Ivey.
+            # Link: https://youtu.be/GnxFohpljqM
+
+            variant = "NT"
+            ante_trimming_status = true
+            antes = [500, 500, 500]
+            blinds_or_straddles = [1000, 2000, 0]
+            min_bet = 2000
+            starting_stacks = [1125600, 2000000, 553500]
+            actions = [
+              # Pre-flop
+
+              "d dh p1 Ac2d",  # Ivey
+              "d dh p2 ????",  # Antonius
+              "d dh p3 7h6h",  # Dwan
+
+              "p3 cbr 7000",  # Dwan
+              "p1 cbr 23000",  # Ivey
+              "p2 f",  # Antonius
+              "p3 cc",  # Dwan
+
+              # Flop
+
+              "d db Jc3d5c",
+
+              "p1 cbr 35000",  # Ivey
+              "p3 cc",  # Dwan
+
+              # Turn
+
+              "d db 4h",
+
+              "p1 cbr 90000",  # Ivey
+              "p3 cbr 232600",  # Dwan
+              "p1 cbr 1067100",  # Ivey
+              "p3 cc",  # Dwan
+
+              # Showdown
+
+              "p1 sm Ac2d",  # Ivey
+              "p3 sm 7h6h",  # Dwan
+
+              # River
+
+              "d db Jh",
+            ]
+            author = "Juho Kim"
+            event = "Full Tilt Million Dollar Cash Game"
+            year = 2009
+            players = ["Phil Ivey", "Patrik Antonius", "Tom Dwan"]
+            currency = "USD"
+            '''
+        )
+        hh = HandHistory.loads(s)
+        it = iter(hh)
+        state = next(it)
+
+        while state.status:
+            state = next(it)
+
+        self.assertRaises(StopIteration, next, it)
+        self.assertEqual(state.stacks, [572100, 1997500, 1109500])
+
+        s = hh.dumps()
+        hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+    def test_phua_xuan_2019(self) -> None:
+        s = dedent(
+            '''\
+            # An all-in hand between Xuan and Phua.
+            # Link: https://youtu.be/QlgCcphLjaQ
+
+            variant = "NS"
+            ante_trimming_status = true
+            antes = [3000, 3000, 3000, 3000, 3000, 3000]
+            blinds_or_straddles = [0, 0, 0, 0, 0, 3000]
+            min_bet = 3000
+            starting_stacks = [495000, 232000, 362000, 403000, 301000, 204000]
+            actions = [
+              # Pre-flop
+
+              "d dh p1 Th8h",  # Badziakouski
+              "d dh p2 QsJd",  # Zhong
+              "d dh p3 QhQd",  # Xuan
+              "d dh p4 8d7c",  # Jun
+              "d dh p5 KhKs",  # Phua
+              "d dh p6 8c7h",  # Koon
+
+              "p1 cc",  # Badziakouski
+              "p2 cc",  # Zhong
+              "p3 cbr 35000",  # Xuan
+              "p4 f",  # Jun
+              "p5 cbr 298000",  # Phua
+              "p6 f",  # Koon
+              "p1 f",  # Badziakouski
+              "p2 f",  # Zhong
+              "p3 cc",  # Xuan
+
+              # Showdown
+
+              "p5 sm KhKs",  # Phua
+              "p3 sm QhQd",  # Xuan
+
+              # Flop
+
+              "d db 9h6cKc",
+
+              # Turn
+
+              "d db Jh",
+
+              # River
+
+              "d db Ts",
+            ]
+            author = "Juho Kim"
+            event = "Triton London 2019"
+            address = "Les Ambassadeurs Club. London, England"
+            year = 2019
+            players = [
+              "Mikita Badziakouski",
+              "Liu Ming Zhong",
+              "Tan Xuan",
+              "Wang Jun",
+              "Paul Phua",
+              "Jason Koon",
+            ]
+            currency = "GBP"
+            '''
+        )
+        hh = HandHistory.loads(s)
+        it = iter(hh)
+        state = next(it)
+
+        while state.status:
+            state = next(it)
+
+        self.assertRaises(StopIteration, next, it)
+        self.assertEqual(
+            state.stacks,
+            [489000, 226000, 684000, 400000, 0, 198000],
+        )
+
+        s = hh.dumps()
+        hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(
+            new_state.stacks,
+            [489000, 226000, 684000, 400000, 0, 198000],
+        )
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+    def test_antonius_blom_2009(self) -> None:
+        s = dedent(
+            '''\
+            # The largest online poker pot every played between Patrik Antonius
+            # and Viktor Blom.
+            # Link: https://youtu.be/UMBm66Id2AA
+
+            variant = "PO"
+            ante_trimming_status = true
+            antes = [0, 0]
+            blinds_or_straddles = [500, 1000]
+            min_bet = 1000
+            starting_stacks = [1259450.25, 678473.5]
+            actions = [
+              # Pre-flop
+
+              "d dh p1 Ah3sKsKh",  # Antonius
+              "d dh p2 6d9s7d8h",  # Blom
+
+              "p2 cbr 3000",  # Blom
+              "p1 cbr 9000",  # Antonius
+              "p2 cbr 27000",  # Blom
+              "p1 cbr 81000",  # Antonius
+              "p2 cc",  # Blom
+
+              # Flop
+
+              "d db 4s5c2h",
+
+              "p1 cbr 91000",  # Antonius
+              "p2 cbr 435000",  # Blom
+              "p1 cbr 779000",  # Antonius
+              "p2 cc",  # Blom
+
+              # Showdown
+
+              "p1 sm Ah3sKsKh",  # Antonius
+              "p2 sm 6d9s7d8h",  # Blom
+
+              # Turn
+
+              "d db 5h",
+
+              # River
+
+              "d db 9c",
+            ]
+            author = "Juho Kim"
+            month = 11
+            year = 2009
+            players = ["Patrik Antonius", "Victor Blom"]
+            currency = "USD"
+            '''
+        )
+        hh = HandHistory.loads(s)
+        it = iter(hh)
+        state = next(it)
+
+        while state.status:
+            state = next(it)
+
+        self.assertRaises(StopIteration, next, it)
+        self.assertEqual(state.stacks, [1937923.75, 0.0])
+
+        s = hh.dumps()
+        hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [1937923.75, 0.0])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+    def test_arieh_yockey_2019(self) -> None:
+        s = dedent(
+            '''\
+            # A bad beat between Yockey and Arieh.
+            # Link: https://youtu.be/pChCqb2FNxY
+
+            variant = "F2L3D"
+            ante_trimming_status = true
+            antes = [0, 0, 0, 0]
+            blinds_or_straddles = [75000, 150000, 0, 0]
+            small_bet = 150000
+            big_bet = 300000
+            starting_stacks = [1180000, 4340000, 5910000, 10765000]
+            actions = [
+              # Pre-draw
+
+              "d dh p1 7h6c4c3d2c",  # Yockey
+              "d dh p2 ??????????",  # Hui
+              "d dh p3 ??????????",  # Esposito
+              "d dh p4 AsQs6s5c3c",  # Arieh
+
+              "p3 f",  # Esposito
+              "p4 cbr 300000",  # Arieh
+              "p1 cbr 450000",  # Yockey
+              "p2 f",  # Hui
+              "p4 cc",  # Arieh
+
+              # First draw
+
+              "p1 sd",  # Yockey
+              "p4 sd AsQs",  # Arieh
+              "d dh p4 2hQh",  # Arieh
+
+              "p1 cbr 150000",  # Yockey
+              "p4 cc",  # Arieh
+
+              # Second draw
+
+              "p1 sd",  # Yockey
+              "p4 sd Qh",  # Arieh
+              "d dh p4 4d",  # Arieh
+
+              "p1 cbr 300000",  # Yockey
+              "p4 cc",  # Arieh
+
+              # Third draw
+
+              "p1 sd",  # Yockey
+              "p4 sd 6s",  # Arieh
+              "d dh p4 7c",  # Arieh
+
+              "p1 cbr 280000",  # Yockey
+              "p4 cc",  # Arieh
+
+              # Showdown
+
+              "p1 sm 7h6c4c3d2c",  # Yockey
+              "p4 sm 2h4d7c5c3c",  # Arieh
+            ]
+            author = "Juho Kim"
+            event = """2019 World Series of Poker Event #58: $50,000 Poker \\
+            Players Championship"""
+            address = "Las Vegas, Nevada, USA"
+            day = 28
+            month = 6
+            year = 2019
+            players = [
+              "Bryce Yockey",
+              "Phil Hui",
+              "John Esposito",
+              "Josh Arieh",
+            ]
+            '''
+        )
+        hh = HandHistory.loads(s)
+        it = iter(hh)
+        state = next(it)
+
+        while state.status:
+            state = next(it)
+
+        self.assertRaises(StopIteration, next, it)
+        self.assertEqual(state.stacks, [0, 4190000, 5910000, 12095000])
+
+        s = hh.dumps()
+        hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+    def test_alice_carol(self) -> None:
+        s = dedent(
+            '''\
+            # An example badugi hand from Wikipedia.
+            # Link: https://en.wikipedia.org/wiki/Badugi
+
+            variant = "FB"
+            ante_trimming_status = true
+            antes = [0, 0, 0, 0]
+            blinds_or_straddles = [1, 2, 0, 0]
+            small_bet = 2
+            big_bet = 4
+            starting_stacks = [200, 200, 200, 200]
+            actions = [
+              # Pre-draw
+
+              "d dh p1 ????????",  # Bob
+              "d dh p2 ????????",  # Carol
+              "d dh p3 ????????",  # Ted
+              "d dh p4 ????????",  # Alice
+
+              "p3 f",  # Ted
+              "p4 cc",  # Alice
+              "p1 cc",  # Bob
+              "p2 cc",  # Carol
+
+              # First draw
+
+              "p1 sd ????",  # Bob
+              "p2 sd ????",  # Carol
+              "p4 sd ??",  # Alice
+              "d dh p1 ????",  # Bob
+              "d dh p2 ????",  # Carol
+              "d dh p4 ??",  # Alice
+
+              "p1 cc",  # Bob
+              "p2 cbr 2",  # Carol
+              "p4 cc",  # Alice
+              "p1 cc",  # Bob
+
+              # Second draw
+
+              "p1 sd ??",  # Bob
+              "p2 sd",  # Carol
+              "p4 sd ??",  # Alice
+              "d dh p1 ??",  # Bob
+              "d dh p4 ??",  # Alice
+
+              "p1 cc",  # Bob
+              "p2 cbr 4",  # Carol
+              "p4 cbr 8",  # Alice
+              "p1 f",  # Bob
+              "p2 cc",  # Bob
+
+              # Third draw
+
+              "p2 sd ??",  # Carol
+              "p4 sd",  # Alice
+              "d dh p2 ??",  # Carol
+
+              "p2 cc",  # Carol
+              "p4 cbr 4",  # Alice
+              "p2 cc",  # Carol
+
+              # Showdown
+
+              "p4 sm 2s4c6d9h",  # Alice
+              "p2 sm 3s5d7c8h",  # Carol
+            ]
+            author = "Juho Kim"
+            players = ["Bob", "Carol", "Ted", "Alice"]
+            '''
+        )
+        hh = HandHistory.loads(s)
+        it = iter(hh)
+        state = next(it)
+
+        while state.status:
+            state = next(it)
+
+        self.assertRaises(StopIteration, next, it)
+        self.assertEqual(state.stacks, [196, 220, 200, 184])
+
+        s = hh.dumps()
+        hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [196, 220, 200, 184])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+
 class READMETestCase(TestCase):
     def test_dwan_ivey(self) -> None:
         # The first televised million dollar pot between Tom Dwan and Phil
         # Ivey.
-
         # Link: https://youtu.be/GnxFohpljqM
 
         from pokerkit import Automation, NoLimitTexasHoldem
@@ -208,9 +630,8 @@ class READMETestCase(TestCase):
 
         self.assertEqual(state.stacks, [572100, 1997500, 1109500])
 
-    def test_xuan_phua(self) -> None:
+    def test_phua_xuan(self) -> None:
         # An all-in hand between Xuan and Phua.
-
         # Link: https://youtu.be/QlgCcphLjaQ
 
         from pokerkit import Automation, NoLimitShortDeckHoldem
@@ -279,7 +700,6 @@ class READMETestCase(TestCase):
     def test_antonius_blom(self) -> None:
         # The largest online poker pot every played between Patrik Antonius and
         # Viktor Blom.
-
         # Link: https://youtu.be/UMBm66Id2AA
 
         from pokerkit import Automation, PotLimitOmahaHoldem
@@ -341,7 +761,6 @@ class READMETestCase(TestCase):
 
     def test_yockey_arieh(self) -> None:
         # A bad beat between Yockey and Arieh.
-
         # Link: https://youtu.be/pChCqb2FNxY
 
         from pokerkit import (
@@ -419,7 +838,6 @@ class READMETestCase(TestCase):
 
     def test_alice_carol(self) -> None:
         # An example badugi hand from Wikipedia.
-
         # Link: https://en.wikipedia.org/wiki/Badugi
 
         from pokerkit import Automation, FixedLimitBadugi
