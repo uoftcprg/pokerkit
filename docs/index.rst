@@ -11,6 +11,7 @@
 
    simulation
    evaluation
+   notation
    contributing
    changelog
    reference
