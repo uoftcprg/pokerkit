@@ -5,7 +5,7 @@ notations.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
-from dataclasses import asdict, dataclass, KW_ONLY
+from dataclasses import asdict, dataclass, fields, KW_ONLY
 from tomllib import load as load_toml, loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
 
@@ -166,14 +166,13 @@ class HandHistory(Iterable[State]):
     }
     """The game fields."""
     ignored_field_names: ClassVar[tuple[str, ...]] = (
-        'automations',
         'divmod',
         'parse_value',
     )
     _: KW_ONLY
     variant: str
     """The variant name."""
-    ante_trimming_status: bool
+    ante_trimming_status: bool = False
     """The ante trimming status."""
     antes: list[int]
     """The antes."""
@@ -226,41 +225,29 @@ class HandHistory(Iterable[State]):
     def loads(
             cls,
             s: str,
-            divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            parse_value: Callable[[str], int] = parse_value,
+            **kwargs: Any,
     ) -> HandHistory:
         """Load PHH from ``str`` object.
 
         :param s: The ``str`` object.
-        :param divmod: The divmod function.
-        :param parse_value: The value parsing function.
-        :return: a hand history object.
+        :param kwargs: The metadata.
+        :return: The hand history object.
         """
-        return cls(
-            **loads_toml(s),
-            divmod=divmod,
-            parse_value=parse_value,
-        )
+        return cls(**loads_toml(s), **kwargs)
 
     @classmethod
     def load(
             cls,
             fp: BinaryIO,
-            divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            parse_value: Callable[[str], int] = parse_value,
+            **kwargs: Any,
     ) -> HandHistory:
         """Load PHH from a file pointer.
 
         :param fp: The file pointer.
-        :param divmod: The divmod function.
-        :param parse_value: The value parsing function.
-        :return: a hand history object.
+        :param kwargs: The metadata.
+        :return: The hand history object.
         """
-        return cls(
-            **load_toml(fp),
-            divmod=divmod,
-            parse_value=parse_value,
-        )
+        return cls(**load_toml(fp), **kwargs)
 
     @classmethod
     def from_game_state(
@@ -273,7 +260,7 @@ class HandHistory(Iterable[State]):
 
         :param game: The game.
         :param state: The state.
-        :param kwargs: Metadata.
+        :param kwargs: The metadata.
         :return: The hand history.
         """
         variant = cls.variants[type(game)]
@@ -317,17 +304,24 @@ class HandHistory(Iterable[State]):
         kwargs.setdefault('actions', actions)
         kwargs.setdefault('starting_stacks', list(state.starting_stacks))
 
+        field_names = [field.name for field in fields(cls)]
+
         for key in cls.game_field_names[variant]:
-            if key not in cls.ignored_field_names:
+            if key not in field_names:
+                continue
+
+            try:
+                value = getattr(game, key)
+            except AttributeError:
                 try:
-                    value = getattr(game, key)
-                except AttributeError:
                     value = getattr(state, key)
+                except AttributeError:
+                    continue
 
-                if isinstance(value, Iterable):
-                    value = list(value)
+            if isinstance(value, Iterable):
+                value = list(value)
 
-                kwargs.setdefault(key, value)
+            kwargs.setdefault(key, value)
 
         return HandHistory(**kwargs)
 

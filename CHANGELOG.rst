@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.1 (Planned)
+-----------------------
+
+**Changed**
+
+- ``ante_trimming_status`` now an optional field for .phh files.
+
 Version 0.4.0 (December 11, 2023)
 ---------------------------------
 

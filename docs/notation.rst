@@ -21,7 +21,6 @@ Required fields:
   - ``FB``: Fixed-limit badugi.
   - et cetera
 
-- ``ante_trimming_status``: How to handle unequal ante contributions, Boolean.
 - ``antes``: The antes, list of integers.
 - ``blinds_or_straddles``: The blinds or straddles (some variants), list of
   integers.
@@ -57,6 +56,7 @@ Optional fields:
 - ``players``: The player names, list of strings (First name last name).
 - ``finishing_stacks``: The finishing stacks, list of integers.
 - ``currency``: The currency, string (ISO 4127).
+- ``ante_trimming_status``: How to handle unequal ante contributions, Boolean.
 
 Example .phh file:
 
