@@ -1,0 +1,59 @@
+# An all-in hand between Xuan and Phua.
+# Link: https://youtu.be/QlgCcphLjaQ
+
+variant = "NS"
+ante_trimming_status = true
+antes = [3000, 3000, 3000, 3000, 3000, 3000]
+blinds_or_straddles = [0, 0, 0, 0, 0, 3000]
+min_bet = 3000
+starting_stacks = [495000, 232000, 362000, 403000, 301000, 204000]
+actions = [
+  # Pre-flop
+
+  "d dh p1 Th8h",  # Badziakouski
+  "d dh p2 QsJd",  # Zhong
+  "d dh p3 QhQd",  # Xuan
+  "d dh p4 8d7c",  # Jun
+  "d dh p5 KhKs",  # Phua
+  "d dh p6 8c7h",  # Koon
+
+  "p1 cc",  # Badziakouski
+  "p2 cc",  # Zhong
+  "p3 cbr 35000",  # Xuan
+  "p4 f",  # Jun
+  "p5 cbr 298000",  # Phua
+  "p6 f",  # Koon
+  "p1 f",  # Badziakouski
+  "p2 f",  # Zhong
+  "p3 cc",  # Xuan
+
+  # Showdown
+
+  "p5 sm KhKs",  # Phua
+  "p3 sm QhQd",  # Xuan
+
+  # Flop
+
+  "d db 9h6cKc",
+
+  # Turn
+
+  "d db Jh",
+
+  # River
+
+  "d db Ts",
+]
+author = "Juho Kim"
+event = "Triton London 2019"
+address = "Les Ambassadeurs Club. London, England"
+year = 2019
+players = [
+  "Mikita Badziakouski",
+  "Liu Ming Zhong",
+  "Tan Xuan",
+  "Wang Jun",
+  "Paul Phua",
+  "Jason Koon",
+]
+currency = "GBP"

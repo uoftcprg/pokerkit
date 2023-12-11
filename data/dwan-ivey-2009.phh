@@ -1,0 +1,52 @@
+# The first televised million dollar pot between Tom Dwan and Phil
+# Ivey.
+# Link: https://youtu.be/GnxFohpljqM
+
+variant = "NT"
+ante_trimming_status = true
+antes = [500, 500, 500]
+blinds_or_straddles = [1000, 2000, 0]
+min_bet = 2000
+starting_stacks = [1125600, 2000000, 553500]
+actions = [
+  # Pre-flop
+
+  "d dh p1 Ac2d",  # Ivey
+  "d dh p2 ????",  # Antonius
+  "d dh p3 7h6h",  # Dwan
+
+  "p3 cbr 7000",  # Dwan
+  "p1 cbr 23000",  # Ivey
+  "p2 f",  # Antonius
+  "p3 cc",  # Dwan
+
+  # Flop
+
+  "d db Jc3d5c",
+
+  "p1 cbr 35000",  # Ivey
+  "p3 cc",  # Dwan
+
+  # Turn
+
+  "d db 4h",
+
+  "p1 cbr 90000",  # Ivey
+  "p3 cbr 232600",  # Dwan
+  "p1 cbr 1067100",  # Ivey
+  "p3 cc",  # Dwan
+
+  # Showdown
+
+  "p1 sm Ac2d",  # Ivey
+  "p3 sm 7h6h",  # Dwan
+
+  # River
+
+  "d db Jh",
+]
+author = "Juho Kim"
+event = "Full Tilt Million Dollar Cash Game"
+year = 2009
+players = ["Phil Ivey", "Patrik Antonius", "Tom Dwan"]
+currency = "USD"

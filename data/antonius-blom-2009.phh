@@ -1,0 +1,49 @@
+# The largest online poker pot every played between Patrik Antonius
+# and Viktor Blom.
+# Link: https://youtu.be/UMBm66Id2AA
+
+variant = "PO"
+ante_trimming_status = true
+antes = [0, 0]
+blinds_or_straddles = [500, 1000]
+min_bet = 1000
+starting_stacks = [1259450.25, 678473.5]
+actions = [
+  # Pre-flop
+
+  "d dh p1 Ah3sKsKh",  # Antonius
+  "d dh p2 6d9s7d8h",  # Blom
+
+  "p2 cbr 3000",  # Blom
+  "p1 cbr 9000",  # Antonius
+  "p2 cbr 27000",  # Blom
+  "p1 cbr 81000",  # Antonius
+  "p2 cc",  # Blom
+
+  # Flop
+
+  "d db 4s5c2h",
+
+  "p1 cbr 91000",  # Antonius
+  "p2 cbr 435000",  # Blom
+  "p1 cbr 779000",  # Antonius
+  "p2 cc",  # Blom
+
+  # Showdown
+
+  "p1 sm Ah3sKsKh",  # Antonius
+  "p2 sm 6d9s7d8h",  # Blom
+
+  # Turn
+
+  "d db 5h",
+
+  # River
+
+  "d db 9c",
+]
+author = "Juho Kim"
+month = 11
+year = 2009
+players = ["Patrik Antonius", "Victor Blom"]
+currency = "USD"

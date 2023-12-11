@@ -1,0 +1,14 @@
+variant = 'NT'
+ante_trimming_status = false
+antes = [0, 225000, 0, 0, 0]
+blinds_or_straddles = [75000, 150000, 0, 0, 0]
+min_bet = 150000
+starting_stacks = [2200000, 3125000, 2825000, 19425000, 2125000]
+actions = ['d dh p1 3s', 'd dh p2 Kh', 'd dh p3 Jd', 'd dh p4 Ks', 'd dh p5 8d', 'd dh p1 3d', 'd dh p2 6c', 'd dh p3 5h', 'd dh p4 4c', 'd dh p5 2d', 'p3 f', 'p4 cbr 300000', 'p5 f', 'p1 cbr 2200000', 'p2 f', 'p4 f']
+author = 'Juho Kim'
+event = '2023 World Series of Poker Event #43: $50,000 Poker Players Championship'
+address = 'Las Vegas, Nevada, USA'
+day = 22
+month = 6
+year = 2023
+hand = 64

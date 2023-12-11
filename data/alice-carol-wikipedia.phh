@@ -1,0 +1,68 @@
+# An example badugi hand from Wikipedia.
+# Link: https://en.wikipedia.org/wiki/Badugi
+
+variant = "FB"
+ante_trimming_status = true
+antes = [0, 0, 0, 0]
+blinds_or_straddles = [1, 2, 0, 0]
+small_bet = 2
+big_bet = 4
+starting_stacks = [200, 200, 200, 200]
+actions = [
+  # Pre-draw
+
+  "d dh p1 ????????",  # Bob
+  "d dh p2 ????????",  # Carol
+  "d dh p3 ????????",  # Ted
+  "d dh p4 ????????",  # Alice
+
+  "p3 f",  # Ted
+  "p4 cc",  # Alice
+  "p1 cc",  # Bob
+  "p2 cc",  # Carol
+
+  # First draw
+
+  "p1 sd ????",  # Bob
+  "p2 sd ????",  # Carol
+  "p4 sd ??",  # Alice
+  "d dh p1 ????",  # Bob
+  "d dh p2 ????",  # Carol
+  "d dh p4 ??",  # Alice
+
+  "p1 cc",  # Bob
+  "p2 cbr 2",  # Carol
+  "p4 cc",  # Alice
+  "p1 cc",  # Bob
+
+  # Second draw
+
+  "p1 sd ??",  # Bob
+  "p2 sd",  # Carol
+  "p4 sd ??",  # Alice
+  "d dh p1 ??",  # Bob
+  "d dh p4 ??",  # Alice
+
+  "p1 cc",  # Bob
+  "p2 cbr 4",  # Carol
+  "p4 cbr 8",  # Alice
+  "p1 f",  # Bob
+  "p2 cc",  # Bob
+
+  # Third draw
+
+  "p2 sd ??",  # Carol
+  "p4 sd",  # Alice
+  "d dh p2 ??",  # Carol
+
+  "p2 cc",  # Carol
+  "p4 cbr 4",  # Alice
+  "p2 cc",  # Carol
+
+  # Showdown
+
+  "p4 sm 2s4c6d9h",  # Alice
+  "p2 sm 3s5d7c8h",  # Carol
+]
+author = "Juho Kim"
+players = ["Bob", "Carol", "Ted", "Alice"]
