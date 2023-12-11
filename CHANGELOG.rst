@@ -4,8 +4,8 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.4.0 (Planned)
------------------------
+Version 0.4.0 (December 11, 2023)
+---------------------------------
 
 **Changed**
 
