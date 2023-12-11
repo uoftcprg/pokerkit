@@ -7,6 +7,7 @@ format with an extension: .phh.
 Required fields:
 
 - ``variant``: The game code, string.
+
   - ``FT``: Fixed-limit Texas hold'em.
   - ``NT``: No-limit Texas hold'em.
   - ``NS``: No-limit short-deck hold'em.
@@ -19,6 +20,7 @@ Required fields:
   - ``F2L3D``: Fixed-limit deuce-to-seven lowball triple draw.
   - ``FB``: Fixed-limit badugi.
   - et cetera
+
 - ``ante_trimming_status``: How to handle unequal ante contributions, Boolean.
 - ``antes``: The antes, list of integers.
 - ``blinds_or_straddles``: The blinds or straddles (some variants), list of
@@ -30,6 +32,7 @@ Required fields:
 - ``starting_stacks``: The starting stacks, list of integers.
 - ``actions``: The actions where dealer is ``d`` and n'th player is ``pn``, list of
   strings.
+
   - ``d db <cards>``: deal board cards.
   - ``d dh <player> <cards>``: deal hole cards.
   - ``<player> sd[ <cards>]``: stand pat or discard.
