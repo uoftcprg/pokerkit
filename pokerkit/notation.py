@@ -378,6 +378,7 @@ class HandHistory(Iterable[State]):
 
         :return: a ``str`` object.
         """
+
         def clean(value: Any) -> str:
             cleaned_value: str
 

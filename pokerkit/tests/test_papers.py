@@ -472,7 +472,7 @@ class Kim2024TestCase(TestCase):
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
 
-    def test_alice_carol(self) -> None:
+    def test_alice_carol_wikipedia(self) -> None:
         s = dedent(
             '''\
             # An example badugi hand from Wikipedia.
