@@ -196,7 +196,7 @@ class Kim2024TestCase(TestCase):
               "d db Jh",
             ]
             author = "Juho Kim"
-            event = "Full Tilt Million Dollar Cash Game"
+            event = "Full Tilt Million Dollar Cash Game S4E12"
             year = 2009
             players = ["Phil Ivey", "Patrik Antonius", "Tom Dwan"]
             currency = "USD"
@@ -445,7 +445,7 @@ class Kim2024TestCase(TestCase):
             ]
             author = "Juho Kim"
             event = """2019 World Series of Poker Event #58: $50,000 Poker \\
-            Players Championship"""
+            Players Championship | Day 5"""
             city = "Las Vegas"
             region = "Nevada"
             country = "United States of America"

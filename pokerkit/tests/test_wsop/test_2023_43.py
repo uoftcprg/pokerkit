@@ -39,7 +39,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 120000},
             (40000, 80000),
             80000,
@@ -190,7 +189,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 150000},
             (50000, 100000),
             100000,
@@ -276,7 +274,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 150000},
             (50000, 100000),
             100000,
@@ -353,7 +350,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((4050000, 7750000, 4825000, 8525000, 4550000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Td Kd As 8c Kc',
                 '   3c 3h 8d 5s 8s',
@@ -430,7 +426,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((4000000, 7700000, 4775000, 8275000, 4950000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Qd Ts 7c Th 8h',
                 '   Js 9s 3s 4d 2h',
@@ -543,7 +538,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((2150000, 9750000, 4675000, 8225000, 4900000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   8d 9s Kd Ah Qs',
                 '   2d 3c 2s Jd 5s',
@@ -594,7 +588,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((2400000, 9700000, 4575000, 8175000, 4850000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Qh 8s 7d 6h Qc',
                 '   6c 5d 4d 3d 6d',
@@ -645,7 +638,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((2650000, 9600000, 4525000, 8125000, 4800000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Qd 9d Kc Qh Kh',
                 '   7d 5c 7c Td 6d',
@@ -755,7 +747,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((2600000, 11250000, 4475000, 6675000, 4700000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   5d 7h Js Ts Qc',
                 '   2s 3s 6d 8s 9c',
@@ -806,7 +797,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 50000, 200000, 400000)
         state = game((2550000, 11150000, 4425000, 6925000, 4650000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Qh Js 9d Qs Qd',
                 '   Tc Jc 8h Ts 3c',
@@ -919,7 +909,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1013,7 +1002,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1105,7 +1093,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1172,7 +1159,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1267,7 +1253,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1360,7 +1345,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1452,7 +1436,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -1545,7 +1528,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((6550000, 6425000, 3775000, 7500000, 5450000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   7c 8s 3s Qd 9d',
                 '   3h 6s 2c 7h 8c',
@@ -1635,7 +1617,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((6450000, 5575000, 4825000, 7450000, 5400000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   5s Qs 8d Ks Qc',
                 '   4h 6s 4s 3s Tc',
@@ -1699,7 +1680,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((6700000, 5525000, 4775000, 7350000, 5350000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Qd 8h Jh 9h 6c',
                 '   2c 4h Jc 5c 2h',
@@ -1764,7 +1744,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((6650000, 5475000, 4675000, 7100000, 5800000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Ks 9d Td Ad 8d',
                 '   9h 7d 6s 2h 2s',
@@ -1815,7 +1794,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((6600000, 5425000, 4575000, 7050000, 6050000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   6s As 4s Tc 5h',
                 '   3h 6h 3d 9c 4h',
@@ -1925,7 +1903,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((6500000, 3575000, 6625000, 7000000, 6000000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   7s Ks 5h Jd 9h',
                 '   6d Jc 2h 3s 7c',
@@ -2019,7 +1996,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 50000, 50000, 200000, 400000)
         state = game((5650000, 3525000, 7875000, 6900000, 5750000), 5)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Kd Th 6c Ks 7s',
                 '   5c 8d 4c 6d 3c',
@@ -2131,7 +2107,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2190,7 +2165,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2247,7 +2221,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2304,7 +2277,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2395,7 +2367,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2485,7 +2456,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2553,7 +2523,6 @@ class StateTestCase(TestCase):
         game = PotLimitOmahaHoldem(
             (),
             False,
-
             {1: 100000},
             (50000, 100000),
             100000,
@@ -2621,7 +2590,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -2711,7 +2679,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -2801,7 +2768,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -2855,7 +2821,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -2908,7 +2873,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -2961,7 +2925,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -3035,7 +2998,6 @@ class StateTestCase(TestCase):
         game = FixedLimitTexasHoldem(
             (),
             True,
-
             0,
             (100000, 200000),
             200000,
@@ -3112,7 +3074,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 150000},
             (50000, 100000),
             100000,
@@ -3170,7 +3131,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -3228,7 +3188,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -3286,7 +3245,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -3344,7 +3302,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -3421,7 +3378,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -3500,7 +3456,6 @@ class StateTestCase(TestCase):
         game = NoLimitDeuceToSevenLowballSingleDraw(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -3558,7 +3513,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -3677,7 +3631,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -3735,7 +3688,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -3853,7 +3805,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -3972,7 +3923,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -4043,7 +3993,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -4141,7 +4090,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             (),
             True,
-
             50000,
             75000,
             250000,
@@ -4212,7 +4160,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4320,7 +4267,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4377,7 +4323,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4490,7 +4435,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4547,7 +4491,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4604,7 +4547,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4711,7 +4653,6 @@ class StateTestCase(TestCase):
         game = FixedLimitDeuceToSevenLowballTripleDraw(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -4814,7 +4755,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -4869,7 +4809,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -4924,7 +4863,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -4980,7 +4918,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -5036,7 +4973,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -5102,7 +5038,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -5158,7 +5093,6 @@ class StateTestCase(TestCase):
         game = NoLimitTexasHoldem(
             (),
             False,
-
             {1: 225000},
             (75000, 150000),
             150000,
@@ -5241,7 +5175,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 75000, 250000, 500000)
         state = game((2675000, 3125000, 21700000, 2200000), 4)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Ks Js Kh 7s',
                 '   2h 6h Tc 5s',
@@ -5349,7 +5282,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 75000, 250000, 500000)
         state = game((2425000, 2050000, 21600000, 3625000), 4)
         state.deck_cards = deque(
-
             Card.parse(
                 '   8h 3d 9h As',
                 '   5s 3c 2h Qd',
@@ -5400,7 +5332,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 75000, 250000, 500000)
         state = game((2375000, 2525000, 21475000, 3325000), 4)
         state.deck_cards = deque(
-
             Card.parse(
                 '   5d Tc As Th',
                 '   2s 9h 3d 5c',
@@ -5466,7 +5397,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 75000, 250000, 500000)
         state = game((2325000, 3500000, 20675000, 3200000), 4)
         state.deck_cards = deque(
-
             Card.parse(
                 '   5s Kd Jc 9c',
                 '   3c 8h Ts 6h',
@@ -5575,7 +5505,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 75000, 250000, 500000)
         state = game((2275000, 5650000, 18625000, 3150000), 4)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Kh Qc Td Ah',
                 '   7h 5d 3h 6s',
@@ -5639,7 +5568,6 @@ class StateTestCase(TestCase):
         game = FixedLimitSevenCardStud((), True, 50000, 75000, 250000, 500000)
         state = game((2750000, 5525000, 18325000, 3100000), 4)
         state.deck_cards = deque(
-
             Card.parse(
                 '   9d Kc Ah Th',
                 '   7d Jh 2d 7h',
@@ -5728,7 +5656,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (250000,),
             250000,
@@ -5820,7 +5747,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -5914,7 +5840,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -6005,7 +5930,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (125000, 250000),
             250000,
@@ -6102,7 +6026,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (150000, 300000),
             300000,
@@ -6192,7 +6115,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (150000, 300000),
             300000,
@@ -6285,7 +6207,6 @@ class StateTestCase(TestCase):
         game = FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             (),
             True,
-
             0,
             (150000, 300000),
             300000,
@@ -6375,7 +6296,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 100000, 100000, 300000, 600000)
         state = game((2150000, 27550000), 2)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Qh As',
                 '   Qd 2c',
@@ -6423,7 +6343,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 100000, 100000, 300000, 600000)
         state = game((1950000, 27750000), 2)
         state.deck_cards = deque(
-
             Card.parse(
                 '   Kd Ah',
                 '   7s 6s',
@@ -6497,7 +6416,6 @@ class StateTestCase(TestCase):
         game = FixedLimitRazz((), True, 100000, 100000, 300000, 600000)
         state = game((2650000, 27050000), 2)
         state.deck_cards = deque(
-
             Card.parse(
                 '   8c 4h',
                 '   2h 3d',

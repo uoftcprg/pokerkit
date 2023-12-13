@@ -55,7 +55,7 @@ actions = [
   "p4 sm 2h4d7c5c3c",  # Arieh
 ]
 author = "Juho Kim"
-event = "2019 World Series of Poker Event #58: $50,000 Poker Players Championship"
+event = "2019 World Series of Poker Event #58: $50,000 Poker Players Championship | Day 5"
 city = "Las Vegas"
 region = "Nevada"
 country = "United States of America"
