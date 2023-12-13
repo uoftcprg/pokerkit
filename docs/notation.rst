@@ -68,8 +68,7 @@ Example .phh file:
 
 .. code-block:: toml
 
-   # The first televised million dollar pot between Tom Dwan and Phil
-   # Ivey.
+   # The first televised million dollar pot between Tom Dwan and Phil Ivey.
    # Link: https://youtu.be/GnxFohpljqM
    
    variant = "NT"
@@ -116,7 +115,7 @@ Example .phh file:
      "d db Jh",
    ]
    author = "Juho Kim"
-   event = "Full Tilt Million Dollar Cash Game"
+   event = "Full Tilt Million Dollar Cash Game S4E12"
    year = 2009
    players = ["Phil Ivey", "Patrik Antonius", "Tom Dwan"]
    currency = "USD"
