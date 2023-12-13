@@ -56,7 +56,9 @@ actions = [
 ]
 author = "Juho Kim"
 event = "2019 World Series of Poker Event #58: $50,000 Poker Players Championship"
-address = "Las Vegas, Nevada, USA"
+city = "Las Vegas"
+region = "Nevada"
+country = "United States of America"
 day = 28
 month = 6
 year = 2019

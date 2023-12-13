@@ -194,8 +194,18 @@ class HandHistory(Iterable[State]):
     """The author."""
     event: str | None = None
     """The event."""
+    url: str | None = None
+    """The url."""
     address: str | None = None
     """The address."""
+    city: str | None = None
+    """The city."""
+    region: str | None = None
+    """The region."""
+    postal_code: str | None = None
+    """The postal code."""
+    country: str | None = None
+    """The country."""
     day: int | None = None
     """The day."""
     month: int | None = None
@@ -204,7 +214,7 @@ class HandHistory(Iterable[State]):
     """The year."""
     hand: int | None = None
     """The hand number."""
-    seat_numbers: list[int] | None = None
+    seats: list[int] | None = None
     """The seat numbers."""
     seat_count: int | None = None
     """The number of seats."""

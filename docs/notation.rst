@@ -21,15 +21,15 @@ Required fields:
   - ``FB``: Fixed-limit badugi.
   - et cetera
 
-- ``antes``: The antes, list of integers.
-- ``blinds_or_straddles``: The blinds or straddles (some variants), list of
-  integers.
-- ``bring_in``: The bring-in (some variants), integer.
-- ``small_bet``: The small bet (some variants), integer.
-- ``big_bet``: The big bet (some variants), integer.
-- ``min_bet``: The minimum bet (some variants), integer.
-- ``starting_stacks``: The starting stacks, list of integers.
-- ``actions``: The actions where dealer is ``d`` and n'th player is ``pn``, list of
+- ``antes``: The antes, array of non-negative integers or floats.
+- ``blinds_or_straddles``: The blinds or straddles (some variants), array of
+  non-negative integers or floats.
+- ``bring_in``: The bring-in (some variants), positive integer or float.
+- ``small_bet``: The small bet (some variants), positive integer or float.
+- ``big_bet``: The big bet (some variants), positive integer or float.
+- ``min_bet``: The minimum bet (some variants), positive integer or float.
+- ``starting_stacks``: The starting stacks, array of positive integers or floats.
+- ``actions``: The actions where dealer is ``d`` and n'th player is ``pn``, array of
   strings.
 
   - ``d db <cards>``: deal board cards.
@@ -45,16 +45,22 @@ Optional fields:
 
 - ``author``: The author, string (First name last name).
 - ``event``: The event, string.
+- ``url``: The url, string.
 - ``address``: The address, string.
+- ``city``: The city, string.
+- ``region``: The region, string.
+- ``postal_code``: The postal code, string.
+- ``country``: The country, string
 - ``day``: The day, integer.
 - ``month``: The month, integer.
 - ``year``: The year, integer.
 - ``hand``: The hand number, integer.
-- ``seat_numbers``: The seat numbers, list of integers.
-- ``seat_count``: The number of seats, list of integers.
+- ``seats``: The seat numbers, array of integers or floats.
+- ``seat_count``: The number of seats, integer.
 - ``table``: The table number, integer.
-- ``players``: The player names, list of strings (First name last name).
-- ``finishing_stacks``: The finishing stacks, list of integers.
+- ``players``: The player names, array of strings (First name last name).
+- ``finishing_stacks``: The finishing stacks, array of non-negative integers or
+  floats.
 - ``currency``: The currency, string (ISO 4127).
 - ``ante_trimming_status``: How to handle unequal ante contributions, Boolean.
 

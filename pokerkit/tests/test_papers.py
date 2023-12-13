@@ -271,7 +271,11 @@ class Kim2024TestCase(TestCase):
             ]
             author = "Juho Kim"
             event = "Triton London 2019"
-            address = "Les Ambassadeurs Club. London, England"
+            address = "5 Hamilton Pl"
+            city = "London"
+            region = "Greater London"
+            postal_code = "W1J 7ED"
+            country = "United Kingdom"
             year = 2019
             players = [
               "Mikita Badziakouski",
@@ -442,7 +446,9 @@ class Kim2024TestCase(TestCase):
             author = "Juho Kim"
             event = """2019 World Series of Poker Event #58: $50,000 Poker \\
             Players Championship"""
-            address = "Las Vegas, Nevada, USA"
+            city = "Las Vegas"
+            region = "Nevada"
+            country = "United States of America"
             day = 28
             month = 6
             year = 2019
