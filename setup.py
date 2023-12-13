@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='pokerkit',
-    version='0.4.0',
+    version='0.4.1',
     description='An open-source Python library for poker simulations and hand evaluations',
     long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
