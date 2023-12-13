@@ -4,8 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.4.1 (Planned)
------------------------
+Version 0.4.1 (December 13, 2023)
+---------------------------------
+
+**Added**
+
+- New .phh optional fields: ``url``, ``city``, ``region``, ``postal_code``,
+  ``country``.
 
 **Changed**
 
