@@ -31,10 +31,21 @@ from pokerkit.games import (
     PotLimitOmahaHoldem,
 )
 from pokerkit.notation import HandHistory
+from pokerkit.state import HoleDealing, Operation
 from pokerkit.utilities import Card
 
 
 class StateTestCase(TestCase):
+    @classmethod
+    def filter_hole_dealing(
+            cls,
+            operations: list[Operation],
+    ) -> list[Operation]:
+        return [
+            operation for operation in operations
+            if not isinstance(operation, HoleDealing)
+        ]
+
     def test_1_00_02_07(self) -> None:
         game = NoLimitTexasHoldem(
             (),
@@ -120,12 +131,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_2_00_08_38(self) -> None:
@@ -177,12 +194,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_3_00_15_36(self) -> None:
@@ -262,12 +285,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_4_00_18_39(self) -> None:
@@ -338,12 +367,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_5_00_22_43(self) -> None:
@@ -414,12 +449,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_6_00_25_05(self) -> None:
@@ -526,12 +567,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_7_00_29_03(self) -> None:
@@ -576,12 +623,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_8_00_30_52(self) -> None:
@@ -626,12 +679,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_9_00_32_02(self) -> None:
@@ -735,12 +794,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_10_00_34_43(self) -> None:
@@ -785,12 +850,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_11_00_35_59(self) -> None:
@@ -897,12 +968,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_12_00_41_13(self) -> None:
@@ -990,12 +1067,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_13_00_43_47(self) -> None:
@@ -1081,12 +1164,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_14_00_46_43(self) -> None:
@@ -1147,12 +1236,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_15_00_48_29(self) -> None:
@@ -1241,12 +1336,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_16_00_51_22(self) -> None:
@@ -1333,12 +1434,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_17_00_55_24(self) -> None:
@@ -1424,12 +1531,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_18_00_58_03(self) -> None:
@@ -1516,12 +1629,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_20_01_00_21(self) -> None:
@@ -1605,12 +1724,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_21_01_02_14(self) -> None:
@@ -1668,12 +1793,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_22_01_03_57(self) -> None:
@@ -1732,12 +1863,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_23_01_06_16(self) -> None:
@@ -1782,12 +1919,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_24_01_07_20(self) -> None:
@@ -1891,12 +2034,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_25_01_10_31(self) -> None:
@@ -1984,12 +2133,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_26_01_13_57(self) -> None:
@@ -2095,12 +2250,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_27_01_18_22(self) -> None:
@@ -2153,12 +2314,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_28_01_22_35(self) -> None:
@@ -2209,12 +2376,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_29_01_25_08(self) -> None:
@@ -2265,12 +2438,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_30_01_26_14(self) -> None:
@@ -2355,12 +2534,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_31_01_29_49(self) -> None:
@@ -2444,12 +2629,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_32_01_32_58(self) -> None:
@@ -2511,12 +2702,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_33_01_37_39(self) -> None:
@@ -2578,12 +2775,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_34_01_39_18(self) -> None:
@@ -2667,12 +2870,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_35_01_42_31(self) -> None:
@@ -2756,12 +2965,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_36_01_44_49(self) -> None:
@@ -2809,12 +3024,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_37_01_45_43(self) -> None:
@@ -2861,12 +3082,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_38_01_46_42(self) -> None:
@@ -2913,12 +3140,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_39_01_47_38(self) -> None:
@@ -2986,12 +3219,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_40_01_51_27(self) -> None:
@@ -3062,12 +3301,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_41_01_53_52(self) -> None:
@@ -3119,12 +3364,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_42_01_56_25(self) -> None:
@@ -3176,12 +3427,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_43_01_59_02(self) -> None:
@@ -3233,12 +3490,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_44_02_00_25(self) -> None:
@@ -3290,12 +3553,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_45_02_01_50(self) -> None:
@@ -3366,12 +3635,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_46_02_04_37(self) -> None:
@@ -3444,12 +3719,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_47_02_07_21(self) -> None:
@@ -3501,12 +3782,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_48_02_09_20(self) -> None:
@@ -3619,12 +3906,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_49_02_13_08(self) -> None:
@@ -3676,12 +3969,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_50_02_14_32(self) -> None:
@@ -3793,12 +4092,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_51_02_18_42(self) -> None:
@@ -3911,12 +4216,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_52_02_22_35(self) -> None:
@@ -3981,12 +4292,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_53_02_25_11(self) -> None:
@@ -4078,12 +4395,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_54_02_28_14(self) -> None:
@@ -4148,12 +4471,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_55_02_29_59(self) -> None:
@@ -4255,12 +4584,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_56_02_34_51(self) -> None:
@@ -4311,12 +4646,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_57_02_36_12(self) -> None:
@@ -4423,12 +4764,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_58_02_40_27(self) -> None:
@@ -4479,12 +4826,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_59_02_41_31(self) -> None:
@@ -4535,12 +4888,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_60_02_42_44(self) -> None:
@@ -4641,12 +5000,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_61_02_46_42(self) -> None:
@@ -4743,12 +5108,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_62_02_51_10(self) -> None:
@@ -4797,12 +5168,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_63_02_53_09(self) -> None:
@@ -4851,12 +5228,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_64_02_54_12(self) -> None:
@@ -4906,12 +5289,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_65_02_56_12(self) -> None:
@@ -4961,12 +5350,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_66_02_57_27(self) -> None:
@@ -5026,12 +5421,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_67_03_00_32(self) -> None:
@@ -5081,12 +5482,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_68_03_02_41(self) -> None:
@@ -5163,12 +5570,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_69_03_05_55(self) -> None:
@@ -5270,12 +5683,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_71_03_11_08(self) -> None:
@@ -5320,12 +5739,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_72_03_12_55(self) -> None:
@@ -5385,12 +5810,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_73_03_14_40(self) -> None:
@@ -5493,12 +5924,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_74_03_17_31(self) -> None:
@@ -5556,12 +5993,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_75_03_19_14(self) -> None:
@@ -5644,12 +6087,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_76_03_22_08(self) -> None:
@@ -5735,12 +6184,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_77_03_25_05(self) -> None:
@@ -5828,12 +6283,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_78_03_32_24(self) -> None:
@@ -5918,12 +6379,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_79_03_36_22(self) -> None:
@@ -6014,12 +6481,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_80_03_42_38(self) -> None:
@@ -6103,12 +6576,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_81_03_44_38(self) -> None:
@@ -6195,12 +6674,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_82_03_46_32(self) -> None:
@@ -6284,12 +6769,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_83_03_48_33(self) -> None:
@@ -6331,12 +6822,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_84_03_49_18(self) -> None:
@@ -6404,12 +6901,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
     def test_85_03_50_24(self) -> None:
@@ -6514,12 +7017,18 @@ class StateTestCase(TestCase):
         hh = HandHistory.from_game_state(game, state)
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
 
         new_hh = HandHistory.loads(hh.dumps())
         new_state = tuple(hh)[-1]
 
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_hole_dealing(new_state.operations),
+            self.filter_hole_dealing(state.operations),
+        )
         self.assertEqual(hh.dumps(), new_hh.dumps())
 
 

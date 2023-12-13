@@ -5,6 +5,7 @@ notations.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
+from collections import defaultdict
 from dataclasses import asdict, dataclass, fields, KW_ONLY
 from tomllib import load as load_toml, loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
@@ -35,7 +36,7 @@ from pokerkit.games import (
     Poker,
     PotLimitOmahaHoldem,
 )
-from pokerkit.utilities import divmod, parse_value
+from pokerkit.utilities import Card, divmod, parse_value
 
 
 @dataclass
@@ -275,15 +276,28 @@ class HandHistory(Iterable[State]):
         """
         variant = cls.variants[type(game)]
         actions = []
+        cards = defaultdict[int, list[Card]](list)
 
         for operation in state.operations:
+            action: str | None
+
+            if not isinstance(operation, HoleDealing) and cards:
+                for player_index in cards:
+                    action = (
+                        f'd dh p{player_index + 1} '
+                        + ''.join(map(repr, cards[player_index]))
+                    )
+
+                    actions.append(action.strip())
+
+                cards.clear()
+
             if isinstance(operation, BoardDealing):
                 action = 'd db ' + ''.join(map(repr, operation.cards))
             elif isinstance(operation, HoleDealing):
-                action = (
-                    f'd dh p{operation.player_index + 1} '
-                    + ''.join(map(repr, operation.cards))
-                )
+                cards[operation.player_index].extend(operation.cards)
+
+                action = None
             elif isinstance(operation, StandingPatOrDiscarding):
                 action = (
                     f'p{operation.player_index + 1} sd '
@@ -309,6 +323,8 @@ class HandHistory(Iterable[State]):
 
             if action is not None:
                 actions.append(action.strip())
+
+        assert not cards
 
         kwargs.setdefault('variant', variant)
         kwargs.setdefault('actions', actions)
