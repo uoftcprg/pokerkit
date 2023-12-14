@@ -32,6 +32,7 @@ Required fields:
 - ``actions``: The actions where dealer is ``d`` and n'th player is ``pn``, array of
   strings.
 
+  - ``<actor> <action>[ <argument-1>, ...][ # commentary...]
   - ``d db <cards>``: deal board cards.
   - ``d dh <player> <cards>``: deal hole cards.
   - ``<player> sd[ <cards>]``: stand pat or discard.
@@ -63,6 +64,8 @@ Optional fields:
   floats.
 - ``currency``: The currency, string (ISO 4127).
 - ``ante_trimming_status``: How to handle unequal ante contributions, Boolean.
+- ``time_limit``: The time limit, integer or float.
+- ``time_banks``: The time banks, array of integers or floats.
 
 Example .phh file:
 

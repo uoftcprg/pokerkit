@@ -227,6 +227,10 @@ class HandHistory(Iterable[State]):
     """The finishing stacks."""
     currency: str | None = None
     """The currency."""
+    time_limit: int | None = None
+    """The time limit."""
+    time_banks: list[int] | None = None
+    """The time banks."""
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function."""
     parse_value: Callable[[str], int] = parse_value
@@ -446,7 +450,12 @@ def parse_action(
         if label != 'p' or parsed_index != index:
             raise ValueError(f'invalid Player \'{player}\'')
 
-    match action.split():
+    words = action.split()
+
+    if '#' in words:
+        words = words[:words.index('#')]
+
+    match words:
         case 'd', 'db', cards:
             state.deal_board(cards)
         case 'd', 'dh', player, cards:
@@ -476,5 +485,7 @@ def parse_action(
         case player, 'sm', cards:
             verify_player(state.showdown_index)
             state.show_or_muck_hole_cards(cards)
+        case ():
+            pass
         case _:
             raise ValueError(f'invalid action \'{action}\'')
