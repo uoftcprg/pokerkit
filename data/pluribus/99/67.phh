@@ -1,0 +1,10 @@
+variant = 'NT'
+ante_trimming_status = true
+antes = [0, 0, 0, 0, 0, 0]
+blinds_or_straddles = [50, 100, 0, 0, 0, 0]
+min_bet = 100
+starting_stacks = [10000, 10000, 10000, 10000, 10000, 10000]
+actions = ['d dh p1 6dQs', 'd dh p2 TsKh', 'd dh p3 8s8c', 'd dh p4 2s9h', 'd dh p5 3hAs', 'd dh p6 4dTh', 'p3 cbr 225', 'p4 f', 'p5 f', 'p6 f', 'p1 f', 'p2 cc', 'd db Qh4sJc', 'p2 cc', 'p3 cc', 'd db 6c', 'p2 cbr 750', 'p3 f']
+hand = 67
+players = ['Eddie', 'MrOrange', 'Bill', 'MrBlue', 'Pluribus', 'MrPink']
+finishing_stacks = [9950, 10275, 9775, 10000, 10000, 10000]
