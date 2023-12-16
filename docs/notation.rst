@@ -52,10 +52,12 @@ Optional fields:
 - ``region``: The region, string.
 - ``postal_code``: The postal code, string.
 - ``country``: The country, string
+- ``time``: The time, local time.
 - ``day``: The day, integer.
 - ``month``: The month, integer.
 - ``year``: The year, integer.
 - ``hand``: The hand number, integer.
+- ``level``: The level number, integer.
 - ``seats``: The seat numbers, array of integers or floats.
 - ``seat_count``: The number of seats, integer.
 - ``table``: The table number, integer.

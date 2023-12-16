@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.2 (December 15, 2023)
+---------------------------------
+
+**Added**
+
+- New .phh optional fields: ``time``, ``time_limit``, ``time_banks``, ``level``.
+
 Version 0.4.1 (December 13, 2023)
 ---------------------------------
 
