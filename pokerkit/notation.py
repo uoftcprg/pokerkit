@@ -9,6 +9,7 @@ from collections import defaultdict
 from dataclasses import asdict, dataclass, fields, KW_ONLY
 from tomllib import load as load_toml, loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
+import datetime
 
 from pokerkit.state import (
     Automation,
@@ -207,6 +208,8 @@ class HandHistory(Iterable[State]):
     """The postal code."""
     country: str | None = None
     """The country."""
+    time: datetime.time | None = None
+    """The time."""
     day: int | None = None
     """The day."""
     month: int | None = None
@@ -215,6 +218,8 @@ class HandHistory(Iterable[State]):
     """The year."""
     hand: int | None = None
     """The hand number."""
+    level: int | None = None
+    """The level."""
     seats: list[int] | None = None
     """The seat numbers."""
     seat_count: int | None = None
@@ -408,6 +413,8 @@ class HandHistory(Iterable[State]):
 
             if isinstance(value, bool):
                 cleaned_value = repr(value).lower()
+            elif isinstance(value, datetime.time):
+                cleaned_value = str(value)
             else:
                 cleaned_value = repr(value)
 

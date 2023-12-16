@@ -588,7 +588,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     :param count: The number of values.
     :return: The cleaned integers.
     """
-    if isinstance(values, int):
+    if isinstance(values, int | float):
         values = (values,) * count
     elif isinstance(values, Mapping):
         parsed_values = [0] * count
