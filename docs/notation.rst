@@ -53,6 +53,7 @@ Optional fields:
 - ``postal_code``: The postal code, string.
 - ``country``: The country, string
 - ``time``: The time, local time.
+- ``time_zone``: The time zone, string.
 - ``day``: The day, integer.
 - ``month``: The month, integer.
 - ``year``: The year, integer.

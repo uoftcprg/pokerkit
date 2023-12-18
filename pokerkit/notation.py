@@ -210,6 +210,8 @@ class HandHistory(Iterable[State]):
     """The country."""
     time: datetime.time | None = None
     """The time."""
+    time_zone: str | None = None
+    """The time zone."""
     day: int | None = None
     """The day."""
     month: int | None = None
