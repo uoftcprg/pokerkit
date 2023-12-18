@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.3 (December 17, 2023)
+---------------------------------
+
+**Added**
+
+- New .phh optional fields: ``time_zone``
+
 Version 0.4.2 (December 15, 2023)
 ---------------------------------
 
