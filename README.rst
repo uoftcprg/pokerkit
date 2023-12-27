@@ -45,6 +45,7 @@ Setup the game.
    from pokerkit import Automation, NoLimitTexasHoldem
 
    state = NoLimitTexasHoldem.create_state(
+       # Automations
        (
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
@@ -54,12 +55,12 @@ Setup the game.
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
        ),
-       True,
-       500,
-       (1000, 2000),
-       2000,
-       (1125600, 2000000, 553500),
-       3,
+       True,  # Uniform antes?
+       500,  # Antes
+       (1000, 2000),  # Blinds or straddles
+       2000,  # Min-bet
+       (1125600, 2000000, 553500),  # Starting stacks
+       3,  # Number of players
    )
 
 Below shows the pre-flop dealings and actions.
@@ -119,6 +120,7 @@ Link: https://youtu.be/QlgCcphLjaQ
    from pokerkit import Automation, NoLimitShortDeckHoldem
 
    state = NoLimitShortDeckHoldem.create_state(
+       # Automations
        (
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
@@ -128,12 +130,12 @@ Link: https://youtu.be/QlgCcphLjaQ
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
        ),
-       True,
-       3000,
-       {-1: 3000},
-       3000,
-       (495000, 232000, 362000, 403000, 301000, 204000),
-       6,
+       True,  # Uniform antes?
+       3000,  # Antes
+       {-1: 3000},  # Blinds or straddles
+       3000,  # Min-bet
+       (495000, 232000, 362000, 403000, 301000, 204000),  # Starting stacks
+       6,  # Number of players
    )
 
 Below shows the pre-flop dealings and actions.
@@ -194,6 +196,7 @@ Link: https://youtu.be/UMBm66Id2AA
    from pokerkit import Automation, PotLimitOmahaHoldem
 
    state = PotLimitOmahaHoldem.create_state(
+       # Automations
        (
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
@@ -203,12 +206,12 @@ Link: https://youtu.be/UMBm66Id2AA
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
        ),
-       True,
-       0,
-       (500, 1000),
-       1000,
-       (1259450.25, 678473.5),
-       2,
+       True,  # Uniform antes?
+       0,  # Antes
+       (500, 1000),  # Blinds or straddles
+       1000,  # Min-bet
+       (1259450.25, 678473.5),  # Starting stacks
+       2,  # Number of players
    )
 
 Below shows the pre-flop dealings and actions.
@@ -265,6 +268,7 @@ Link: https://youtu.be/pChCqb2FNxY
    from pokerkit import Automation, FixedLimitDeuceToSevenLowballTripleDraw
 
    state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+       # Automations
        (
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
@@ -274,13 +278,13 @@ Link: https://youtu.be/pChCqb2FNxY
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
        ),
-       True,
-       0,
-       (75000, 150000),
-       150000,
-       300000,
-       (1180000, 4340000, 5910000, 10765000),
-       4,
+       True,  # Uniform antes?
+       0,  # Antes
+       (75000, 150000),  # Blinds or straddles
+       150000,  # Small-bet
+       300000,  # Big-bet
+       (1180000, 4340000, 5910000, 10765000),  # Starting stacks
+       4,  # Number of players
    )
 
 Below shows the pre-flop dealings and actions.
@@ -349,6 +353,7 @@ Link: https://en.wikipedia.org/wiki/Badugi
    from pokerkit import Automation, FixedLimitBadugi
 
    state = FixedLimitBadugi.create_state(
+       # Automations
        (
            Automation.ANTE_POSTING,
            Automation.BET_COLLECTION,
@@ -357,13 +362,13 @@ Link: https://en.wikipedia.org/wiki/Badugi
            Automation.CHIPS_PUSHING,
            Automation.CHIPS_PULLING,
        ),
-       True,
-       0,
-       (1, 2),
-       2,
-       4,
-       200,
-       4,
+       True,  # Uniform antes?
+       0,  # Antes
+       (1, 2),  # Blinds or straddles
+       2,  # Small-bet
+       4,  # Big-bet
+       200,  # Starting stacks
+       4,  # Number of players
    )
 
 Below shows the pre-flop dealings and actions.
