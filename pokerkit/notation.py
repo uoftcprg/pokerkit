@@ -168,7 +168,7 @@ class HandHistory(Iterable[State]):
         ),
     }
     """The required field names."""
-    optional_field_names: tuple[str, ...] = (
+    optional_field_names: ClassVar[tuple[str, ...]] = (
         'author',
         'event',
         'url',

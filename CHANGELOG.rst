@@ -4,8 +4,16 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.4.4 (December 13, 2023)
----------------------------------
+Version 0.4.5 (Planned)
+-----------------------
+
+**Changed**
+
+- Fix incorrect type annotation for class attribute ``optional_field_names`` in
+  ``optional_field_names`` in``pokerkit.notation.HandHistory``.
+
+Version 0.4.4 (January 1, 2024)
+-------------------------------
 
 **Added**
 
