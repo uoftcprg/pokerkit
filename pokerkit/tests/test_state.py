@@ -20,7 +20,7 @@ from pokerkit.state import (
     _LowHandOpeningLookup,
 )
 from pokerkit.tests.test_lookups import LookupTestCaseMixin
-from pokerkit.utilities import Deck
+from pokerkit.utilities import Deck, ValuesLike
 
 
 class LowHandOpeningLookupTestCase(LookupTestCaseMixin, TestCase):
@@ -690,6 +690,30 @@ class StateTestCase(TestCase):
 
         for _ in range(state.player_count):
             state.check_or_call()
+
+    def test_preflop_opener(self) -> None:
+
+        def create_state(
+                forced_bets: ValuesLike,
+                player_count: int,
+        ):
+            return NoLimitTexasHoldem.create_state(
+                tuple(Automation),
+                False,
+                0,
+                forced_bets,
+                2,
+                200,
+                player_count,
+            )
+
+        self.assertEqual(create_state((1, 2), 2).actor_index, 1)
+        self.assertEqual(create_state((1, 2), 3).actor_index, 2)
+        self.assertEqual(create_state((1, 2), 6).actor_index, 2)
+        self.assertEqual(create_state((1, 2, 4), 6).actor_index, 3)
+        self.assertEqual(create_state((1, 2, 4, 8), 6).actor_index, 4)
+        self.assertEqual(create_state((1, 2, 0, 0, 0, 4), 6).actor_index, 0)
+        self.assertEqual(create_state((1, 2, 4, 0, 0, 8), 6).actor_index, 0)
 
 
 if __name__ == '__main__':
