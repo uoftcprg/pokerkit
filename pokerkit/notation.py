@@ -7,8 +7,9 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable, Iterator
 from collections import defaultdict
 from dataclasses import asdict, dataclass, fields, KW_ONLY
-from tomllib import load as load_toml, loads as loads_toml
+from tomllib import loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
+from warnings import warn
 import datetime
 
 from pokerkit.state import (
@@ -69,108 +70,131 @@ class HandHistory(Iterable[State]):
         zip(game_types.values(), game_types.keys()),
     )
     """The game types and the corresponding game codes."""
-    game_field_names: ClassVar[dict[str, tuple[str, ...]]] = {
+    required_field_names: ClassVar[dict[str, tuple[str, ...]]] = {
         'FT': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'NT': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'min_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'NS': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'min_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'PO': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'min_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'FO/8': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'F7S': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'bring_in',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'F7S/8': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'bring_in',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'FR': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'bring_in',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'N2L1D': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'min_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'F2L3D': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
         'FB': (
-            'automations',
-            'ante_trimming_status',
+            'variant',
             'antes',
             'blinds_or_straddles',
             'small_bet',
             'big_bet',
-            'divmod',
+            'starting_stacks',
+            'actions',
         ),
     }
-    """The game fields."""
-    ignored_field_names: ClassVar[tuple[str, ...]] = (
-        'divmod',
-        'parse_value',
+    """The required field names."""
+    optional_field_names: tuple[str, ...] = (
+        'author',
+        'event',
+        'url',
+        'address',
+        'city',
+        'region',
+        'postal_code',
+        'country',
+        'time',
+        'time_zone',
+        'day',
+        'month',
+        'year',
+        'hand',
+        'level',
+        'seats',
+        'seat_count',
+        'table',
+        'players',
+        'finishing_stacks',
+        'currency',
+        'ante_trimming_status',
+        'time_limit',
+        'time_banks',
     )
+    """The optional field names."""
     _: KW_ONLY
     variant: str
     """The variant name."""
@@ -244,32 +268,35 @@ class HandHistory(Iterable[State]):
     """The value parsing function."""
 
     @classmethod
-    def loads(
-            cls,
-            s: str,
-            **kwargs: Any,
-    ) -> HandHistory:
+    def _filter_non_fields(cls, **kwargs: Any) -> dict[str, Any]:
+        field_names = {field.name for field in fields(cls)}
+
+        for key in tuple(kwargs.keys()):
+            if key not in field_names and not key.startswith('_'):
+                warn(f'unexpected field \'{key}\'')
+                kwargs.pop(key)
+
+        return kwargs
+
+    @classmethod
+    def loads(cls, s: str, **kwargs: Any) -> HandHistory:
         """Load PHH from ``str`` object.
 
         :param s: The ``str`` object.
         :param kwargs: The metadata.
         :return: The hand history object.
         """
-        return cls(**loads_toml(s), **kwargs)
+        return cls(**cls._filter_non_fields(**kwargs | loads_toml(s)))
 
     @classmethod
-    def load(
-            cls,
-            fp: BinaryIO,
-            **kwargs: Any,
-    ) -> HandHistory:
+    def load(cls, fp: BinaryIO, **kwargs: Any) -> HandHistory:
         """Load PHH from a file pointer.
 
         :param fp: The file pointer.
         :param kwargs: The metadata.
         :return: The hand history object.
         """
-        return cls(**load_toml(fp), **kwargs)
+        return cls.loads(fp.read().decode(), **kwargs)
 
     @classmethod
     def from_game_state(
@@ -341,26 +368,26 @@ class HandHistory(Iterable[State]):
         kwargs.setdefault('actions', actions)
         kwargs.setdefault('starting_stacks', list(state.starting_stacks))
 
-        field_names = [field.name for field in fields(cls)]
+        field_names = {field.name for field in fields(cls)}
 
-        for key in cls.game_field_names[variant]:
-            if key not in field_names:
+        for name in cls.required_field_names[variant]:
+            if name not in field_names:
                 continue
 
             try:
-                value = getattr(game, key)
+                attribute = getattr(game, name)
             except AttributeError:
                 try:
-                    value = getattr(state, key)
+                    attribute = getattr(state, name)
                 except AttributeError:
                     continue
 
-            if isinstance(value, Iterable):
-                value = list(value)
+            if isinstance(attribute, Iterable):
+                attribute = list(attribute)
 
-            kwargs.setdefault(key, value)
+            kwargs.setdefault(name, attribute)
 
-        return HandHistory(**kwargs)
+        return HandHistory(**cls._filter_non_fields(**kwargs))
 
     def __iter__(self) -> Iterator[State]:
         state = self.create_state()
@@ -388,11 +415,25 @@ class HandHistory(Iterable[State]):
 
         :return: The game.
         """
-        args = (
-            getattr(self, name) for name in self.game_field_names[self.variant]
-        )
+        kwargs: dict[str, Any] = {
+            'automations': self.automations,
+            'divmod': self.divmod,
+            'ante_trimming_status': self.ante_trimming_status,
+        }
 
-        return self.game_type(*args)
+        for name in self.required_field_names[self.variant]:
+            if name == 'antes' or name == 'blinds_or_straddles':
+                key = f'raw_{name}'
+            else:
+                key = name
+
+            kwargs[key] = getattr(self, name)
+
+        kwargs.pop('variant')
+        kwargs.pop('starting_stacks')
+        kwargs.pop('actions')
+
+        return self.game_type(**kwargs)
 
     def create_state(self) -> State:
         """Create the initial state.
@@ -422,15 +463,19 @@ class HandHistory(Iterable[State]):
 
             return cleaned_value
 
-        return '\n'.join(
-            f'{key} = {clean(value)}' for (
-                key,
-                value,
-            ) in asdict(self).items() if (
-                value is not None
-                and key not in self.ignored_field_names
-            )
-        )
+        lines = []
+
+        for key, value in asdict(self).items():
+            if (
+                    (
+                        key in self.required_field_names[self.variant]
+                        or key in self.optional_field_names
+                    )
+                    and value is not None
+            ):
+                lines.append(f'{key} = {clean(value)}')
+
+        return '\n'.join(lines)
 
     def dump(self, fp: BinaryIO) -> None:
         """Dump PHH to a file pointer.

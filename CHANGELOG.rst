@@ -4,6 +4,19 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.4 (December 13, 2023)
+---------------------------------
+
+**Added**
+
+- Add class attributes ``game_field_names`` and ``ignored_field_names`` to
+  ``pokerkit.notation.HandHistory``.
+
+**Changed**
+
+- Remove class attributes ``game_field_names`` and ``ignored_field_names`` from
+  ``pokerkit.notation.HandHistory``
+
 Version 0.4.3 (December 17, 2023)
 ---------------------------------
 

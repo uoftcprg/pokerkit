@@ -18,6 +18,7 @@ from pokerkit.state import (
     Automation,
     _HighHandOpeningLookup,
     _LowHandOpeningLookup,
+    State,
 )
 from pokerkit.tests.test_lookups import LookupTestCaseMixin
 from pokerkit.utilities import Deck, ValuesLike
@@ -696,7 +697,7 @@ class StateTestCase(TestCase):
         def create_state(
                 forced_bets: ValuesLike,
                 player_count: int,
-        ):
+        ) -> State:
             return NoLimitTexasHoldem.create_state(
                 tuple(Automation),
                 False,
