@@ -24,3 +24,8 @@ Here are some of the features that are planned to be implemented in the future.
 
   - URL: https://www.wsop.com/2022/2023-WSOP-Tournament-Rules.pdf
   - Add mock games to unit test for each variant.
+
+- Improved type annotations.
+
+  - The code supports both ``int`` and ``float`` but type annotations for static
+    type checking only support ``int``.
