@@ -2289,7 +2289,7 @@ class State:
         """
         try:
             self._verify_ante_posting()
-        except ValueError:
+        except (ValueError, UserWarning):
             return
 
         for i in self.player_indices:
@@ -2359,7 +2359,7 @@ class State:
         """
         try:
             self.verify_ante_posting(player_index)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -2461,7 +2461,7 @@ class State:
         """
         try:
             self.verify_bet_collection()
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -2593,7 +2593,7 @@ class State:
         """
         try:
             self._verify_blind_or_straddle_posting()
-        except ValueError:
+        except (ValueError, UserWarning):
             return
 
         for i in self.player_indices:
@@ -2663,7 +2663,7 @@ class State:
         """
         try:
             self.verify_blind_or_straddle_posting(player_index)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -2834,7 +2834,7 @@ class State:
         """
         try:
             self.verify_card_burning(card)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -2876,7 +2876,7 @@ class State:
         """
         try:
             self._verify_hole_dealing()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         assert self.street is not None
@@ -2936,7 +2936,7 @@ class State:
         """
         try:
             self.verify_hole_dealing(cards)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -3006,7 +3006,7 @@ class State:
         """
         try:
             self.verify_board_dealing(cards)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -3042,7 +3042,7 @@ class State:
         """
         try:
             self._verify_standing_pat_or_discarding()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         return self.standing_pat_or_discarding_statuses.index(True)
@@ -3082,7 +3082,7 @@ class State:
         """
         try:
             self.verify_standing_pat_or_discarding(cards)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -3381,7 +3381,7 @@ class State:
         """
         try:
             self.verify_folding()
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -3417,7 +3417,7 @@ class State:
         """
         try:
             self.verify_checking_or_calling()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         player_index = self.actor_index
@@ -3482,7 +3482,7 @@ class State:
         """
         try:
             self.verify_checking_or_calling()
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -3519,7 +3519,7 @@ class State:
         """
         try:
             self.verify_bring_in_posting()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         player_index = self.actor_index
@@ -3547,7 +3547,7 @@ class State:
         """
         try:
             self.verify_bring_in_posting()
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -3589,7 +3589,7 @@ class State:
         """
         try:
             self._verify_completion_betting_or_raising()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         assert self.street is not None
@@ -3620,7 +3620,7 @@ class State:
         """
         try:
             self._verify_completion_betting_or_raising()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         player_index = self.actor_index
@@ -3646,7 +3646,7 @@ class State:
         """
         try:
             self._verify_completion_betting_or_raising()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         assert self.actor_index is not None
@@ -3844,7 +3844,7 @@ class State:
         """
         try:
             self.verify_completion_betting_or_raising_to(amount)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -4026,7 +4026,7 @@ class State:
         """
         try:
             self._verify_hole_cards_showing_or_mucking()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         return self.showdown_indices[0]
@@ -4178,7 +4178,7 @@ class State:
         """
         try:
             self.verify_hole_cards_showing_or_mucking(status_or_hole_cards)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -4334,7 +4334,7 @@ class State:
         """
         try:
             self._verify_hand_killing()
-        except ValueError:
+        except (ValueError, UserWarning):
             return
 
         for i in self.player_indices:
@@ -4433,7 +4433,7 @@ class State:
         """
         try:
             self.verify_hand_killing(player_index)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -4535,7 +4535,7 @@ class State:
         """
         try:
             self.verify_chips_pushing()
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True
@@ -4693,7 +4693,7 @@ class State:
         """
         try:
             self._verify_chips_pulling()
-        except ValueError:
+        except (ValueError, UserWarning):
             return None
 
         for i in self.player_indices:
@@ -4766,7 +4766,7 @@ class State:
         """
         try:
             self.verify_chips_pulling(player_index)
-        except ValueError:
+        except (ValueError, UserWarning):
             return False
 
         return True

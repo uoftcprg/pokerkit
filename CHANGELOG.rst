@@ -11,6 +11,7 @@ Version 0.4.5 (Planned)
 
 - Fix incorrect type annotation for class attribute ``optional_field_names`` in
   ``optional_field_names`` in``pokerkit.notation.HandHistory``.
+- Operation queries also catches ``UserWarning``.
 
 Version 0.4.4 (January 1, 2024)
 -------------------------------
