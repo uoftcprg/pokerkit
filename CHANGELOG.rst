@@ -4,6 +4,17 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.6 (January 8, 2024)
+-------------------------------
+
+**Changed**
+
+- Collapse pots (main + side) that have the same players in the
+  ``pokerkit.state.State.pots`` property.
+- Allow default automations to be overridden in
+  ``pokerkit.notation.HandHistory.create_game`` and
+  ``pokerkit.notation.HandHistory.create_game``.
+
 Version 0.4.5 (January 4, 2024)
 -------------------------------
 

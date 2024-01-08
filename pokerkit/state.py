@@ -1572,6 +1572,7 @@ class State:
                 pending_contributions[i] -= ante
 
         previous_contribution = 0
+        pots = list[Pot]()
 
         for contribution in sorted(set(contributions)):
             player_indices = []
@@ -1587,10 +1588,15 @@ class State:
                 ):
                     player_indices.append(i)
 
-            yield Pot(amount, tuple(player_indices))
+            while pots and pots[-1].player_indices == tuple(player_indices):
+                amount += pots.pop().amount
+
+            pots.append(Pot(amount, tuple(player_indices)))
 
             amount = 0
             previous_contribution = contribution
+
+        yield from pots
 
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
         """Return the down cards of the player.

@@ -303,12 +303,14 @@ class HandHistory(Iterable[State]):
             cls,
             game: Poker,
             state: State,
+            compression_status: bool = True,
             **kwargs: Any,
     ) -> HandHistory:
         """Create a hand history from game state.
 
         :param game: The game.
         :param state: The state.
+        :param compression_status: The compression status.
         :param kwargs: The metadata.
         :return: The hand history.
         """
@@ -319,16 +321,19 @@ class HandHistory(Iterable[State]):
         for operation in state.operations:
             action: str | None
 
-            if not isinstance(operation, HoleDealing) and cards:
+            if (
+                    not compression_status
+                    or not isinstance(operation, HoleDealing)
+            ):
                 for player_index in cards:
-                    action = (
-                        f'd dh p{player_index + 1} '
-                        + ''.join(map(repr, cards[player_index]))
-                    )
+                    if cards[player_index]:
+                        action = (
+                            f'd dh p{player_index + 1} '
+                            + ''.join(map(repr, cards[player_index]))
+                        )
 
-                    actions.append(action.strip())
-
-                cards.clear()
+                        actions.append(action.strip())
+                        cards[player_index].clear()
 
             if isinstance(operation, BoardDealing):
                 action = 'd db ' + ''.join(map(repr, operation.cards))
@@ -362,7 +367,7 @@ class HandHistory(Iterable[State]):
             if action is not None:
                 actions.append(action.strip())
 
-        assert not cards
+        assert not any(cards.values())
 
         kwargs.setdefault('variant', variant)
         kwargs.setdefault('actions', actions)
@@ -410,13 +415,18 @@ class HandHistory(Iterable[State]):
         """
         return self.game_types[self.variant]
 
-    def create_game(self) -> Poker:
+    def create_game(
+            self,
+            automations: tuple[Automation, ...] = automations,
+    ) -> Poker:
         """Create the game.
 
+        :param automations: The automations to apply, defaults to
+                            everything but actions.
         :return: The game.
         """
         kwargs: dict[str, Any] = {
-            'automations': self.automations,
+            'automations': automations,
             'divmod': self.divmod,
             'ante_trimming_status': self.ante_trimming_status,
         }
@@ -435,12 +445,17 @@ class HandHistory(Iterable[State]):
 
         return self.game_type(**kwargs)
 
-    def create_state(self) -> State:
+    def create_state(
+            self,
+            automations: tuple[Automation, ...] = automations,
+    ) -> State:
         """Create the initial state.
 
+        :param automations: The automations to apply, defaults to
+                            everything but actions.
         :return: The initial state.
         """
-        return self.create_game()(
+        return self.create_game(automations)(
             self.starting_stacks,
             len(self.starting_stacks),
         )
