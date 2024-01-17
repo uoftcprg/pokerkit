@@ -8,6 +8,8 @@ Here are some of the features that are planned to be implemented in the future.
 
   - Post bets are posted when a player wants to play a game immediately after
     joining without waiting for the button to pass him or her.
+  - This is demonstrably different from blinds or straddles
+  - As an optional parameter
 
 - Unknown stacks support.
 
@@ -29,3 +31,8 @@ Here are some of the features that are planned to be implemented in the future.
 
   - The code supports both ``int`` and ``float`` but type annotations for static
     type checking only support ``int``.
+
+- Rake
+
+  - Different rake types
+  - As an optional parameter of type Callable passed into State or Game
