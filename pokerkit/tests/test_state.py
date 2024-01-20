@@ -716,6 +716,149 @@ class StateTestCase(TestCase):
         self.assertEqual(create_state((1, 2, 0, 0, 0, 4), 6).actor_index, 0)
         self.assertEqual(create_state((1, 2, 4, 0, 0, 8), 6).actor_index, 0)
 
+    def test_chips_pushing(self) -> None:
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (125, 100),
+            2,
+        )
+
+        state.deal_hole('2c3c')
+        state.deal_hole('2d3d')
+        state.complete_bet_or_raise_to(100)
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('TsJsQs')
+        state.burn_card('??')
+        state.deal_board('Ks')
+        state.burn_card('??')
+        state.deal_board('As')
+        state.push_chips()
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [125, 100])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (125, 100, 150),
+            3,
+        )
+
+        state.deal_hole('2c3c')
+        state.deal_hole('2d3d')
+        state.deal_hole('2h3h')
+        state.complete_bet_or_raise_to(150)
+        state.check_or_call()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('TsJsQs')
+        state.burn_card('??')
+        state.deal_board('Ks')
+        state.burn_card('??')
+        state.deal_board('As')
+        state.push_chips()
+        state.push_chips()
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [125, 100, 150])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (125, 100, 175, 150),
+            4,
+        )
+
+        state.deal_hole('2c3c')
+        state.deal_hole('2d3d')
+        state.deal_hole('2h3h')
+        state.deal_hole('2s3s')
+        state.complete_bet_or_raise_to(175)
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('TsJsQs')
+        state.burn_card('??')
+        state.deal_board('Ks')
+        state.burn_card('??')
+        state.deal_board('As')
+        state.push_chips()
+        state.push_chips()
+        state.push_chips()
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [125, 100, 175, 150])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (125, 100, 200, 175, 150),
+            5,
+        )
+
+        state.deal_hole('2c3c')
+        state.deal_hole('2d3d')
+        state.deal_hole('2h3h')
+        state.deal_hole('2s3s')
+        state.deal_hole('4c5c')
+        state.complete_bet_or_raise_to(200)
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('TsJsQs')
+        state.burn_card('??')
+        state.deal_board('Ks')
+        state.burn_card('??')
+        state.deal_board('As')
+        state.push_chips()
+        state.push_chips()
+        state.push_chips()
+        state.push_chips()
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [125, 100, 200, 175, 150])
+
 
 if __name__ == '__main__':
     main()  # pragma: no cover

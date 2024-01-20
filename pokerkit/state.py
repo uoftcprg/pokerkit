@@ -6,8 +6,8 @@ from collections import Counter, deque
 from dataclasses import InitVar, dataclass, field
 from enum import StrEnum, unique
 from functools import partial
-from itertools import chain, filterfalse, islice
-from operator import getitem
+from itertools import chain, filterfalse, islice, starmap
+from operator import getitem, sub
 from random import shuffle
 from warnings import warn
 
@@ -613,7 +613,7 @@ class State:
     >>> state.collect_bets()
     BetCollection(bets=(0, 0))
     >>> state.push_chips()
-    ChipsPushing(amounts=(0, 3))
+    ChipsPushing(amounts=(0, 2))
     >>> state.pull_chips(1)
     ChipsPulling(player_index=1, amount=3)
 
@@ -1297,306 +1297,6 @@ class State:
             return None
 
         return self.streets[self.street_index]
-
-    @property
-    def total_pot_amount(self) -> int:
-        """Return the total pot amount.
-
-        This value also includes the bets.
-
-        >>> from pokerkit import NoLimitTexasHoldem
-        >>> state = NoLimitTexasHoldem.create_state(
-        ...     (),
-        ...     False,
-        ...     (0, 2),
-        ...     (1, 2),
-        ...     2,
-        ...     200,
-        ...     2,
-        ... )
-        >>> state.total_pot_amount
-        0
-
-        Setup.
-
-        >>> state.post_ante(0)
-        AntePosting(player_index=0, amount=2)
-        >>> state.total_pot_amount
-        2
-        >>> state.collect_bets()
-        BetCollection(bets=(2, 0))
-        >>> state.total_pot_amount
-        2
-        >>> state.post_blind_or_straddle(0)
-        BlindOrStraddlePosting(player_index=0, amount=2)
-        >>> state.total_pot_amount
-        4
-        >>> state.post_blind_or_straddle(1)
-        BlindOrStraddlePosting(player_index=1, amount=1)
-        >>> state.total_pot_amount
-        5
-
-        Pre-flop.
-
-        >>> state.deal_hole('Ac')
-        HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
-        >>> state.deal_hole('Kc')
-        HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
-        >>> state.deal_hole('Ad')
-        HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
-        >>> state.deal_hole('Kd')
-        HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
-        >>> state.total_pot_amount
-        5
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
-        >>> state.total_pot_amount
-        6
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
-        >>> state.collect_bets()
-        BetCollection(bets=(2, 2))
-
-        Flop.
-
-        >>> state.burn_card('2c')
-        CardBurning(card=2c)
-        >>> state.deal_board('AhKhAs')
-        BoardDealing(cards=(Ah, Kh, As))
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
-
-        Turn.
-
-        >>> state.burn_card('2d')
-        CardBurning(card=2d)
-        >>> state.deal_board('Ks')
-        BoardDealing(cards=(Ks,))
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
-        >>> state.total_pot_amount
-        6
-        >>> state.complete_bet_or_raise_to(10)
-        CompletionBettingOrRaisingTo(player_index=1, amount=10)
-        >>> state.total_pot_amount
-        16
-        >>> state.complete_bet_or_raise_to(30)
-        CompletionBettingOrRaisingTo(player_index=0, amount=30)
-        >>> state.total_pot_amount
-        46
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=20)
-        >>> state.collect_bets()
-        BetCollection(bets=(30, 30))
-        >>> state.total_pot_amount
-        66
-
-        River.
-
-        >>> state.burn_card('2h')
-        CardBurning(card=2h)
-        >>> state.deal_board('2s')
-        BoardDealing(cards=(2s,))
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
-
-        Showdown.
-
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
-
-        Teardown.
-
-        >>> state.push_chips()
-        ChipsPushing(amounts=(66, 0))
-        >>> state.total_pot_amount
-        66
-        >>> state.pull_chips()
-        ChipsPulling(player_index=0, amount=66)
-        >>> state.total_pot_amount
-        0
-
-        >>> state = NoLimitTexasHoldem.create_state(
-        ...     (
-        ...         Automation.ANTE_POSTING,
-        ...         Automation.BET_COLLECTION,
-        ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
-        ...         Automation.HOLE_DEALING,
-        ...         Automation.BOARD_DEALING,
-        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
-        ...         Automation.HAND_KILLING,
-        ...         Automation.CHIPS_PUSHING,
-        ...         Automation.CHIPS_PULLING,
-        ...     ),
-        ...     False,
-        ...     (0, 2),
-        ...     (1, 2),
-        ...     2,
-        ...     200,
-        ...     2,
-        ... )
-        >>> state.total_pot_amount
-        5
-        >>> state.fold()
-        Folding(player_index=1)
-        >>> state.total_pot_amount
-        0
-
-        :return: The total pot amount.
-        """
-        amount = sum(self.bets)
-
-        for pot in self.pots:
-            amount += pot.amount
-
-        return amount
-
-    @property
-    def pots(self) -> Iterator[Pot]:
-        """Return the list of main and side pots (if any).
-
-        The first pot (if any) is the main pot of this game. The
-        subsequent pots are side pots.
-
-        >>> from pokerkit import NoLimitTexasHoldem
-        >>> state = NoLimitTexasHoldem.create_state(
-        ...     (
-        ...         Automation.ANTE_POSTING,
-        ...         Automation.BET_COLLECTION,
-        ...         Automation.BLIND_OR_STRADDLE_POSTING,
-        ...         Automation.CARD_BURNING,
-        ...         Automation.HOLE_DEALING,
-        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
-        ...         Automation.HAND_KILLING,
-        ...         Automation.CHIPS_PUSHING,
-        ...         Automation.CHIPS_PULLING,
-        ...     ),
-        ...     True,
-        ...     0,
-        ...     (1, 2),
-        ...     2,
-        ...     (50, 100, 200, 1000, 200, 100),
-        ...     6,
-        ... )
-        >>> state.pots  # doctest: +ELLIPSIS
-        <generator object State.pots at 0x...>
-        >>> next(state.pots)
-        Traceback (most recent call last):
-            ...
-        StopIteration
-        >>> tuple(state.pots)  # doctest: +ELLIPSIS
-        ()
-
-        Pre-flop.
-
-        >>> state.complete_bet_or_raise_to(200)
-        CompletionBettingOrRaisingTo(player_index=2, amount=200)
-        >>> state.complete_bet_or_raise_to(1000)
-        Traceback (most recent call last):
-            ...
-        ValueError: irrelevant completion, betting, or raising
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=3, amount=200)
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=4, amount=200)
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=5, amount=100)
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=49)
-        >>> tuple(state.pots)
-        ()
-        >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=98)
-        >>> next(state.pots)
-        Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
-        >>> pots = tuple(state.pots)
-        >>> len(pots)
-        3
-        >>> pots[0]
-        Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
-        >>> pots[1]
-        Pot(amount=250, player_indices=(1, 2, 3, 4, 5))
-        >>> pots[2]
-        Pot(amount=300, player_indices=(2, 3, 4))
-
-        Flop.
-
-        >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(..., ..., ...))
-
-        Turn.
-
-        >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(...,))
-
-        River.
-
-        >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(...,))
-        >>> next(state.pots)
-        Traceback (most recent call last):
-            ...
-        StopIteration
-        >>> tuple(state.pots)
-        ()
-
-        :return: The list of main and side pots (if any).
-        """
-        if sum(self.stacks) + sum(self.bets) == sum(self.starting_stacks):
-            return
-
-        contributions = list(self.starting_stacks)
-        pending_contributions = list(self.starting_stacks)
-        amount = 0
-
-        for i in self.player_indices:
-            assert self.stacks[i] <= self.starting_stacks[i]
-
-            contributions[i] -= self.bets[i] + self.stacks[i]
-            pending_contributions[i] -= self.stacks[i]
-
-        if not self.ante_trimming_status:
-            amount = 0
-
-            for i in self.player_indices:
-                ante = self.get_effective_ante(i)
-                amount += ante
-                contributions[i] -= ante
-                pending_contributions[i] -= ante
-
-        previous_contribution = 0
-        pots = list[Pot]()
-
-        for contribution in sorted(set(contributions)):
-            player_indices = []
-
-            for i in self.player_indices:
-                if contributions[i] >= contribution:
-                    amount += contribution - previous_contribution
-
-            for i in self.player_indices:
-                if (
-                        pending_contributions[i] >= contribution
-                        and self.statuses[i]
-                ):
-                    player_indices.append(i)
-
-            while pots and pots[-1].player_indices == tuple(player_indices):
-                amount += pots.pop().amount
-
-            pots.append(Pot(amount, tuple(player_indices)))
-
-            amount = 0
-            previous_contribution = contribution
-
-        yield from pots
 
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
         """Return the down cards of the player.
@@ -4464,17 +4164,16 @@ class State:
 
     # chips pushing
 
-    chips_pushing_status: bool = field(default=False, init=False)
-    """The chips pushing status."""
+    _pots: list[Pot] | None = field(default=None, init=False)
 
     def _setup_chips_pushing(self) -> None:
         pass
 
     def _begin_chips_pushing(self) -> None:
-        assert not self.chips_pushing_status
+        assert self._pots is None
 
         self.street_index = None
-        self.chips_pushing_status = True
+        self._pots = list(self.pots)
 
         self._update_chips_pushing()
 
@@ -4484,16 +4183,321 @@ class State:
     ) -> None:
         self._update(operation)
 
-        if not self.chips_pushing_status:
+        if not self._pots:
             self._end_chips_pushing()
         elif Automation.CHIPS_PUSHING in self.automations:
-            if self.chips_pushing_status:
+            while self._pots:
                 self.push_chips()
 
     def _end_chips_pushing(self) -> None:
-        assert not self.chips_pushing_status
+        assert not self._pots
 
         self._begin_chips_pulling()
+
+    @property
+    def total_pot_amount(self) -> int:
+        """Return the total pot amount.
+
+        This value also includes the bets.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> state.total_pot_amount
+        0
+
+        Setup.
+
+        >>> state.post_ante(0)
+        AntePosting(player_index=0, amount=2)
+        >>> state.total_pot_amount
+        2
+        >>> state.collect_bets()
+        BetCollection(bets=(2, 0))
+        >>> state.total_pot_amount
+        2
+        >>> state.post_blind_or_straddle(0)
+        BlindOrStraddlePosting(player_index=0, amount=2)
+        >>> state.total_pot_amount
+        4
+        >>> state.post_blind_or_straddle(1)
+        BlindOrStraddlePosting(player_index=1, amount=1)
+        >>> state.total_pot_amount
+        5
+
+        Pre-flop.
+
+        >>> state.deal_hole('Ac')
+        HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
+        >>> state.deal_hole('Kc')
+        HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
+        >>> state.deal_hole('Ad')
+        HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
+        >>> state.deal_hole('Kd')
+        HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
+        >>> state.total_pot_amount
+        5
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=1)
+        >>> state.total_pot_amount
+        6
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.collect_bets()
+        BetCollection(bets=(2, 2))
+
+        Flop.
+
+        >>> state.burn_card('2c')
+        CardBurning(card=2c)
+        >>> state.deal_board('AhKhAs')
+        BoardDealing(cards=(Ah, Kh, As))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+
+        Turn.
+
+        >>> state.burn_card('2d')
+        CardBurning(card=2d)
+        >>> state.deal_board('Ks')
+        BoardDealing(cards=(Ks,))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.total_pot_amount
+        6
+        >>> state.complete_bet_or_raise_to(10)
+        CompletionBettingOrRaisingTo(player_index=1, amount=10)
+        >>> state.total_pot_amount
+        16
+        >>> state.complete_bet_or_raise_to(30)
+        CompletionBettingOrRaisingTo(player_index=0, amount=30)
+        >>> state.total_pot_amount
+        46
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=20)
+        >>> state.collect_bets()
+        BetCollection(bets=(30, 30))
+        >>> state.total_pot_amount
+        66
+
+        River.
+
+        >>> state.burn_card('2h')
+        CardBurning(card=2h)
+        >>> state.deal_board('2s')
+        BoardDealing(cards=(2s,))
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=0)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=0)
+
+        Showdown.
+
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
+        >>> state.show_or_muck_hole_cards()
+        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
+
+        Teardown.
+
+        >>> state.push_chips()
+        ChipsPushing(amounts=(66, 0))
+        >>> state.total_pot_amount
+        66
+        >>> state.pull_chips()
+        ChipsPulling(player_index=0, amount=66)
+        >>> state.total_pot_amount
+        0
+
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.BOARD_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     False,
+        ...     (0, 2),
+        ...     (1, 2),
+        ...     2,
+        ...     200,
+        ...     2,
+        ... )
+        >>> state.total_pot_amount
+        5
+        >>> state.fold()
+        Folding(player_index=1)
+        >>> state.total_pot_amount
+        0
+
+        :return: The total pot amount.
+        """
+        amount = sum(self.bets)
+
+        for pot in self.pots:
+            amount += pot.amount
+
+        return amount
+
+    @property
+    def pots(self) -> Iterator[Pot]:
+        """Return the list of main and side pots (if any).
+
+        The first pot (if any) is the main pot of this game. The
+        subsequent pots are side pots.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     True,
+        ...     0,
+        ...     (1, 2),
+        ...     2,
+        ...     (50, 100, 200, 1000, 200, 100),
+        ...     6,
+        ... )
+        >>> state.pots  # doctest: +ELLIPSIS
+        <generator object State.pots at 0x...>
+        >>> next(state.pots)
+        Traceback (most recent call last):
+            ...
+        StopIteration
+        >>> tuple(state.pots)  # doctest: +ELLIPSIS
+        ()
+
+        Pre-flop.
+
+        >>> state.complete_bet_or_raise_to(200)
+        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.complete_bet_or_raise_to(1000)
+        Traceback (most recent call last):
+            ...
+        ValueError: irrelevant completion, betting, or raising
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=3, amount=200)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=4, amount=200)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=5, amount=100)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=49)
+        >>> tuple(state.pots)
+        ()
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=98)
+        >>> next(state.pots)
+        Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
+        >>> pots = tuple(state.pots)
+        >>> len(pots)
+        3
+        >>> pots[0]
+        Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
+        >>> pots[1]
+        Pot(amount=250, player_indices=(1, 2, 3, 4, 5))
+        >>> pots[2]
+        Pot(amount=300, player_indices=(2, 3, 4))
+
+        Flop.
+
+        >>> state.deal_board()  # doctest: +ELLIPSIS
+        BoardDealing(cards=(..., ..., ...))
+
+        Turn.
+
+        >>> state.deal_board()  # doctest: +ELLIPSIS
+        BoardDealing(cards=(...,))
+
+        River.
+
+        >>> state.deal_board()  # doctest: +ELLIPSIS
+        BoardDealing(cards=(...,))
+        >>> next(state.pots)
+        Traceback (most recent call last):
+            ...
+        StopIteration
+        >>> tuple(state.pots)
+        ()
+
+        :return: The list of main and side pots (if any).
+        """
+        if self._pots is not None:
+            yield from self._pots
+
+            return
+        elif sum(self.stacks) + sum(self.bets) == sum(self.starting_stacks):
+            return
+
+        contributions = list(self.starting_stacks)
+        pending_contributions = list(self.starting_stacks)
+        amount = 0
+
+        for i in self.player_indices:
+            assert self.stacks[i] <= self.starting_stacks[i]
+
+            contributions[i] -= self.bets[i] + self.stacks[i]
+            pending_contributions[i] -= self.stacks[i]
+
+        if not self.ante_trimming_status:
+            amount = 0
+
+            for i in self.player_indices:
+                ante = self.get_effective_ante(i)
+                amount += ante
+                contributions[i] -= ante
+                pending_contributions[i] -= ante
+
+        previous_contribution = 0
+        pots = list[Pot]()
+
+        for contribution in sorted(set(contributions)):
+            player_indices = []
+
+            for i in self.player_indices:
+                if contributions[i] >= contribution:
+                    amount += contribution - previous_contribution
+
+            for i in self.player_indices:
+                if (
+                        pending_contributions[i] >= contribution
+                        and self.statuses[i]
+                ):
+                    player_indices.append(i)
+
+            while pots and pots[-1].player_indices == tuple(player_indices):
+                amount += pots.pop().amount
+
+            if amount:
+                pots.append(Pot(amount, tuple(player_indices)))
+
+            amount = 0
+            previous_contribution = contribution
+
+        yield from pots
 
     def verify_chips_pushing(self) -> None:
         """Verify the chips pushing.
@@ -4501,7 +4505,7 @@ class State:
         :return: ``None``.
         :raises ValueError: If the chips pushing cannot be done.
         """
-        if not self.chips_pushing_status:
+        if not self._pots:
             raise ValueError('chips push not allowed')
 
     def can_push_chips(self) -> bool:
@@ -4554,13 +4558,15 @@ class State:
         """
         self.verify_chips_pushing()
 
-        self.chips_pushing_status = False
+        assert self._pots is not None and self._pots
+
+        pot = self._pots.pop()
+        bets = self.bets.copy()
 
         if sum(self.statuses) == 1:
-            for pot in self.pots:
-                assert len(pot.player_indices) == 1
+            assert len(pot.player_indices) == 1
 
-                self.bets[pot.player_indices[0]] += pot.amount
+            self.bets[pot.player_indices[0]] += pot.amount
         else:
 
             def push(player_indices: list[int], amount: int) -> None:
@@ -4591,27 +4597,26 @@ class State:
 
             hand_type_count = len(hand_type_indices)
 
-            for pot in self.pots:
-                for i in hand_type_indices:
-                    hands = tuple(self.get_up_hands(i))
-                    max_hand = max_or_none(
-                        map(partial(getitem, hands), pot.player_indices),
-                    )
-                    player_indices = [
-                        j for j in pot.player_indices if hands[j] == max_hand
-                    ]
-                    quotient, remainder = self.divmod(
-                        pot.amount,
-                        hand_type_count,
-                    )
-                    amount = quotient
+            for i in hand_type_indices:
+                hands = tuple(self.get_up_hands(i))
+                max_hand = max_or_none(
+                    map(partial(getitem, hands), pot.player_indices),
+                )
+                player_indices = [
+                    j for j in pot.player_indices if hands[j] == max_hand
+                ]
+                quotient, remainder = self.divmod(
+                    pot.amount,
+                    hand_type_count,
+                )
+                amount = quotient
 
-                    if not i:
-                        amount += remainder
+                if not i:
+                    amount += remainder
 
-                    push(player_indices, amount)
+                push(player_indices, amount)
 
-        operation = ChipsPushing(tuple(self.bets))
+        operation = ChipsPushing(tuple(starmap(sub, zip(self.bets, bets))))
 
         self._update_chips_pushing(operation)
 

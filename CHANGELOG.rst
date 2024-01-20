@@ -4,6 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.5.0 (Planned)
+-----------------------
+
+**Changed**
+
+- If there are multiple pots (main + side), ``pokerkit.state.State.push_chips``
+  must be called multiple times.
+
 Version 0.4.6 (January 8, 2024)
 -------------------------------
 
