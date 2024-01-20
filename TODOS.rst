@@ -32,11 +32,6 @@ Here are some of the features that are planned to be implemented in the future.
   - The code supports both ``int`` and ``float`` but type annotations for static
     type checking only support ``int``.
 
-- Rake
-
-  - Different rake types
-  - As an optional parameter of type Callable passed into State or Game
-
 - Sandbox mode
 
   - Do not care about errors
