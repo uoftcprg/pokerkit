@@ -36,3 +36,7 @@ Here are some of the features that are planned to be implemented in the future.
 
   - Different rake types
   - As an optional parameter of type Callable passed into State or Game
+
+- Sandbox mode
+
+  - Do not care about errors
