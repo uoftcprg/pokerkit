@@ -4,7 +4,7 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.5.0 (Planned)
+Version 0.4.7 (Planned)
 -----------------------
 
 **Changed**
