@@ -11,7 +11,8 @@ Version 0.5.0 (Planned)
 
 - If there are multiple pots (main + side), ``pokerkit.state.State.push_chips``
   must be called multiple times.
-- Custom automations is passed through constructor for ``pokerkit.notation.HandHistory''.
+- Custom automations is passed through constructor for ``pokerkit.notation.HandHistory``.
+- Support rakes.
 
 Version 0.4.6 (January 8, 2024)
 -------------------------------

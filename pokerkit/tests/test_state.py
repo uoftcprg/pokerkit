@@ -2,6 +2,7 @@
 :mod:`pokerkit.state`.
 """
 
+from functools import partial
 from hashlib import md5
 from itertools import combinations
 from unittest import main, TestCase
@@ -21,7 +22,7 @@ from pokerkit.state import (
     State,
 )
 from pokerkit.tests.test_lookups import LookupTestCaseMixin
-from pokerkit.utilities import Deck, ValuesLike
+from pokerkit.utilities import Deck, rake, ValuesLike
 
 
 class LowHandOpeningLookupTestCase(LookupTestCaseMixin, TestCase):
@@ -730,13 +731,14 @@ class StateTestCase(TestCase):
             0,
             (1, 2),
             2,
-            (125, 100),
+            (100, 10),
             2,
+            rake=partial(rake, rake=0.1),
         )
 
         state.deal_hole('2c3c')
         state.deal_hole('2d3d')
-        state.complete_bet_or_raise_to(100)
+        state.complete_bet_or_raise_to(10)
         state.check_or_call()
         state.burn_card('??')
         state.deal_board('TsJsQs')
@@ -746,7 +748,7 @@ class StateTestCase(TestCase):
         state.deal_board('As')
         state.push_chips()
         self.assertFalse(state.status)
-        self.assertEqual(state.stacks, [125, 100])
+        self.assertEqual(state.stacks, [99, 9])
 
         state = NoLimitTexasHoldem.create_state(
             (
@@ -761,14 +763,15 @@ class StateTestCase(TestCase):
             0,
             (1, 2),
             2,
-            (125, 100, 150),
+            (100, 10, 1000),
             3,
+            rake=partial(rake, rake=0.1),
         )
 
         state.deal_hole('2c3c')
         state.deal_hole('2d3d')
         state.deal_hole('2h3h')
-        state.complete_bet_or_raise_to(150)
+        state.complete_bet_or_raise_to(1000)
         state.check_or_call()
         state.check_or_call()
         state.burn_card('??')
@@ -780,7 +783,7 @@ class StateTestCase(TestCase):
         state.push_chips()
         state.push_chips()
         self.assertFalse(state.status)
-        self.assertEqual(state.stacks, [125, 100, 150])
+        self.assertEqual(state.stacks, [90, 9, 990])
 
         state = NoLimitTexasHoldem.create_state(
             (
@@ -795,15 +798,16 @@ class StateTestCase(TestCase):
             0,
             (1, 2),
             2,
-            (125, 100, 175, 150),
+            (100, 10, 10000, 1000),
             4,
+            rake=partial(rake, rake=0.1),
         )
 
         state.deal_hole('2c3c')
         state.deal_hole('2d3d')
         state.deal_hole('2h3h')
         state.deal_hole('2s3s')
-        state.complete_bet_or_raise_to(175)
+        state.complete_bet_or_raise_to(10000)
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
@@ -817,7 +821,7 @@ class StateTestCase(TestCase):
         state.push_chips()
         state.push_chips()
         self.assertFalse(state.status)
-        self.assertEqual(state.stacks, [125, 100, 175, 150])
+        self.assertEqual(state.stacks, [90, 9, 9900, 900])
 
         state = NoLimitTexasHoldem.create_state(
             (
@@ -832,8 +836,9 @@ class StateTestCase(TestCase):
             0,
             (1, 2),
             2,
-            (125, 100, 200, 175, 150),
+            (100, 10, 100000, 10000, 1000),
             5,
+            rake=partial(rake, rake=0.1),
         )
 
         state.deal_hole('2c3c')
@@ -841,7 +846,7 @@ class StateTestCase(TestCase):
         state.deal_hole('2h3h')
         state.deal_hole('2s3s')
         state.deal_hole('4c5c')
-        state.complete_bet_or_raise_to(200)
+        state.complete_bet_or_raise_to(100000)
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
@@ -857,7 +862,7 @@ class StateTestCase(TestCase):
         state.push_chips()
         state.push_chips()
         self.assertFalse(state.status)
-        self.assertEqual(state.stacks, [125, 100, 200, 175, 150])
+        self.assertEqual(state.stacks, [90, 9, 99000, 9000, 900])
 
 
 if __name__ == '__main__':

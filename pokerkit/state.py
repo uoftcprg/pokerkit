@@ -9,6 +9,7 @@ from functools import partial
 from itertools import chain, filterfalse, islice, starmap
 from operator import getitem, sub
 from random import shuffle
+from typing import Any
 from warnings import warn
 
 from pokerkit.hands import Hand
@@ -21,6 +22,7 @@ from pokerkit.utilities import (
     divmod,
     max_or_none,
     min_or_none,
+    rake,
     RankOrder,
     shuffled,
     Suit,
@@ -446,18 +448,20 @@ class ChipsPushing(Operation):
 
     amounts: tuple[int, ...]
     """The amounts."""
+    rake: int
+    """The rake."""
 
     @property
     def total_amount(self) -> int:
         """Return the total amount.
 
-        >>> chips_pushing = ChipsPushing((1, 2, 3))
+        >>> chips_pushing = ChipsPushing((1, 2, 3), 0)
         >>> chips_pushing.total_amount
         6
 
         :return: The total amount.
         """
-        return sum(self.amounts)
+        return sum(self.amounts) + self.rake
 
 
 @dataclass(frozen=True)
@@ -613,7 +617,7 @@ class State:
     >>> state.collect_bets()
     BetCollection(bets=(0, 0))
     >>> state.push_chips()
-    ChipsPushing(amounts=(0, 2))
+    ChipsPushing(amounts=(0, 2), rake=0)
     >>> state.pull_chips(1)
     ChipsPulling(player_index=1, amount=3)
 
@@ -853,6 +857,10 @@ class State:
     """The number of players."""
     divmod: Callable[[int, int], tuple[int, int]] = field(default=divmod)
     """The divmod function."""
+    rake: Callable[[int], tuple[Any, int]] = field(
+        default=partial(rake, rake=0),
+    )
+    """The rake function."""
     antes: tuple[int, ...] = field(init=False)
     """The antes."""
     blinds_or_straddles: tuple[int, ...] = field(init=False)
@@ -1256,7 +1264,7 @@ class State:
         Teardown.
 
         >>> state.push_chips()
-        ChipsPushing(amounts=(6, 0))
+        ChipsPushing(amounts=(6, 0), rake=0)
         >>> state.street is None
         True
         >>> state.pull_chips()
@@ -4310,7 +4318,7 @@ class State:
         Teardown.
 
         >>> state.push_chips()
-        ChipsPushing(amounts=(66, 0))
+        ChipsPushing(amounts=(66, 0), rake=0)
         >>> state.total_pot_amount
         66
         >>> state.pull_chips()
@@ -4561,12 +4569,13 @@ class State:
         assert self._pots is not None and self._pots
 
         pot = self._pots.pop()
+        raked_amount, pushed_amount = self.rake(pot.amount)
         bets = self.bets.copy()
 
         if sum(self.statuses) == 1:
             assert len(pot.player_indices) == 1
 
-            self.bets[pot.player_indices[0]] += pot.amount
+            self.bets[pot.player_indices[0]] += pushed_amount
         else:
 
             def push(player_indices: list[int], amount: int) -> None:
@@ -4606,7 +4615,7 @@ class State:
                     j for j in pot.player_indices if hands[j] == max_hand
                 ]
                 quotient, remainder = self.divmod(
-                    pot.amount,
+                    pushed_amount,
                     hand_type_count,
                 )
                 amount = quotient
@@ -4616,7 +4625,10 @@ class State:
 
                 push(player_indices, amount)
 
-        operation = ChipsPushing(tuple(starmap(sub, zip(self.bets, bets))))
+        operation = ChipsPushing(
+            tuple(starmap(sub, zip(self.bets, bets))),
+            raked_amount,
+        )
 
         self._update_chips_pushing(operation)
 

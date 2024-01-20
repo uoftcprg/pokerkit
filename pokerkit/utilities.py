@@ -653,6 +653,32 @@ def divmod(dividend: int, divisor: int) -> tuple[int, int]:
     return cast(tuple[int, int], (quotient, remainder))
 
 
+def rake(amount: int, rake: float) -> tuple[int, int]:
+    """Rake the amount.
+
+    >>> rake(100, 0)
+    (0, 100)
+    >>> rake(1000, 0.1)
+    (100, 900)
+    >>> rake(10, 0.11)
+    (1, 9)
+    >>> rake(10.0, 0.11)
+    (1.1, 8.9)
+
+    :param amount: The pot amount.
+    :param rake: The rake.
+    :return: The raked amount and the remaining amount.
+    """
+    raked_amount = amount * rake
+
+    if isinstance(amount, Integral):
+        raked_amount = round(raked_amount)
+
+    remaining_amount = amount - raked_amount
+
+    return cast(tuple[int, int], (raked_amount, remaining_amount))
+
+
 def parse_value(raw_value: str) -> int:
     """Convert ``str`` to a number.
 
