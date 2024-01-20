@@ -5,7 +5,7 @@ notations.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import asdict, dataclass, fields, KW_ONLY
 from tomllib import loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
@@ -43,15 +43,6 @@ from pokerkit.utilities import Card, divmod, parse_value
 
 @dataclass
 class HandHistory(Iterable[State]):
-    automations: ClassVar[tuple[Automation, ...]] = (
-        Automation.ANTE_POSTING,
-        Automation.BET_COLLECTION,
-        Automation.BLIND_OR_STRADDLE_POSTING,
-        Automation.HAND_KILLING,
-        Automation.CHIPS_PUSHING,
-        Automation.CHIPS_PULLING,
-    )
-    """The automations."""
     game_types: ClassVar[dict[str, type[Poker]]] = {
         'FT': FixedLimitTexasHoldem,
         'NT': NoLimitTexasHoldem,
@@ -262,6 +253,15 @@ class HandHistory(Iterable[State]):
     """The time limit."""
     time_banks: list[int] | None = None
     """The time banks."""
+    automations: tuple[Automation, ...] = (
+        Automation.ANTE_POSTING,
+        Automation.BET_COLLECTION,
+        Automation.BLIND_OR_STRADDLE_POSTING,
+        Automation.HAND_KILLING,
+        Automation.CHIPS_PUSHING,
+        Automation.CHIPS_PULLING,
+    )
+    """The automations."""
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function."""
     parse_value: Callable[[str], int] = parse_value
@@ -396,16 +396,31 @@ class HandHistory(Iterable[State]):
 
     def __iter__(self) -> Iterator[State]:
         state = self.create_state()
+        actions = deque(self.actions)
+
+        while state.status:
+            yield state
+
+            if state.can_post_ante():
+                state.post_ante()
+            elif state.can_collect_bets():
+                state.collect_bets()
+            elif state.can_post_blind_or_straddle():
+                state.post_blind_or_straddle()
+            elif state.can_burn_card():
+                state.burn_card('??')
+            elif state.can_kill_hand():
+                state.kill_hand()
+            elif state.can_push_chips():
+                state.push_chips()
+            elif state.can_pull_chips():
+                state.pull_chips()
+            else:
+                action = actions.popleft()
+
+                parse_action(state, action, self.parse_value)
 
         yield state
-
-        for action in self.actions:
-            while state.can_burn_card():
-                state.burn_card('??')
-
-            parse_action(state, action, self.parse_value)
-
-            yield state
 
     @property
     def game_type(self) -> type[Poker]:
@@ -415,18 +430,13 @@ class HandHistory(Iterable[State]):
         """
         return self.game_types[self.variant]
 
-    def create_game(
-            self,
-            automations: tuple[Automation, ...] = automations,
-    ) -> Poker:
+    def create_game(self) -> Poker:
         """Create the game.
 
-        :param automations: The automations to apply, defaults to
-                            everything but actions.
         :return: The game.
         """
         kwargs: dict[str, Any] = {
-            'automations': automations,
+            'automations': self.automations,
             'divmod': self.divmod,
             'ante_trimming_status': self.ante_trimming_status,
         }
@@ -445,17 +455,12 @@ class HandHistory(Iterable[State]):
 
         return self.game_type(**kwargs)
 
-    def create_state(
-            self,
-            automations: tuple[Automation, ...] = automations,
-    ) -> State:
+    def create_state(self) -> State:
         """Create the initial state.
 
-        :param automations: The automations to apply, defaults to
-                            everything but actions.
         :return: The initial state.
         """
-        return self.create_game(automations)(
+        return self.create_game()(
             self.starting_stacks,
             len(self.starting_stacks),
         )

@@ -220,6 +220,13 @@ class Kim2024TestCase(TestCase):
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
 
+        hh = HandHistory.loads(s, automations=())
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
     def test_phua_xuan_2019(self) -> None:
         s = dedent(
             '''\
@@ -312,6 +319,16 @@ class Kim2024TestCase(TestCase):
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
 
+        hh = HandHistory.loads(s, automations=())
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(
+            new_state.stacks,
+            [489000, 226000, 684000, 400000, 0, 198000],
+        )
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
     def test_antonius_blom_2009(self) -> None:
         s = dedent(
             '''\
@@ -378,6 +395,13 @@ class Kim2024TestCase(TestCase):
 
         s = hh.dumps()
         hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [1937923.75, 0.0])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+        hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
         self.assertEqual(new_state.stacks, [1937923.75, 0.0])
@@ -478,6 +502,13 @@ class Kim2024TestCase(TestCase):
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
 
+        hh = HandHistory.loads(s, automations=())
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
     def test_alice_carol_wikipedia(self) -> None:
         s = dedent(
             '''\
@@ -563,6 +594,13 @@ class Kim2024TestCase(TestCase):
 
         s = hh.dumps()
         hh = HandHistory.loads(s)
+        new_state = tuple(hh)[-1]
+
+        self.assertEqual(new_state.stacks, [196, 220, 200, 184])
+        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(s, hh.dumps())
+
+        hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
         self.assertEqual(new_state.stacks, [196, 220, 200, 184])
