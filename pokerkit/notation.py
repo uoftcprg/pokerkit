@@ -556,6 +556,9 @@ def parse_action(
         case player, 'sm':
             verify_player(state.showdown_index)
             state.show_or_muck_hole_cards(False)
+        case player, 'sm', '-':
+            verify_player(state.showdown_index)
+            state.show_or_muck_hole_cards(True)
         case player, 'sm', cards:
             verify_player(state.showdown_index)
             state.show_or_muck_hole_cards(cards)
