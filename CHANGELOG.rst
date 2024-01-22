@@ -4,6 +4,15 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.8 (January 22, 2024)
+--------------------------------
+
+**Changed**
+
+- New action notation ``pn sm -`` for showing hole cards.
+- ``pokerkit.notation.HandHistory.iter_state_actions`` for iterating through
+  states with actions.
+
 Version 0.4.7 (January 20, 2024)
 --------------------------------
 
