@@ -2,6 +2,7 @@
 papers and documentations on PokerKit.
 """
 
+from operator import itemgetter
 from textwrap import dedent
 from unittest import TestCase, main
 from warnings import resetwarnings, simplefilter
@@ -216,6 +217,10 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s)
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(
+            list(map(itemgetter(1), hh.iter_state_actions())),
+            [None] + hh.actions,
+        )
         self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -223,6 +228,11 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
+        self.assertEqual(
+            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            hh.actions,
+        )
         self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -313,6 +323,10 @@ class Kim2024TestCase(TestCase):
         new_state = tuple(hh)[-1]
 
         self.assertEqual(
+            list(map(itemgetter(1), hh.iter_state_actions())),
+            [None] + hh.actions,
+        )
+        self.assertEqual(
             new_state.stacks,
             [489000, 226000, 684000, 400000, 0, 198000],
         )
@@ -322,6 +336,11 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
+        self.assertEqual(
+            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            hh.actions,
+        )
         self.assertEqual(
             new_state.stacks,
             [489000, 226000, 684000, 400000, 0, 198000],
@@ -397,6 +416,10 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s)
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(
+            list(map(itemgetter(1), hh.iter_state_actions())),
+            [None] + hh.actions,
+        )
         self.assertEqual(new_state.stacks, [1937923.75, 0.0])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -404,6 +427,11 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
+        self.assertEqual(
+            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            hh.actions,
+        )
         self.assertEqual(new_state.stacks, [1937923.75, 0.0])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -498,6 +526,10 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s)
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(
+            list(map(itemgetter(1), hh.iter_state_actions())),
+            [None] + hh.actions,
+        )
         self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -505,6 +537,11 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
+        self.assertEqual(
+            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            hh.actions,
+        )
         self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -596,6 +633,10 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s)
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(
+            list(map(itemgetter(1), hh.iter_state_actions())),
+            [None] + hh.actions,
+        )
         self.assertEqual(new_state.stacks, [196, 220, 200, 184])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())
@@ -603,6 +644,11 @@ class Kim2024TestCase(TestCase):
         hh = HandHistory.loads(s, automations=())
         new_state = tuple(hh)[-1]
 
+        self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
+        self.assertEqual(
+            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            hh.actions,
+        )
         self.assertEqual(new_state.stacks, [196, 220, 200, 184])
         self.assertEqual(new_state.operations, state.operations)
         self.assertEqual(s, hh.dumps())

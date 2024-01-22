@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable, Iterator
 from collections import defaultdict, deque
 from dataclasses import asdict, dataclass, fields, KW_ONLY
+from operator import itemgetter
 from tomllib import loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
 from warnings import warn
@@ -257,6 +258,7 @@ class HandHistory(Iterable[State]):
         Automation.ANTE_POSTING,
         Automation.BET_COLLECTION,
         Automation.BLIND_OR_STRADDLE_POSTING,
+        Automation.CARD_BURNING,
         Automation.HAND_KILLING,
         Automation.CHIPS_PUSHING,
         Automation.CHIPS_PULLING,
@@ -395,11 +397,20 @@ class HandHistory(Iterable[State]):
         return HandHistory(**cls._filter_non_fields(**kwargs))
 
     def __iter__(self) -> Iterator[State]:
+        yield from map(itemgetter(0), self.iter_state_actions())
+
+    def iter_state_actions(self) -> Iterator[tuple[State, str | None]]:
+        """Iterate through state-actions.
+
+        :return: The state actions.
+        """
         state = self.create_state()
         actions = deque(self.actions)
 
+        yield state, None
+
         while state.status:
-            yield state
+            action = None
 
             if state.can_post_ante():
                 state.post_ante()
@@ -409,6 +420,9 @@ class HandHistory(Iterable[State]):
                 state.post_blind_or_straddle()
             elif state.can_burn_card():
                 state.burn_card('??')
+
+                if Automation.CARD_BURNING in self.automations:
+                    continue
             elif state.can_kill_hand():
                 state.kill_hand()
             elif state.can_push_chips():
@@ -420,7 +434,7 @@ class HandHistory(Iterable[State]):
 
                 parse_action(state, action, self.parse_value)
 
-        yield state
+            yield state, action
 
     @property
     def game_type(self) -> type[Poker]:
@@ -435,8 +449,13 @@ class HandHistory(Iterable[State]):
 
         :return: The game.
         """
+        automations = list(self.automations)
+
+        if Automation.CARD_BURNING in self.automations:
+            automations.remove(Automation.CARD_BURNING)
+
         kwargs: dict[str, Any] = {
-            'automations': self.automations,
+            'automations': tuple(automations),
             'divmod': self.divmod,
             'ante_trimming_status': self.ante_trimming_status,
         }
