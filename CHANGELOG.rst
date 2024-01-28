@@ -4,23 +4,28 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.9 (January 28, 2024)
+--------------------------------
+
+**Changed**
+
+- New field ``rake`` for ``pokerkit.notation.HandHistory`` when constructing games/states.
+
 Version 0.4.8 (January 22, 2024)
 --------------------------------
 
 **Changed**
 
 - New action notation ``pn sm -`` for showing hole cards.
-- ``pokerkit.notation.HandHistory.iter_state_actions`` for iterating through
-  states with actions.
+- ``pokerkit.notation.HandHistory.iter_state_actions`` for iterating through states with actions.
 
 Version 0.4.7 (January 20, 2024)
 --------------------------------
 
 **Changed**
 
-- If there are multiple pots (main + side), ``pokerkit.state.State.push_chips``
-  must be called multiple times.
-- Custom automations is passed through constructor for ``pokerkit.notation.HandHistory``.
+- If there are multiple pots (main + side), ``pokerkit.state.State.push_chips`` must be called multiple times.
+- Custom automations are passed through the constructor for ``pokerkit.notation.HandHistory``.
 - Support rakes.
 
 Version 0.4.6 (January 8, 2024)
@@ -28,40 +33,34 @@ Version 0.4.6 (January 8, 2024)
 
 **Changed**
 
-- Collapse pots (main + side) that have the same players in the
-  ``pokerkit.state.State.pots`` property.
-- Allow default automations to be overridden in
-  ``pokerkit.notation.HandHistory.create_game`` and
-  ``pokerkit.notation.HandHistory.create_game``.
+- Collapse pots (main + side) that have the same players in the ``pokerkit.state.State.pots`` property.
+- Allow default automations to be overridden in ``pokerkit.notation.HandHistory.create_game`` and ``pokerkit.notation.HandHistory.create_game``.
 
 Version 0.4.5 (January 4, 2024)
 -------------------------------
 
 **Changed**
 
-- Fix incorrect type annotation for class attribute ``optional_field_names`` in
-  ``optional_field_names`` in``pokerkit.notation.HandHistory``.
-- Operation queries also catches ``UserWarning``.
+- Fix incorrect type annotation for class attribute ``optional_field_names`` in ``optional_field_names`` in``pokerkit.notation.HandHistory``.
+- Operation queries also catch ``UserWarning``.
 
 Version 0.4.4 (January 1, 2024)
 -------------------------------
 
 **Added**
 
-- Add class attributes ``game_field_names`` and ``ignored_field_names`` to
-  ``pokerkit.notation.HandHistory``.
+- Add class attributes ``game_field_names`` and ``ignored_field_names`` to ``pokerkit.notation.HandHistory``.
 
 **Changed**
 
-- Remove class attributes ``game_field_names`` and ``ignored_field_names`` from
-  ``pokerkit.notation.HandHistory``
+- Remove class attributes ``game_field_names`` and ``ignored_field_names`` from ``pokerkit.notation.HandHistory``
 
 Version 0.4.3 (December 17, 2023)
 ---------------------------------
 
 **Added**
 
-- New .phh optional fields: ``time_zone``
+- The new .phh optional fields: ``time_zone``
 
 Version 0.4.2 (December 15, 2023)
 ---------------------------------
@@ -80,17 +79,16 @@ Version 0.4.1 (December 13, 2023)
 
 **Changed**
 
-- ``ante_trimming_status`` now an optional field for .phh files.
+- ``ante_trimming_status``is now an optional field for .phh files.
 
 Version 0.4.0 (December 11, 2023)
 ---------------------------------
 
 **Changed**
 
-- When not enough card to deal everybody hole cards, a board dealing is done.
+- When not enough cards to deal everybody's hole cards, a board dealing is done.
 - Showdown can specify what cards the player showed.
-- More generous state operations when it comes to cards. Some things that were
-  errors are now warnings.
+- More generous state operations when it comes to cards. Some things that were errors are now warnings.
 - When all-in, cards are shown via ``show_or_muck_hole_cards``.
 - ``None`` is no longer ``ValuesLike`` or ``CardsLike``.
 
@@ -121,48 +119,39 @@ Version 0.3.0 (October 7, 2023)
 **Changed**
 
 - Call ``unittest.main`` in unit test files when executed as ``__main__``.
-- Move the ``automations`` parameter to be the first parameter of
-  ``pokerkit.state.State``.
+- Move the ``automations`` parameter to be the first parameter of ``pokerkit.state.State``.
 
 Version 0.2.1 (September 27, 2023)
 ----------------------------------
 
 **Changed**
 
-- Make ``pokerkit.state.Operation`` available as ``pokerkit.Operation`` by
-  importing it in ``pokerkit.__init__``.
+- Make ``pokerkit.state.Operation`` available as ``pokerkit.Operation`` by importing it in ``pokerkit.__init__``.
 
 Version 0.2.0 (September 10, 2023)
 ----------------------------------
 
 **Changed**
 
-- Limit maximum number of completions, bets, or raises to 4 in the
-  pre-configured Fixed-limit deuce-to-seven triple draw and Fixed-limit badugi
-  variants.
-- Flip antes just like blinds during heads-up play (in case of big blind antes).
-- Also reshuffle all discarded cards (including from current draw round) along
-  with mucked and burn cards when the deck runs out. Previously, discarded cards
-  from the same draw round was excluded.
-- Rename ``pokerkit.state.State.verify_card_availability_making`` to
-  ``pokerkit.state.State.verify_cards_availability_making``.
+- Limit the maximum number of completions, bets, or raises to 4 in the pre-configured Fixed-limit deuce-to-seven triple draw and Fixed-limit badugi variants.
+- Flip antes just like blinds during heads-up play (in the case of big blind antes).
+- Also reshuffle all discarded cards (including from the current draw round) along with mucked and burned cards when the deck runs out. Previously, discarded cards from the same draw round was excluded.
+- Rename ``pokerkit.state.State.verify_card_availability_making`` to ``pokerkit.state.State.verify_cards_availability_making``.
 
 **Added**
 
-- Add more unittests and doctests to achieve 99% code coverage.
+- Add more unit tests and doctests to achieve 99% code coverage.
 
 Version 0.1.1 (August 29, 2023)
 -------------------------------
 
 **Bugfixes**
 
-- Fix ``AssertionError`` being raised in certain scenarios after discards are
-  made when the state was configured to automatically deal hole cards.
+- Fix ``AssertionError`` being raised in certain scenarios after discards are made when the state was configured to automatically deal with hole cards.
 
 **Changed**
 
-- When the dealer deals hole cards after standing pat or discarding, an explicit
-  ``ValueError`` is raised unless every player has stood pat or discarded.
+- When the dealer deals hole cards after standing pat or discarding, an explicit ``ValueError`` is raised unless every player has stood pat or discarded.
 
 Version 0.1.0 (August 27, 2023)
 -------------------------------
@@ -177,21 +166,13 @@ Version 0.1.0 (August 27, 2023)
 
 **Changed**
 
-- ``pokerkit.state.State`` now also accepts ``pokerkit.utilities.ValuesLike``
-  instances as arguments for various parameters.
-- ``pokerkit.state.State`` requires ``player_count`` argument to be passed
-  during initialization.
-- Various operation classes such as ``pokerkit.state.State.AntePosting`` moved
-  to ``pokerkit.state`` and is no longer a nested class of
-  ``pokerkit.state.State``.
-- Renamed ``pokerkit.lookups.RegularLowLookup`` to
-  ``pokerkit.lookups.RegularLookup`` for enhanced consistency.
-- Renamed ``pokerkit.state.State.burned_cards`` to
-  ``pokerkit.state.State.burn_cards``.
-- Renamed ``pokerkit.state.State.verify_card_availabilities`` to
-  ``pokerkit.state.State.verify_card_availability_making``.
-- Changed the property ``pokerkit.state.State.available_cards`` to method
-  ``pokerkit.state.State.get_available_cards``.
+- ``pokerkit.state.State`` now also accepts ``pokerkit.utilities.ValuesLike`` instances as arguments for various parameters.
+- ``pokerkit.state.State`` requires ``player_count`` argument to be passed during initialization.
+- Various operation classes such as ``pokerkit.state.State.AntePosting`` moved to ``pokerkit.state`` and is no longer a nested class of ``pokerkit.state.State``.
+- Renamed ``pokerkit.lookups.RegularLowLookup`` to ``pokerkit.lookups.RegularLookup`` for enhanced consistency.
+- Renamed ``pokerkit.state.State.burned_cards`` to ``pokerkit.state.State.burn_cards``.
+- Renamed ``pokerkit.state.State.verify_card_availabilities`` to ``pokerkit.state.State.verify_card_availability_making``.
+- Changed the property ``pokerkit.state.State.available_cards`` to method ``pokerkit.state.State.get_available_cards``.
 - Cards can be dealt from the mucked cards or burn cards if the deck is empty.
 - Warning is printed if cards are dealt from burn cards without any good reason.
 
@@ -200,21 +181,16 @@ Version 0.0.2 (August 17, 2023)
 
 **Added**
 
-- Introduce ``pokerkit.utilities.CardsLike`` and
-  ``pokerkit.utilities.ValuesLike`` type aliases to simplify type annotations
-  of various methods.
+- Introduce ``pokerkit.utilities.CardsLike`` and ``pokerkit.utilities.ValuesLike`` type aliases to simplify type annotations of various methods.
 
 Version 0.0.1 (August 7, 2023)
 ------------------------------
 
 **Changed**
 
-- Modify the methods that only accepted an iterable of ``Card`` so they can
-  accept any card-like object.
-- Make the protected attributes of the instances of the ``Hand`` type and its
-  descendants public.
-- Move ``pokerkit.state.State._clean_cards`` and
-  ``pokerkit.games.Game._clean_values`` to ``pokerkit.utilities``.
+- Modify the methods that only accept an iterable of ``Card`` so they can accept any card-like object.
+- Make the protected attributes of the instances of the ``Hand`` type and its descendants public.
+- Move ``pokerkit.state.State._clean_cards`` and ``pokerkit.games.Game._clean_values`` to ``pokerkit.utilities``.
 
 Version 0.0.0 (August 2, 2023)
 ------------------------------

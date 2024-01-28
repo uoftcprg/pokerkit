@@ -2,9 +2,7 @@
 Contributing
 ============
 
-Thanks for considering contributing to PokerKit! Your contributions are
-greatly appreciated, and help make PokerKit a better tool for everyone in
-the Poker AI and research communities.
+Thanks for considering contributing to PokerKit! Your contributions are greatly appreciated, and help make PokerKit a better tool for everyone in the Poker AI and research communities.
 
 Setting up Your Development Environment
 ---------------------------------------
@@ -21,12 +19,9 @@ Making Changes
 
 When making changes, please follow these guidelines:
 
-- Always write your code in compliance with
-  `PEP8 <https://peps.python.org/pep-0008/>`_.
-- Write unit tests for your changes, and make sure all tests pass before
-  submitting a pull request.
-- Document your changes in the code and update the `README <README.rst>`_ file
-  if necessary.
+- Always write your code in compliance with `PEP8 <https://peps.python.org/pep-0008/>`_.
+- Write unit tests for your changes, and make sure all tests pass before submitting a pull request.
+- Document your changes in the code and update the `README <README.rst>`_ file if necessary.
 - After making changes, please validate your changes.
 
 1. Run static type checking with ``--strict`` flag: ``mypy --strict pokerkit``
@@ -41,15 +36,12 @@ Submitting a Pull Request
 2. Push to the branch: ``git push origin branch-name``
 3. Submit a pull request to the ``main`` branch in the PokerKit repository.
 
-Before submitting your pull request, please make sure the mypy static type
-checking with ``--strict`` flag, flake8, doctests, unit tests pass, and your
-code adheres to `PEP8 <https://peps.python.org/pep-0008/>`_.
+Before submitting your pull request, please make sure the mypy static type checking with ``--strict`` flag, flake8, doctests, unit tests pass, and your code adheres to `PEP8 <https://peps.python.org/pep-0008/>`_.
 
 After Your Pull Request Is Merged
 ---------------------------------
 
-After your pull request is merged, you can safely delete your branch and pull
-the changes from the main repository:
+After your pull request is merged, you can safely delete your branch and pull the changes from the main repository:
 
 - Delete the remote branch on GitHub: ``git push origin --delete branch-name``
 - Check out the main branch: ``git checkout main``

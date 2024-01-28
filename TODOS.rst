@@ -6,8 +6,7 @@ Here are some of the features that are planned to be implemented in the future.
 
 - Post bets support.
 
-  - Post bets are posted when a player wants to play a game immediately after
-    joining without waiting for the button to pass him or her.
+  - Post bets are posted when a player wants to play a game immediately after joining without waiting for the button to pass him or her.
   - This is demonstrably different from blinds or straddles
   - As an optional parameter
 
@@ -20,17 +19,14 @@ Here are some of the features that are planned to be implemented in the future.
   - URL: https://arxiv.org/abs/2312.11753
 
 - Parser for the PokerStars hand history file format.
-- Improve documentations.
-- Fully pre-define all variants in the 2023 World Series of Poker Tournament
-  Rules.
+- Fully pre-define all variants in the 2023 World Series of Poker Tournament Rules.
 
   - URL: https://www.wsop.com/2022/2023-WSOP-Tournament-Rules.pdf
-  - Add mock games to unit test for each variant.
+  - Add mock games to the unit test for each variant.
 
 - Improved type annotations.
 
-  - The code supports both ``int`` and ``float`` but type annotations for static
-    type checking only support ``int``.
+  - The code supports both ``int`` and ``float`` but type annotations for static type checking only support ``int``.
 
 - Sandbox mode
 

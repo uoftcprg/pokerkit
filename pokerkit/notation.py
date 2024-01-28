@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable, Iterator
 from collections import defaultdict, deque
 from dataclasses import asdict, dataclass, fields, KW_ONLY
+from functools import partial
 from operator import itemgetter
 from tomllib import loads as loads_toml
 from typing import Any, ClassVar, BinaryIO
@@ -39,7 +40,7 @@ from pokerkit.games import (
     Poker,
     PotLimitOmahaHoldem,
 )
-from pokerkit.utilities import Card, divmod, parse_value
+from pokerkit.utilities import Card, divmod, parse_value, rake
 
 
 @dataclass
@@ -266,6 +267,8 @@ class HandHistory(Iterable[State]):
     """The automations."""
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function."""
+    rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0)
+    """The rake function."""
     parse_value: Callable[[str], int] = parse_value
     """The value parsing function."""
 
@@ -281,14 +284,25 @@ class HandHistory(Iterable[State]):
         return kwargs
 
     @classmethod
-    def loads(cls, s: str, **kwargs: Any) -> HandHistory:
+    def loads(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            **kwargs: Any,
+    ) -> HandHistory:
         """Load PHH from ``str`` object.
 
         :param s: The ``str`` object.
+        :param parse_value: The value parsing function.
         :param kwargs: The metadata.
         :return: The hand history object.
         """
-        return cls(**cls._filter_non_fields(**kwargs | loads_toml(s)))
+        return cls(
+            **cls._filter_non_fields(
+                **kwargs | loads_toml(s, parse_float=parse_value),
+            ),
+        )
 
     @classmethod
     def load(cls, fp: BinaryIO, **kwargs: Any) -> HandHistory:

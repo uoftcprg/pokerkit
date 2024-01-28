@@ -2,15 +2,7 @@
 PokerKit
 ========
 
-PokerKit is an open-source Python library for simulating poker games and
-evaluating poker hands, developed by the University of Toronto Computer Poker
-Research Group. PokerKit supports an extensive array of poker variants and it
-provides a flexible architecture for users to define their custom games. These
-facilities are exposed via an intuitive unified high-level programmatic API. The
-library can be used in a variety of use cases, from poker AI development, tool
-creation, to online poker casino implementation. PokerKit's reliability has been
-established through static type checking, extensive doctests, and unit tests,
-achieving 99% code coverage.
+PokerKit is an open-source Python library for simulating poker games and evaluating poker hands, developed by the University of Toronto Computer Poker Research Group. PokerKit supports an extensive array of poker variants and it provides a flexible architecture for users to define their custom games. These facilities are exposed via an intuitive unified high-level programmatic API. The library can be used in a variety of use cases, from poker AI development, and tool creation, to online poker casino implementation. PokerKit's reliability has been established through static type checking, extensive doctests, and unit tests, achieving 99% code coverage.
 
 Features
 --------
@@ -18,8 +10,8 @@ Features
 * Extensive poker game logic for major and minor poker variants.
 * High-speed hand evaluations.
 * Customizable game states and parameters.
-* Robust implementation with static type checking and extensive unit tests and
-  doctests.
+* Robust implementation with static type checking and extensive unit tests and doctests.
+* Dataset of over 10,000 hand histories.
 
 Installation
 ------------
@@ -30,15 +22,14 @@ The PokerKit library can be installed using pip:
 
    pip install pokerkit
 
-Usage
------
+Usages
+------
 
-**The first televised million dollar pot between Tom Dwan and Phil
-Ivey.**
+**The first televised million-dollar pot between Tom Dwan and Phil Ivey.**
 
 Link: https://youtu.be/GnxFohpljqM
 
-Setup the game.
+Set up the game.
 
 .. code-block:: python
 
@@ -63,7 +54,7 @@ Setup the game.
        3,  # Number of players
    )
 
-Below shows the pre-flop dealings and actions.
+Below are the pre-flop dealings and actions.
 
 .. code-block:: python
 
@@ -76,7 +67,7 @@ Below shows the pre-flop dealings and actions.
    state.fold()  # Antonius
    state.check_or_call()  # Dwan
 
-Below shows the flop dealing and actions.
+Below are the flop dealing and actions.
 
 .. code-block:: python
 
@@ -86,7 +77,7 @@ Below shows the flop dealing and actions.
    state.complete_bet_or_raise_to(35000)  # Ivey
    state.check_or_call()  # Dwan
 
-Below shows the turn dealing and actions.
+Below are the turn dealing and actions.
 
 .. code-block:: python
 
@@ -98,14 +89,14 @@ Below shows the turn dealing and actions.
    state.complete_bet_or_raise_to(1067100)  # Ivey
    state.check_or_call()  # Dwan
 
-Below shows the river dealing.
+Below is the river dealing.
 
 .. code-block:: python
 
    state.burn_card('??')
    state.deal_board('Jh')
 
-Below show the final stacks.
+Below are the final stacks.
 
 .. code-block:: python
 
@@ -138,7 +129,7 @@ Link: https://youtu.be/QlgCcphLjaQ
        6,  # Number of players
    )
 
-Below shows the pre-flop dealings and actions.
+Below are the pre-flop dealings and actions.
 
 .. code-block:: python
 
@@ -159,34 +150,34 @@ Below shows the pre-flop dealings and actions.
    state.fold()  # Zhong
    state.check_or_call()  # Xuan
 
-Below shows the flop dealing.
+Below is the flop dealing.
 
 .. code-block:: python
 
    state.burn_card('??')
    state.deal_board('9h6cKc')
 
-Below shows the turn dealing.
+Below is the turn dealing.
 
 .. code-block:: python
 
    state.burn_card('??')
    state.deal_board('Jh')
 
-Below shows the river dealing.
+Below is the river dealing.
 
 .. code-block:: python
 
    state.burn_card('??')
    state.deal_board('Ts')
 
-Below show the final stacks.
+Below are the final stacks.
 
 .. code-block:: python
 
    print(state.stacks)  # [489000, 226000, 684000, 400000, 0, 198000]
 
-**The largest online poker pot every played between Patrik Antonius and Viktor
+**The largest online poker pot ever played between Patrik Antonius and Viktor
 Blom.**
 
 Link: https://youtu.be/UMBm66Id2AA
@@ -214,7 +205,7 @@ Link: https://youtu.be/UMBm66Id2AA
        2,  # Number of players
    )
 
-Below shows the pre-flop dealings and actions.
+Below are the pre-flop dealings and actions.
 
 .. code-block:: python
 
@@ -227,7 +218,7 @@ Below shows the pre-flop dealings and actions.
    state.complete_bet_or_raise_to(81000)  # Antonius
    state.check_or_call()  # Blom
 
-Below shows the flop dealing and actions.
+Below are the flop dealing and actions.
 
 .. code-block:: python
 
@@ -239,21 +230,21 @@ Below shows the flop dealing and actions.
    state.complete_bet_or_raise_to(779000)  # Antonius
    state.check_or_call()  # Blom
 
-Below shows the turn dealing.
+Below is the turn dealing.
 
 .. code-block:: python
 
    state.burn_card('??')
    state.deal_board('5h')
 
-Below shows the river dealing.
+Below is the river dealing.
 
 .. code-block:: python
 
    state.burn_card('??')
    state.deal_board('9c')
 
-Below show the final stacks.
+Below are the final stacks.
 
 .. code-block:: python
 
@@ -287,7 +278,7 @@ Link: https://youtu.be/pChCqb2FNxY
        4,  # Number of players
    )
 
-Below shows the pre-flop dealings and actions.
+Below are the pre-flop dealings and actions.
 
 .. code-block:: python
 
@@ -302,7 +293,7 @@ Below shows the pre-flop dealings and actions.
    state.fold()  # Hui
    state.check_or_call()  # Arieh
 
-Below shows the first draw and actions.
+Below are the first draw and actions.
 
 .. code-block:: python
 
@@ -314,7 +305,7 @@ Below shows the first draw and actions.
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-Below shows the second draw and actions.
+Below are the second draw and actions.
 
 .. code-block:: python
 
@@ -326,7 +317,7 @@ Below shows the second draw and actions.
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-Below shows the third draw and actions.
+Below are the third draw and actions.
 
 .. code-block:: python
 
@@ -338,7 +329,7 @@ Below shows the third draw and actions.
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-Below show the final stacks.
+Below are the final stacks.
 
 .. code-block:: python
 
@@ -371,7 +362,7 @@ Link: https://en.wikipedia.org/wiki/Badugi
        4,  # Number of players
    )
 
-Below shows the pre-flop dealings and actions.
+Below are the pre-flop dealings and actions.
 
 .. code-block:: python
 
@@ -385,7 +376,7 @@ Below shows the pre-flop dealings and actions.
    state.check_or_call()  # Bob
    state.check_or_call()  # Carol
 
-Below shows the first draw and actions.
+Below are the first draw and actions.
 
 .. code-block:: python
 
@@ -402,7 +393,7 @@ Below shows the first draw and actions.
    state.check_or_call()  # Alice
    state.check_or_call()  # Bob
 
-Below shows the second draw and actions.
+Below are the second draw and actions.
 
 .. code-block:: python
 
@@ -419,7 +410,7 @@ Below shows the second draw and actions.
    state.fold()  # Bob
    state.check_or_call()  # Carol
 
-Below shows the third draw and actions.
+Below are the third draw and actions.
 
 .. code-block:: python
 
@@ -432,14 +423,14 @@ Below shows the third draw and actions.
    state.complete_bet_or_raise_to()  # Alice
    state.check_or_call()  # Carol
 
-Below show the showdown.
+Below is the showdown.
 
 .. code-block:: python
 
    state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
    state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
 
-Below show the final stacks.
+Below are the final stacks.
 
 .. code-block:: python
 
@@ -448,15 +439,12 @@ Below show the final stacks.
 Testing and Validation
 ----------------------
 
-PokerKit has extensive test coverage, passes mypy static type checking with
-strict parameter, and has been validated through extensive use in real-life
-scenarios.
+PokerKit has extensive test coverage, passes mypy static type checking with strict parameter, and has been validated through extensive use in real-life scenarios.
 
 Contributing
 ------------
 
-Contributions are welcome! Please read our Contributing Guide for more
-information.
+Contributions are welcome! Please read our Contributing Guide for more information.
 
 License
 -------
