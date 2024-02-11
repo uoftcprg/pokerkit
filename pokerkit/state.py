@@ -283,10 +283,6 @@ class Pot:
     Traceback (most recent call last):
         ...
     ValueError: negative pot amount
-    >>> pot = Pot(10, ())
-    Traceback (most recent call last):
-        ...
-    ValueError: empty player indices
     """
 
     amount: int
@@ -297,8 +293,6 @@ class Pot:
     def __post_init__(self) -> None:
         if self.amount < 0:
             raise ValueError('negative pot amount')
-        elif not self.player_indices:
-            raise ValueError('empty player indices')
 
 
 @dataclass(frozen=True)
@@ -1516,7 +1510,7 @@ class State:
                 self.hole_cards[player_index],
                 self.board_cards,
             )
-        except ValueError:
+        except (KeyError, ValueError):
             hand = None
 
         return hand
@@ -3792,6 +3786,11 @@ class State:
         if hole_cards is None and status:
             hole_cards = tuple(self.hole_cards[player_index])
 
+        if hole_cards is not None and status:
+            for card in hole_cards:
+                if card.unknown_status:
+                    raise ValueError('unknown card shown')
+
         return status, hole_cards
 
     def can_show_or_muck_hole_cards(
@@ -4201,6 +4200,100 @@ class State:
         assert not self._pots
 
         self._begin_chips_pulling()
+
+    @property
+    def pot_amounts(self) -> Iterator[int]:
+        """Return the list of main and side pot amounts (if any).
+
+        The first pot (if any) is the main pot of this game. The
+        subsequent pots are side pots.
+
+        >>> from pokerkit import NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.CARD_BURNING,
+        ...         Automation.HOLE_DEALING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     True,
+        ...     0,
+        ...     (1, 2),
+        ...     2,
+        ...     (50, 100, 200, 1000, 200, 100),
+        ...     6,
+        ... )
+        >>> state.pot_amounts  # doctest: +ELLIPSIS
+        <generator object State.pot_amounts at 0x...>
+        >>> next(state.pot_amounts)
+        Traceback (most recent call last):
+            ...
+        StopIteration
+        >>> tuple(state.pot_amounts)  # doctest: +ELLIPSIS
+        ()
+
+        Pre-flop.
+
+        >>> state.complete_bet_or_raise_to(200)
+        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.complete_bet_or_raise_to(1000)
+        Traceback (most recent call last):
+            ...
+        ValueError: irrelevant completion, betting, or raising
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=3, amount=200)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=4, amount=200)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=5, amount=100)
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=0, amount=49)
+        >>> tuple(state.pot_amounts)
+        ()
+        >>> state.check_or_call()
+        CheckingOrCalling(player_index=1, amount=98)
+        >>> next(state.pot_amounts)
+        300
+        >>> pot_amounts = tuple(state.pot_amounts)
+        >>> len(pot_amounts)
+        3
+        >>> pot_amounts[0]
+        300
+        >>> pot_amounts[1]
+        250
+        >>> pot_amounts[2]
+        300
+
+        Flop.
+
+        >>> state.deal_board()  # doctest: +ELLIPSIS
+        BoardDealing(cards=(..., ..., ...))
+
+        Turn.
+
+        >>> state.deal_board()  # doctest: +ELLIPSIS
+        BoardDealing(cards=(...,))
+
+        River.
+
+        >>> state.deal_board()  # doctest: +ELLIPSIS
+        BoardDealing(cards=(...,))
+        >>> next(state.pot_amounts)
+        Traceback (most recent call last):
+            ...
+        StopIteration
+        >>> tuple(state.pot_amounts)
+        ()
+
+        :return: The list of main and side pots (if any).
+        """
+        for pot in self.pots:
+            yield pot.amount
 
     @property
     def total_pot_amount(self) -> int:
@@ -4653,8 +4746,6 @@ class State:
 
         for i in self.player_indices:
             self.chips_pulling_statuses[i] = self.bets[i] > 0
-
-        assert any(self.chips_pulling_statuses)
 
         self._update_chips_pulling()
 

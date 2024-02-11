@@ -4,6 +4,17 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.10 (February 11, 2024)
+----------------------------------
+
+**Added**
+
+- ``pokerkit.state.State.pot_amounts`` for iterating through main/side pot amounts.
+
+**Changed**
+
+- Forbid showdown without specifying cards if unknown hole cards are dealt.
+
 Version 0.4.9 (January 28, 2024)
 --------------------------------
 

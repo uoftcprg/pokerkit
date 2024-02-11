@@ -864,6 +864,62 @@ class StateTestCase(TestCase):
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [90, 9, 99000, 9000, 900])
 
+    def test_unknown_showdown(self) -> None:
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+                Automation.CHIPS_PUSHING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            200,
+            3,
+        )
+
+        state.deal_hole('????')
+        state.deal_hole('????')
+        state.deal_hole('????')
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('TsJsQs')
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('Ks')
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('As')
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        for _ in range(3):
+            self.assertTrue(state.can_show_or_muck_hole_cards())
+            self.assertTrue(state.can_show_or_muck_hole_cards(False))
+            self.assertFalse(state.can_show_or_muck_hole_cards(True))
+            self.assertFalse(state.can_show_or_muck_hole_cards('????'))
+            self.assertFalse(state.can_show_or_muck_hole_cards('??2d'))
+            self.assertTrue(state.can_show_or_muck_hole_cards('TcJc'))
+            self.assertEqual(state.show_or_muck_hole_cards().hole_cards, ())
+
+        self.assertFalse(state.status)
+        self.assertEqual(tuple(state.pots), ())
+        self.assertEqual(tuple(state.pot_amounts), ())
+        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(state.starting_stacks, (200,) * 3)
+        self.assertEqual(state.stacks, [198] * 3)
+
 
 if __name__ == '__main__':
     main()  # pragma: no cover
