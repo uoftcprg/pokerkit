@@ -11,7 +11,6 @@ Features
 * High-speed hand evaluations.
 * Customizable game states and parameters.
 * Robust implementation with static type checking and extensive unit tests and doctests.
-* Dataset of over 10,000 hand histories.
 
 Installation
 ------------

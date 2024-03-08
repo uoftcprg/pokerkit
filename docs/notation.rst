@@ -71,7 +71,7 @@ Optional fields:
 Examples
 --------
 
-Over 10,000 example hand histories from sources ranging from Pluribus's gameplay, 2023 WSOP Event #43: $50,000 Poker Players Championship | Day 5, and other various historical hands are in the `PokerKit GitHub repository <https://github.com/uoftcprg/pokerkit>`__. They cover 11 poker variants. One of the historical hands, played by Dwan and Ivey is shown below:
+A large dataset of hand histories are available on `Zenodo <https://doi.org/10.5281/zenodo.10796886>`__. One of the hands, played by Dwan and Ivey, is shown below:
 
 .. code-block:: toml
 
