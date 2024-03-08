@@ -69,7 +69,7 @@ class EightOrBetterLookupTestCase(LookupTestCaseMixin, TestCase):
     def test_get_entry(self) -> None:
         lookup = EightOrBetterLookup()
         combinations_ = sorted(
-            filter(lookup.has_entry, combinations(Deck.STANDARD, 5)),
+            filter(lookup.has_entry, combinations(Deck.REGULAR, 5)),
             key=lookup.get_entry,
         )
         string = self.serialize_combinations(combinations_)
@@ -78,7 +78,7 @@ class EightOrBetterLookupTestCase(LookupTestCaseMixin, TestCase):
 
         self.assertEqual(
             algorithm.hexdigest(),
-            'd765d50ed799d03a8f062a3d5a31ad5c',
+            'ecf2b6b16031562a6761932b1ce1de91',
         )
 
 
@@ -86,7 +86,7 @@ class RegularLookupTestCase(LookupTestCaseMixin, TestCase):
     def test_get_entry(self) -> None:
         lookup = RegularLookup()
         combinations_ = sorted(
-            combinations(Deck.STANDARD, 5),
+            combinations(Deck.REGULAR, 5),
             key=lookup.get_entry,
         )
         string = self.serialize_combinations(combinations_)
@@ -95,7 +95,7 @@ class RegularLookupTestCase(LookupTestCaseMixin, TestCase):
 
         self.assertEqual(
             algorithm.hexdigest(),
-            'edd288a3022b2763475a533ad2a102e9',
+            '28925b97b06a1e674eaabf241a441e15',
         )
 
 
@@ -105,7 +105,7 @@ class BadugiLookupTestCase(LookupTestCaseMixin, TestCase):
         combinations_ = []
 
         for n in range(1, 5):
-            for cards in combinations(Deck.STANDARD, n):
+            for cards in combinations(Deck.REGULAR, n):
                 pairedness = Card.are_paired(cards)
                 suitedness = Card.are_suited(cards)
                 rainbowness = Card.are_rainbow(cards)
@@ -122,7 +122,7 @@ class BadugiLookupTestCase(LookupTestCaseMixin, TestCase):
 
         self.assertEqual(
             algorithm.hexdigest(),
-            'c284d3bf45c87707f62cd7fc6699c31a',
+            '9d29ddbc3f76d815e166c6faa2af9021',
         )
 
 
