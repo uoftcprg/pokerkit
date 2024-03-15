@@ -435,6 +435,17 @@ class BadugiLookup(Lookup):
 
 
 @dataclass
+class StandardBadugiLookup(BadugiLookup):
+    """The class for standard badugi hand lookups.
+
+    Lookups are used by evaluators. If you want to evaluate poker hands,
+    please use :class:`pokerkit.hands.StandardBadugiHand`.
+    """
+
+    rank_order = RankOrder.STANDARD
+
+
+@dataclass
 class KuhnPokerLookup(Lookup):
     """The class for Kuhn poker hand lookups.
 

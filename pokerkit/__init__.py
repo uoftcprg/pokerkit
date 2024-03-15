@@ -79,6 +79,8 @@ __all__ = (
     'ShortDeckHoldemLookup',
     'shuffled',
     'SingleDraw',
+    'StandardBadugiHand',
+    'StandardBadugiLookup',
     'StandardHand',
     'StandardHighHand',
     'StandardLookup',
@@ -132,6 +134,7 @@ from pokerkit.hands import (
     OmahaHoldemHand,
     RegularLowHand,
     ShortDeckHoldemHand,
+    StandardBadugiHand,
     StandardHand,
     StandardHighHand,
     StandardLowHand,
@@ -145,6 +148,7 @@ from pokerkit.lookups import (
     Lookup,
     RegularLookup,
     ShortDeckHoldemLookup,
+    StandardBadugiLookup,
     StandardLookup,
 )
 from pokerkit.notation import HandHistory, parse_action

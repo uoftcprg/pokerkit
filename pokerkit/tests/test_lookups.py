@@ -13,6 +13,7 @@ from pokerkit.lookups import (
     KuhnPokerLookup,
     RegularLookup,
     ShortDeckHoldemLookup,
+    StandardBadugiLookup,
     StandardLookup,
 )
 from pokerkit.utilities import Card, Deck
@@ -123,6 +124,33 @@ class BadugiLookupTestCase(LookupTestCaseMixin, TestCase):
         self.assertEqual(
             algorithm.hexdigest(),
             '9d29ddbc3f76d815e166c6faa2af9021',
+        )
+
+
+class StandardBadugiLookupTestCase(LookupTestCaseMixin, TestCase):
+    def test_get_entry(self) -> None:
+        lookup = StandardBadugiLookup()
+        combinations_ = []
+
+        for n in range(1, 5):
+            for cards in combinations(Deck.STANDARD, n):
+                pairedness = Card.are_paired(cards)
+                suitedness = Card.are_suited(cards)
+                rainbowness = Card.are_rainbow(cards)
+
+                if not pairedness and rainbowness:
+                    combinations_.append(cards)
+                elif pairedness or suitedness:
+                    self.assertRaises(ValueError, lookup.get_entry, cards)
+
+        combinations_.sort(key=lookup.get_entry)
+        string = self.serialize_combinations(combinations_)
+        algorithm = md5()
+        algorithm.update(string.encode())
+
+        self.assertEqual(
+            algorithm.hexdigest(),
+            '06886dd57a4c7b780953f5090c63bcfe',
         )
 
 

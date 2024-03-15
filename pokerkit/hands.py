@@ -16,9 +16,10 @@ from pokerkit.lookups import (
     Lookup,
     RegularLookup,
     ShortDeckHoldemLookup,
+    StandardBadugiLookup,
     StandardLookup,
 )
-from pokerkit.utilities import Card, CardsLike, RankOrder
+from pokerkit.utilities import Card, CardsLike
 
 
 @total_ordering
@@ -623,6 +624,19 @@ class BadugiHand(Hand):
         >>> h1 = BadugiHand('Ks')
         >>> h0 == h1
         True
+        >>> h0 = BadugiHand.from_game('Ac2c3c4c')
+        >>> h1 = BadugiHand('Ac')
+        >>> h0 == h1
+        True
+
+        >>> h0 = BadugiHand.from_game('AcAdAhAs')
+        >>> h1 = BadugiHand('As')
+        >>> h0 == h1
+        True
+        >>> h0 = StandardBadugiHand.from_game('Ac2c3c4c')
+        >>> h1 = StandardBadugiHand('2c')
+        >>> h0 == h1
+        True
 
         :param hole_cards: The hole cards.
         :param board_cards: The optional board cards.
@@ -634,7 +648,7 @@ class BadugiHand(Hand):
 
         for card in sorted(
                 chain(Card.clean(hole_cards), Card.clean(board_cards)),
-                key=lambda card: RankOrder.STANDARD.index(card.rank),
+                key=lambda card: cls.lookup.rank_order.index(card.rank),
         ):
             if card.rank not in ranks and card.suit not in suits:
                 ranks.add(card.rank)
@@ -648,6 +662,12 @@ class BadugiHand(Hand):
 
         if not Card.are_rainbow(self.cards):
             raise ValueError('cards not rainbow')
+
+
+class StandardBadugiHand(BadugiHand):
+    """The class for standard badugi hands."""
+
+    lookup = StandardBadugiLookup()
 
 
 class KuhnPokerHand(Hand):
