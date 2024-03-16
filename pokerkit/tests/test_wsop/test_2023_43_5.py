@@ -1,6 +1,6 @@
 """:mod:`pokerkit.tests.test_wsop.test_2023_43` implements unit tests
-for :mod:`pokerkit.state` with hands played on 2023 World Series of
-Poker Event #43: $50000 Poker Players Championship.
+for :mod:`pokerkit.state` with hands played on the Day 5 of the 2023
+World Series of Poker Event #43: $50,000 Poker Players Championship.
 
 https://www.pokergo.com/videos/6e5e4f34-9857-458c-b61e-d478ad29dbd6
 
