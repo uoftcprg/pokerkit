@@ -3,7 +3,7 @@
 from abc import ABC
 from collections.abc import Callable, Iterable, Iterator
 from collections import Counter, deque
-from dataclasses import InitVar, dataclass, field
+from dataclasses import InitVar, dataclass, field, KW_ONLY
 from enum import StrEnum, unique
 from functools import partial
 from itertools import chain, filterfalse, islice, starmap
@@ -299,7 +299,9 @@ class Pot:
 class Operation(ABC):
     """The abstract base class for operations."""
 
-    pass
+    _: KW_ONLY
+    commentary: str | None = None
+    """The optional commentary."""
 
 
 @dataclass(frozen=True)
@@ -468,6 +470,13 @@ class ChipsPulling(Operation):
     """The amount."""
 
 
+@dataclass(frozen=True)
+class NoOperation(Operation):
+    """The class for no-operations."""
+
+    pass
+
+
 @dataclass
 class State:
     """The class for states.
@@ -525,7 +534,7 @@ class State:
     First player checks.
 
     >>> state.check_or_call()
-    CheckingOrCalling(player_index=0, amount=0)
+    CheckingOrCalling(commentary=None, player_index=0, amount=0)
     >>> state.stacks
     [1, 1]
     >>> state.bets
@@ -534,7 +543,7 @@ class State:
     The second player bets 1.
 
     >>> state.complete_bet_or_raise_to()
-    CompletionBettingOrRaisingTo(player_index=1, amount=1)
+    CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount=1)
     >>> state.stacks
     [1, 0]
     >>> state.bets
@@ -543,7 +552,7 @@ class State:
     The first player folds.
 
     >>> state.fold()
-    Folding(player_index=0)
+    Folding(commentary=None, player_index=0)
     >>> state.stacks
     [1, 3]
     >>> state.bets
@@ -584,36 +593,36 @@ class State:
     Antes are collected.
 
     >>> state.post_ante(0)
-    AntePosting(player_index=0, amount=1)
+    AntePosting(commentary=None, player_index=0, amount=1)
     >>> state.post_ante(1)
-    AntePosting(player_index=1, amount=1)
+    AntePosting(commentary=None, player_index=1, amount=1)
     >>> state.collect_bets()
-    BetCollection(bets=(1, 1))
+    BetCollection(commentary=None, bets=(1, 1))
 
     Hole cards are dealt.
 
-    >>> state.deal_hole('Js')
-    HoleDealing(player_index=0, cards=(Js,), statuses=(False,))
+    >>> state.deal_hole('Js')  # doctest: +ELLIPSIS
+    HoleDealing(commentary=None, player_index=0, cards=(Js,), statuses=(Fals...
     >>> state.deal_hole()  # doctest: +ELLIPSIS
-    HoleDealing(player_index=1, cards=(...s,), statuses=(False,))
+    HoleDealing(commentary=None, player_index=1, cards=(...s,), statuses=(Fa...
 
     The actions are carried out.
 
     >>> state.check_or_call()
-    CheckingOrCalling(player_index=0, amount=0)
+    CheckingOrCalling(commentary=None, player_index=0, amount=0)
     >>> state.complete_bet_or_raise_to()
-    CompletionBettingOrRaisingTo(player_index=1, amount=1)
+    CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount=1)
     >>> state.fold()
-    Folding(player_index=0)
+    Folding(commentary=None, player_index=0)
 
     The bets are collected and distributed to the winner.
 
     >>> state.collect_bets()
-    BetCollection(bets=(0, 0))
+    BetCollection(commentary=None, bets=(0, 0))
     >>> state.push_chips()
-    ChipsPushing(amounts=(0, 2), rake=0)
+    ChipsPushing(commentary=None, amounts=(0, 2), rake=0)
     >>> state.pull_chips(1)
-    ChipsPulling(player_index=1, amount=3)
+    ChipsPulling(commentary=None, player_index=1, amount=3)
 
     The game has terminated.
 
@@ -1164,15 +1173,15 @@ class State:
         Setup.
 
         >>> state.post_ante(0)
-        AntePosting(player_index=0, amount=2)
+        AntePosting(commentary=None, player_index=0, amount=2)
         >>> state.collect_bets()
-        BetCollection(bets=(2, 0))
+        BetCollection(commentary=None, bets=(2, 0))
         >>> state.post_blind_or_straddle(0)
-        BlindOrStraddlePosting(player_index=0, amount=2)
+        BlindOrStraddlePosting(commentary=None, player_index=0, amount=2)
         >>> state.street is None
         True
         >>> state.post_blind_or_straddle(1)
-        BlindOrStraddlePosting(player_index=1, amount=1)
+        BlindOrStraddlePosting(commentary=None, player_index=1, amount=1)
         >>> state.street is state.streets[0]
         True
         >>> state.street  # doctest: +ELLIPSIS
@@ -1180,89 +1189,89 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('Ac')
-        HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
-        >>> state.deal_hole('Kc')
-        HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
-        >>> state.deal_hole('Ad')
-        HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
-        >>> state.deal_hole('Kd')
-        HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
+        >>> state.deal_hole('Ac')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac,), statuses=(...
+        >>> state.deal_hole('Kc')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kc,), statuses=(...
+        >>> state.deal_hole('Ad')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ad,), statuses=(...
+        >>> state.deal_hole('Kd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kd,), statuses=(...
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(commentary=None, player_index=1, amount=1)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.street is state.streets[0]
         True
         >>> state.collect_bets()
-        BetCollection(bets=(2, 2))
+        BetCollection(commentary=None, bets=(2, 2))
         >>> state.street is state.streets[1]
         True
 
         Flop.
 
         >>> state.burn_card('2c')
-        CardBurning(card=2c)
+        CardBurning(commentary=None, card=2c)
         >>> state.deal_board('AhKhAs')
-        BoardDealing(cards=(Ah, Kh, As))
+        BoardDealing(commentary=None, cards=(Ah, Kh, As))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.street is state.streets[1]
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.street is state.streets[2]
         True
 
         Turn.
 
         >>> state.burn_card('2d')
-        CardBurning(card=2d)
+        CardBurning(commentary=None, card=2d)
         >>> state.deal_board('Ks')
-        BoardDealing(cards=(Ks,))
+        BoardDealing(commentary=None, cards=(Ks,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.street is state.streets[2]
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.street is state.streets[3]
         True
 
         River.
 
         >>> state.burn_card('2h')
-        CardBurning(card=2h)
+        CardBurning(commentary=None, card=2h)
         >>> state.deal_board('2s')
-        BoardDealing(cards=(2s,))
+        BoardDealing(commentary=None, cards=(2s,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.street is state.streets[3]
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.street is state.streets[3]
         True
 
         Showdown.
 
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=0, hole_card...
         >>> state.street is state.streets[3]
         True
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=1, hole_card...
         >>> state.street is None
         True
 
         Teardown.
 
         >>> state.push_chips()
-        ChipsPushing(amounts=(6, 0), rake=0)
+        ChipsPushing(commentary=None, amounts=(6, 0), rake=0)
         >>> state.street is None
         True
         >>> state.pull_chips()
-        ChipsPulling(player_index=0, amount=6)
+        ChipsPulling(commentary=None, player_index=0, amount=6)
         >>> state.street is None
         True
 
@@ -1289,7 +1298,7 @@ class State:
         >>> state.street is state.streets[0]
         True
         >>> state.fold()
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
         >>> state.street is None
         True
 
@@ -1325,9 +1334,9 @@ class State:
         ...     2,
         ... )
         >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(False, Fal...
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad, Ah), sta...
         >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(False, Fal...
+        HoleDealing(commentary=None, player_index=1, cards=(Kc, Kd, Kh), sta...
         >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
         <generator object State.get_down_cards at 0x...>
         >>> tuple(state.get_down_cards(0))
@@ -1335,9 +1344,9 @@ class State:
         >>> tuple(state.get_down_cards(1))
         (Kc, Kd)
         >>> state.post_bring_in()
-        BringInPosting(player_index=1, amount=1)
+        BringInPosting(commentary=None, player_index=1, amount=1)
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> tuple(state.get_down_cards(0))
         ()
         >>> tuple(state.get_down_cards(1))
@@ -1377,9 +1386,9 @@ class State:
         ...     2,
         ... )
         >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(Ac, Ad, Ah), statuses=(False, Fal...
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad, Ah), sta...
         >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(Kc, Kd, Kh), statuses=(False, Fal...
+        HoleDealing(commentary=None, player_index=1, cards=(Kc, Kd, Kh), sta...
         >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
         <generator object State.get_down_cards at 0x...>
         >>> tuple(state.get_up_cards(0))
@@ -1387,9 +1396,9 @@ class State:
         >>> tuple(state.get_up_cards(1))
         (Kh,)
         >>> state.post_bring_in()
-        BringInPosting(player_index=1, amount=1)
+        BringInPosting(commentary=None, player_index=1, amount=1)
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> tuple(state.get_up_cards(0))
         ()
         >>> tuple(state.get_up_cards(1))
@@ -1433,25 +1442,25 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('AcAd')
-        HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
-        >>> state.deal_hole('KsQs')
-        HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
+        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad), statuse...
+        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Ks, Qs), statuse...
         >>> state.get_hand(0, 0) is None
         True
         >>> state.get_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(commentary=None, player_index=1, amount=1)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('JsTs2c')
-        BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(commentary=None, cards=(Js, Ts, 2c))
         >>> state.get_hand(0, 0)
         AcAdJsTs2c
         >>> str(state.get_hand(0, 0))
@@ -1459,39 +1468,39 @@ class State:
         >>> str(state.get_hand(1, 0))
         'High card (KsQsJsTs2c)'
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ah')
-        BoardDealing(cards=(Ah,))
+        BoardDealing(commentary=None, cards=(Ah,))
         >>> str(state.get_hand(0, 0))
         'Three of a kind (AcAdJsTsAh)'
         >>> str(state.get_hand(1, 0))
         'Straight (KsQsJsTsAh)'
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('As')
-        BoardDealing(cards=(As,))
+        BoardDealing(commentary=None, cards=(As,))
         >>> str(state.get_hand(0, 0))
         'Four of a kind (AcAdJsAhAs)'
         >>> str(state.get_hand(1, 0))
         'Straight flush (KsQsJsTsAs)'
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.get_hand(0, 0) is None
         True
         >>> str(state.get_hand(1, 0))
@@ -1547,63 +1556,63 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('AcAd')
-        HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
-        >>> state.deal_hole('KsQs')
-        HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
+        >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad), statuse...
+        >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Ks, Qs), statuse...
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(commentary=None, player_index=1, amount=1)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('JsTs2c')
-        BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(commentary=None, cards=(Js, Ts, 2c))
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ah')
-        BoardDealing(cards=(Ah,))
+        BoardDealing(commentary=None, cards=(Ah,))
         >>> state.get_up_hand(0, 0) is None
         True
         >>> state.get_up_hand(1, 0) is None
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('As')
-        BoardDealing(cards=(As,))
+        BoardDealing(commentary=None, cards=(As,))
         >>> str(state.get_up_hand(0, 0))
         'One pair (JsTs2cAhAs)'
         >>> str(state.get_up_hand(1, 0))
         'One pair (JsTs2cAhAs)'
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.get_up_hand(0, 0) is None
         True
         >>> str(state.get_up_hand(1, 0))
@@ -1655,48 +1664,48 @@ class State:
         Pre-flop.
 
         >>> state.deal_hole('AcAd')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(Ac, Ad), statuses=(False, False))
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad), statuse...
         >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(Ks, Qs), statuses=(False, False))
+        HoleDealing(commentary=None, player_index=1, cards=(Ks, Qs), statuse...
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(commentary=None, player_index=1, amount=1)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('JsTs2c')
-        BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(commentary=None, cards=(Js, Ts, 2c))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ah')
-        BoardDealing(cards=(Ah,))
+        BoardDealing(commentary=None, cards=(Ah,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('As')
-        BoardDealing(cards=(As,))
+        BoardDealing(commentary=None, cards=(As,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> tuple(state.get_up_hands(0))
         (JsTs2cAhAs, JsTs2cAhAs)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> tuple(state.get_up_hands(0))
         (None, KsQsJsTsAs)
 
@@ -1733,46 +1742,46 @@ class State:
         Pre-flop.
 
         >>> state.deal_hole('KhQh')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(Kh, Qh), statuses=(False, False))
+        HoleDealing(commentary=None, player_index=0, cards=(Kh, Qh), statuse...
         >>> state.deal_hole('AcKc')  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(Ac, Kc), statuses=(False, False))
+        HoleDealing(commentary=None, player_index=1, cards=(Ac, Kc), statuse...
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(commentary=None, player_index=1, amount=1)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('JsTs2c')
-        BoardDealing(cards=(Js, Ts, 2c))
+        BoardDealing(commentary=None, cards=(Js, Ts, 2c))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ah')
-        BoardDealing(cards=(Ah,))
+        BoardDealing(commentary=None, cards=(Ah,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('As')
-        BoardDealing(cards=(As,))
+        BoardDealing(commentary=None, cards=(As,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Showdown.
 
@@ -1780,14 +1789,14 @@ class State:
         True
         >>> state.can_win_now(1)
         True
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Kh, Qh))
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=0, hole_card...
         >>> state.can_win_now(0)
         True
         >>> state.can_win_now(1)
         False
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=1, hole_card...
 
         :param player_index: The player index.
         :return: ``True`` if the player can win, otherwise ``False``.
@@ -2072,10 +2081,16 @@ class State:
 
         return True
 
-    def post_ante(self, player_index: int | None = None) -> AntePosting:
+    def post_ante(
+            self,
+            player_index: int | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> AntePosting:
         """Post the ante.
 
         :param player_index: The optional player index.
+        :param commentary: The optional commentary.
         :return: The ante posting.
         :raises ValueError: If the ante posting cannot be done.
         """
@@ -2090,7 +2105,7 @@ class State:
         self.bets[player_index] = amount
         self.stacks[player_index] -= amount
 
-        operation = AntePosting(player_index, amount)
+        operation = AntePosting(player_index, amount, commentary=commentary)
 
         self._update_ante_posting(operation)
 
@@ -2160,7 +2175,7 @@ class State:
         >>> state.can_collect_bets()
         False
         >>> state.post_ante()
-        AntePosting(player_index=0, amount=2)
+        AntePosting(commentary=None, player_index=0, amount=2)
         >>> state.can_collect_bets()
         True
 
@@ -2174,9 +2189,10 @@ class State:
 
         return True
 
-    def collect_bets(self) -> BetCollection:
+    def collect_bets(self, *, commentary: str | None = None) -> BetCollection:
         """Collect the bets.
 
+        :param commentary: The optional commentary.
         :return: The bet collection.
         :raises ValueError: If the bet collection cannot be done.
         """
@@ -2208,7 +2224,7 @@ class State:
         for i in player_indices:
             self.bets[i] = 0
 
-        operation = BetCollection(tuple(bets))
+        operation = BetCollection(tuple(bets), commentary=commentary)
 
         self._update_bet_collection(operation)
 
@@ -2291,9 +2307,9 @@ class State:
         >>> tuple(state.blind_or_straddle_poster_indices)
         ()
         >>> state.post_ante(1)
-        AntePosting(player_index=1, amount=2)
+        AntePosting(commentary=None, player_index=1, amount=2)
         >>> state.collect_bets()
-        BetCollection(bets=(0, 2, 0, 0))
+        BetCollection(commentary=None, bets=(0, 2, 0, 0))
         >>> tuple(state.blind_or_straddle_poster_indices)
         (0, 1)
 
@@ -2351,9 +2367,9 @@ class State:
         >>> state.can_post_blind_or_straddle()
         False
         >>> state.post_ante(1)
-        AntePosting(player_index=1, amount=2)
+        AntePosting(commentary=None, player_index=1, amount=2)
         >>> state.collect_bets()
-        BetCollection(bets=(0, 2, 0, 0))
+        BetCollection(commentary=None, bets=(0, 2, 0, 0))
         >>> state.can_post_blind_or_straddle()
         True
         >>> state.can_post_blind_or_straddle(0)
@@ -2379,10 +2395,13 @@ class State:
     def post_blind_or_straddle(
             self,
             player_index: int | None = None,
+            *,
+            commentary: str | None = None,
     ) -> BlindOrStraddlePosting:
         """Post the blind or straddle of the player.
 
         :param player_index: The optional player index.
+        :param commentary: The optional commentary.
         :return: The blind or straddle posting.
         :raises ValueError: If the blind or straddle posting cannot be
                             done.
@@ -2398,7 +2417,11 @@ class State:
         self.bets[player_index] = amount
         self.stacks[player_index] -= amount
 
-        operation = BlindOrStraddlePosting(player_index, amount)
+        operation = BlindOrStraddlePosting(
+            player_index,
+            amount,
+            commentary=commentary,
+        )
 
         self._update_blind_or_straddle_posting(operation)
 
@@ -2547,10 +2570,16 @@ class State:
 
         return True
 
-    def burn_card(self, card: Card | str | None = None) -> CardBurning:
+    def burn_card(
+            self,
+            card: Card | str | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> CardBurning:
         """Burn a card.
 
         :param card: The optional card.
+        :param commentary: The optional commentary.
         :return: The card burning.
         :raises ValueError: If the card burning cannot be done.
         """
@@ -2569,7 +2598,7 @@ class State:
         self.card_burning_status = False
         self.burn_cards.append(card)
 
-        operation = CardBurning(card)
+        operation = CardBurning(card, commentary=commentary)
 
         self._update_dealing(operation)
 
@@ -2649,10 +2678,16 @@ class State:
 
         return True
 
-    def deal_hole(self, cards: CardsLike | int | None = None) -> HoleDealing:
+    def deal_hole(
+            self,
+            cards: CardsLike | int | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> HoleDealing:
         """Deal the hole.
 
         :param cards: The optional cards.
+        :param commentary: The optional commentary.
         :return: The hole dealing.
         :raises ValueError: If the hole dealing cannot be done.
         """
@@ -2672,7 +2707,12 @@ class State:
             self.hole_cards[player_index].append(card)
             self.hole_card_statuses[player_index].append(status)
 
-        operation = HoleDealing(player_index, cards, tuple(statuses))
+        operation = HoleDealing(
+            player_index,
+            cards,
+            tuple(statuses),
+            commentary=commentary,
+        )
 
         self._update_dealing(operation)
 
@@ -2719,10 +2759,16 @@ class State:
 
         return True
 
-    def deal_board(self, cards: CardsLike | int | None = None) -> BoardDealing:
+    def deal_board(
+            self,
+            cards: CardsLike | int | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> BoardDealing:
         """Deal the board.
 
         :param cards: The optional cards.
+        :param commentary: The optional commentary.
         :return: The board dealing.
         :raises ValueError: If the board dealing cannot be done.
         """
@@ -2735,7 +2781,7 @@ class State:
         self.board_dealing_count -= len(cards)
         self.board_cards.extend(cards)
 
-        operation = BoardDealing(cards)
+        operation = BoardDealing(cards, commentary=commentary)
 
         self._update_dealing(operation)
 
@@ -2798,10 +2844,13 @@ class State:
     def stand_pat_or_discard(
             self,
             cards: CardsLike = (),
+            *,
+            commentary: str | None = None,
     ) -> StandingPatOrDiscarding:
         """Discard hole cards.
 
         :param cards: The optional discarded cards.
+        :param commentary: The optional commentary.
         :return: The standing pat or discarding, defaults to empty.
         :raises ValueError: If the discard cannot be done.
         """
@@ -2824,7 +2873,11 @@ class State:
             self.hole_card_statuses[player_index].pop(index)
             self.discarded_cards[self.street_index].append(card)
 
-        operation = StandingPatOrDiscarding(player_index, cards)
+        operation = StandingPatOrDiscarding(
+            player_index,
+            cards,
+            commentary=commentary,
+        )
 
         self._update_dealing(operation)
 
@@ -3068,17 +3121,17 @@ class State:
         >>> state.can_fold()
         True
         >>> state.fold()
-        Folding(player_index=2)
+        Folding(commentary=None, player_index=2)
         >>> state.can_fold()
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=1)
+        CheckingOrCalling(commentary=None, player_index=0, amount=1)
         >>> state.can_fold()
         False
         >>> state.complete_bet_or_raise_to(4)
-        CompletionBettingOrRaisingTo(player_index=1, amount=4)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount=4)
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> state.status
         False
         >>> state.can_fold()
@@ -3094,9 +3147,10 @@ class State:
 
         return True
 
-    def fold(self) -> Folding:
+    def fold(self, *, commentary: str | None = None) -> Folding:
         """Fold.
 
+        :param commentary: The optional commentary.
         :return: The folding.
         :raises ValueError: If the folding cannot be done.
         """
@@ -3110,7 +3164,7 @@ class State:
 
         assert any(self.statuses)
 
-        operation = Folding(player_index)
+        operation = Folding(player_index, commentary=commentary)
 
         self._update_betting(operation)
 
@@ -3175,11 +3229,11 @@ class State:
         >>> state.can_check_or_call()
         True
         >>> state.fold()
-        Folding(player_index=2)
+        Folding(commentary=None, player_index=2)
         >>> state.can_check_or_call()
         True
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> state.status
         False
         >>> state.can_check_or_call()
@@ -3195,9 +3249,14 @@ class State:
 
         return True
 
-    def check_or_call(self) -> CheckingOrCalling:
+    def check_or_call(
+            self,
+            *,
+            commentary: str | None = None,
+    ) -> CheckingOrCalling:
         """Check or call.
 
+        :param commentary: The optional commentary.
         :return: The checking or calling.
         :raises ValueError: If the checking or calling cannot be done.
         """
@@ -3212,7 +3271,11 @@ class State:
         self.stacks[player_index] -= amount
         self.bets[player_index] += amount
 
-        operation = CheckingOrCalling(player_index, amount)
+        operation = CheckingOrCalling(
+            player_index,
+            amount,
+            commentary=commentary,
+        )
 
         self._update_betting(operation)
 
@@ -3260,9 +3323,14 @@ class State:
 
         return True
 
-    def post_bring_in(self) -> BringInPosting:
+    def post_bring_in(
+            self,
+            *,
+            commentary: str | None = None,
+    ) -> BringInPosting:
         """Post the bring-in.
 
+        :param commentary: The optional commentary.
         :return: The bring-in posting.
         :raises ValueError: If the bring-in posting cannot be done.
         """
@@ -3282,7 +3350,7 @@ class State:
         self.bets[player_index] += amount
         self.bring_in_status = False
 
-        operation = BringInPosting(player_index, amount)
+        operation = BringInPosting(player_index, amount, commentary=commentary)
 
         self._update_betting(operation)
 
@@ -3487,15 +3555,15 @@ class State:
         >>> state.can_complete_bet_or_raise_to(201)
         False
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=2)
-        >>> state.complete_bet_or_raise_to(100)
-        CompletionBettingOrRaisingTo(player_index=0, amount=100)
+        CheckingOrCalling(commentary=None, player_index=2, amount=2)
+        >>> state.complete_bet_or_raise_to(100)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.fold()
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
         >>> state.can_complete_bet_or_raise_to(200)
         False
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=98)
+        CheckingOrCalling(commentary=None, player_index=2, amount=98)
         >>> state.status
         False
         >>> state.can_complete_bet_or_raise_to()
@@ -3525,19 +3593,19 @@ class State:
         >>> state.can_complete_bet_or_raise_to()
         True
         >>> state.complete_bet_or_raise_to()
-        CompletionBettingOrRaisingTo(player_index=2, amount=4)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount=4)
         >>> state.can_complete_bet_or_raise_to()
         True
         >>> state.complete_bet_or_raise_to()
-        CompletionBettingOrRaisingTo(player_index=3, amount=6)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=3, amount=6)
         >>> state.can_complete_bet_or_raise_to()
         True
         >>> state.complete_bet_or_raise_to()
-        CompletionBettingOrRaisingTo(player_index=4, amount=8)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=4, amount=8)
         >>> state.can_complete_bet_or_raise_to()
         True
-        >>> state.complete_bet_or_raise_to()
-        CompletionBettingOrRaisingTo(player_index=5, amount=10)
+        >>> state.complete_bet_or_raise_to()  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=5, amount...
         >>> state.can_complete_bet_or_raise_to()
         False
         >>> state.complete_bet_or_raise_to()
@@ -3560,11 +3628,14 @@ class State:
     def complete_bet_or_raise_to(
             self,
             amount: int | None = None,
+            *,
+            commentary: str | None = None,
     ) -> CompletionBettingOrRaisingTo:
         """Complete, bet, or raise to an amount.
 
         :param amount: The optional completion, betting, or raising to
                        amount.
+        :param commentary: The optional commentary.
         :return: The completion, betting, or raising to.
         :raises ValueError: If the completion, betting, or raising
                             cannot be done.
@@ -3595,7 +3666,11 @@ class State:
 
         assert self.actor_indices
 
-        operation = CompletionBettingOrRaisingTo(player_index, amount)
+        operation = CompletionBettingOrRaisingTo(
+            player_index,
+            amount,
+            commentary=commentary,
+        )
 
         self._update_betting(operation)
 
@@ -3661,74 +3736,74 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('JcJd')
-        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
-        >>> state.deal_hole('KcKd')
-        HoleDealing(player_index=1, cards=(Kc, Kd), statuses=(False, False))
-        >>> state.deal_hole('QcQd')
-        HoleDealing(player_index=2, cards=(Qc, Qd), statuses=(False, False))
+        >>> state.deal_hole('JcJd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Jc, Jd), statuse...
+        >>> state.deal_hole('KcKd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kc, Kd), statuse...
+        >>> state.deal_hole('QcQd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(Qc, Qd), statuse...
         >>> state.complete_bet_or_raise_to(6)
-        CompletionBettingOrRaisingTo(player_index=2, amount=6)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount=6)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=5)
+        CheckingOrCalling(commentary=None, player_index=0, amount=5)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=4)
+        CheckingOrCalling(commentary=None, player_index=1, amount=4)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('AcAdAh')
-        BoardDealing(cards=(Ac, Ad, Ah))
+        BoardDealing(commentary=None, cards=(Ac, Ad, Ah))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=0)
+        CheckingOrCalling(commentary=None, player_index=2, amount=0)
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2c')
-        BoardDealing(cards=(2c,))
+        BoardDealing(commentary=None, cards=(2c,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=0)
+        CheckingOrCalling(commentary=None, player_index=2, amount=0)
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2d')
-        BoardDealing(cards=(2d,))
+        BoardDealing(commentary=None, cards=(2d,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Showdown.
 
         >>> state.showdown_index is None
         True
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=0)
+        CheckingOrCalling(commentary=None, player_index=2, amount=0)
         >>> state.showdown_index
         0
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Jc, Jd))
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=0, hole_card...
         >>> state.showdown_index
         1
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=(Kc, Kd))
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=1, hole_card...
         >>> state.showdown_index
         2
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=2, hole_cards=())
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=2, hole_card...
 
         :return: The showdown index if applicable, otherwise ``None``.
         """
@@ -3816,74 +3891,74 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('JcJd')
-        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
-        >>> state.deal_hole('KcKd')
-        HoleDealing(player_index=1, cards=(Kc, Kd), statuses=(False, False))
-        >>> state.deal_hole('QcQd')
-        HoleDealing(player_index=2, cards=(Qc, Qd), statuses=(False, False))
+        >>> state.deal_hole('JcJd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Jc, Jd), statuse...
+        >>> state.deal_hole('KcKd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kc, Kd), statuse...
+        >>> state.deal_hole('QcQd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(Qc, Qd), statuse...
         >>> state.complete_bet_or_raise_to(6)
-        CompletionBettingOrRaisingTo(player_index=2, amount=6)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount=6)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=5)
+        CheckingOrCalling(commentary=None, player_index=0, amount=5)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=4)
+        CheckingOrCalling(commentary=None, player_index=1, amount=4)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('AcAdAh')
-        BoardDealing(cards=(Ac, Ad, Ah))
+        BoardDealing(commentary=None, cards=(Ac, Ad, Ah))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=0)
+        CheckingOrCalling(commentary=None, player_index=2, amount=0)
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2c')
-        BoardDealing(cards=(2c,))
+        BoardDealing(commentary=None, cards=(2c,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=0)
+        CheckingOrCalling(commentary=None, player_index=2, amount=0)
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2d')
-        BoardDealing(cards=(2d,))
+        BoardDealing(commentary=None, cards=(2d,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.can_show_or_muck_hole_cards()
         False
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=2, amount=0)
+        CheckingOrCalling(commentary=None, player_index=2, amount=0)
 
         Showdown.
 
         >>> state.can_show_or_muck_hole_cards()
         True
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Jc, Jd))
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=0, hole_card...
         >>> state.can_show_or_muck_hole_cards(False)
         True
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=(Kc, Kd))
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=1, hole_card...
         >>> state.can_show_or_muck_hole_cards(True)
         True
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=2, hole_cards=())
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=2, hole_card...
 
         :param status_or_hole_cards: The optional status or hole cards.
         :return: ``True`` if the hole crad showing or mucking can be
@@ -3899,6 +3974,8 @@ class State:
     def show_or_muck_hole_cards(
             self,
             status_or_hole_cards: bool | CardsLike | None = None,
+            *,
+            commentary: str | None = None,
     ) -> HoleCardsShowingOrMucking:
         """Show or muck hole cards.
 
@@ -3907,6 +3984,7 @@ class State:
         will be mucked.
 
         :param status_or_hole_cards: The optional status or hole cards.
+        :param commentary: The optional commentary.
         :return: The hole cards showing or mucking.
         """
         status, hole_cards = self.verify_hole_cards_showing_or_mucking(
@@ -3936,6 +4014,7 @@ class State:
         operation = HoleCardsShowingOrMucking(
             player_index,
             tuple(self.hole_cards[player_index]),
+            commentary=commentary,
         )
 
         self._update_showdown(operation)
@@ -4003,32 +4082,32 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('JcJd')
-        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
-        >>> state.deal_hole('QcQd')
-        HoleDealing(player_index=1, cards=(Qc, Qd), statuses=(False, False))
-        >>> state.deal_hole('KcKd')
-        HoleDealing(player_index=2, cards=(Kc, Kd), statuses=(False, False))
-        >>> state.complete_bet_or_raise_to(200)
-        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.deal_hole('JcJd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Jc, Jd), statuse...
+        >>> state.deal_hole('QcQd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Qc, Qd), statuse...
+        >>> state.deal_hole('KcKd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(Kc, Kd), statuse...
+        >>> state.complete_bet_or_raise_to(200)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=199)
+        CheckingOrCalling(commentary=None, player_index=0, amount=199)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=198)
+        CheckingOrCalling(commentary=None, player_index=1, amount=198)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('AcAdAh')
-        BoardDealing(cards=(Ac, Ad, Ah))
+        BoardDealing(commentary=None, cards=(Ac, Ad, Ah))
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2c')
-        BoardDealing(cards=(2c,))
+        BoardDealing(commentary=None, cards=(2c,))
         >>> state.hand_killing_indices  # doctest: +ELLIPSIS
         <generator object State.hand_killing_indices at 0x...>
         >>> tuple(state.hand_killing_indices)
@@ -4037,9 +4116,9 @@ class State:
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2d')
-        BoardDealing(cards=(2d,))
+        BoardDealing(commentary=None, cards=(2d,))
         >>> tuple(state.hand_killing_indices)
         (0, 1)
 
@@ -4096,41 +4175,41 @@ class State:
 
         Pre-flop.
 
-        >>> state.deal_hole('JcJd')
-        HoleDealing(player_index=0, cards=(Jc, Jd), statuses=(False, False))
-        >>> state.deal_hole('QcQd')
-        HoleDealing(player_index=1, cards=(Qc, Qd), statuses=(False, False))
-        >>> state.deal_hole('KcKd')
-        HoleDealing(player_index=2, cards=(Kc, Kd), statuses=(False, False))
-        >>> state.complete_bet_or_raise_to(200)
-        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.deal_hole('JcJd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Jc, Jd), statuse...
+        >>> state.deal_hole('QcQd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Qc, Qd), statuse...
+        >>> state.deal_hole('KcKd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(Kc, Kd), statuse...
+        >>> state.complete_bet_or_raise_to(200)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=199)
+        CheckingOrCalling(commentary=None, player_index=0, amount=199)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=198)
+        CheckingOrCalling(commentary=None, player_index=1, amount=198)
 
         Flop.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('AcAdAh')
-        BoardDealing(cards=(Ac, Ad, Ah))
+        BoardDealing(commentary=None, cards=(Ac, Ad, Ah))
 
         Turn.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2c')
-        BoardDealing(cards=(2c,))
+        BoardDealing(commentary=None, cards=(2c,))
         >>> state.can_kill_hand()
         False
 
         River.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('2d')
-        BoardDealing(cards=(2d,))
+        BoardDealing(commentary=None, cards=(2d,))
         >>> state.can_kill_hand()
         True
         >>> state.can_kill_hand(0)
@@ -4151,10 +4230,16 @@ class State:
 
         return True
 
-    def kill_hand(self, player_index: int | None = None) -> HandKilling:
+    def kill_hand(
+            self,
+            player_index: int | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> HandKilling:
         """Kill hand.
 
         :param player_index: The optional player index.
+        :param commentary: The optional commentary.
         :return: The hand killing.
         :raises ValueError: If the hand killing cannot be done.
         """
@@ -4163,7 +4248,7 @@ class State:
 
         self._muck_hole_cards(player_index)
 
-        operation = HandKilling(player_index)
+        operation = HandKilling(player_index, commentary=commentary)
 
         self._update_hand_killing(operation)
 
@@ -4239,24 +4324,24 @@ class State:
 
         Pre-flop.
 
-        >>> state.complete_bet_or_raise_to(200)
-        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.complete_bet_or_raise_to(200)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
         >>> state.complete_bet_or_raise_to(1000)
         Traceback (most recent call last):
             ...
         ValueError: irrelevant completion, betting, or raising
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=3, amount=200)
+        CheckingOrCalling(commentary=None, player_index=3, amount=200)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=4, amount=200)
+        CheckingOrCalling(commentary=None, player_index=4, amount=200)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=5, amount=100)
+        CheckingOrCalling(commentary=None, player_index=5, amount=100)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=49)
+        CheckingOrCalling(commentary=None, player_index=0, amount=49)
         >>> tuple(state.pot_amounts)
         ()
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=98)
+        CheckingOrCalling(commentary=None, player_index=1, amount=98)
         >>> next(state.pot_amounts)
         300
         >>> pot_amounts = tuple(state.pot_amounts)
@@ -4272,17 +4357,17 @@ class State:
         Flop.
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(..., ..., ...))
+        BoardDealing(commentary=None, cards=(..., ..., ...))
 
         Turn.
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(...,))
+        BoardDealing(commentary=None, cards=(...,))
 
         River.
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(...,))
+        BoardDealing(commentary=None, cards=(...,))
         >>> next(state.pot_amounts)
         Traceback (most recent call last):
             ...
@@ -4317,105 +4402,105 @@ class State:
         Setup.
 
         >>> state.post_ante(0)
-        AntePosting(player_index=0, amount=2)
+        AntePosting(commentary=None, player_index=0, amount=2)
         >>> state.total_pot_amount
         2
         >>> state.collect_bets()
-        BetCollection(bets=(2, 0))
+        BetCollection(commentary=None, bets=(2, 0))
         >>> state.total_pot_amount
         2
         >>> state.post_blind_or_straddle(0)
-        BlindOrStraddlePosting(player_index=0, amount=2)
+        BlindOrStraddlePosting(commentary=None, player_index=0, amount=2)
         >>> state.total_pot_amount
         4
         >>> state.post_blind_or_straddle(1)
-        BlindOrStraddlePosting(player_index=1, amount=1)
+        BlindOrStraddlePosting(commentary=None, player_index=1, amount=1)
         >>> state.total_pot_amount
         5
 
         Pre-flop.
 
-        >>> state.deal_hole('Ac')
-        HoleDealing(player_index=0, cards=(Ac,), statuses=(False,))
-        >>> state.deal_hole('Kc')
-        HoleDealing(player_index=1, cards=(Kc,), statuses=(False,))
-        >>> state.deal_hole('Ad')
-        HoleDealing(player_index=0, cards=(Ad,), statuses=(False,))
-        >>> state.deal_hole('Kd')
-        HoleDealing(player_index=1, cards=(Kd,), statuses=(False,))
+        >>> state.deal_hole('Ac')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac,), statuses=(...
+        >>> state.deal_hole('Kc')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kc,), statuses=(...
+        >>> state.deal_hole('Ad')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ad,), statuses=(...
+        >>> state.deal_hole('Kd')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kd,), statuses=(...
         >>> state.total_pot_amount
         5
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=1)
+        CheckingOrCalling(commentary=None, player_index=1, amount=1)
         >>> state.total_pot_amount
         6
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.collect_bets()
-        BetCollection(bets=(2, 2))
+        BetCollection(commentary=None, bets=(2, 2))
 
         Flop.
 
         >>> state.burn_card('2c')
-        CardBurning(card=2c)
+        CardBurning(commentary=None, card=2c)
         >>> state.deal_board('AhKhAs')
-        BoardDealing(cards=(Ah, Kh, As))
+        BoardDealing(commentary=None, cards=(Ah, Kh, As))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Turn.
 
         >>> state.burn_card('2d')
-        CardBurning(card=2d)
+        CardBurning(commentary=None, card=2d)
         >>> state.deal_board('Ks')
-        BoardDealing(cards=(Ks,))
+        BoardDealing(commentary=None, cards=(Ks,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.total_pot_amount
         6
-        >>> state.complete_bet_or_raise_to(10)
-        CompletionBettingOrRaisingTo(player_index=1, amount=10)
+        >>> state.complete_bet_or_raise_to(10)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
         >>> state.total_pot_amount
         16
-        >>> state.complete_bet_or_raise_to(30)
-        CompletionBettingOrRaisingTo(player_index=0, amount=30)
+        >>> state.complete_bet_or_raise_to(30)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.total_pot_amount
         46
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=20)
+        CheckingOrCalling(commentary=None, player_index=1, amount=20)
         >>> state.collect_bets()
-        BetCollection(bets=(30, 30))
+        BetCollection(commentary=None, bets=(30, 30))
         >>> state.total_pot_amount
         66
 
         River.
 
         >>> state.burn_card('2h')
-        CardBurning(card=2h)
+        CardBurning(commentary=None, card=2h)
         >>> state.deal_board('2s')
-        BoardDealing(cards=(2s,))
+        BoardDealing(commentary=None, cards=(2s,))
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Showdown.
 
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=0, hole_cards=(Ac, Ad))
-        >>> state.show_or_muck_hole_cards()
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=())
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=0, hole_card...
+        >>> state.show_or_muck_hole_cards()  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=1, hole_card...
 
         Teardown.
 
         >>> state.push_chips()
-        ChipsPushing(amounts=(66, 0), rake=0)
+        ChipsPushing(commentary=None, amounts=(66, 0), rake=0)
         >>> state.total_pot_amount
         66
         >>> state.pull_chips()
-        ChipsPulling(player_index=0, amount=66)
+        ChipsPulling(commentary=None, player_index=0, amount=66)
         >>> state.total_pot_amount
         0
 
@@ -4442,7 +4527,7 @@ class State:
         >>> state.total_pot_amount
         5
         >>> state.fold()
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
         >>> state.total_pot_amount
         0
 
@@ -4493,24 +4578,24 @@ class State:
 
         Pre-flop.
 
-        >>> state.complete_bet_or_raise_to(200)
-        CompletionBettingOrRaisingTo(player_index=2, amount=200)
+        >>> state.complete_bet_or_raise_to(200)  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
         >>> state.complete_bet_or_raise_to(1000)
         Traceback (most recent call last):
             ...
         ValueError: irrelevant completion, betting, or raising
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=3, amount=200)
+        CheckingOrCalling(commentary=None, player_index=3, amount=200)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=4, amount=200)
+        CheckingOrCalling(commentary=None, player_index=4, amount=200)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=5, amount=100)
+        CheckingOrCalling(commentary=None, player_index=5, amount=100)
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=0, amount=49)
+        CheckingOrCalling(commentary=None, player_index=0, amount=49)
         >>> tuple(state.pots)
         ()
         >>> state.check_or_call()
-        CheckingOrCalling(player_index=1, amount=98)
+        CheckingOrCalling(commentary=None, player_index=1, amount=98)
         >>> next(state.pots)
         Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
         >>> pots = tuple(state.pots)
@@ -4526,17 +4611,17 @@ class State:
         Flop.
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(..., ..., ...))
+        BoardDealing(commentary=None, cards=(..., ..., ...))
 
         Turn.
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(...,))
+        BoardDealing(commentary=None, cards=(...,))
 
         River.
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
-        BoardDealing(cards=(...,))
+        BoardDealing(commentary=None, cards=(...,))
         >>> next(state.pots)
         Traceback (most recent call last):
             ...
@@ -4635,9 +4720,9 @@ class State:
         >>> state.can_push_chips()
         False
         >>> state.fold()
-        Folding(player_index=2)
+        Folding(commentary=None, player_index=2)
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> state.can_push_chips()
         True
 
@@ -4651,9 +4736,10 @@ class State:
 
         return True
 
-    def push_chips(self) -> ChipsPushing:
+    def push_chips(self, *, commentary: str | None = None) -> ChipsPushing:
         """Push chips.
 
+        :param commentary: The optional commentary.
         :return: The chips pushing.
         :raises ValueError: If the chips pushing cannot be done.
         """
@@ -4721,6 +4807,7 @@ class State:
         operation = ChipsPushing(
             tuple(starmap(sub, zip(self.bets, bets))),
             raked_amount,
+            commentary=commentary,
         )
 
         self._update_chips_pushing(operation)
@@ -4797,9 +4884,9 @@ class State:
         >>> tuple(state.chips_pulling_indices)
         ()
         >>> state.fold()
-        Folding(player_index=2)
+        Folding(commentary=None, player_index=2)
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> tuple(state.chips_pulling_indices)
         (1,)
 
@@ -4862,9 +4949,9 @@ class State:
         >>> state.can_pull_chips()
         False
         >>> state.fold()
-        Folding(player_index=2)
+        Folding(commentary=None, player_index=2)
         >>> state.fold()
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> state.can_pull_chips()
         True
         >>> state.can_pull_chips(0)
@@ -4885,10 +4972,16 @@ class State:
 
         return True
 
-    def pull_chips(self, player_index: int | None = None) -> ChipsPulling:
+    def pull_chips(
+            self,
+            player_index: int | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> ChipsPulling:
         """Pull chips.
 
         :param player_index: The optional player index.
+        :param commentary: The optional commentary.
         :return: The chips pulling.
         :raises ValueError: If the chips pulling cannot be done.
         """
@@ -4899,8 +4992,44 @@ class State:
         self.bets[player_index] = 0
         self.chips_pulling_statuses[player_index] = False
 
-        operation = ChipsPulling(player_index, amount)
+        operation = ChipsPulling(player_index, amount, commentary=commentary)
 
         self._update_chips_pulling(operation)
+
+        return operation
+
+    def verify_no_operation(self) -> None:
+        """Verify the no-operation.
+
+        :return: ``None``.
+        """
+        pass
+
+    def can_no_operate(self) -> bool:
+        """Return whether the no-operation can be done. Always ``True``.
+
+        :return: ``True``.
+        """
+        try:
+            self.verify_no_operation()
+        except (ValueError, UserWarning):
+            return False
+
+        return True
+
+    def no_operate(
+            self,
+            *,
+            commentary: str | None = None,
+    ) -> NoOperation:
+        """No-operate.
+
+        :return: The no-operation.
+        """
+        self.verify_no_operation()
+
+        operation = NoOperation(commentary=commentary)
+
+        self._update(operation)
 
         return operation

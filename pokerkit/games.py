@@ -417,17 +417,17 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('AcAs')
-        HoleDealing(player_index=0, cards=(Ac, As), statuses=(False, False))
-        >>> state.deal_hole('7h6h')
-        HoleDealing(player_index=1, cards=(7h, 6h), statuses=(False, False))
+        >>> state.deal_hole('AcAs')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, As), statuse...
+        >>> state.deal_hole('7h6h')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(7h, 6h), statuse...
 
         >>> state.complete_bet_or_raise_to()
-        CompletionBettingOrRaisingTo(player_index=1, amount=4)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount=4)
         >>> state.complete_bet_or_raise_to()
-        CompletionBettingOrRaisingTo(player_index=0, amount=6)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount=6)
         >>> state.fold()
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
 
         Below show the final stacks.
 
@@ -505,56 +505,60 @@ class NoLimitTexasHoldem(
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('Ac2d')  # Ivey
-        HoleDealing(player_index=0, cards=(Ac, 2d), statuses=(False, False))
-        >>> state.deal_hole('????')  # Antonius
-        HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
-        >>> state.deal_hole('7h6h')  # Dwan
-        HoleDealing(player_index=2, cards=(7h, 6h), statuses=(False, False))
+        >>> state.deal_hole('Ac2d')  # Ivey  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, 2d), statuse...
+        >>> state.deal_hole('????')  # Antonius  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(??, ??), statuse...
+        >>> state.deal_hole('7h6h')  # Dwan  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(7h, 6h), statuse...
 
-        >>> state.complete_bet_or_raise_to(7000)  # Dwan
-        CompletionBettingOrRaisingTo(player_index=2, amount=7000)
-        >>> state.complete_bet_or_raise_to(23000)  # Ivey
-        CompletionBettingOrRaisingTo(player_index=0, amount=23000)
+        >>> state.complete_bet_or_raise_to(7000)  # Dwan  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
+        >>> state.complete_bet_or_raise_to(23000)  # Ivey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.fold()  # Antonius
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
         >>> state.check_or_call()  # Dwan
-        CheckingOrCalling(player_index=2, amount=16000)
+        CheckingOrCalling(commentary=None, player_index=2, amount=16000)
 
         Below shows the flop dealing and actions.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Jc3d5c')
-        BoardDealing(cards=(Jc, 3d, 5c))
+        BoardDealing(commentary=None, cards=(Jc, 3d, 5c))
 
-        >>> state.complete_bet_or_raise_to(35000)  # Ivey
-        CompletionBettingOrRaisingTo(player_index=0, amount=35000)
+        >>> state.complete_bet_or_raise_to(35000)  # Ivey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Dwan
-        CheckingOrCalling(player_index=2, amount=35000)
+        CheckingOrCalling(commentary=None, player_index=2, amount=35000)
 
         Below shows the turn dealing and actions.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('4h')
-        BoardDealing(cards=(4h,))
+        BoardDealing(commentary=None, cards=(4h,))
 
-        >>> state.complete_bet_or_raise_to(90000)  # Ivey
-        CompletionBettingOrRaisingTo(player_index=0, amount=90000)
-        >>> state.complete_bet_or_raise_to(232600)  # Dwan
-        CompletionBettingOrRaisingTo(player_index=2, amount=232600)
-        >>> state.complete_bet_or_raise_to(1067100)  # Ivey
-        CompletionBettingOrRaisingTo(player_index=0, amount=1067100)
+        >>> state.complete_bet_or_raise_to(90000)  # Ivey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     232600,
+        ... )  # Dwan  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     1067100,
+        ... )  # Ivey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Dwan
-        CheckingOrCalling(player_index=2, amount=262400)
+        CheckingOrCalling(commentary=None, player_index=2, amount=262400)
 
         Below shows the river dealing.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Jh')
-        BoardDealing(cards=(Jh,))
+        BoardDealing(commentary=None, cards=(Jh,))
 
         Below show the final stacks.
 
@@ -629,58 +633,60 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
 
         Below shows the pre-flop dealings and actions.
 
-        >>> state.deal_hole('Th8h')  # Badziakouski
-        HoleDealing(player_index=0, cards=(Th, 8h), statuses=(False, False))
-        >>> state.deal_hole('QsJd')  # Zhong
-        HoleDealing(player_index=1, cards=(Qs, Jd), statuses=(False, False))
-        >>> state.deal_hole('QhQd')  # Xuan
-        HoleDealing(player_index=2, cards=(Qh, Qd), statuses=(False, False))
-        >>> state.deal_hole('8d7c')  # Jun
-        HoleDealing(player_index=3, cards=(8d, 7c), statuses=(False, False))
-        >>> state.deal_hole('KhKs')  # Phua
-        HoleDealing(player_index=4, cards=(Kh, Ks), statuses=(False, False))
-        >>> state.deal_hole('8c7h')  # Koon
-        HoleDealing(player_index=5, cards=(8c, 7h), statuses=(False, False))
+        >>> state.deal_hole('Th8h')  # Badziakouski  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Th, 8h), statuse...
+        >>> state.deal_hole('QsJd')  # Zhong  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Qs, Jd), statuse...
+        >>> state.deal_hole('QhQd')  # Xuan  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(Qh, Qd), statuse...
+        >>> state.deal_hole('8d7c')  # Jun  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(8d, 7c), statuse...
+        >>> state.deal_hole('KhKs')  # Phua  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=4, cards=(Kh, Ks), statuse...
+        >>> state.deal_hole('8c7h')  # Koon  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=5, cards=(8c, 7h), statuse...
 
         >>> state.check_or_call()  # Badziakouski
-        CheckingOrCalling(player_index=0, amount=3000)
+        CheckingOrCalling(commentary=None, player_index=0, amount=3000)
         >>> state.check_or_call()  # Zhong
-        CheckingOrCalling(player_index=1, amount=3000)
-        >>> state.complete_bet_or_raise_to(35000)  # Xuan
-        CompletionBettingOrRaisingTo(player_index=2, amount=35000)
+        CheckingOrCalling(commentary=None, player_index=1, amount=3000)
+        >>> state.complete_bet_or_raise_to(35000)  # Xuan  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
         >>> state.fold()  # Jun
-        Folding(player_index=3)
-        >>> state.complete_bet_or_raise_to(298000)  # Phua
-        CompletionBettingOrRaisingTo(player_index=4, amount=298000)
+        Folding(commentary=None, player_index=3)
+        >>> state.complete_bet_or_raise_to(
+        ...     298000,
+        ... )  # Phua  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=4, amount...
         >>> state.fold()  # Koon
-        Folding(player_index=5)
+        Folding(commentary=None, player_index=5)
         >>> state.fold()  # Badziakouski
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> state.fold()  # Zhong
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
         >>> state.check_or_call()  # Xuan
-        CheckingOrCalling(player_index=2, amount=263000)
+        CheckingOrCalling(commentary=None, player_index=2, amount=263000)
 
         Below shows the flop dealing.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('9h6cKc')
-        BoardDealing(cards=(9h, 6c, Kc))
+        BoardDealing(commentary=None, cards=(9h, 6c, Kc))
 
         Below shows the turn dealing.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Jh')
-        BoardDealing(cards=(Jh,))
+        BoardDealing(commentary=None, cards=(Jh,))
 
         Below shows the river dealing.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ts')
-        BoardDealing(cards=(Ts,))
+        BoardDealing(commentary=None, cards=(Ts,))
 
         Below show the final stacks.
 
@@ -766,50 +772,60 @@ class PotLimitOmahaHoldem(
         Below shows the pre-flop dealings and actions.
 
         >>> state.deal_hole('Ah3sKsKh')  # Antonius  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(Ah, 3s, Ks, Kh), statuses=(False,...
+        HoleDealing(commentary=None, player_index=0, cards=(Ah, 3s, Ks, Kh),...
         >>> state.deal_hole('6d9s7d8h')  # Blom  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(6d, 9s, 7d, 8h), statuses=(False,...
+        HoleDealing(commentary=None, player_index=1, cards=(6d, 9s, 7d, 8h),...
 
-        >>> state.complete_bet_or_raise_to(3000)  # Blom
-        CompletionBettingOrRaisingTo(player_index=1, amount=3000)
-        >>> state.complete_bet_or_raise_to(9000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=9000)
-        >>> state.complete_bet_or_raise_to(27000)  # Blom
-        CompletionBettingOrRaisingTo(player_index=1, amount=27000)
-        >>> state.complete_bet_or_raise_to(81000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=81000)
+        >>> state.complete_bet_or_raise_to(3000)  # Blom  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     9000,
+        ... )  # Antonius  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
+        >>> state.complete_bet_or_raise_to(27000)  # Blom  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     81000,
+        ... )  # Antonius  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Blom
-        CheckingOrCalling(player_index=1, amount=54000)
+        CheckingOrCalling(commentary=None, player_index=1, amount=54000)
 
         Below shows the flop dealing and actions.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('4s5c2h')
-        BoardDealing(cards=(4s, 5c, 2h))
+        BoardDealing(commentary=None, cards=(4s, 5c, 2h))
 
-        >>> state.complete_bet_or_raise_to(91000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=91000)
-        >>> state.complete_bet_or_raise_to(435000)  # Blom
-        CompletionBettingOrRaisingTo(player_index=1, amount=435000)
-        >>> state.complete_bet_or_raise_to(779000)  # Antonius
-        CompletionBettingOrRaisingTo(player_index=0, amount=779000)
+        >>> state.complete_bet_or_raise_to(
+        ...     91000,
+        ... )  # Antonius  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     435000,
+        ... )  # Blom  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     779000,
+        ... )  # Antonius  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Blom
-        CheckingOrCalling(player_index=1, amount=162473.5)
+        CheckingOrCalling(commentary=None, player_index=1, amount=162473.5)
 
         Below shows the turn dealing.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('5h')
-        BoardDealing(cards=(5h,))
+        BoardDealing(commentary=None, cards=(5h,))
 
         Below shows the river dealing.
 
         >>> state.burn_card('??')
-        CardBurning(card=??)
+        CardBurning(commentary=None, card=??)
         >>> state.deal_board('9c')
-        BoardDealing(cards=(9c,))
+        BoardDealing(commentary=None, cards=(9c,))
 
         Below show the final stacks.
 
@@ -1369,72 +1385,72 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         Below shows the pre-flop dealings and actions.
 
         >>> state.deal_hole('7h6c4c3d2c')  # Yockey  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(7h, 6c, 4c, 3d, 2c), statuses=(Fa...
+        HoleDealing(commentary=None, player_index=0, cards=(7h, 6c, 4c, 3d, ...
         >>> state.deal_hole('??????????')  # Hui  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(??, ??, ??, ??, ??), statuses=(Fa...
+        HoleDealing(commentary=None, player_index=1, cards=(??, ??, ??, ??, ...
         >>> state.deal_hole('??????????')  # Esposito  # doctest: +ELLIPSIS
-        HoleDealing(player_index=2, cards=(??, ??, ??, ??, ??), statuses=(Fa...
+        HoleDealing(commentary=None, player_index=2, cards=(??, ??, ??, ??, ...
         >>> state.deal_hole('AsQs6s5c3c')  # Arieh  # doctest: +ELLIPSIS
-        HoleDealing(player_index=3, cards=(As, Qs, 6s, 5c, 3c), statuses=(Fa...
+        HoleDealing(commentary=None, player_index=3, cards=(As, Qs, 6s, 5c, ...
 
         >>> state.fold()  # Esposito
-        Folding(player_index=2)
-        >>> state.complete_bet_or_raise_to()  # Arieh
-        CompletionBettingOrRaisingTo(player_index=3, amount=300000)
-        >>> state.complete_bet_or_raise_to()  # Yockey
-        CompletionBettingOrRaisingTo(player_index=0, amount=450000)
+        Folding(commentary=None, player_index=2)
+        >>> state.complete_bet_or_raise_to()  # Arieh  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=3, amount...
+        >>> state.complete_bet_or_raise_to()  # Yockey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.fold()  # Hui
-        Folding(player_index=1)
+        Folding(commentary=None, player_index=1)
         >>> state.check_or_call()  # Arieh
-        CheckingOrCalling(player_index=3, amount=150000)
+        CheckingOrCalling(commentary=None, player_index=3, amount=150000)
 
         Below shows the first draw and actions.
 
         >>> state.stand_pat_or_discard()  # Yockey
-        StandingPatOrDiscarding(player_index=0, cards=())
-        >>> state.stand_pat_or_discard('AsQs')  # Arieh
-        StandingPatOrDiscarding(player_index=3, cards=(As, Qs))
+        StandingPatOrDiscarding(commentary=None, player_index=0, cards=())
+        >>> state.stand_pat_or_discard('AsQs')  # Arieh  # doctest: +ELLIPSIS
+        StandingPatOrDiscarding(commentary=None, player_index=3, cards=(As, ...
         >>> state.burn_card('??')
-        CardBurning(card=??)
-        >>> state.deal_hole('2hQh')  # Arieh
-        HoleDealing(player_index=3, cards=(2h, Qh), statuses=(False, False))
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_hole('2hQh')  # Arieh  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(2h, Qh), statuse...
 
-        >>> state.complete_bet_or_raise_to()  # Yockey
-        CompletionBettingOrRaisingTo(player_index=0, amount=150000)
+        >>> state.complete_bet_or_raise_to()  # Yockey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Arieh
-        CheckingOrCalling(player_index=3, amount=150000)
+        CheckingOrCalling(commentary=None, player_index=3, amount=150000)
 
         Below shows the second draw and actions.
 
         >>> state.stand_pat_or_discard()  # Yockey
-        StandingPatOrDiscarding(player_index=0, cards=())
+        StandingPatOrDiscarding(commentary=None, player_index=0, cards=())
         >>> state.stand_pat_or_discard('Qh')  # Arieh
-        StandingPatOrDiscarding(player_index=3, cards=(Qh,))
+        StandingPatOrDiscarding(commentary=None, player_index=3, cards=(Qh,))
         >>> state.burn_card('??')
-        CardBurning(card=??)
-        >>> state.deal_hole('4d')  # Arieh
-        HoleDealing(player_index=3, cards=(4d,), statuses=(False,))
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_hole('4d')  # Arieh  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(4d,), statuses=(...
 
-        >>> state.complete_bet_or_raise_to()  # Yockey
-        CompletionBettingOrRaisingTo(player_index=0, amount=300000)
+        >>> state.complete_bet_or_raise_to()  # Yockey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Arieh
-        CheckingOrCalling(player_index=3, amount=300000)
+        CheckingOrCalling(commentary=None, player_index=3, amount=300000)
 
         Below shows the third draw and actions.
 
         >>> state.stand_pat_or_discard()  # Yockey
-        StandingPatOrDiscarding(player_index=0, cards=())
+        StandingPatOrDiscarding(commentary=None, player_index=0, cards=())
         >>> state.stand_pat_or_discard('6s')  # Arieh
-        StandingPatOrDiscarding(player_index=3, cards=(6s,))
+        StandingPatOrDiscarding(commentary=None, player_index=3, cards=(6s,))
         >>> state.burn_card('??')
-        CardBurning(card=??)
-        >>> state.deal_hole('7c')  # Arieh
-        HoleDealing(player_index=3, cards=(7c,), statuses=(False,))
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_hole('7c')  # Arieh  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(7c,), statuses=(...
 
-        >>> state.complete_bet_or_raise_to()  # Yockey
-        CompletionBettingOrRaisingTo(player_index=0, amount=280000)
+        >>> state.complete_bet_or_raise_to()  # Yockey  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=0, amount...
         >>> state.check_or_call()  # Arieh
-        CheckingOrCalling(player_index=3, amount=280000)
+        CheckingOrCalling(commentary=None, player_index=3, amount=280000)
 
         Below show the final stacks.
 
@@ -1513,99 +1529,103 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         Below shows the pre-flop dealings and actions.
 
         >>> state.deal_hole('????????')  # Bob  # doctest: +ELLIPSIS
-        HoleDealing(player_index=0, cards=(??, ??, ??, ??), statuses=(False,...
+        HoleDealing(commentary=None, player_index=0, cards=(??, ??, ??, ??),...
         >>> state.deal_hole('????????')  # Carol  # doctest: +ELLIPSIS
-        HoleDealing(player_index=1, cards=(??, ??, ??, ??), statuses=(False,...
+        HoleDealing(commentary=None, player_index=1, cards=(??, ??, ??, ??),...
         >>> state.deal_hole('????????')  # Ted  # doctest: +ELLIPSIS
-        HoleDealing(player_index=2, cards=(??, ??, ??, ??), statuses=(False,...
+        HoleDealing(commentary=None, player_index=2, cards=(??, ??, ??, ??),...
         >>> state.deal_hole('????????')  # Alice  # doctest: +ELLIPSIS
-        HoleDealing(player_index=3, cards=(??, ??, ??, ??), statuses=(False,...
+        HoleDealing(commentary=None, player_index=3, cards=(??, ??, ??, ??),...
 
         >>> state.fold()  # Ted
-        Folding(player_index=2)
+        Folding(commentary=None, player_index=2)
         >>> state.check_or_call()  # Alice
-        CheckingOrCalling(player_index=3, amount=2)
+        CheckingOrCalling(commentary=None, player_index=3, amount=2)
         >>> state.check_or_call()  # Bob
-        CheckingOrCalling(player_index=0, amount=1)
+        CheckingOrCalling(commentary=None, player_index=0, amount=1)
         >>> state.check_or_call()  # Carol
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
 
         Below shows the first draw and actions.
 
-        >>> state.stand_pat_or_discard('????')  # Bob
-        StandingPatOrDiscarding(player_index=0, cards=(??, ??))
-        >>> state.stand_pat_or_discard('????')  # Carol
-        StandingPatOrDiscarding(player_index=1, cards=(??, ??))
+        >>> state.stand_pat_or_discard('????')  # Bob  # doctest: +ELLIPSIS
+        StandingPatOrDiscarding(commentary=None, player_index=0, cards=(??, ...
+        >>> state.stand_pat_or_discard('????')  # Carol  # doctest: +ELLIPSIS
+        StandingPatOrDiscarding(commentary=None, player_index=1, cards=(??, ...
         >>> state.stand_pat_or_discard('??')  # Alice
-        StandingPatOrDiscarding(player_index=3, cards=(??,))
+        StandingPatOrDiscarding(commentary=None, player_index=3, cards=(??,))
         >>> state.burn_card('??')
-        CardBurning(card=??)
-        >>> state.deal_hole('????')  # Bob
-        HoleDealing(player_index=0, cards=(??, ??), statuses=(False, False))
-        >>> state.deal_hole('????')  # Carol
-        HoleDealing(player_index=1, cards=(??, ??), statuses=(False, False))
-        >>> state.deal_hole('??')  # Alice
-        HoleDealing(player_index=3, cards=(??,), statuses=(False,))
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_hole('????')  # Bob  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(??, ??), statuse...
+        >>> state.deal_hole('????')  # Carol  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(??, ??), statuse...
+        >>> state.deal_hole('??')  # Alice  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(??,), statuses=(...
 
         >>> state.check_or_call()  # Bob
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.complete_bet_or_raise_to()  # Carol
-        CompletionBettingOrRaisingTo(player_index=1, amount=2)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount=2)
         >>> state.check_or_call()  # Alice
-        CheckingOrCalling(player_index=3, amount=2)
+        CheckingOrCalling(commentary=None, player_index=3, amount=2)
         >>> state.check_or_call()  # Bob
-        CheckingOrCalling(player_index=0, amount=2)
+        CheckingOrCalling(commentary=None, player_index=0, amount=2)
 
         Below shows the second draw and actions.
 
         >>> state.stand_pat_or_discard('??')  # Bob
-        StandingPatOrDiscarding(player_index=0, cards=(??,))
+        StandingPatOrDiscarding(commentary=None, player_index=0, cards=(??,))
         >>> state.stand_pat_or_discard()  # Carol
-        StandingPatOrDiscarding(player_index=1, cards=())
+        StandingPatOrDiscarding(commentary=None, player_index=1, cards=())
         >>> state.stand_pat_or_discard('??')  # Alice
-        StandingPatOrDiscarding(player_index=3, cards=(??,))
+        StandingPatOrDiscarding(commentary=None, player_index=3, cards=(??,))
         >>> state.burn_card('??')
-        CardBurning(card=??)
-        >>> state.deal_hole('??')  # Bob
-        HoleDealing(player_index=0, cards=(??,), statuses=(False,))
-        >>> state.deal_hole('??')  # Alice
-        HoleDealing(player_index=3, cards=(??,), statuses=(False,))
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_hole('??')  # Bob  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(??,), statuses=(...
+        >>> state.deal_hole('??')  # Alice  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(??,), statuses=(...
 
         >>> state.check_or_call()  # Bob
-        CheckingOrCalling(player_index=0, amount=0)
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.complete_bet_or_raise_to()  # Carol
-        CompletionBettingOrRaisingTo(player_index=1, amount=4)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount=4)
         >>> state.complete_bet_or_raise_to()  # Alice
-        CompletionBettingOrRaisingTo(player_index=3, amount=8)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=3, amount=8)
         >>> state.fold()  # Bob
-        Folding(player_index=0)
+        Folding(commentary=None, player_index=0)
         >>> state.check_or_call()  # Carol
-        CheckingOrCalling(player_index=1, amount=4)
+        CheckingOrCalling(commentary=None, player_index=1, amount=4)
 
         Below shows the third draw and actions.
 
         >>> state.stand_pat_or_discard('??')  # Carol
-        StandingPatOrDiscarding(player_index=1, cards=(??,))
+        StandingPatOrDiscarding(commentary=None, player_index=1, cards=(??,))
         >>> state.stand_pat_or_discard()  # Alice
-        StandingPatOrDiscarding(player_index=3, cards=())
+        StandingPatOrDiscarding(commentary=None, player_index=3, cards=())
         >>> state.burn_card('??')
-        CardBurning(card=??)
-        >>> state.deal_hole('??')  # Carol
-        HoleDealing(player_index=1, cards=(??,), statuses=(False,))
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_hole('??')  # Carol  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(??,), statuses=(...
 
         >>> state.check_or_call()  # Carol
-        CheckingOrCalling(player_index=1, amount=0)
+        CheckingOrCalling(commentary=None, player_index=1, amount=0)
         >>> state.complete_bet_or_raise_to()  # Alice
-        CompletionBettingOrRaisingTo(player_index=3, amount=4)
+        CompletionBettingOrRaisingTo(commentary=None, player_index=3, amount=4)
         >>> state.check_or_call()  # Carol
-        CheckingOrCalling(player_index=1, amount=4)
+        CheckingOrCalling(commentary=None, player_index=1, amount=4)
 
         Below show the showdown.
 
-        >>> state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
-        HoleCardsShowingOrMucking(player_index=3, hole_cards=(2s, 4c, 6d, 9h))
-        >>> state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
-        HoleCardsShowingOrMucking(player_index=1, hole_cards=(3s, 5d, 7c, 8h))
+        >>> state.show_or_muck_hole_cards(
+        ...     '2s4c6d9h',
+        ... )  # Alice  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=3, hole_card...
+        >>> state.show_or_muck_hole_cards(
+        ...     '3s5d7c8h',
+        ... )  # Carol  # doctest: +ELLIPSIS
+        HoleCardsShowingOrMucking(commentary=None, player_index=1, hole_card...
 
         Below show the final stacks.
 

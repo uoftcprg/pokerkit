@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
 from collections import defaultdict, deque
-from dataclasses import asdict, dataclass, fields, KW_ONLY
+from dataclasses import asdict, dataclass, field, fields, KW_ONLY
 from functools import partial
 from operator import itemgetter
 from tomllib import loads as loads_toml
@@ -255,6 +255,8 @@ class HandHistory(Iterable[State]):
     """The time limit."""
     time_banks: list[int] | None = None
     """The time banks."""
+    user_defined_fields: dict[str, Any] = field(default_factory=dict)
+    """The user-defined fields."""
     automations: tuple[Automation, ...] = (
         Automation.ANTE_POSTING,
         Automation.BET_COLLECTION,
@@ -275,13 +277,25 @@ class HandHistory(Iterable[State]):
     @classmethod
     def _filter_non_fields(cls, **kwargs: Any) -> dict[str, Any]:
         field_names = {field.name for field in fields(cls)}
+        filtered_fields = {}
 
-        for key in tuple(kwargs.keys()):
-            if key not in field_names and not key.startswith('_'):
-                warn(f'unexpected field \'{key}\'')
-                kwargs.pop(key)
+        if 'user_defined_fields' in kwargs:
+            filtered_fields['user_defined_fields'] = kwargs.pop(
+                'user_defined_fields',
+            )
+        else:
+            filtered_fields['user_defined_fields'] = {}
 
-        return kwargs
+        for key, value in kwargs.items():
+            if key in field_names:
+                filtered_fields[key] = value
+            else:
+                if not key.startswith('_'):
+                    warn(f'unexpected field \'{key}\'')
+
+                filtered_fields['user_defined_fields'][key] = value
+
+        return filtered_fields
 
     @classmethod
     def loads(
@@ -379,6 +393,12 @@ class HandHistory(Iterable[State]):
                 )
             else:
                 action = None
+
+            if operation.commentary is not None:
+                if action is None:
+                    action = '# {operation.commentary}'
+                else:
+                    action = action.strip() + ' # {operation.commentary}'
 
             if action is not None:
                 actions.append(action.strip())
@@ -528,6 +548,9 @@ class HandHistory(Iterable[State]):
             ):
                 lines.append(f'{key} = {clean(value)}')
 
+        for key, value in self.user_defined_fields.items():
+            lines.append(f'{key} = {clean(value)}')
+
         return '\n'.join(lines)
 
     def dump(self, fp: BinaryIO) -> None:
@@ -557,6 +580,7 @@ def parse_action(
         if label != 'p' or parsed_index != index:
             raise ValueError(f'invalid Player \'{player}\'')
 
+    commentary = action[action.index('#') + 2:] if '#' in action else None
     words = action.split()
 
     if '#' in words:
@@ -567,35 +591,38 @@ def parse_action(
             state.deal_board(cards)
         case 'd', 'dh', player, cards:
             verify_player(state.hole_dealee_index)
-            state.deal_hole(cards)
+            state.deal_hole(cards, commentary=commentary)
         case player, 'sd':
             verify_player(state.stander_pat_or_discarder_index)
-            state.stand_pat_or_discard()
+            state.stand_pat_or_discard(commentary=commentary)
         case player, 'sd', cards:
             verify_player(state.stander_pat_or_discarder_index)
-            state.stand_pat_or_discard(cards)
+            state.stand_pat_or_discard(cards, commentary=commentary)
         case player, 'pb':
             verify_player(state.actor_index)
-            state.post_bring_in()
+            state.post_bring_in(commentary=commentary)
         case player, 'f':
             verify_player(state.actor_index)
-            state.fold()
+            state.fold(commentary=commentary)
         case player, 'cc':
             verify_player(state.actor_index)
-            state.check_or_call()
+            state.check_or_call(commentary=commentary)
         case player, 'cbr', amount:
             verify_player(state.actor_index)
-            state.complete_bet_or_raise_to(parse_value(amount))
+            state.complete_bet_or_raise_to(
+                parse_value(amount),
+                commentary=commentary,
+            )
         case player, 'sm':
             verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(False)
+            state.show_or_muck_hole_cards(False, commentary=commentary)
         case player, 'sm', '-':
             verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(True)
+            state.show_or_muck_hole_cards(True, commentary=commentary)
         case player, 'sm', cards:
             verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(cards)
+            state.show_or_muck_hole_cards(cards, commentary=commentary)
         case ():
-            pass
+            state.no_operate(commentary=commentary)
         case _:
             raise ValueError(f'invalid action \'{action}\'')
