@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 Version 0.4.12 (March 21, 2024)
 -------------------------------
 
+**Removed**
+
+- Remove non-compliant action notation ``pn sm -`` for showing hole cards.
+
 **Added**
 
 - Commentary for state actions.
