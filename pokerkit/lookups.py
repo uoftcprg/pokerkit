@@ -2,10 +2,10 @@
 lookups.
 """
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Iterable, Reversible, Sequence
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import StrEnum, unique
 from functools import partial
 from itertools import combinations, filterfalse
@@ -52,8 +52,9 @@ class Entry:
 
     The :attr:`index` represents the strength of the corresponding
     hand. In this library, a stronger hand is considered greater. In
-    other words, stronger hands have a greater index with which
-    different entries and hands are compared.
+    other words, stronger hands have either a greater or less (depending
+    on whether using a high/low hand) index with which different entries
+    and hands are compared.
 
     The attributes are read-only.
 
@@ -146,6 +147,29 @@ class Lookup(ABC):
 
         return hashes
 
+    def __post_init__(self) -> None:
+        self._add_entries()
+        self.__reset_ranks()
+
+    @abstractmethod
+    def _add_entries(self) -> None:
+        pass
+
+    def __reset_ranks(self) -> None:
+        indices = set()
+
+        for entry in self.__entries.values():
+            indices.add(entry.index)
+
+        sorted_indices = sorted(indices)
+        reset_indices = dict(zip(sorted_indices, range(len(indices))))
+
+        for key, value in self.__entries.items():
+            self.__entries[key] = replace(
+                value,
+                index=reset_indices[value.index],
+            )
+
     def has_entry(self, cards: CardsLike) -> bool:
         """Return whether the cards can be looked up.
 
@@ -162,7 +186,7 @@ class Lookup(ABC):
         :return: ``True`` if the cards can looked up, otherwise
                  ``False``.
         """
-        return self.__get_key(cards) in self.__entries
+        return self._get_key(cards) in self.__entries
 
     def get_entry(self, cards: CardsLike) -> Entry:
         """Return the corresponding lookup entry of the hand that the
@@ -171,7 +195,7 @@ class Lookup(ABC):
         >>> lookup = ShortDeckHoldemLookup()
         >>> entry = lookup.get_entry('Ah6h7s8c9s')
         >>> entry.index
-        1134
+        1128
         >>> entry.label
         <Label.STRAIGHT: 'Straight'>
         >>> entry = lookup.get_entry('Ah6h7s8c2s')
@@ -183,7 +207,7 @@ class Lookup(ABC):
         :return: The corresponding lookup entry.
         :raises ValueError: If cards do not form a valid hand.
         """
-        key = self.__get_key(cards)
+        key = self._get_key(cards)
 
         if key not in self.__entries:
             raise ValueError('cards form an invalid hand')
@@ -205,9 +229,9 @@ class Lookup(ABC):
         :param cards: The cards to look up.
         :return: The optional corresponding lookup entry.
         """
-        return self.__entries.get(self.__get_key(cards))
+        return self.__entries.get(self._get_key(cards))
 
-    def __get_key(self, cards: CardsLike) -> tuple[int, bool]:
+    def _get_key(self, cards: CardsLike) -> tuple[int, bool]:
         cards = Card.clean(cards)
         hash_ = self.__hash(Card.get_ranks(cards))
         suitedness = Card.are_suited(cards)
@@ -223,7 +247,7 @@ class Lookup(ABC):
         hashes = self.__hash_multisets(self.rank_order, counter)
 
         for hash_ in reversed(hashes):
-            self.__add(hash_, suitednesses, label)
+            self.__add_entry(hash_, suitednesses, label)
 
     def _add_straights(
             self,
@@ -231,20 +255,20 @@ class Lookup(ABC):
             suitednesses: tuple[bool, ...],
             label: Label,
     ) -> None:
-        self.__add(
+        self.__add_entry(
             self.__hash(self.rank_order[-1:] + self.rank_order[: count - 1]),
             suitednesses,
             label,
         )
 
         for i in range(len(self.rank_order) - count + 1):
-            self.__add(
+            self.__add_entry(
                 self.__hash(self.rank_order[i:i + count]),
                 suitednesses,
                 label,
             )
 
-    def __add(
+    def __add_entry(
             self,
             hash_: int,
             suitednesses: Iterable[bool],
@@ -282,7 +306,7 @@ class StandardLookup(Lookup):
 
     rank_order = RankOrder.STANDARD
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
         self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
         self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
@@ -328,7 +352,7 @@ class ShortDeckHoldemLookup(Lookup):
 
     rank_order = RankOrder.SHORT_DECK_HOLDEM
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
         self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
         self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
@@ -358,7 +382,7 @@ class EightOrBetterLookup(Lookup):
 
     rank_order = RankOrder.EIGHT_OR_BETTER_LOW
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         self._add_multisets(Counter({1: 5}), (False, True), Label.HIGH_CARD)
 
 
@@ -388,7 +412,7 @@ class RegularLookup(Lookup):
 
     rank_order = RankOrder.REGULAR
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         self._add_multisets(Counter({1: 5}), (False, True), Label.HIGH_CARD)
         self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
         self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
@@ -429,9 +453,17 @@ class BadugiLookup(Lookup):
 
     rank_order = RankOrder.REGULAR
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         for i in range(4, 0, -1):
             self._add_multisets(Counter({1: i}), (i == 1,), Label.HIGH_CARD)
+
+    def _get_key(self, cards: CardsLike) -> tuple[int, bool]:
+        cards = Card.clean(cards)
+
+        if not Card.are_rainbow(cards):
+            raise ValueError('cards not rainbow')
+
+        return super()._get_key(cards)
 
 
 @dataclass
@@ -469,5 +501,5 @@ class KuhnPokerLookup(Lookup):
 
     rank_order = RankOrder.KUHN_POKER
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         self._add_multisets(Counter({1: 1}), (True,), Label.HIGH_CARD)

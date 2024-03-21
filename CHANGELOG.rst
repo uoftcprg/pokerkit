@@ -4,8 +4,8 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.5.0 (March 20, 2024)
-------------------------------
+Version 0.4.12 (March 21, 2024)
+-------------------------------
 
 **Added**
 

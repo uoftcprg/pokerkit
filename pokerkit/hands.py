@@ -579,7 +579,7 @@ class BadugiHand(Hand):
     >>> h = BadugiHand('Ac2d3c4s5c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2d3c4s5c'
+    ValueError: cards not rainbow
     >>> h = BadugiHand('Ac2d3c4s')
     Traceback (most recent call last):
         ...
@@ -591,7 +591,7 @@ class BadugiHand(Hand):
     >>> h = BadugiHand('Ac2c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2c'
+    ValueError: cards not rainbow
     >>> h = BadugiHand(())
     Traceback (most recent call last):
         ...
@@ -656,12 +656,6 @@ class BadugiHand(Hand):
                 cards.add(card)
 
         return cls(cards)
-
-    def __init__(self, cards: CardsLike) -> None:
-        super().__init__(cards)
-
-        if not Card.are_rainbow(self.cards):
-            raise ValueError('cards not rainbow')
 
 
 class StandardBadugiHand(BadugiHand):

@@ -81,7 +81,7 @@ class Opening(StrEnum):
 class _LowHandOpeningLookup(Lookup):
     rank_order = RankOrder.REGULAR
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         for i in range(1, 5):
             self._add_multisets(
                 Counter({1: i}),
@@ -112,7 +112,7 @@ class _LowHandOpeningLookup(Lookup):
 class _HighHandOpeningLookup(Lookup):
     rank_order = RankOrder.STANDARD
 
-    def __post_init__(self) -> None:
+    def _add_entries(self) -> None:
         for i in range(1, 5):
             self._add_multisets(
                 Counter({1: i}),
