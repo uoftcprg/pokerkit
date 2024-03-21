@@ -4,6 +4,22 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.5.0 (March 20, 2024)
+------------------------------
+
+**Added**
+
+- Commentary for state actions.
+- User-defined field support for PHH.
+- PHH to ACPC protocol converter
+
+Version 0.4.11 (March 15, 2024)
+-------------------------------
+
+**Added**
+
+- Deuce-to-seven badugi hand lookup/evaluator.
+
 Version 0.4.10 (February 11, 2024)
 ----------------------------------
 

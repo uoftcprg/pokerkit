@@ -188,6 +188,8 @@ class HandHistory(Iterable[State]):
         'time_banks',
     )
     """The optional field names."""
+    ACPC_PROTOCOL_VARIANTS = {'FT', 'NT'}
+    """The variant codes supported by the ACPC protocol."""
     _: KW_ONLY
     variant: str
     """The variant name."""
@@ -464,6 +466,9 @@ class HandHistory(Iterable[State]):
             elif state.can_pull_chips():
                 state.pull_chips()
             else:
+                if not actions:
+                    break
+
                 action = actions.popleft()
 
                 parse_action(state, action, self.parse_value)
@@ -561,6 +566,125 @@ class HandHistory(Iterable[State]):
         """
         fp.write(self.dumps().encode())
 
+    def to_acpc_protocol(
+            self,
+            position: int,
+            hand_number: int | None = None,
+    ) -> Iterator[tuple[str, str]]:
+        """Convert to the ACPC protocol.
+
+        Only the fixed-limit/no-limit Texas hold'em variants are
+        supported.
+
+        :param position: The client position.
+        :param hand_number: The optional hand number. If ``None``, it is
+                            inferred from the field.
+        :return: The hand histories in the ACPC protocol.
+        :raises ValueError: If the game is not supported or the hand
+                            number cannot be determined.
+        """
+        if self.variant not in self.ACPC_PROTOCOL_VARIANTS:
+            raise ValueError('unsupported variant')
+
+        if hand_number is None:
+            if self.hand is None:
+                raise ValueError('hand number is unknown')
+
+            hand_number = self.hand
+
+        index = 0
+        actions = ''
+        raw_hole_cards = [['', ''] for _ in self.starting_stacks]
+        hole_cards = ''
+        board_cards = ''
+        match_state = ''
+        action = ''
+
+        def egress() -> tuple[str, str]:
+            return 'S->', f'{match_state}\r\n'
+
+        def ingress() -> tuple[str, str]:
+            return '<-C', f'{match_state}:{action}\r\n'
+
+        for state in self:
+            while index < len(state.operations):
+                operation = state.operations[index]
+                index += 1
+
+                if (
+                        isinstance(
+                            operation,
+                            (
+                                Folding
+                                | CheckingOrCalling
+                                | CompletionBettingOrRaisingTo
+                            ),
+                        )
+                ):
+                    yield egress()
+
+                if isinstance(operation, Folding):
+                    action = 'f'
+                    actions += action
+                elif isinstance(operation, CheckingOrCalling):
+                    action = 'c'
+                    actions += action
+                elif isinstance(operation, CompletionBettingOrRaisingTo):
+                    match self.variant:
+                        case 'FT':
+                            action = 'r'
+                        case 'NT':
+                            amount = (
+                                state.starting_stacks[operation.player_index]
+                                - state.stacks[operation.player_index]
+                            )
+                            action = f'r{amount}'
+                        case _:
+                            raise AssertionError
+
+                    actions += action
+
+                if (
+                        isinstance(
+                            operation,
+                            (
+                                Folding
+                                | CheckingOrCalling
+                                | CompletionBettingOrRaisingTo
+                            ),
+                        )
+                        and operation.player_index == position
+                ):
+                    yield ingress()
+
+                if isinstance(operation, HoleDealing):
+                    if operation.player_index == position:
+                        for i, card in enumerate(operation.cards):
+                            if not card.unknown_status:
+                                raw_hole_cards[position][i] = repr(card)
+                elif isinstance(operation, HoleCardsShowingOrMucking):
+                    for i, card in enumerate(operation.hole_cards):
+                        if not card.unknown_status:
+                            raw_hole_cards[operation.player_index][i] = (
+                                repr(card)
+                            )
+
+                if isinstance(operation, BoardDealing):
+                    actions += '/'
+                    board_cards += '/' + ''.join(map(repr, operation.cards))
+
+                hole_cards = '|'.join(map(''.join, raw_hole_cards))
+                match_state = (
+                    f'MATCHSTATE'
+                    f':{position}'
+                    f':{hand_number}'
+                    f':{actions}'
+                    f':{hole_cards}{board_cards}'
+                )
+
+        if not state.status or state.actor_index is not None:
+            yield egress()
+
 
 def parse_action(
         state: State,
@@ -616,9 +740,6 @@ def parse_action(
         case player, 'sm':
             verify_player(state.showdown_index)
             state.show_or_muck_hole_cards(False, commentary=commentary)
-        case player, 'sm', '-':
-            verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(True, commentary=commentary)
         case player, 'sm', cards:
             verify_player(state.showdown_index)
             state.show_or_muck_hole_cards(cards, commentary=commentary)
