@@ -4,6 +4,15 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.11 (March 22, 2024)
+-------------------------------
+
+**Added**
+
+- ``pokerkit.state.State.reserved_cards``
+- ``pokerkit.state.State.cards_in_play``
+- ``pokerkit.state.State.cards_not_in_play``
+
 Version 0.4.12 (March 21, 2024)
 -------------------------------
 

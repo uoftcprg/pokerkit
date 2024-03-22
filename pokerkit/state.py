@@ -1831,19 +1831,6 @@ class State:
         for i in range(len(self.hole_cards[player_index])):
             self.hole_card_statuses[player_index][i] = True
 
-    @property
-    def _backup_cards(self) -> tuple[Card, ...]:
-        return tuple(
-            filterfalse(
-                Card.unknown_status.__get__,
-                chain(
-                    self.burn_cards,
-                    self.mucked_cards,
-                    chain.from_iterable(self.discarded_cards),
-                ),
-            ),
-        )
-
     def _produce_cards(self, cards: Iterable[Card]) -> None:
         self.deck_cards.extend(
             filterfalse(
@@ -1875,7 +1862,7 @@ class State:
 
     def _consume_cards(self, cards: tuple[Card, ...]) -> None:
         if set(cards) > set(self.deck_cards):
-            self._produce_cards(shuffled(self._backup_cards))
+            self._produce_cards(shuffled(self.reserved_cards))
 
             self.mucked_cards.clear()
             self.burn_cards.clear()
@@ -1910,9 +1897,71 @@ class State:
         cards = tuple(self.deck_cards)
 
         if deal_count is None or deal_count > len(self.deck_cards):
-            cards += tuple(shuffled(self._backup_cards))
+            cards += tuple(shuffled(self.reserved_cards))
 
         return cards
+
+    @property
+    def reserved_cards(self) -> tuple[Card, ...]:
+        """Iterate through the reserved cards.
+
+        These are either in the burn, muck, or discards and used when
+        the deck is empty.
+
+        :return: The reserved cards.
+        """
+        return tuple(
+            filterfalse(
+                Card.unknown_status.__get__,
+                chain(
+                    self.burn_cards,
+                    self.mucked_cards,
+                    chain.from_iterable(self.discarded_cards),
+                ),
+            ),
+        )
+
+    @property
+    def cards_in_play(self) -> tuple[Card, ...]:
+        """Iterate through the cards in play.
+
+        These are visible by players still in the pot.
+
+        These are either in the board or holes.
+
+        :return: The cards in play.
+        """
+        return tuple(
+            filterfalse(
+                Card.unknown_status.__get__,
+                chain(
+                    self.board_cards,
+                    chain.from_iterable(self.hole_cards),
+                ),
+            ),
+        )
+
+    @property
+    def cards_not_in_play(self) -> tuple[Card, ...]:
+        """Iterate through the cards not in play.
+
+        These are invisible by players still in the pot.
+
+        These are either in the deck, burns, muck, or discards.
+
+        :return: The cards not in play.
+        """
+        return tuple(
+            filterfalse(
+                Card.unknown_status.__get__,
+                chain(
+                    self.deck_cards,
+                    self.burn_cards,
+                    self.mucked_cards,
+                    chain.from_iterable(self.discarded_cards),
+                ),
+            ),
+        )
 
     # ante posting
 
