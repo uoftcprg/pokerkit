@@ -846,11 +846,11 @@ Bet Collection Phase/Operation
 
 The bet collection operation (:meth:`pokerkit.state.State.collect_bets`) collects the outstanding bets and incorporates them into the pot. This method can only be called if there are outstanding bets. If the betting round finished without anyone posting the bet, this method cannot be called and this phase will be automatically skipped. This method accepts no positional argument.
 
-================================================= =============================================================
-Helper Method/Attribute                           Description
-================================================= =============================================================
-:attr:`pokerkit.state.State.bet_colletion_status` ``True`` if a bet collection is pending, otherwise ``False``.
-================================================= =============================================================
+================================================== =============================================================
+Helper Method/Attribute                            Description
+================================================== =============================================================
+:attr:`pokerkit.state.State.bet_collection_status` ``True`` if a bet collection is pending, otherwise ``False``.
+================================================== =============================================================
 
 Blind/Straddle Posting Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
