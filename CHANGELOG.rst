@@ -4,8 +4,12 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.4.11 (March 22, 2024)
+Version 0.4.13 (March 22, 2024)
 -------------------------------
+
+**Changed**
+
+- Renamed ``pokerkit.state.State.all_in_show_status`` to  ``pokerkit.state.State.all_in_status``.
 
 **Added**
 
@@ -119,7 +123,7 @@ Version 0.4.1 (December 13, 2023)
 
 **Changed**
 
-- ``ante_trimming_status``is now an optional field for .phh files.
+- ``ante_trimming_status`` is now an optional field for .phh files.
 
 Version 0.4.0 (December 11, 2023)
 ---------------------------------

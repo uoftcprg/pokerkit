@@ -25,6 +25,14 @@ pokerkit.lookups module
    :undoc-members:
    :show-inheritance:
 
+pokerkit.notation module
+------------------------
+
+.. automodule:: pokerkit.notation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pokerkit.state module
 ---------------------
 

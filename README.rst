@@ -438,7 +438,7 @@ Below are the final stacks.
 Testing and Validation
 ----------------------
 
-PokerKit has extensive test coverage, passes mypy static type checking with strict parameter, and has been validated through extensive use in real-life scenarios.
+PokerKit has extensive test coverage, passes mypy static type checking with strict mode, and has been validated through extensive use in real-life scenarios.
 
 Contributing
 ------------

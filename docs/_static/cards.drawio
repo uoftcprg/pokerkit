@@ -1,0 +1,113 @@
+<mxfile host="app.diagrams.net" modified="2024-03-22T20:15:56.412Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="29fcLfhqoOzDFxm-HO6d" version="24.0.8" type="device">
+  <diagram name="Page-1" id="9hLKhGnbqO0ZPyHHJBVp">
+    <mxGraphModel dx="2788" dy="2151" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nl4g_ohaOCt-SJDADAla-5" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;Cards not in Play&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;/&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;background-color: initial; font-size: 19px;&quot;&gt;Dealable Cards (Insufficient Cards in Deck&lt;span style=&quot;color: rgb(31, 31, 31); font-family: &amp;quot;Google Sans&amp;quot;, arial, sans-serif; text-align: left;&quot;&gt;)&lt;/span&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.cards_not_in_play&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.get_dealable_cards(N)&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;font-family: &amp;quot;Courier New&amp;quot;;&quot;&gt;when N &amp;gt;&lt;/font&gt;&lt;span style=&quot;font-family: &amp;quot;Courier New&amp;quot;; color: rgb(31, 31, 31); text-align: left;&quot;&gt;&amp;nbsp;|State.deck_cards|&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;textShadow=1;labelBackgroundColor=none;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="760" y="-900" width="880" height="620" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-15" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;Cards in Play&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 12px;&quot;&gt;State.cards_in_play&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;textShadow=1;labelBackgroundColor=none;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry y="-900" width="440" height="620" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-21" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;Reserved Cards&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 12px;&quot;&gt;State.reserved_cards&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;textShadow=1;labelBackgroundColor=none;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="800" y="-840" width="240" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;textShadow=1;labelBackgroundColor=none;" parent="1" edge="1" target="nl4g_ohaOCt-SJDADAla-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="759" y="-730" as="sourcePoint" />
+            <mxPoint x="119.31" y="-650" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="759" y="-730" />
+              <mxPoint x="119" y="-730" />
+              <mxPoint x="119" y="-650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-51" value="&lt;div&gt;Board Dealing&lt;/div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.deal_board()&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];textShadow=0;labelBackgroundColor=default;" parent="nl4g_ohaOCt-SJDADAla-49" vertex="1" connectable="0">
+          <mxGeometry x="0.4676" y="-1" relative="1" as="geometry">
+            <mxPoint x="-110" y="41" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-28" value="&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;Dealable Cards (Sufficient Cards in Deck&lt;span style=&quot;color: rgb(31, 31, 31); font-family: &amp;quot;Google Sans&amp;quot;, arial, sans-serif; text-align: left;&quot;&gt;)&lt;/span&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.get_dealable_cards(N)&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;font-family: &amp;quot;Courier New&amp;quot;;&quot;&gt;when N&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;font-family: &amp;quot;Courier New&amp;quot;; color: rgb(31, 31, 31); text-align: left;&quot;&gt;≤ |State.deck_cards|&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=0;right=0;fillColor=none;textShadow=1;labelBackgroundColor=none;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="-900" width="440" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-6" value="&lt;b&gt;Deck Cards&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.deck_cards&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;textShadow=1;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1340" y="-800" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-7" value="&lt;b&gt;Mucked Cards&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.mucked_cards&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;textShadow=1;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="840" y="-700" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-8" value="&lt;b&gt;Burn Cards&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.burn_cards&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;textShadow=1;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="840" y="-800" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-9" value="&lt;b&gt;Board Cards&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.board_cards&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;textShadow=1;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="-650" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-10" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b&gt;Hole Cards&lt;/b&gt;&lt;/font&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.hole_cards&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;textShadow=1;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="240" y="-650" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-16" value="&lt;b&gt;Discarded Cards&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.discarded_cards&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;textShadow=1;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="840" y="-600" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;textShadow=1;labelBackgroundColor=none;" parent="1" source="nl4g_ohaOCt-SJDADAla-21" target="nl4g_ohaOCt-SJDADAla-6" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="-860" />
+              <mxPoint x="1420" y="-860" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-20" value="Insufficient Cards" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];textShadow=0;labelBackgroundColor=default;" parent="nl4g_ohaOCt-SJDADAla-19" vertex="1" connectable="0">
+          <mxGeometry x="-0.0464" relative="1" as="geometry">
+            <mxPoint x="-55" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-22" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;dashed=1;textShadow=1;labelBackgroundColor=none;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="nl4g_ohaOCt-SJDADAla-6" target="nl4g_ohaOCt-SJDADAla-8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1247.66" y="729.95" as="sourcePoint" />
+            <mxPoint x="1110" y="-1070" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-23" value="Card Burning&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.burn_card()&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];textShadow=0;labelBackgroundColor=default;" parent="nl4g_ohaOCt-SJDADAla-22" vertex="1" connectable="0">
+          <mxGeometry x="-0.0149" y="-1" relative="1" as="geometry">
+            <mxPoint x="-52" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-44" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;textShadow=1;labelBackgroundColor=none;" parent="1" source="nl4g_ohaOCt-SJDADAla-10" target="nl4g_ohaOCt-SJDADAla-16" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="690" y="-650" as="sourcePoint" />
+            <mxPoint x="740" y="-700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-45" value="Discarding&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.stand_pat_or_discard()&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];textShadow=0;labelBackgroundColor=default;" parent="nl4g_ohaOCt-SJDADAla-44" vertex="1" connectable="0">
+          <mxGeometry x="-0.0005" y="-1" relative="1" as="geometry">
+            <mxPoint x="-20" y="-6" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-46" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;textShadow=1;labelBackgroundColor=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="nl4g_ohaOCt-SJDADAla-10" target="nl4g_ohaOCt-SJDADAla-7" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="960" y="-570" as="sourcePoint" />
+            <mxPoint x="1010" y="-660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nl4g_ohaOCt-SJDADAla-47" value="Folding/Mucking&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.fold()/State.show_or_muck_hole_cards()&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];textShadow=0;labelBackgroundColor=default;" parent="nl4g_ohaOCt-SJDADAla-46" vertex="1" connectable="0">
+          <mxGeometry x="0.0048" relative="1" as="geometry">
+            <mxPoint x="-21" y="5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WGSXOvfb72F14EieoRrB-1" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" target="nl4g_ohaOCt-SJDADAla-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="320" y="-730" as="sourcePoint" />
+            <mxPoint x="320" y="-740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WGSXOvfb72F14EieoRrB-2" value="Hole Dealing&lt;div&gt;&lt;font face=&quot;Courier New&quot;&gt;State.deal_hole()&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WGSXOvfb72F14EieoRrB-1">
+          <mxGeometry x="0.0084" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

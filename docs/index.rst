@@ -9,9 +9,11 @@
    :maxdepth: 2
    :caption: Contents:
 
+   examples
    simulation
    evaluation
    notation
+   snippets
    contributing
    changelog
    reference
