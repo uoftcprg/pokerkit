@@ -66,34 +66,52 @@ String Representations
 
 All functions and methods in PokerKit that accept cards also accept strings that represent cards. A single card as a string is composed of two characters: a rank and a suit, the valid values of each are shown in the below tables. A single string can contain multiple card representations.
 
-===== ====
-Rank  Char
-===== ====
-Ace   A
-Deuce 2
-Trey  3
-Four  4
-Five  5
-Six   6
-Seven 7
-Eight 8
-Nine  9
-Ten   T 
-Jack  J
-Queen Q
-King  K
-===== ====
+======= ========= =======================================
+Rank    Character Class
+======= ========= =======================================
+Ace     A         :attr:`pokerkit.utilities.Rank.ACE`
+Deuce   2         :attr:`pokerkit.utilities.Rank.DEUCE`
+Trey    3         :attr:`pokerkit.utilities.Rank.TREY`
+Four    4         :attr:`pokerkit.utilities.Rank.FOUR`
+Five    5         :attr:`pokerkit.utilities.Rank.FIVE`
+Six     6         :attr:`pokerkit.utilities.Rank.SIX`
+Seven   7         :attr:`pokerkit.utilities.Rank.SEVEN`
+Eight   8         :attr:`pokerkit.utilities.Rank.EIGHT`
+Nine    9         :attr:`pokerkit.utilities.Rank.NINE`
+Ten     T         :attr:`pokerkit.utilities.Rank.TEN`
+Jack    J         :attr:`pokerkit.utilities.Rank.JACK`
+Queen   Q         :attr:`pokerkit.utilities.Rank.QUEEN`
+King    K         :attr:`pokerkit.utilities.Rank.KING`
+Unknown ?         :attr:`pokerkit.utilities.Rank.UNKNOWN`
+======= ========= =======================================
 
-======= ====
-Suit    Char
-======= ====
-Club    c
-Diamond d
-Heart   h
-Spade   s
-======= ====
+======= ========= ======================================
+Suit    Character Class
+======= ========= ======================================
+Club    c         :attr:`pokerkit.utilities.Suit.CLUB`
+Diamond d         :attr:`pokerkit.utilities.Suit.DIAMOND`
+Heart   h         :attr:`pokerkit.utilities.Suit.HEART`
+Spade   s         :attr:`pokerkit.utilities.Suit.SPADE`
+Unknown ?         :attr:`pokerkit.utilities.Suit.UNKNOWN`
+======= ========= ======================================
 
-Note that parsing the strings is computationally expensive. Therefore, if performance is key, one should parse it beforehand and avoid using raw strings as cards. The parsing can be facilitated with :meth:`pokerkit.utilities.Card.parse`.
+Note that **parsing the strings is computationally expensive**. Therefore, **if performance is key, one should parse it beforehand and avoid using raw strings as cards**. The parsing can be facilitated with :meth:`pokerkit.utilities.Card.parse`.
+
+.. code-block:: pycon
+
+   >>> Card.parse('AsKsQsJsTs')  # doctest: +ELLIPSIS
+   <generator object Card.parse at 0x...>
+   >>> list(Card.parse('2c8d5sKh'))
+   [2c, 8d, 5s, Kh]
+   >>> next(Card.parse('AcAh'))
+   Ac
+   >>> tuple(Card.parse('??2?3??c'))
+   (??, 2?, 3?, ?c)
+
+Unknowns
+^^^^^^^^
+
+PokerKit allow cards to contain an unknown value. If a rank and/or suit are unknown, they can be represented as a question mark character (``"?"``). Note that these values are not treated as jokers in the hand evaluation suite, but instead are ignored/complained about by them. Unknown cards are intended to be used during game simulation when some hole card values might not be known.
 
 Creating Hands
 --------------
