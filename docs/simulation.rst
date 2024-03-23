@@ -139,7 +139,7 @@ In certain use cases, one may want to create a template from which just the star
        3,  # number of players
    )
 
-The exact parameters that must be specified differ depending on the variant being played. Button games accept antes and blinds/straddles. Stud games accept bring-ins. Fixed-limit games accept small/big-bets while pot/no-limit games accept a min-bet. For a specific list of parameters, the API references should be consulted.
+The exact parameters that must be specified differ depending on the variant being played. Button games accept antes and blinds/straddles. Stud games accept bring-ins. Fixed-limit games accept small/big bets while pot/no-limit games accept a min-bet. For a specific list of parameters, the API references should be consulted.
 
 Why Specify the Number of Players?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -165,7 +165,7 @@ The ways the chip values (e.g. antes, blinds/straddles, and starting stacks) can
        4,  # number of players
    )
 
-In the fourth statement, PokerKit interprets a single numeric value for the starting stacks parameter as saying identical values for all players. Since just a single number do not say anything about the number of players like a ``list``, ``tuple``, or ``dict`` would, the number of players must also be supplied.
+In the fourth statement, PokerKit interprets a single numeric value for the starting stacks parameter as saying identical values for all players. Since just a single number does not say anything about the number of players like a ``list``, ``tuple``, or ``dict``, the number of players must also be supplied.
 
 Defining States from Scratch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -266,23 +266,23 @@ If you would like to see other variants pre-defined, please create an issue in t
 What Is Ante Trimming Status?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To unambiguously define the ante configuration, this value is necessary. It means the following: say players ended up paying different ante amounts at the start of the game; if the player who put less ante wins, is the player entitled to win the full antes of others that put more? This means that this parameter is only relevant when different ante amounts is paid by the players. This situation arises in two different situations: when non-uniform antes like BB or BTN ante (used in tournaments or 6+ poker) are used or when a player has a very low low starting stack that fall below the ante amount. If the answer to this question is yes, ``False`` must be supplied, or, if no, the supplied value must be ``True``.
+To unambiguously define the ante configuration, this value is necessary. It means the following: say players ended up paying different ante amounts at the start of the game; if the player who put less ante wins, is the player entitled to win the full antes of others that put more? This means that this parameter is only relevant when different ante amounts is paid by the players. This situation arises in two different situations: when non-uniform antes like BB or BTN ante (used in tournaments or 6+ poker) are used or when a player has a very low starting stack that falls below the ante amount. If the answer to this question is yes, ``False`` must be supplied, or, if no, the supplied value must be ``True``.
 
 Simply put, if non-uniform antes are used, ``False`` must be supplied no matter what. If uniform antes are used, the programmer has a choice, but the value supplied should most likely be ``True`` unless the programmer believes that the player who is short-stacked to the point of not being able to post the full ante can win the full antes of others as opposed to just a portion of it.
 
 Position
 ^^^^^^^^
 
-Note that PokerKit does not consider "seat numbers" but instead "positions" that are relevant to the gameplay. For non-heads-up button games, this means that the zero'th player will always be the small blind, the first player will always be the big blind, the second player will always be UTG, and so on until the last player who will always be in the button and in position. The notion of position does not really exist in stud games. In this case, the player to the immediate left to the dealer should be in the zeroth position while the player to the immediate right of the dealer should be in the last position.
+Note that PokerKit does not consider "seat numbers" but instead "positions" that are relevant to the gameplay. For non-heads-up button games, this means that the zeroth player will always be the small blind, the first player will always be the big blind, the second player will always be UTG, and so on until the last player who will always be in the button and in position. The notion of position does not really exist in stud games. In this case, the player to the immediate left of the dealer should be in the zeroth position while the player to the immediate right of the dealer should be in the last position.
 
-Note that, in this ordering, the player in the n'th position is the n'th person to be dealt the hole cards in the beginning of the hand.
+Note that, in this ordering, the player in the n'th position is the n'th person to be dealt the hole cards at the beginning of the hand.
 
-Automations
-^^^^^^^^^^^
+Automation
+^^^^^^^^^^
 
 The PokerKit state allows the state to be modified in a really fine-grained way, down to posting antes, blinds, straddles, burning cards before dealing, dealing hole cards, dealing board cards, standing pat, discarding, folding, checking, calling, posting bring-ins, completing, betting, raising, showing hole cards, mucking, dealer killing losing hands, collecting bets, pushing chips to the winners, and winners putting the chips they won back into their stack.
 
-This fine-grained state transition is necessary for use in online casinos. However, depending on the use cases, many of these operations are completely irrelevant and can be automatically handled without any user input, as users can specify which operations they care about and therefore be manual, as opposed of being automated.
+This fine-grained state transition is necessary for use in online casinos. However, depending on the use cases, many of these operations are completely irrelevant and can be automatically handled without any user input, as users can specify which operations they care about and therefore be manual, as opposed to being automated.
 
 For example, if you are trying to create a poker AI, you are not worried about having the option of mucking the best hand, purposely showing the worst hand, burning a card, pushing the chips to the winners, collecting chips a player won, collecting bets after each street, et cetera. But, you want to handle user actions like fold, check, call, bring-in, complete, bet, and raise. Also, you might want to control what cards are dealt to each player and to the board. The below automations will suit the aforesaid use cases.
 
@@ -385,12 +385,12 @@ Deck
 
 When you supply a deck to the state, the state automatically shuffles it so the cards can be dealt at random when required. :class:`pokerkit.utilities.Deck` describes a complete list of decks. Decks are simply tuples of cards and you can define your own as needed.
 
-Most poker games use a standard 52-card deck, accessible as :class:`pokerkit.utilities.Deck.STANDARD` or :class:`pokerkit.utilities.Deck.REGULAR`. Both are composed of 52 cards and have no difference in content. The only difference between the two is that they are sorted differently. The standard deck has uses the ace-high rank ordering while the regular deck has ace-low rank ordering. Obviously, after shuffling, there is no real difference. Simply choose whatever you prefer. In pre-defined games within PokerKit, regular decks are only used for variants that always consider aces to low.
+Most poker games use a standard 52-card deck, accessible as :class:`pokerkit.utilities.Deck.STANDARD` or :class:`pokerkit.utilities.Deck.REGULAR`. Both are composed of 52 cards and have no difference in content. The only difference between the two is that they are sorted differently. The standard deck uses the ace-high rank ordering while the regular deck has ace-low rank ordering. Obviously, after shuffling, there is no real difference. Simply choose whatever you prefer. In pre-defined games within PokerKit, regular decks are only used for variants that always consider aces to low.
 
 Hand Types
 ^^^^^^^^^^
 
-Hand types denote how hands are evaluated in a game settings. Most games like Texas hold 'em or short-deck use just one hand type, but some games like high-low split games use two hand types. Technically, you can define more than two in PokerKit, but no mainstream variant uses more than two.
+Hand types denote how hands are evaluated in a game setting. Most games like Texas hold 'em or short-deck use just one hand type, but some games like high-low split games use two hand types. Technically, you can define more than two in PokerKit, but no mainstream variant uses more than two.
 
 .. code-block:: python
 
@@ -563,14 +563,14 @@ This parameter states the antes. Just like it is for starting stacks, as explain
 Raw Blinds or Straddles
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-This parameter states the blinds or straddles. It is raw in that it must be cleaned by PokerKit just like raw antes. Standard small and big blinds can be supplied as ``[0.5, 1]``. With an UTG straddle, it would be ``[0.5, 1, 2]``. With double straddles, ``[0.5, 1, 2, 4]``. With a button straddle, ``{0: 0.5, 1: 1, -1: 2}``. If the small and big blinds are equal, then it would be ``[2, 2]``. The possibilities are endless. If the game does not use blinds or straddles, the user must supply ``0`` or its equivalent (e.g. ``[0, 0, 0, 0]``), meaning no player is blinded or straddled.
+This parameter states the blinds or straddles. It is raw in that it must be cleaned by PokerKit just like raw antes. Standard small and big blinds can be supplied as ``[0.5, 1]``. With a UTG straddle, it would be ``[0.5, 1, 2]``. With double straddles, ``[0.5, 1, 2, 4]``. With a button straddle, ``{0: 0.5, 1: 1, -1: 2}``. If the small and big blinds are equal, then it would be ``[2, 2]``. The possibilities are endless. If the game does not use blinds or straddles, the user must supply ``0`` or its equivalent (e.g. ``[0, 0, 0, 0]``), meaning no player is blinded or straddled.
 
 Bring-In
 ^^^^^^^^
 
 Some games use bring-ins. If this is supplied, it must be a positive value like ``1.5``. Otherwise, simply supply ``0``.
 
-The usages of blinds/straddles and bring-in is mutually exclusive. In other words, no variant uses both at the same time. If one is used, the other must be zeroed out, meaning it is not relevant.
+The usage of blinds/straddles and bring-ins is mutually exclusive. In other words, no variant uses both at the same time. If one is used, the other must be zeroed out, meaning it is not relevant.
 
 Raw Starting Stacks
 ^^^^^^^^^^^^^^^^^^^
@@ -585,21 +585,21 @@ This parameter simply states the number of players.
 Optional: Divmod
 ^^^^^^^^^^^^^^^^
 
-This is an optional parameter. It is a callable that divides up a pot among the winners who are entitled to win the pot. By default, PokerKit divides up the pot differently depending on the numeric type being used (integral (int, etc.) or real (float, etc.)). If PokerKit deems that the values in the poker state are integral, the pot is divided evenly using floor division (``//``). The remainder (akin to odd-chips) is given to the player most out of position. If PokerKit deems that the values in the poker state are real, the pot is divided up using truediv (``/``) among the winners. To be safe, if you want to always handle the chip values as integers, make sure all numerical values supplied to PokerKit states are integral. Obviously, if you want to handle all the chip values as real values, supply them as floats, fractions, et cetera.
+This is an optional parameter. It is a callable that divides up a pot among the winners who are entitled to win the pot. By default, PokerKit divides up the pot differently depending on the numeric type being used (integral (int, etc.) or real (float, etc.)). If PokerKit deems that the values in the poker state are integral, the pot is divided evenly using floor division (``//``). The remainder (akin to odd-chips) is given to the player most out of position. If PokerKit deems that the values in the poker state are real, the pot is divided up using true division (``/``) among the winners. To be safe, if you want to always handle the chip values as integers, make sure all numerical values supplied to PokerKit states are integral. Obviously, if you want to handle all the chip values as real values, supply them as floats, fractions, et cetera.
 
-The user may want to use dollar values with two decimal places. PokerKit is designed to automatically handle as such if the Python's built-in decimal type (and potentially more) values are supplied as chip amounts.
+The user may want to use dollar values with two decimal places. PokerKit is designed to automatically handle as such if Python's built-in decimal type (and potentially more) values are supplied as chip amounts.
 
-The programmer can also define a custom function that divides up the pot to tailor to specific use cases. For the function signature, check our default :func:`pokerkit.utilities.divmod` function.
+The programmer can also define a custom function that divides up the pot to tailor it to specific use cases. For the function signature, check our default :func:`pokerkit.utilities.divmod` function.
 
 Optional: Rake
 ^^^^^^^^^^^^^^
 
-This is an optional parameter. It is a callable that takes a rake from the pot(s). By default, PokerKit states take no rake. The default :func:`pokerkit.utilities.rake` function can accept parameters to take a non-zero rake. You can use ``functools.partial`` with it and supply as the rake function. Of course, the user can define their own to do something more complex like min-rake or max-rake per pot.
+This is an optional parameter. It is a callable that takes a rake from the pot(s). By default, PokerKit states take no rake. The default :func:`pokerkit.utilities.rake` function can accept parameters to take a non-zero rake. You can use ``functools.partial`` with it and supply it as the rake function. Of course, the user can define their own to do something more complex like min-rake or max-rake per pot.
 
 Methods and Attributes
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The simulation are architected around the concept of states, encapsulating all the vital information about the current game through its attributes. Below lists more generic items that are not associated with any particular phase/operation. The ones that are are introduced later when each individual phase/operation is discussed.
+The simulation mechanism in PokerKit is architected around the concept of states, encapsulating all the vital information about the current game through its attributes. Below are more generic items that are not associated with any particular phase/operation. The ones that are introduced later when each individual phase/operation is discussed.
 
 ==================================================== ==================================================================================================================================================
 Helper Method/Attribute                              Description
@@ -619,7 +619,7 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.starting_stacks`         Cleaned starting stack chip amounts.
 :attr:`pokerkit.state.State.deck_cards`              Shuffled deck from which cards are drawn.
 :attr:`pokerkit.state.State.board_cards`             Community cards.
-:attr:`pokerkit.state.State.mucked_cards`            Cards that were mucked during folds or mucks in showdown.
+:attr:`pokerkit.state.State.mucked_cards`            Cards that were mucked during folds or mucks during the showdown.
 :attr:`pokerkit.state.State.burn_cards`              Cards that were burnt before dealing operations.
 :attr:`pokerkit.state.State.statuses`                Whether or not a player at the corresponding position is still in the hand (i.e. active).
 :attr:`pokerkit.state.State.bets`                    Outstanding bets.
@@ -633,7 +633,7 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.operations`              History of operations carried out so far.
 :attr:`pokerkit.state.State.hand_type_count`         Number of hand types.
 :attr:`pokerkit.state.State.hand_type_indices`       Indices of hand types.
-:attr:`pokerkit.state.State.draw_statuses`           Boolean values for each stage whether or not it is a draw stage.
+:attr:`pokerkit.state.State.draw_statuses`           Boolean values for each stage whether or not it is a drawing stage.
 :attr:`pokerkit.state.State.player_indices`          Indices of players.
 :attr:`pokerkit.state.State.street_count`            Number of streets.
 :attr:`pokerkit.state.State.street_indices`          Indices of streets.
@@ -644,7 +644,7 @@ Helper Method/Attribute                              Description
 :meth:`pokerkit.state.State.get_up_hand`             Evaluated open/up hand of a player for a hand type.
 :meth:`pokerkit.state.State.get_up_hands`            Evaluated open/up hand of a player for all hand types.
 :meth:`pokerkit.state.State.can_win_now`             Whether or not a player may be able to win a portion of the pots (i.e. no shown hand can prevent the player from winning a portion of the pot(s)).
-:meth:`pokerkit.state.State.get_dealable_cards`      Cards that are recommended to be dealt from (handles deck replenishing if out of cards in deck).
+:meth:`pokerkit.state.State.get_dealable_cards`      Cards that are recommended to be dealt from (handles deck replenishing if the deck is/will be out of cards).
 :attr:`pokerkit.state.State.reserved_cards`          Cards that are tapped into when replenishing an emptied deck.
 :attr:`pokerkit.state.State.cards_in_play`           Cards that are in play (i.e. visible to at least one active player).
 :attr:`pokerkit.state.State.cards_not_in_play`       Cards that are not in play (i.e. not visible to any active player).
@@ -673,7 +673,7 @@ Ante Posting              During the ante-posting phase, each player has the opt
 Bet Collection            The collection of bets on the table occurs after any phase that allows players to bet. If any bet is present, the bet collection operation must be performed before proceeding to the subsequent phase. This phase only occurs after ante-posting or betting. When no bets are pending collection, this phase is skipped.
 Blind or Straddle Posting Forced bets like blinds or straddles must be posted before the start of the first street. PokerKit accommodates a variety of blind or straddle configurations, ranging from small and big blinds, to button blinds or even no blind at all. If the state is configured to exclude any forced bets, this phase is skipped.
 Dealing                   The dealing phase precedes the betting phase. During this phase, the user can deal with board or hole cards, contingent upon the state's configuration. Options to burn a card or discard and draw cards are also available when applicable. This phase is bypassed if only one player remains in the hand.
-Betting                   During betting, players can execute the actions such as folding, checking, calling, posting a bring-in, completing, betting, or raising. During state creation, the user must specify how to select the first player to act and the betting limits. This phase is bypassed if all players are all-in or if only one player remains in the hand.
+Betting                   During betting, players can execute actions such as folding, checking, calling, posting a bring-in, completing, betting, or raising. During state creation, the user must specify how to select the first player to act and the betting limits. This phase is bypassed if all players are all-in or if only one player remains in the hand.
 Showdown                  During the showdown, players reveal or muck their hands in accordance with the showdown order. The first to show is typically the last aggressor in the final street. If no one bet, the player who was the first to act in the final betting round must show first. Players can opt to show a losing hand or muck a winning hand, even though this is often disadvantageous. When dealing with all-in pots, players are obligated to show their hands in order to prevent chip-dumping. If this is the case, or if only one player remains in the pot, the showdown phase is bypassed.
 Hand Killing              The dealer is responsible for "killing," or discarding, hands that cannot win any portion of the pot. If no hand should be killed, this phase is bypassed.
 Chips Pushing             The dealer is charged with pushing the chips to the winners. In button games, the pot size is always non-zero due to the mandatory presence of antes, forced bets, or bring-ins (as enforced by PokerKit). Thus, this phase is always carried out in button games. This might not be the case in non-button games like stud games without antes where everyone folds after the opener brings in or completes.
@@ -685,7 +685,7 @@ Note that, depending on the number of betting rounds, the **Dealing**, **Betting
 Operations
 ^^^^^^^^^^
 
-The operation that mutates the states in PokerKit is each associated with a phase and returns information about what happened as the return value. Below list all the operations supported by PokerKit.
+The operation that mutates the states in PokerKit is each associated with a phase and returns information about what happened as the return value. Below are all the operations supported by PokerKit.
 
 +-------------------------+-------------------------------+-------------------------------------------------------+------------------------------------------------------+
 + **Phase**               + **Operation**                 | **Method**                                            | **Return Class**                                     |
@@ -721,8 +721,8 @@ The operation that mutates the states in PokerKit is each associated with a phas
 + Chips Pulling           + Chips Pulling                 | :meth:`pokerkit.state.State.pull_chips`               | :class:`pokerkit.state.ChipsPulling`                 |
 +-------------------------+-------------------------------+-------------------------------------------------------+------------------------------------------------------+
 
-Automations
-^^^^^^^^^^^
+Automation
+^^^^^^^^^^
 
 Depending on your use case, many of these operations will not be of concern and can be automated.
 
@@ -767,7 +767,7 @@ Each operation is coupled with two other associated methods: a verification meth
 
 - **Verifier**: The verification method validates if a move can be executed within the rules, considering the current game state and the variant in play. It raises an error with an error message or issues a warning if any violation of the game rule is detected.
 - **Querier**: Users can use a corresponding action query method (with optional arguments), which simply checks if the verification method triggers an error and returns a Boolean value indicating the validity of the action. These methods return ``True`` if you can perform such an operation (with specified arguments, if any) or ``False`` if otherwise.
-- **Operator**: The method that actually performs the operation initially runs the verification method, executing the operation only if no errors are raised. If the verification fails, the state remains unchanged. After operation, descriptions of what was carried out like the player(s) involved, the amount (if relevant), what cards were involved (if any), how much chips (is applicable), et cetera are returned.
+- **Operator**: The method that actually performs the operation initially runs the verification method, executing the operation only if no errors are raised. If the verification fails, the state remains unchanged. After an operation, descriptions of what was carried out like the player(s) involved, the amount (if relevant), what cards were involved (if any), how many chips (if applicable), et cetera are returned.
 
 Warnings are shown when an operation does something suspicious. Warnings are not errors and therefore ignored by the query method. The user can configure Python to treat ``UserWarning`` as an error, as below:
 
@@ -777,7 +777,7 @@ Warnings are shown when an operation does something suspicious. Warnings are not
 
    filterwarnings('error')
 
-Should this be the case, PokerKit's action query methods will return ``False`` like it does for errors when warnings are issued.
+Should this be the case, PokerKit's action query methods will return ``False`` as it does for errors when warnings are issued.
 
 PokerKit’s philosophy is that it should focus on maintaining the game state and enforcing rules. During verification or operation, error handling is left to the user, who may need to handle errors differently depending on the application. All the errors raised are ``ValueError`` (or ``UserWarning`` if configured as such).
 
@@ -802,7 +802,7 @@ Pseudocodes of these are shown below:
        self.verify_operation(...)
        ...
 
-The table below shows the verifiers and queriers for each operation.
+The table below shows the verifiers and queries for each operation.
 
 ============================= ==================================================================== =========================================================
 Operation                     Verifier                                                             Querier
@@ -829,22 +829,22 @@ Ante Posting Phase/Operation
 
 The ante posting operation (:meth:`pokerkit.state.State.post_ante`) posts a player ante. Each call corresponds to exactly one player posting an ante. Therefore, to progress from the ante posting phase, this operation must be invoked multiple times until the players due to post ante are anted.
 
-The ante posting method accepts one positional argument, ``player_index``, which defaults to the player with the lowest index who did not yet post an ante.
+The ante posting method accepts one positional argument, ``player_index``, which defaults to the player with the lowest index who has not yet posted an ante.
 
-================================================== =====================================================================================================================================
+================================================== ================================================================================================================================
 Helper Method/Attribute                            Description
-================================================== =====================================================================================================================================
+================================================== ================================================================================================================================
 :attr:`pokerkit.state.State.ante_posting_statuses` List of Booleans on whether the player at that position is due to post an ante.
-:meth:`pokerkit.state.State.get_effective_ante`    The ante amount to be/that have been posted by each player (reduced from the original ante if the player does not have enough chips).
-:attr:`pokerkit.state.State.ante_poster_indices`   The players pending ante posting, sorted by their position.
-================================================== =====================================================================================================================================
+:meth:`pokerkit.state.State.get_effective_ante`    Ante amount to be/that has been posted by each player (reduced from the original ante if the player does not have enough chips).
+:attr:`pokerkit.state.State.ante_poster_indices`   Players pending ante posting, sorted by their position.
+================================================== ================================================================================================================================
 
-The effective ante amount is almost always the full ante amount for that position, unless the player is severely short-stacked below the ante amount.
+The effective ante amount is almost always the full ante amount for that position unless the player is severely short-stacked below the ante amount.
 
 Bet Collection Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The bet collection operation (:meth:`pokerkit.state.State.collect_bets`) collects the outstanding bets and incorporates into the pot. This method can only be called if there are outstanding bets. If the betting round finished without anyone posting the bet, this method cannot be called and this phase will be automatically be skipped. This method accepts no positional argument.
+The bet collection operation (:meth:`pokerkit.state.State.collect_bets`) collects the outstanding bets and incorporates them into the pot. This method can only be called if there are outstanding bets. If the betting round finished without anyone posting the bet, this method cannot be called and this phase will be automatically skipped. This method accepts no positional argument.
 
 ================================================= =============================================================
 Helper Method/Attribute                           Description
@@ -855,24 +855,24 @@ Helper Method/Attribute                           Description
 Blind/Straddle Posting Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The blind/straddle posting operation (:meth:`pokerkit.state.State.post_blind_or_straddle`) posts a player forced bet. Each call corresponds to exactly one player posting a forced bet. Therefore, to progress from the ante posting phase, this operation must be invoked multiple times until the players due to post blind/straddle are posted.
+The blind/straddle posting operation (:meth:`pokerkit.state.State.post_blind_or_straddle`) posts the forced bet of a player. Each call corresponds to exactly one player posting a forced bet. Therefore, to progress from the ante-posting phase, this operation must be invoked multiple times until the players due to post blind/straddle are posted.
 
-The blind/straddle posting method accepts one argument, ``player_index`` which defaults to the player with the lowest index who did not yet post a forced bet.
+The blind/straddle posting method accepts one argument, ``player_index`` which defaults to the player with the lowest index who has not yet posted a forced bet.
 
-=============================================================== ========================================================================================================================================================
+=============================================================== ====================================================================================================================================================
 Helper Method/Attribute                                         Description
-=============================================================== ========================================================================================================================================================
+=============================================================== ====================================================================================================================================================
 :attr:`pokerkit.state.State.blind_or_straddle_posting_statuses` List of Booleans on whether the player at that position is due to post a blind or straddle.
-:meth:`pokerkit.state.State.get_effective_blind_or_straddle`    The blind or straddle amount to be/that have been posted by each player (reduced from the original forced bet if the player does not have enough chips).
-:attr:`pokerkit.state.State.blind_or_straddle_poster_indices`   The players pending blind/straddle posting, sorted by their position.
-=============================================================== ========================================================================================================================================================
+:meth:`pokerkit.state.State.get_effective_blind_or_straddle`    Blind or straddle amount to be/that has been posted by each player (reduced from the original forced bet if the player does not have enough chips).
+:attr:`pokerkit.state.State.blind_or_straddle_poster_indices`   Players pending blind/straddle posting, sorted by their position.
+=============================================================== ====================================================================================================================================================
 
-The effective blind/straddle amount is almost always the full blind/straddle amount for that position, unless the player is severely short-stacked below the said amount.
+The effective blind/straddle amount is almost always the full blind/straddle amount for that position unless the player is severely short-stacked below the said amount.
 
 Dealing Phase
 ^^^^^^^^^^^^^
 
-In this phase, cards are moved from one place to another. There are a few places where cards can be at. All cards are initially in the shuffled deck. As operations are carried out, they are moved from one place to another. The cards that are drawn usually come from the deck. But, there are cases in certain variants where one may run out of cards. If this happens, the cards in the muck, burn, and the discards are combined, shuffled, and incorporated to the back of the deck. In stud games, even this incorporation might not be enough to cover the hole cards of all players. In this case, the hole dealings are replaced with board dealings to be shared by all players, as per the `2023 WSOP Tournament Rules <_static/2023-WSOP-Tournament-Rules.pdf>`_.
+In this phase, cards are moved from one place to another. There are a few places where cards can be in. All cards are initially in the shuffled deck. As operations are carried out, they are moved from one place to another. The cards that are drawn usually come from the deck. But, there are cases in certain variants where one may run out of cards. If this happens, the cards in the muck, burn, and the discards are combined, shuffled, and incorporated into the back of the deck. In stud games, even this incorporation might not be enough to cover the hole cards of all players. In this case, the hole dealings are replaced with board dealings to be shared by all players, as per the `2023 WSOP Tournament Rules <_static/2023-WSOP-Tournament-Rules.pdf>`_.
 
 .. image:: _static/cards.drawio.png
 
@@ -890,12 +890,12 @@ Helper Method/Attribute                                          Description
 Card Burning Operation
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The card burning operation (:meth:`pokerkit.state.State.burn_card`) burns a single card. It can be called only once per dealing phase. This is only called if the corresponding street attribute configures as such. The method for this operation accept an optional card to be burned as a positional argument. If this is not supplied, the card that is burnt is the card at the front of the shuffled deck. This method can be automated. But, note that, if you automate this method and specify what card to be dealt as hole/board cards, you may later encounter warnings when you attempt to deal cards that are already burnt. As such, if you intend to specify what cards to deal, you should not automate this and burn ``"??"`` denoting an unknown card.
+The card burning operation (:meth:`pokerkit.state.State.burn_card`) burns a single card. It can be called only once per dealing phase. This is only called if the corresponding street attribute configures as such. The method for this operation accepts an optional card to be burned as a positional argument. If this is not supplied, the card that is burnt is the card at the front of the shuffled deck. This method can be automated. But, note that, if you automate this method and specify what card to be dealt as hole/board cards, you may later encounter warnings when you attempt to deal cards that are already burnt. As such, if you intend to specify what cards to deal with, you should not automate this and explicitly burn ``"??"`` denoting an unknown card.
 
 Hole Dealing Operation
 ^^^^^^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.deal_hole`) concerns itself with the private card dealings. Each invocation deals to one player only, and this player is automatically selected based on position. The caller can optionally supply the cards to be dealt to the dealee as a positional argument (which may be unknown like ``"????"``.
+This operation (:meth:`pokerkit.state.State.deal_hole`) concerns itself with the private card dealings. Each invocation deals with one player only, and this player is automatically selected based on position. The caller can optionally supply the cards to be dealt to the dealee as a positional argument (which may be unknown like ``"????"``.
 
 If the cards are not provided, they are drawn from the shuffled deck. The number of cards drawn from the deck (and therefore dealt) per invocation varies depending on the situation. In a draw round, the number of cards drawn per call equals the number of discarded cards for the player being dealt. In other words, each method call completely replenishes a player's hole. If the state is not in a draw round, each method call draws one card only. In this context, the method must be called "N" times the number of active players where "N" is the number of hole cards to be dealt for each person until the hole dealings are complete for that phase.
 
@@ -914,7 +914,7 @@ If at least one card was discarded by a player, the player must later be dealt t
 Specifying Cards
 ^^^^^^^^^^^^^^^^
 
-Just like in the case of chips, PokerKit supports different ways cards can be described. A single card is considered as a singleton iterable containing the same card. An iterable of cards is considered, exactly as that. String representations of cards are also accepted and is parsed, for more information about the string card representations, see the next page on hand evaluations.
+Just like in the case of chips, PokerKit supports different ways cards can be described. A single card is considered as a singleton iterable containing the same card. An iterable of cards is considered, exactly as that. String representations of cards are also accepted and are parsed, for more information about the string card representations, see the next page on hand evaluations.
 
 Betting Phase
 ^^^^^^^^^^^^^
@@ -932,7 +932,7 @@ Helper Method/Attribute                                                  Descrip
 :attr:`pokerkit.state.State.completion_betting_or_raising_count`         Number of completions, bettings, or raisings in the betting phase.
 :attr:`pokerkit.state.State.actor_index`                                 Current actor.
 :attr:`pokerkit.state.State.checking_or_calling_amount`                  Calling amount. 0 if checking.
-:attr:`pokerkit.state.State.effective_bring_in_amount`                   Bring-in amount to be posted. Potentially less than the defined value if the opener have insufficient chips.
+:attr:`pokerkit.state.State.effective_bring_in_amount`                   Bring-in amount to be posted. Potentially less than the defined value if the opener has insufficient chips.
 :attr:`pokerkit.state.State.min_completion_betting_or_raising_to_amount` Minimum completion/betting/raising to amount.
 :attr:`pokerkit.state.State.pot_completion_betting_or_raising_to_amount` Pot completion/bet/raising to amount.
 :attr:`pokerkit.state.State.max_completion_betting_or_raising_to_amount` Maximum completion/betting/raising to amount.
@@ -961,7 +961,7 @@ This operation (:meth:`pokerkit.state.State.complete_bet_or_raise_to`) correspon
 Showdown Phase
 ^^^^^^^^^^^^^^
 
-In this phase, the players may show or muck their hole cards in an attempt to win the pot. This phase is not performed when all but one players folded. When there are multiple players in showdown, the winner must show their entire hand to win.
+In this phase, the players may show or muck their hole cards in an attempt to win the pot. This phase is not performed when all but one player is folded. When there are multiple players in showdown, the winner must show their entire hand to win.
 
 ============================================= ===============================
 Helper Method/Attribute                       Description
@@ -973,14 +973,14 @@ Helper Method/Attribute                       Description
 Hole Cards Showing/Mucking Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.show_or_muck_hole_cards`) corresponds to showing or mucking of one's cards. It accepts one optional positional argument on whether to show or muck. If ``True``, this denotes that the player is showing all his/her hole cards. If ``False``, this denotes that the player is mucking his hand. If some card values are supplied, the caller is saying that the player is showing the supplied cards. This is useful when the hole cards previously dealt were unknown (e.g. ``"????"``). Note that even when known cards are held by the player, the caller can override what cards are shown with this method call. If no argument is supplied, whether or not player shows or mucks their hand is decided automatically. If they hold a hand that may win a piece of the pot as it ties with or wins over all other shown hands, the player will opt to show. Otherwise, the player will automatically muck.
+This operation (:meth:`pokerkit.state.State.show_or_muck_hole_cards`) corresponds to showing or mucking of one's cards. It accepts one optional positional argument on whether to show or muck. If ``True``, this denotes that the player is showing all his/her hole cards. If ``False``, this denotes that the player is mucking his hand. If some card values are supplied, the caller is saying that the player is showing the supplied cards. This is useful when the hole cards previously dealt were unknown (e.g. ``"????"``). Note that even when known cards are held by the player, the caller can override what cards are shown with this method call. If no argument is supplied, whether or not the player shows or mucks their hand is decided automatically. If they hold a hand that may win a piece of the pot as it ties with or wins over all other shown hands, the player will opt to show. Otherwise, the player will automatically muck.
 
 No matter what happens, the shown hand must all be known (i.e. contains no question marks).
 
 Hand Killing Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.kill_hand`) corresponds to the hand killing. Typically, in in-person poker games, before pushing the chips to the winners, the dealer "kills" hands that are lost. The same holds for states in PokerKit. Hands that are not entitled to any portion of the pot(s) is mucked. Each call mucks a single hand. This operation method does not accept any argument.
+This operation (:meth:`pokerkit.state.State.kill_hand`) corresponds to the hand killing. Typically, in in-person poker games, before pushing the chips to the winners, the dealer "kills" hands that are lost. The same holds for states in PokerKit. Hands that are not entitled to any portion of the pot(s) are mucked. Each call mucks a single hand. This operation method does not accept any argument.
 
 ================================================== =================================================================================================================================
 Helper Method/Attribute                            Description
@@ -1009,7 +1009,7 @@ Helper Method/Attribute                             Description
 Benchmarks
 ----------
 
-A diverse variant of games (9 variants) were played as part of the simulation benchmark on a single core of Intel Core i7-1255U with a 16GB of RAM and Python 3.11.5.
+A diverse variant of games (9 variants) were played as part of the simulation benchmark on a single core of Intel Core i7-1255U with 16GB of RAM and Python 3.11.5.
 
 ================= ========
 Metric            PokerKit

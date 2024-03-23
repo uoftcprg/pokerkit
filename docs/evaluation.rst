@@ -36,7 +36,7 @@ Typically, when a hand name contains the term ``low``, it means it is a low hand
 Benchmarks
 ----------
 
-Benchmark of the hand evaluation suite for the standard hand on a single core of Intel Core i7-1255U with a 16GB of RAM and Python 3.11.5 is shown in the below table.
+The benchmark of the hand evaluation suite for the standard hand on a single core of Intel Core i7-1255U with 16GB of RAM and Python 3.11.5 is shown in the below table.
 
 ================= ========= =========
 Metric            PokerKit  Treys
@@ -49,7 +49,7 @@ PokerKit performs in the same magnitude as ``treys``. But, it is a bit faster. T
 Representing Cards
 ------------------
 
-In order to evaluate hands, one must understand how to represent cards in PokerKit. There are multiple ways these can be represented. Below statements define identical set of cards.
+In order to evaluate hands, one must understand how to represent cards in PokerKit. There are multiple ways these can be represented. The below statements define an identical set of cards.
 
 .. code-block:: python
 
@@ -64,7 +64,7 @@ In order to evaluate hands, one must understand how to represent cards in PokerK
 String Representations
 ^^^^^^^^^^^^^^^^^^^^^^
 
-All functions and methods in PokerKit that accepts cards also accept strings that represent cards. A single card as a string is composed of two characters: a rank and a suit, the valid values of each are shown in the below tables. A single string can contain multiple card representations.
+All functions and methods in PokerKit that accept cards also accept strings that represent cards. A single card as a string is composed of two characters: a rank and a suit, the valid values of each are shown in the below tables. A single string can contain multiple card representations.
 
 ===== ====
 Rank  Char

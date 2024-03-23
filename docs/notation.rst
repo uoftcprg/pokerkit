@@ -33,7 +33,7 @@ Reading hands
    for state, action in hh.iter_state_actions():
        ...
 
-It is possible to supply your own chip value parsing function, divmod, or rake function to construct the game states. Additionally, the default value parsing function is defined as :func:`pokerkit.utilities.parse_value`. This parser automatically parses integers or floats based on the raw string value. You may supply your own number type parsers as well.
+It is possible to supply your own chip value parsing function, divmod, or rake function to construct the game states. Additionally, the default value parsing function is defined as :func:`pokerkit.utilities.parse_value`. This parser automatically parses integers or floats based on the raw string value. You may supply your own number-type parsers as well.
 
 .. code-block:: python
 
@@ -112,7 +112,7 @@ Writing Hands
 Annual Computer Poker Competition (ACPC) Protocol
 -------------------------------------------------
 
-Instead of saving as a PHH file, ACPC logs can be generated.
+Instead of saving hand histories as PHH files, ACPC logs can be generated.
 
 .. code-block:: python
 

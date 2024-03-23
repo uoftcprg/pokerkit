@@ -3,7 +3,7 @@ Motivational Examples
 
 The functionalities of PokerKit primarily fall into two categories: game simulations and hand evaluations. Game simulations encompass creating an environment where poker games can be played out programmatically, simulating real-world scenarios with high fidelity. On the other hand, hand evaluations are concerned with determining the strength of particular poker hands.
 
-Some motivational examples of poker games being played through PokerKit is shown in this page.
+Some motivational examples of poker games being played through PokerKit are shown in this page.
 
 A Fixed-Limit Texas Hold'em Hand that Folds around
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
