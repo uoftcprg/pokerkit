@@ -4,7 +4,7 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.4.13 (March 22, 2024)
+Version 0.4.13 (March 23, 2024)
 -------------------------------
 
 **Changed**
