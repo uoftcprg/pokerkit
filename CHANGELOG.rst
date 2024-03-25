@@ -4,6 +4,16 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.14 (March 25, 2024)
+-------------------------------
+
+**Added**
+
+- Analysis module
+
+  - Range parser ``pokerkit.analysis.parse_range`` (e.g. ``"AKs,T8o-KJo,6h5h,A2+"``).
+  - Equity calculator ``pokerkit.analysis.calculate_equity``.
+
 Version 0.4.13 (March 23, 2024)
 -------------------------------
 
