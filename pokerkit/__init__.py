@@ -90,6 +90,7 @@ __all__ = (
     'StandardLowHand',
     'StandingPatOrDiscarding',
     'State',
+    'Statistics',
     'Street',
     'Suit',
     'TexasHoldemMixin',
@@ -98,7 +99,7 @@ __all__ = (
     'ValuesLike',
 )
 
-from pokerkit.analysis import calculate_equities, parse_range
+from pokerkit.analysis import calculate_equities, parse_range, Statistics
 from pokerkit.games import (
     DeuceToSevenLowballMixin,
     Draw,

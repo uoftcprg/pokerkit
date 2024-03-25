@@ -1,13 +1,29 @@
+""":mod:`pokerkit.analysis` implements classes related to poker
+analysis.
+"""
+
+from __future__ import annotations
+
 from collections.abc import Iterable, Iterator
-from collections import Counter
+from collections import Counter, defaultdict
 from concurrent.futures import Executor
+from dataclasses import dataclass
 from functools import partial
-from itertools import chain, combinations, permutations, product
+from itertools import (
+    chain,
+    combinations,
+    permutations,
+    product,
+    repeat,
+    starmap,
+)
 from operator import eq
 from random import choices, sample
+from statistics import mean, stdev
 from typing import Any
 
 from pokerkit.hands import Hand
+from pokerkit.notation import HandHistory
 from pokerkit.utilities import Card, Deck, max_or_none, RankOrder, Suit
 
 __SUITS = Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE
@@ -305,3 +321,94 @@ def calculate_equities(
         equities[i] = equity / sample_count
 
     return equities
+
+
+@dataclass
+class Statistics:
+    """The class for player statistics."""
+
+    payoffs: list[int]
+    """The payoffs."""
+
+    @classmethod
+    def merge(cls, *statistics: Statistics) -> Statistics:
+        """Merge the statistics.
+
+        :param statistics: The statistics to merge.
+        :return: The merged stats.
+        """
+        payoffs = []
+
+        for sub_statistics in statistics:
+            payoffs.extend(sub_statistics.payoffs)
+
+        return Statistics(payoffs=payoffs)
+
+    @classmethod
+    def from_hand_history(cls, *hhs: HandHistory) -> dict[str, Statistics]:
+        """Obtain statistics for each position and players (if any) for a
+        hand history or hand histories.
+
+        :param hh: The hand history/histories to analyze.
+        :return: The hand history statistics.
+        """
+        statistics = defaultdict[str, list[Statistics]](list)
+
+        for hh in hhs:
+            end_state = tuple(hh)[-1]
+
+            if hh.finishing_stacks is None:
+                finishing_stacks = end_state.stacks
+            else:
+                finishing_stacks = hh.finishing_stacks
+
+            players: Any
+
+            if hh.players is None:
+                players = repeat(None)
+            else:
+                players = hh.players
+
+            for i, (starting_stack, stack, player) in enumerate(
+                    zip(hh.starting_stacks, finishing_stacks, players),
+            ):
+                if player is not None:
+                    statistics[player].append(
+                        Statistics(payoffs=[stack - starting_stack]),
+                    )
+
+        return dict(
+            zip(statistics.keys(), starmap(cls.merge, statistics.values())),
+        )
+
+    @property
+    def sample_size(self) -> int:
+        """Return the sample size.
+
+        :return: The sample size.
+        """
+        return len(self.payoffs)
+
+    @property
+    def payoff_sum(self) -> float:
+        """Return the total payoff.
+
+        :return: The total payoff.
+        """
+        return sum(self.payoffs)
+
+    @property
+    def payoff_mean(self) -> float:
+        """Return the payoff rate (per hand).
+
+        :return: The payoff rate.
+        """
+        return mean(self.payoffs)
+
+    @property
+    def payoff_stdev(self) -> float:
+        """Return the payoff standard deviation.
+
+        :return: The payoff stdev.
+        """
+        return stdev(self.payoffs)
