@@ -2,10 +2,12 @@
 analysis related tools on PokerKit.
 """
 
+from concurrent.futures import ProcessPoolExecutor
 from unittest import TestCase, main
 
-from pokerkit.analysis import parse_range
-from pokerkit.utilities import Card
+from pokerkit.analysis import calculate_equities, parse_range
+from pokerkit.hands import StandardHighHand
+from pokerkit.utilities import Card, Deck
 
 
 class HandHistoryTestCase(TestCase):
@@ -372,6 +374,122 @@ class HandHistoryTestCase(TestCase):
                 ),
             ),
         )
+
+    def test_calculate_equities(self) -> None:
+        with ProcessPoolExecutor() as executor:
+            equities = calculate_equities(
+                (parse_range('AsKs'), parse_range('2h2c')),
+                (),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 2)
+            self.assertAlmostEqual(sum(equities), 1)
+
+            equities = calculate_equities(
+                (parse_range('JsTs'), parse_range('AhAd')),
+                Card.parse('9s8s2c'),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 2)
+            self.assertAlmostEqual(sum(equities), 1)
+
+            equities = calculate_equities(
+                (parse_range('AKs'), parse_range('22')),
+                (),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 2)
+            self.assertAlmostEqual(sum(equities), 1)
+
+            equities = calculate_equities(
+                (parse_range('AA'), parse_range('22')),
+                (),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 2)
+            self.assertAlmostEqual(sum(equities), 1)
+
+            equities = calculate_equities(
+                (
+                    parse_range('2h2c'),
+                    parse_range('3h3c'),
+                    parse_range('AsKs'),
+                ),
+                Card.parse('QsJsTs'),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 3)
+            self.assertAlmostEqual(sum(equities), 1)
+            self.assertAlmostEqual(equities[0], 0)
+            self.assertAlmostEqual(equities[1], 0)
+            self.assertAlmostEqual(equities[2], 1)
+
+            equities = calculate_equities(
+                (
+                    parse_range('2h2c'),
+                    parse_range('3h3c'),
+                    parse_range('AhKh'),
+                ),
+                Card.parse('3s3d4c'),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 3)
+            self.assertAlmostEqual(sum(equities), 1)
+            self.assertAlmostEqual(equities[0], 0)
+            self.assertAlmostEqual(equities[1], 1)
+            self.assertAlmostEqual(equities[2], 0)
+
+            equities = calculate_equities(
+                (parse_range('3d3h'), parse_range('3c3s')),
+                Card.parse('Tc8d6h4s'),
+                2,
+                5,
+                Deck.STANDARD,
+                (StandardHighHand,),
+                sample_count=10000,
+                executor=executor,
+            )
+
+            self.assertEqual(len(equities), 2)
+            self.assertAlmostEqual(sum(equities), 1)
+            self.assertAlmostEqual(equities[0], 0.5)
+            self.assertAlmostEqual(equities[1], 0.5)
 
 
 if __name__ == '__main__':

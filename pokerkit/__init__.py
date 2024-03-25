@@ -14,6 +14,7 @@ __all__ = (
     'BoardCombinationHand',
     'BoardDealing',
     'BringInPosting',
+    'calculate_equities',
     'Card',
     'CardBurning',
     'CardsLike',
@@ -65,6 +66,7 @@ __all__ = (
     'Opening',
     'Operation',
     'parse_action',
+    'parse_range',
     'parse_value',
     'Poker',
     'Pot',
@@ -96,6 +98,7 @@ __all__ = (
     'ValuesLike',
 )
 
+from pokerkit.analysis import calculate_equities, parse_range
 from pokerkit.games import (
     DeuceToSevenLowballMixin,
     Draw,

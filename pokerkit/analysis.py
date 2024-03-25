@@ -1,10 +1,16 @@
-from collections.abc import Iterator
-from itertools import combinations, permutations, product
+from collections.abc import Iterable, Iterator
+from collections import Counter
+from concurrent.futures import Executor
+from functools import partial
+from itertools import chain, combinations, permutations, product
+from operator import eq
+from random import choices, sample
 from typing import Any
 
-from pokerkit.utilities import Card, RankOrder, Suit
+from pokerkit.hands import Hand
+from pokerkit.utilities import Card, Deck, max_or_none, RankOrder, Suit
 
-SUITS = Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE
+__SUITS = Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE
 
 
 def __parse_range(
@@ -55,17 +61,17 @@ def __parse_range(
     match tuple(raw_range):
         case r0, r1:
             if r0 == r1:
-                yield from iterate(combinations(SUITS, 2))
+                yield from iterate(combinations(__SUITS, 2))
             else:
-                yield from iterate(product(SUITS, repeat=2))
+                yield from iterate(product(__SUITS, repeat=2))
         case r0, r1, 's':
             if r0 != r1:
-                yield from iterate(zip(SUITS, SUITS))
+                yield from iterate(zip(__SUITS, __SUITS))
         case r0, r1, 'o':
             if r0 == r1:
                 yield from __parse_range(f'{r0}{r1}', rank_order)
             else:
-                yield from iterate(permutations(SUITS, 2))
+                yield from iterate(permutations(__SUITS, 2))
         case r0, r1, '+':
             yield from iterate_plus('')
         case r0, r1, 's', '+':
@@ -86,6 +92,24 @@ def parse_range(
         *raw_ranges: str,
         rank_order: RankOrder = RankOrder.STANDARD,
 ) -> set[frozenset[Card]]:
+    """Parse the range.
+
+    The notations can be separated by a whitespace, comma, or a
+    semicolon. The returned range is a set of frozensets of cards.
+
+    >>> rng = parse_range('AKs')
+    >>> len(rng)
+    4
+    >>> frozenset(Card.parse('AsKs')) in rng
+    True
+    >>> frozenset(Card.parse('AcKd')) in rng
+    False
+
+    :param raw_ranges: The raw ranges to be parsed.
+    :param rank_order: The rank ordering to be used, defaults to
+                       :attr:`pokerkit.utilities.RankOrder`.
+    :return: The range.
+    """
     raw_ranges = tuple(
         ' '.join(raw_ranges).replace(',', ' ').replace(';', ' ').split(),
     )
@@ -95,3 +119,189 @@ def parse_range(
         range_.update(__parse_range(raw_range, rank_order))
 
     return range_
+
+
+def __calculate_equities_0(
+        hole_cards: tuple[list[Card], ...],
+        board_cards: list[Card],
+        hole_dealing_count: int,
+        board_dealing_count: int,
+        deck_cards: list[Card],
+        hand_types: tuple[type[Hand], ...],
+) -> list[float]:
+    hole_cards = tuple(map(list.copy, hole_cards))
+    board_cards = board_cards.copy()
+    sample_count = (
+        (hole_dealing_count * len(hole_cards))
+        - sum(map(len, hole_cards))
+        + board_dealing_count
+        - len(board_cards)
+    )
+    sampled_cards = sample(deck_cards, k=sample_count)
+    begin = 0
+
+    for i in range(len(hole_cards)):
+        end = begin + hole_dealing_count - len(hole_cards[i])
+
+        hole_cards[i].extend(sampled_cards[begin:end])
+
+        assert len(hole_cards[i]) == hole_dealing_count
+
+        begin = end
+
+    board_cards.extend(sampled_cards[begin:])
+
+    assert len(board_cards) == board_dealing_count
+
+    equities = [0.0] * len(hole_cards)
+
+    for hand_type in hand_types:
+        hands = list(
+            map(
+                partial(hand_type.from_game, board_cards=board_cards),
+                hole_cards,
+            ),
+        )
+        max_hand = max_or_none(hands)
+        statuses = list(map(partial(eq, max_hand), hands))
+        increment = 1 / (len(hand_types) * sum(statuses))
+
+        for i, status in enumerate(statuses):
+            if status:
+                equities[i] += increment
+
+    return equities
+
+
+def __calculate_equities_1(
+        hole_cards: list[tuple[list[Card], ...]],
+        board_cards: list[Card],
+        hole_dealing_count: int,
+        board_dealing_count: int,
+        deck_cards: list[list[Card]],
+        hand_types: tuple[type[Hand], ...],
+        index: int,
+) -> list[float]:
+    return __calculate_equities_0(
+        hole_cards[index],
+        board_cards,
+        hole_dealing_count,
+        board_dealing_count,
+        deck_cards[index],
+        hand_types,
+    )
+
+
+def calculate_equities(
+        hole_ranges: Iterable[Iterable[Iterable[Card]]],
+        board_cards: Iterable[Card],
+        hole_dealing_count: int,
+        board_dealing_count: int,
+        deck: Deck,
+        hand_types: Iterable[type[Hand]],
+        *,
+        sample_count: int,
+        executor: Executor | None = None,
+) -> list[float]:
+    """Calculate the equities.
+
+    The user may supply an executor to use parallelization. If not
+    given, a single-threaded evaluation is performed.
+
+    >>> from concurrent.futures import ProcessPoolExecutor
+    >>> from pokerkit import *
+    >>> with ProcessPoolExecutor() as executor:
+    ...     calculate_equities(
+    ...         (
+    ...             parse_range('2h2c'),
+    ...             parse_range('3h3c'),
+    ...             parse_range('AsKs'),
+    ...         ),
+    ...         Card.parse('QsJsTs'),
+    ...         2,
+    ...         5,
+    ...         Deck.STANDARD,
+    ...         (StandardHighHand,),
+    ...         sample_count=1000,
+    ...         executor=executor,
+    ...     )
+    ...
+    [0.0, 0.0, 1.0]
+    >>> calculate_equities(
+    ...     (
+    ...         parse_range('2h2c'),
+    ...         parse_range('3h3c'),
+    ...         parse_range('AhKh'),
+    ...     ),
+    ...     Card.parse('3s3d4c'),
+    ...     2,
+    ...     5,
+    ...     Deck.STANDARD,
+    ...     (StandardHighHand,),
+    ...     sample_count=1000,
+    ... )
+    [0.0, 1.0, 0.0]
+    >>> calculate_equities(
+    ...     (
+    ...         parse_range('3d3h'),
+    ...         parse_range('3c3s'),
+    ...     ),
+    ...     Card.parse('Tc8d6h4s'),
+    ...     2,
+    ...     5,
+    ...     Deck.STANDARD,
+    ...     (StandardHighHand,),
+    ...     sample_count=1000,
+    ... )
+    [0.5, 0.5]
+
+    :param hole_ranges: The ranges of each player in the pot.
+    :param board_cards: The board cards, may be empty.
+    :param hole_dealing_count: The final number of hole cards; for
+                               hold'em, it is ``2``.
+    :param board_dealing_count: The final number of board cards; for
+                                hold'em, it is ``5``.
+    :param deck: The deck; most games typically use
+                 :attr:`pokerkit.utilities.Deck.STANDARD`.
+    :param hand_types: The hand types; most games typically just use
+                       :class:`pokerkit.hands.StandardHighHand`.
+    :param sample_count: The number of samples to simulate, higher value
+                         gives greater accuracy and fidelity.
+    :param executor: The optional executor, defaults to ``None`` which
+                     is just using 1 thread/process. The user can supply
+                     a ``ProcessPoolExecutor`` to use processes.
+    :return: The equity values.
+    """
+    hole_ranges = tuple(map(list, map(partial(map, list), hole_ranges)))
+    board_cards = list(board_cards)
+    hand_types = tuple(hand_types)
+    hole_cards = []
+    deck_cards = []
+
+    for selection in product(*hole_ranges):
+        counter = Counter(chain(chain.from_iterable(selection), board_cards))
+
+        if all(count == 1 for count in counter.values()):
+            hole_cards.append(selection)
+            deck_cards.append(list(set(deck) - counter.keys()))
+
+    fn = partial(
+        __calculate_equities_1,
+        hole_cards,
+        board_cards,
+        hole_dealing_count,
+        board_dealing_count,
+        deck_cards,
+        hand_types,
+    )
+    mapper: Any = map if executor is None else executor.map
+    indices = choices(range(len(hole_cards)), k=sample_count)
+    equities = [0.0] * len(hole_ranges)
+
+    for i, equity in chain.from_iterable(map(enumerate, mapper(fn, indices))):
+        equities[i] += equity
+
+    for i, equity in enumerate(equities):
+        equities[i] = equity / sample_count
+
+    return equities
