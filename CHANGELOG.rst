@@ -13,6 +13,7 @@ Version 0.4.14 (March 25, 2024)
 
   - Range parser ``pokerkit.analysis.parse_range`` (e.g. ``"AKs,T8o-KJo,6h5h,A2+"``).
   - Equity calculator ``pokerkit.analysis.calculate_equity``.
+  - Player statistics ``pokerkit.analysis.Statistics``.
 
 Version 0.4.13 (March 23, 2024)
 -------------------------------
