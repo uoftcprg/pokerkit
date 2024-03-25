@@ -15,6 +15,7 @@ __all__ = (
     'BoardDealing',
     'BringInPosting',
     'calculate_equities',
+    'calculate_hand_strength',
     'Card',
     'CardBurning',
     'CardsLike',
@@ -99,7 +100,12 @@ __all__ = (
     'ValuesLike',
 )
 
-from pokerkit.analysis import calculate_equities, parse_range, Statistics
+from pokerkit.analysis import (
+    calculate_equities,
+    calculate_hand_strength,
+    parse_range,
+    Statistics,
+)
 from pokerkit.games import (
     DeuceToSevenLowballMixin,
     Draw,

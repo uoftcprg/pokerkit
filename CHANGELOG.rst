@@ -12,7 +12,8 @@ Version 0.4.14 (March 25, 2024)
 - Analysis module
 
   - Range parser ``pokerkit.analysis.parse_range`` (e.g. ``"AKs,T8o-KJo,6h5h,A2+"``).
-  - Equity calculator ``pokerkit.analysis.calculate_equity``.
+  - Equity calculator ``pokerkit.analysis.calculate_equities``.
+  - Hand strength calculator ``pokerkit.analysis.calculate_hand_strength``.
   - Player statistics ``pokerkit.analysis.Statistics``.
 
 Version 0.4.13 (March 23, 2024)
