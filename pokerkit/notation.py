@@ -346,31 +346,45 @@ class HandHistory(Iterable[State]):
         :param kwargs: The metadata.
         :return: The hand history.
         """
+
+        action: str | None
+
+        def append_dealing_actions() -> None:
+            nonlocal action
+
+            for player_index in hole_cards:
+                if hole_cards[player_index]:
+                    action = (
+                        f'd dh p{player_index + 1} '
+                        + ''.join(map(repr, hole_cards[player_index]))
+                    )
+
+                    actions.append(action.strip())
+                    hole_cards[player_index].clear()
+
+            if board_cards:
+                action = 'd db ' + ''.join(map(repr, board_cards))
+
+                actions.append(action.strip())
+                board_cards.clear()
+
         variant = cls.variants[type(game)]
         actions = []
-        cards = defaultdict[int, list[Card]](list)
+        hole_cards = defaultdict[int, list[Card]](list)
+        board_cards = list[Card]()
 
         for operation in state.operations:
-            action: str | None
-
             if (
                     not compression_status
-                    or not isinstance(operation, HoleDealing)
+                    or not isinstance(operation, HoleDealing | BoardDealing)
             ):
-                for player_index in cards:
-                    if cards[player_index]:
-                        action = (
-                            f'd dh p{player_index + 1} '
-                            + ''.join(map(repr, cards[player_index]))
-                        )
-
-                        actions.append(action.strip())
-                        cards[player_index].clear()
-
+                append_dealing_actions()
             if isinstance(operation, BoardDealing):
-                action = 'd db ' + ''.join(map(repr, operation.cards))
+                board_cards.extend(operation.cards)
+
+                action = None
             elif isinstance(operation, HoleDealing):
-                cards[operation.player_index].extend(operation.cards)
+                hole_cards[operation.player_index].extend(operation.cards)
 
                 action = None
             elif isinstance(operation, StandingPatOrDiscarding):
@@ -405,8 +419,7 @@ class HandHistory(Iterable[State]):
             if action is not None:
                 actions.append(action.strip())
 
-        assert not any(cards.values())
-
+        append_dealing_actions()
         kwargs.setdefault('variant', variant)
         kwargs.setdefault('actions', actions)
         kwargs.setdefault('starting_stacks', list(state.starting_stacks))
