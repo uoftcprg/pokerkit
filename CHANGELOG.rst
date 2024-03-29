@@ -4,6 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.15 (March 29, 2024)
+-------------------------------
+
+**Added**
+
+- Raise error for ACPC protocol converter when hole cards unknown.
+- PHH to Pluribus protocol converter.
+
 Version 0.4.14 (March 25, 2024)
 -------------------------------
 

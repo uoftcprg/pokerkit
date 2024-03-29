@@ -1,7 +1,7 @@
 Hand History
 ============
 
-PokerKit can save and/or load hand histories in two formats: the Poker Hand History (PHH) format and the Annual Computer Poker Competition (ACPC) protocol.
+PokerKit can save and/or load hand histories in two formats: the Poker Hand History (PHH) format, the Annual Computer Poker Competition (ACPC) protocol, and the Pluribus protocol.
 
 Poker Hand History (PHH) File Format
 ------------------------------------
@@ -123,3 +123,16 @@ Instead of saving hand histories as PHH files, ACPC logs can be generated.
 
    with open("...", "w") as file:
        file.write("".join(lines))
+
+Pluribus Protocol
+-----------------
+
+This format was used to record games by Brown and Sandholm in the supplementary for their Science paper on Pluribus.
+
+.. code-block:: python
+
+   hh = ...
+   line = hh.to_pluribus_protocol(10)
+
+   with open("...", "w") as file:
+       file.write(line)

@@ -720,6 +720,137 @@ class HandHistoryTestCase(TestCase):
             interactions,
         )
 
+    def test_to_pluribus_protocol(self) -> None:
+        game = NoLimitTexasHoldem(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (50, 100),
+            100,
+        )
+        state = game(10000, 6)
+
+        state.deal_hole('8d5h')
+        state.deal_hole('6sTs')
+        state.deal_hole('4d9h')
+        state.deal_hole('7c7d')
+        state.deal_hole('4sQc')
+        state.deal_hole('KhKc')
+        state.fold()
+        state.complete_bet_or_raise_to(225)
+        state.fold()
+        state.complete_bet_or_raise_to(700)
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('4c2s7h')
+        state.check_or_call()
+        state.complete_bet_or_raise_to(555)
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('Js')
+        state.check_or_call()
+        state.complete_bet_or_raise_to(1750)
+        state.check_or_call()
+        state.burn_card('??')
+        state.deal_board('2h')
+        state.check_or_call()
+        state.complete_bet_or_raise_to(6995)
+        state.check_or_call()
+
+        self.assertFalse(state.status)
+
+        hh = HandHistory.from_game_state(
+            game,
+            state,
+            players=[
+                'Hattori',
+                'MrBlue',
+                'Pluribus',
+                'Budd',
+                'MrWhite',
+                'MrOrange',
+            ],
+        )
+
+        self.assertEqual(
+            hh.to_pluribus_protocol(33),
+            (
+                'STATE'
+                ':33'
+                ':fr225fr700ffc/cr1255c/cr3005c/cr10000c'
+                ':8d5h|6sTs|4d9h|7c7d|4sQc|KhKc/4c2s7h/Js/2h'
+                ':-50|-100|0|10150|0|-10000'
+                ':Hattori|MrBlue|Pluribus|Budd|MrWhite|MrOrange'
+            ),
+        )
+
+        game = NoLimitTexasHoldem(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (50, 100),
+            100,
+        )
+        state = game(10000, 6)
+
+        state.deal_hole('4sAd')
+        state.deal_hole('3h6d')
+        state.deal_hole('9hJd')
+        state.deal_hole('7s7d')
+        state.deal_hole('KhTd')
+        state.deal_hole('Tc4d')
+        state.fold()
+        state.complete_bet_or_raise_to(200)
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+
+        self.assertFalse(state.status)
+
+        hh = HandHistory.from_game_state(
+            game,
+            state,
+            players=[
+                'MrOrange',
+                'Hattori',
+                'MrBlue',
+                'Pluribus',
+                'Budd',
+                'MrWhite',
+            ],
+        )
+
+        self.assertEqual(
+            hh.to_pluribus_protocol(38),
+            (
+                'STATE'
+                ':38'
+                ':fr200ffff'
+                ':4sAd|3h6d|9hJd|7s7d|KhTd|Tc4d'
+                ':-50|-100|0|150|0|0'
+                ':MrOrange|Hattori|MrBlue|Pluribus|Budd|MrWhite'
+            ),
+        )
+
 
 if __name__ == '__main__':
     main()  # pragma: no cover
