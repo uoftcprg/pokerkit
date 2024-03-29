@@ -614,6 +614,9 @@ class HandHistory(Iterable[State]):
         action = ''
 
         def egress() -> tuple[str, str]:
+            if not all(raw_hole_cards[position]):
+                raise ValueError('the hole cards at position must be known')
+
             return 'S->', f'{match_state}\r\n'
 
         def ingress() -> tuple[str, str]:
