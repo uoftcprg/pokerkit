@@ -186,7 +186,12 @@ class Lookup(ABC):
         :return: ``True`` if the cards can looked up, otherwise
                  ``False``.
         """
-        return self._get_key(cards) in self.__entries
+        try:
+            key = self._get_key(cards)
+        except ValueError:
+            key = None
+
+        return key in self.__entries
 
     def get_entry(self, cards: CardsLike) -> Entry:
         """Return the corresponding lookup entry of the hand that the

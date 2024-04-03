@@ -579,11 +579,11 @@ class BadugiHand(Hand):
     >>> h = BadugiHand('Ac2d3c4s5c')
     Traceback (most recent call last):
         ...
-    ValueError: cards not rainbow
+    ValueError: invalid hand 'Ac2d3c4s5c'
     >>> h = BadugiHand('Ac2d3c4s')
     Traceback (most recent call last):
         ...
-    ValueError: cards not rainbow
+    ValueError: invalid hand 'Ac2d3c4s'
     >>> h = BadugiHand('AcAd3h4s')
     Traceback (most recent call last):
         ...
@@ -591,7 +591,7 @@ class BadugiHand(Hand):
     >>> h = BadugiHand('Ac2c')
     Traceback (most recent call last):
         ...
-    ValueError: cards not rainbow
+    ValueError: invalid hand 'Ac2c'
     >>> h = BadugiHand(())
     Traceback (most recent call last):
         ...
