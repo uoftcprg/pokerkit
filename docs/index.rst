@@ -13,6 +13,7 @@
    simulation
    evaluation
    notation
+   analysis
    snippets
    contributing
    changelog

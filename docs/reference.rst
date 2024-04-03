@@ -1,6 +1,14 @@
 Reference
 =========
 
+pokerkit.analysis module
+------------------------
+
+.. automodule:: pokerkit.analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pokerkit.games module
 ---------------------
 

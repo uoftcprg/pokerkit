@@ -1,6 +1,11 @@
 Code Snippets
 =============
 
+Some example snippets of code are shown below. If you would like to see more examples in this section, please create an issue.
+
+Full Manual Usage
+-----------------
+
 In some use cases, it might be better not to use any automation and handle each operation step by step. For such a purpose, one might use the code below.
 
 .. code-block:: python
