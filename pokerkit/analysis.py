@@ -346,7 +346,7 @@ def calculate_hand_strength(
     >>> calculate_hand_strength(
     ...     3,
     ...     parse_range('3h3c'),
-    ...     Card.parse('3s3d2c'),
+    ...     Card.parse('3s3d2c2h'),
     ...     2,
     ...     5,
     ...     Deck.STANDARD,
