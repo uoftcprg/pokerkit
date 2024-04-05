@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.16 (April 5, 2024)
+------------------------------
+
+**Added**
+
+- Restore action notation ``pn sm -`` for showing hole cards.
+
 Version 0.4.15 (March 29, 2024)
 -------------------------------
 
