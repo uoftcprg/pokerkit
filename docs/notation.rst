@@ -1,12 +1,12 @@
 Hand History
 ============
 
-PokerKit can save and/or load hand histories in two formats: the Poker Hand History (PHH) format, the Annual Computer Poker Competition (ACPC) protocol, and the Pluribus protocol.
+PokerKit can save and/or load hand histories in two formats: the `Poker Hand History (PHH) file format <https://phh.readthedocs.io/>`_, the `Annual Computer Poker Competition (ACPC) protocol <_static/protocol.pdf>`_, and the protocol used in the supplementary of the paper introducing `Pluribus <https://doi.org/10.1126/science.aay2400>`_.
 
 Poker Hand History (PHH) File Format
 ------------------------------------
 
-The PokerKit library features PHH file format reader and writer utilities. It offers "load" and "dump" programmatic APIs akin to those provided by Python's standard libraries such as "json," and "pickle". Below are sample usages of the PHH file format utilities in PokerKit. The hand history object in Python serves as an iterator of the corresponding poker state which first yields the initial state, followed by the same state after applying each action one-by-one in the “actions” field. From game and state objects that are interacted with programmatically, the hand history object can also be created which can subsequently be saved in the file system.
+The PokerKit library features `PHH file format <https://phh.readthedocs.io/>`_ reader and writer utilities. It offers "load" and "dump" programmatic APIs akin to those provided by Python's standard libraries such as "json," and "pickle". Below are sample usages of the PHH file format utilities in PokerKit. The hand history object in Python serves as an iterator of the corresponding poker state which first yields the initial state, followed by the same state after applying each action one-by-one in the “actions” field. From game and state objects that are interacted with programmatically, the hand history object can also be created which can subsequently be saved in the file system.
 
 Reading hands
 ^^^^^^^^^^^^^
@@ -112,7 +112,7 @@ Writing Hands
 Annual Computer Poker Competition (ACPC) Protocol
 -------------------------------------------------
 
-Instead of saving hand histories as PHH files, ACPC logs can be generated.
+Instead of saving hand histories as PHH files, `ACPC <_static/protocol.pdf>`_ logs can be generated.
 
 .. code-block:: python
 
@@ -127,7 +127,7 @@ Instead of saving hand histories as PHH files, ACPC logs can be generated.
 Pluribus Protocol
 -----------------
 
-This format was used to record games by Brown and Sandholm in the supplementary for their Science paper on Pluribus.
+This format was used to record games by `Brown and Sandholm <https://doi.org/10.1126/science.aay2400>`_ in the supplementary for their Science paper on Pluribus.
 
 .. code-block:: python
 
