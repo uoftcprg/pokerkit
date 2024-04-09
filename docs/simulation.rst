@@ -638,6 +638,8 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.street_count`            Number of streets.
 :attr:`pokerkit.state.State.street_indices`          Indices of streets.
 :attr:`pokerkit.state.State.street`                  Current street.
+:attr:`pokerkit.state.State.turn_index`              The index of the player who is in turn to act (draw, betting street, showdown). This attribute exists to combine the three following attributes: :attr:`pokerkit.state.State.stander_pat_or_discarder_index`, :attr:`pokerkit.state.State.actor_index`, and :attr:`pokerkit.state.State.showdown_index`.
+:meth:`pokerkit.state.State.get_censored_hole_cards` Return the hole cards of a player, but censor the down cards (i.e. convert to an unknown card ``??``).
 :meth:`pokerkit.state.State.get_down_cards`          Down cards of a player.
 :meth:`pokerkit.state.State.get_up_cards`            Up cards of a player.
 :meth:`pokerkit.state.State.get_hand`                Evaluated hand of a player for a hand type.
