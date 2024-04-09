@@ -13,6 +13,7 @@ from numbers import Integral
 from operator import is_not
 from random import shuffle
 from typing import Any, cast, TypeVar
+import builtins
 
 _T = TypeVar('_T')
 
@@ -634,9 +635,6 @@ def shuffled(values: Iterable[_T]) -> list[_T]:
     return values
 
 
-_divmod = divmod
-
-
 def divmod(dividend: int, divisor: int) -> tuple[int, int]:
     """Divide the amount.
 
@@ -650,7 +648,7 @@ def divmod(dividend: int, divisor: int) -> tuple[int, int]:
     :return: The quotient and the remainder.
     """
     if isinstance(dividend, Integral):
-        return _divmod(dividend, divisor)
+        return builtins.divmod(dividend, divisor)
 
     quotient = dividend / divisor
     remainder = dividend - quotient * divisor
