@@ -30,10 +30,10 @@ class Hand(Hashable, ABC):
 
     >>> h0 = ShortDeckHoldemHand('6s7s8s9sTs')
     >>> h1 = ShortDeckHoldemHand('7c8c9cTcJc')
-    >>> h2 = ShortDeckHoldemHand('2c2d2h2s3h')
+    >>> h2 = ShortDeckHoldemHand('2c2d2h2s3h')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand '2c2d2h2s3h'
+    ValueError: The cards '2c2d2h2s3h' form an invalid ShortDeckHoldemHand h...
     >>> h0
     6s7s8s9sTs
     >>> h1
@@ -85,7 +85,12 @@ class Hand(Hashable, ABC):
         self.__cards = Card.clean(cards)
 
         if not self.lookup.has_entry(self.cards):
-            raise ValueError(f'invalid hand \'{repr(self)}\'')
+            raise ValueError(
+                (
+                    f'The cards {repr(cards)} form an invalid'
+                    f' {type(self).__qualname__} hand.'
+                ),
+            )
 
     def __eq__(self, other: Any) -> bool:
         if type(self) != type(other):  # noqa: E721
@@ -223,7 +228,12 @@ class CombinationHand(Hand, ABC):
                     max_hand = hand
 
         if max_hand is None:
-            raise ValueError('no valid hand')
+            raise ValueError(
+                (
+                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    ' from the hole and board cards.'
+                ),
+            )
 
         return max_hand
 
@@ -246,18 +256,18 @@ class StandardHighHand(StandardHand):
     >>> h0 < h1 < h2 < h3 < h4
     True
 
-    >>> h = StandardHighHand('4c5dThJsAcKh2h')
+    >>> h = StandardHighHand('4c5dThJsAcKh2h')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand '4c5dThJsAcKh2h'
+    ValueError: The cards '4c5dThJsAcKh2h' form an invalid StandardHighHand ...
     >>> h = StandardHighHand('Ac2c3c4c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2c3c4c'
+    ValueError: The cards 'Ac2c3c4c' form an invalid StandardHighHand hand.
     >>> h = StandardHighHand(())
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand ''
+    ValueError: The cards () form an invalid StandardHighHand hand.
     """
 
     low = False
@@ -274,18 +284,18 @@ class StandardLowHand(StandardHand):
     >>> h0 < h1 < h2 < h3 < h4
     True
 
-    >>> h = StandardLowHand('4c5dThJsAcKh2h')
+    >>> h = StandardLowHand('4c5dThJsAcKh2h')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand '4c5dThJsAcKh2h'
+    ValueError: The cards '4c5dThJsAcKh2h' form an invalid StandardLowHand h...
     >>> h = StandardLowHand('Ac2c3c4c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2c3c4c'
+    ValueError: The cards 'Ac2c3c4c' form an invalid StandardLowHand hand.
     >>> h = StandardLowHand(())
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand ''
+    ValueError: The cards () form an invalid StandardLowHand hand.
     """
 
     low = True
@@ -304,18 +314,18 @@ class ShortDeckHoldemHand(CombinationHand):
     >>> h0 < h1 < h2 < h3 < h4
     True
 
-    >>> h = ShortDeckHoldemHand('4c5dThJsAcKh2h')
+    >>> h = ShortDeckHoldemHand('4c5dThJsAcKh2h')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand '4c5dThJsAcKh2h'
-    >>> h = ShortDeckHoldemHand('Ac2c3c4c5c')
+    ValueError: The cards '4c5dThJsAcKh2h' form an invalid ShortDeckHoldemHa...
+    >>> h = ShortDeckHoldemHand('Ac2c3c4c5c')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2c3c4c5c'
+    ValueError: The cards 'Ac2c3c4c5c' form an invalid ShortDeckHoldemHand ...
     >>> h = ShortDeckHoldemHand(())
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand ''
+    ValueError: The cards () form an invalid ShortDeckHoldemHand hand.
     """
 
     lookup = ShortDeckHoldemLookup()
@@ -332,26 +342,26 @@ class EightOrBetterLowHand(CombinationHand):
     >>> h0 < h1 < h2
     True
 
-    >>> h = EightOrBetterLowHand('AcAsAd2s4s')
+    >>> h = EightOrBetterLowHand('AcAsAd2s4s')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'AcAsAd2s4s'
-    >>> h = EightOrBetterLowHand('TsJsQsKsAs')
+    ValueError: The cards 'AcAsAd2s4s' form an invalid EightOrBetterLowHand ...
+    >>> h = EightOrBetterLowHand('TsJsQsKsAs')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'TsJsQsKsAs'
-    >>> h = EightOrBetterLowHand('4c5dThJsAcKh2h')
+    ValueError: The cards 'TsJsQsKsAs' form an invalid EightOrBetterLowHand ...
+    >>> h = EightOrBetterLowHand('4c5dThJsAcKh2h')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand '4c5dThJsAcKh2h'
+    ValueError: The cards '4c5dThJsAcKh2h' form an invalid EightOrBetterLowH...
     >>> h = EightOrBetterLowHand('Ac2c3c4c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2c3c4c'
+    ValueError: The cards 'Ac2c3c4c' form an invalid EightOrBetterLowHand hand.
     >>> h = EightOrBetterLowHand(())
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand ''
+    ValueError: The cards () form an invalid EightOrBetterLowHand hand.
     """
 
     lookup = EightOrBetterLookup()
@@ -374,11 +384,11 @@ class RegularLowHand(CombinationHand):
     >>> h = RegularLowHand('4c5dThJsAcKh2h')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand '4c5dThJsAcKh2h'
+    ValueError: The cards '4c5dThJsAcKh2h' form an invalid RegularLowHand hand.
     >>> h = RegularLowHand(())
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand ''
+    ValueError: The cards () form an invalid RegularLowHand hand.
     """
 
     lookup = RegularLookup()
@@ -434,7 +444,12 @@ class BoardCombinationHand(CombinationHand, ABC):
                     max_hand = hand
 
         if max_hand is None:
-            raise ValueError('no valid hand')
+            raise ValueError(
+                (
+                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    ' from the hole and board cards.'
+                ),
+            )
 
         return max_hand
 
@@ -521,7 +536,12 @@ class HoleBoardCombinationHand(BoardCombinationHand, ABC):
                     max_hand = hand
 
         if max_hand is None:
-            raise ValueError('no valid hand')
+            raise ValueError(
+                (
+                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    ' from the hole and board cards.'
+                ),
+            )
 
         return max_hand
 
@@ -579,23 +599,23 @@ class BadugiHand(Hand):
     >>> h = BadugiHand('Ac2d3c4s5c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2d3c4s5c'
+    ValueError: The cards 'Ac2d3c4s5c' form an invalid BadugiHand hand.
     >>> h = BadugiHand('Ac2d3c4s')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2d3c4s'
+    ValueError: The cards 'Ac2d3c4s' form an invalid BadugiHand hand.
     >>> h = BadugiHand('AcAd3h4s')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'AcAd3h4s'
+    ValueError: The cards 'AcAd3h4s' form an invalid BadugiHand hand.
     >>> h = BadugiHand('Ac2c')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'Ac2c'
+    ValueError: The cards 'Ac2c' form an invalid BadugiHand hand.
     >>> h = BadugiHand(())
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand ''
+    ValueError: The cards () form an invalid BadugiHand hand.
     """
 
     lookup = BadugiLookup()
@@ -676,7 +696,7 @@ class KuhnPokerHand(Hand):
     >>> h = KuhnPokerHand('As')
     Traceback (most recent call last):
         ...
-    ValueError: invalid hand 'As'
+    ValueError: The cards 'As' form an invalid KuhnPokerHand hand.
     """
 
     lookup = KuhnPokerLookup()

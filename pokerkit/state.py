@@ -23,6 +23,7 @@ from pokerkit.utilities import (
     max_or_none,
     min_or_none,
     rake,
+    Rank,
     RankOrder,
     shuffled,
     Suit,
@@ -168,7 +169,7 @@ class Street:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: negative number of dealt cards
+    ValueError: The number of dealt cards -1 is negative.
     >>> street = Street(
     ...     True,
     ...     (False, False),
@@ -177,10 +178,10 @@ class Street:
     ...     Opening.POSITION,
     ...     0,
     ...     None,
-    ... )
+    ... )  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: non-positive minimum completion, betting, or raising amount
+    ValueError: Non-positive minimum completion, betting, or raising amount ...
     >>> street = Street(
     ...     True,
     ...     (False, False),
@@ -189,10 +190,10 @@ class Street:
     ...     Opening.POSITION,
     ...     2,
     ...     -1,
-    ... )
+    ... )  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: negative maximum number of completions, bettings, or raisings
+    ValueError: Negative maximum number of completion, bets, or raises -1 wa...
     """
 
     card_burning_status: bool
@@ -212,18 +213,32 @@ class Street:
 
     def __post_init__(self) -> None:
         if self.board_dealing_count < 0:
-            raise ValueError('negative number of dealt cards')
+            raise ValueError(
+                (
+                    f'The number of dealt cards {self.board_dealing_count}'
+                    ' is negative.'
+                ),
+            )
         elif (
                 not self.hole_dealing_statuses
                 and not self.board_dealing_count
                 and not self.draw_status
         ):
-            raise ValueError('no dealing')
+            raise ValueError('At least one dealing must be carried out.')
         elif self.hole_dealing_statuses and self.draw_status:
-            raise ValueError('dealing hole and standing pat or discarding')
+            raise ValueError(
+                (
+                    'Only one of hole dealing or drawing is permitted as draws'
+                    ' are followed by hole dealings.'
+                ),
+            )
         elif self.min_completion_betting_or_raising_amount <= 0:
             raise ValueError(
-                'non-positive minimum completion, betting, or raising amount',
+                (
+                    'Non-positive minimum completion, betting, or raising'
+                    f' amount {self.min_completion_betting_or_raising_amount}'
+                    ' was supplied.'
+                ),
             )
         elif (
                 self.max_completion_betting_or_raising_count is not None
@@ -231,8 +246,9 @@ class Street:
         ):
             raise ValueError(
                 (
-                    'negative maximum number of completions, bettings, or '
-                    'raisings'
+                    'Negative maximum number of completion, bets, or raises'
+                    f' {self.max_completion_betting_or_raising_count} was'
+                    ' supplied.'
                 ),
             )
 
@@ -282,7 +298,7 @@ class Pot:
     >>> pot = Pot(-1, (1, 3))
     Traceback (most recent call last):
         ...
-    ValueError: negative pot amount
+    ValueError: The pot amount -1 is negative.
     """
 
     amount: int
@@ -292,7 +308,7 @@ class Pot:
 
     def __post_init__(self) -> None:
         if self.amount < 0:
-            raise ValueError('negative pot amount')
+            raise ValueError(f'The pot amount {self.amount} is negative.')
 
 
 @dataclass(frozen=True)
@@ -644,7 +660,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: empty streets
+    ValueError: The streets are empty.
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -670,7 +686,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: first street not hole dealing
+    ValueError: The first street must be of hole dealing.
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -696,7 +712,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: negative antes, blinds, straddles, or bring-in
+    ValueError: Negative antes, blinds, straddles, or bring-in was supplied.
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -722,7 +738,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: no antes, blinds, straddles, or bring-in
+    ValueError: No antes, blinds, straddles, or bring-in was supplied.
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -748,7 +764,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: non-positive starting stacks
+    ValueError: Non-positive starting stacks was supplied.
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -771,10 +787,10 @@ class State:
     ...     1,
     ...     (2,) * 2,
     ...     2,
-    ... )
+    ... )  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: both bring-in and blinds or straddles specified
+    ValueError: Only one of bring-in or (blinds or straddles) must specified...
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -800,7 +816,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: bring-in must be less than the min bet
+    ValueError: The bring-in must be less than the min bet.
     >>> state = State(
     ...     (),
     ...     Deck.KUHN_POKER,
@@ -826,7 +842,7 @@ class State:
     ... )
     Traceback (most recent call last):
         ...
-    ValueError: not enough players
+    ValueError: There must be at least 2 players (currently 1).
     """
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
@@ -922,32 +938,46 @@ class State:
         )
 
         if not self.streets:
-            raise ValueError('empty streets')
+            raise ValueError('The streets are empty.')
         elif not self.streets[0].hole_dealing_statuses:
-            raise ValueError('first street not hole dealing')
+            raise ValueError('The first street must be of hole dealing.')
         elif (
                 min(self.antes) < 0
                 or min(self.blinds_or_straddles) < 0
                 or self.bring_in < 0
         ):
-            raise ValueError('negative antes, blinds, straddles, or bring-in')
+            raise ValueError(
+                'Negative antes, blinds, straddles, or bring-in was supplied.',
+            )
         elif (
                 not any(self.antes)
                 and not any(self.blinds_or_straddles)
                 and not self.bring_in
         ):
-            raise ValueError('no antes, blinds, straddles, or bring-in')
+            raise ValueError(
+                'No antes, blinds, straddles, or bring-in was supplied.',
+            )
         elif min(self.starting_stacks) <= 0:
-            raise ValueError('non-positive starting stacks')
+            raise ValueError('Non-positive starting stacks was supplied.')
         elif any(self.blinds_or_straddles) and self.bring_in:
-            raise ValueError('both bring-in and blinds or straddles specified')
+            raise ValueError(
+                (
+                    'Only one of bring-in or (blinds or straddles) must'
+                    ' specified, but both were.'
+                ),
+            )
         elif (
                 self.bring_in
                 >= self.streets[0].min_completion_betting_or_raising_amount
         ):
-            raise ValueError('bring-in must be less than the min bet')
+            raise ValueError('The bring-in must be less than the min bet.')
         elif self.player_count < 2:
-            raise ValueError('not enough players')
+            raise ValueError(
+                (
+                    'There must be at least 2 players (currently'
+                    f' {self.player_count}).'
+                ),
+            )
 
         self._setup()
         self._begin()
@@ -1308,6 +1338,82 @@ class State:
             return None
 
         return self.streets[self.street_index]
+
+    @property
+    def turn_index(self) -> int | None:
+        """Return the turn index.
+
+        Regardless of what stage the state is in, whoever must make a
+        decision will be returned, which is one of the following:
+
+        - :attr:`pokerkit.state.State.stander_pat_or_discarder_index`
+        - :attr:`pokerkit.state.State.actor_index`
+        - :attr:`pokerkit.state.State.showdown_index`
+
+        :return: The index of the player whose turn it is or ``None`` if
+                 no one is in turn.
+        """
+        if self.stander_pat_or_discarder_index is not None:
+            player_index = self.stander_pat_or_discarder_index
+        elif self.actor_index is not None:
+            player_index = self.actor_index
+        elif self.showdown_index is not None:
+            player_index = self.showdown_index
+        else:
+            player_index = None
+
+        return player_index
+
+    def get_censored_hole_cards(self, player_index: int) -> Iterator[Card]:
+        """Return the censored hole cards of the player.
+
+        The hole cards that are face-down are yielded as an unknown
+        card.
+
+        >>> from pokerkit import *
+        >>> state = (
+        ...     FixedLimitSevenCardStudHighLowSplitEightOrBetter.create_state(
+        ...         (
+        ...             Automation.ANTE_POSTING,
+        ...             Automation.BET_COLLECTION,
+        ...             Automation.BLIND_OR_STRADDLE_POSTING,
+        ...             Automation.CARD_BURNING,
+        ...             Automation.BOARD_DEALING,
+        ...             Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...             Automation.HAND_KILLING,
+        ...             Automation.CHIPS_PUSHING,
+        ...             Automation.CHIPS_PULLING,
+        ...         ),
+        ...         True,
+        ...         0,
+        ...         1,
+        ...         2,
+        ...         4,
+        ...         (50, 100),
+        ...         2,
+        ...     )
+        ... )
+        >>> state.deal_hole('AcAdAh')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad, Ah), sta...
+        >>> state.deal_hole('KcKdKh')  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Kc, Kd, Kh), sta...
+        >>> state.get_down_cards(0)  # doctest: +ELLIPSIS
+        <generator object State.get_down_cards at 0x...>
+        >>> tuple(state.get_censored_hole_cards(0))
+        (??, ??, Ah)
+        >>> tuple(state.get_censored_hole_cards(1))
+        (??, ??, Kh)
+
+        :return: The censored hole cards.
+        """
+        for card, status in zip(
+                self.hole_cards[player_index],
+                self.hole_card_statuses[player_index],
+        ):
+            if status:
+                yield card
+            else:
+                yield Card(Rank.UNKNOWN, Suit.UNKNOWN)
 
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
         """Return the down cards of the player.
@@ -1926,7 +2032,7 @@ class State:
             dealable_cards = self.get_dealable_cards(cards)
 
             if len(dealable_cards) < cards:
-                raise ValueError('not enough cards in deck')
+                raise ValueError('There are not enough cards to be dealt.')
 
             cards = dealable_cards[:cards]
         else:
@@ -1935,7 +2041,12 @@ class State:
 
             for card in cards:
                 if card not in dealable_cards and not card.unknown_status:
-                    warn(f'dealing {card} that is not recommended to be dealt')
+                    warn(
+                        (
+                            f'A card being dealt {repr(card)} is not'
+                            ' recommended to be dealt.'
+                        ),
+                    )
 
         return cards
 
@@ -2030,7 +2141,7 @@ class State:
         >>> state.complete_bet_or_raise_to(1000)
         Traceback (most recent call last):
             ...
-        ValueError: irrelevant completion, betting, or raising
+        ValueError: There is no reason to complete, bet, or raise.
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=3, amount=200)
         >>> state.check_or_call()
@@ -2284,7 +2395,7 @@ class State:
         >>> state.complete_bet_or_raise_to(1000)
         Traceback (most recent call last):
             ...
-        ValueError: irrelevant completion, betting, or raising
+        ValueError: There is no reason to complete, bet, or raise.
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=3, amount=200)
         >>> state.check_or_call()
@@ -2487,7 +2598,7 @@ class State:
 
     def _verify_ante_posting(self) -> None:
         if not any(self.ante_posting_statuses):
-            raise ValueError('nobody can post the ante')
+            raise ValueError('Nobody can post the ante.')
 
     def verify_ante_posting(self, player_index: int | None = None) -> int:
         """Verify the ante posting.
@@ -2502,7 +2613,9 @@ class State:
             player_index = next(self.ante_poster_indices)
 
         if not self.ante_posting_statuses[player_index]:
-            raise ValueError('player cannot post the ante')
+            raise ValueError(
+                f'The Player {player_index} cannot post the ante.',
+            )
 
         return player_index
 
@@ -2629,7 +2742,7 @@ class State:
         :raises ValueError: If the bet collection cannot be done.
         """
         if not self.bet_collection_status:
-            raise ValueError('bet collection prohibited')
+            raise ValueError('The bet collection is currently prohibited.')
 
     def can_collect_bets(self) -> bool:
         """Return whether the bet collection can be done.
@@ -2798,7 +2911,7 @@ class State:
 
     def _verify_blind_or_straddle_posting(self) -> None:
         if not any(self.blind_or_straddle_posting_statuses):
-            raise ValueError('nobody can post the blind or straddle')
+            raise ValueError('Nobody can post the blind or straddle.')
 
     def verify_blind_or_straddle_posting(
             self,
@@ -2816,7 +2929,9 @@ class State:
             player_index = next(self.blind_or_straddle_poster_indices)
 
         if not self.blind_or_straddle_posting_statuses[player_index]:
-            raise ValueError('player cannot post the blind or straddle')
+            raise ValueError(
+                f'The Player {player_index} cannot post the blind or straddle',
+            )
 
         return player_index
 
@@ -3018,11 +3133,21 @@ class State:
         )
 
         if not self.card_burning_status:
-            raise ValueError('no pending burns')
+            raise ValueError('No card burning is pending.')
         elif any(self.standing_pat_or_discarding_statuses):
-            raise ValueError('not all have stood pat or discarded')
+            raise ValueError(
+                (
+                    'Not all have stood pat or discarded as should be done'
+                    ' when burning a card.'
+                ),
+            )
         elif len(cards) != 1:
-            raise ValueError('expected one card')
+            raise ValueError(
+                (
+                    f'One card must be burned, not {len(cards)} as in'
+                    f' {repr(cards)}.'
+                ),
+            )
 
         card, = cards
 
@@ -3106,11 +3231,16 @@ class State:
 
     def _verify_hole_dealing(self) -> None:
         if self.card_burning_status:
-            raise ValueError('card must be burnt')
+            raise ValueError('A card must be burnt before hole dealing.')
         elif not any(self.hole_dealing_statuses):
-            raise ValueError('nobody can be dealt hole cards')
+            raise ValueError('Currently, nobody can be dealt hole cards.')
         elif any(self.standing_pat_or_discarding_statuses):
-            raise ValueError('not all have stood pat or discarded')
+            raise ValueError(
+                (
+                    'Not all have stood pat or discarded, as should be when'
+                    ' hole dealing.'
+                ),
+            )
 
     def verify_hole_dealing(
             self,
@@ -3132,7 +3262,14 @@ class State:
         assert player_index is not None
 
         if not 0 < len(cards) <= len(self.hole_dealing_statuses[player_index]):
-            raise ValueError('invalid number of cards')
+            raise ValueError(
+                (
+                    'The number of cards dealt must be non-zero and less than'
+                    ' or equal to'
+                    f' {len(self.hole_dealing_statuses[player_index])}, not'
+                    f' {len(cards)} as for {repr(cards)}.'
+                ),
+            )
 
         return cards
 
@@ -3201,18 +3338,24 @@ class State:
         :raises ValueError: If the board dealing cannot be done.
         """
         if self.card_burning_status:
-            raise ValueError('card must be burnt')
+            raise ValueError('A card must be burnt before board dealing.')
         elif not self.board_dealing_count:
-            raise ValueError('no pending board dealing')
+            raise ValueError('No board dealing is pending.')
         elif any(self.standing_pat_or_discarding_statuses):
-            raise ValueError('not all have stood pat or discarded')
+            raise ValueError('Not all have stood pat or discarded.')
 
         cards = self._verify_cards_consumption(
             self.board_dealing_count if cards is None else cards,
         )
 
         if not 0 < len(cards) <= self.board_dealing_count:
-            raise ValueError('invalid number of cards')
+            raise ValueError(
+                (
+                    'The number of dealt cards must be non-zero and less than'
+                    f' or equal to {self.board_dealing_count}, not'
+                    f' {len(cards)} as for {repr(cards)}.'
+                ),
+            )
 
         return cards
 
@@ -3275,7 +3418,7 @@ class State:
 
     def _verify_standing_pat_or_discarding(self) -> None:
         if not any(self.standing_pat_or_discarding_statuses):
-            raise ValueError('no pending discards')
+            raise ValueError('There are no pending draws.')
 
     def verify_standing_pat_or_discarding(
             self,
@@ -3295,7 +3438,13 @@ class State:
         assert player_index is not None
 
         if not set(cards) <= set(self.hole_cards[player_index]):
-            raise ValueError('discarded cards not a subset of hole cards')
+            raise ValueError(
+                (
+                    f'The discarded cards {repr(cards)} must be a subset of'
+                    f' hole cards {repr(self.hole_cards[player_index])}, but'
+                    ' it is not.'
+                ),
+            )
 
         return cards
 
@@ -3442,7 +3591,7 @@ class State:
                 ]
                 self.opener_index = entries.index(max_or_none(entries))
             case _:  # pragma: no cover
-                raise NotImplementedError
+                raise AssertionError
 
         assert self.opener_index is not None
 
@@ -3531,16 +3680,16 @@ class State:
         :raises ValueError: If the folding cannot be done.
         """
         if not self.actor_indices:
-            raise ValueError('no player to act')
+            raise ValueError('There is no player to act.')
         elif self.bring_in_status:
-            raise ValueError('bring-in not posted')
+            raise ValueError('The player must post a bring-in or complete.')
 
         player_index = self.actor_index
 
         assert player_index is not None
 
         if self.bets[player_index] >= max(self.bets):
-            raise ValueError('redundant fold')
+            raise ValueError('There is no reason for this player to fold.')
 
     def can_fold(self) -> bool:
         """Return whether theing fold can be done.
@@ -3646,9 +3795,9 @@ class State:
         :raises ValueError: If the checking or calling cannot be done.
         """
         if not self.actor_indices:
-            raise ValueError('no player to act')
+            raise ValueError('There is no player to act.')
         elif self.bring_in_status:
-            raise ValueError('bring-in not posted')
+            raise ValueError('The player must post a bring-in or complete.')
 
     def can_check_or_call(self) -> bool:
         """Return whether the checking or calling can be done.
@@ -3754,9 +3903,9 @@ class State:
         :raises ValueError: If the bring-in posting cannot be done.
         """
         if not self.actor_indices:
-            raise ValueError('no player to act')
+            raise ValueError('There is no player to act.')
         elif not self.bring_in_status:
-            raise ValueError('bring-in cannot be posted')
+            raise ValueError('The bring-in posting is forbidden.')
 
     def can_post_bring_in(self) -> bool:
         """Return whether the bring-in posting can be done.
@@ -3886,7 +4035,7 @@ class State:
                     + self.bets[self.actor_index]
                 )
             case _:  # pragma: no cover
-                raise NotImplementedError
+                raise AssertionError
 
         assert amount is not None
         assert (
@@ -3898,7 +4047,7 @@ class State:
 
     def _verify_completion_betting_or_raising(self) -> None:
         if not self.actor_indices:
-            raise ValueError('no player to act')
+            raise ValueError('There is no player to act.')
 
         assert self.street is not None
 
@@ -3907,7 +4056,7 @@ class State:
                 == self.street.max_completion_betting_or_raising_count
         ):
             raise ValueError(
-                'no more completion, betting, or raising permitted',
+                'No more completion, betting, or raising is permitted.',
             )
 
         player_index = self.actor_index
@@ -3918,7 +4067,7 @@ class State:
                 self.stacks[player_index]
                 <= max(self.bets) - self.bets[player_index]
         ):
-            raise ValueError('not enough chips in stack')
+            raise ValueError('There are not enough chips in stack.')
 
         for i in self.player_indices:
             if (
@@ -3928,7 +4077,7 @@ class State:
             ):
                 break
         else:
-            raise ValueError('irrelevant completion, betting, or raising')
+            raise ValueError('There is no reason to complete, bet, or raise.')
 
     def verify_completion_betting_or_raising_to(
             self,
@@ -3952,11 +4101,17 @@ class State:
 
         if amount < self.min_completion_betting_or_raising_to_amount:
             raise ValueError(
-                'below min completion, betting, or raising to amount',
+                (
+                    f'The amount {amount} is below the minimum allowed'
+                    f' {self.min_completion_betting_or_raising_to_amount}.'
+                ),
             )
         elif amount > self.max_completion_betting_or_raising_to_amount:
             raise ValueError(
-                'above max completion, betting, or raising to amount',
+                (
+                    f'The amount {amount} is above the maximum allowed'
+                    f' {self.max_completion_betting_or_raising_to_amount}.'
+                ),
             )
 
         return amount
@@ -4059,7 +4214,7 @@ class State:
         >>> state.complete_bet_or_raise_to()
         Traceback (most recent call last):
             ...
-        ValueError: no more completion, betting, or raising permitted
+        ValueError: No more completion, betting, or raising is permitted.
 
         :param amount: The optional completion, betting, or raising to
                        amount.
@@ -4267,7 +4422,7 @@ class State:
 
     def _verify_hole_cards_showing_or_mucking(self) -> None:
         if not self.showdown_indices:
-            raise ValueError('no player to act')
+            raise ValueError('There is no player to showdown.')
 
     def verify_hole_cards_showing_or_mucking(
             self,
@@ -4304,7 +4459,7 @@ class State:
             )
 
         if not status and self.all_in_status:
-            raise ValueError('must show hole cards in all-in pots')
+            raise ValueError('The player must show in an all-in situation.')
 
         if hole_cards is None and status:
             hole_cards = tuple(self.hole_cards[player_index])
@@ -4312,7 +4467,7 @@ class State:
         if hole_cards is not None and status:
             for card in hole_cards:
                 if card.unknown_status:
-                    raise ValueError('unknown card shown')
+                    raise ValueError('An unknown card is shown.')
 
         return status, hole_cards
 
@@ -4583,7 +4738,7 @@ class State:
 
     def _verify_hand_killing(self) -> None:
         if not any(self.hand_killing_statuses):
-            raise ValueError('nobody can kill their hand')
+            raise ValueError('Nobody can kill their hand.')
 
     def verify_hand_killing(self, player_index: int | None = None) -> int:
         """Verify the hand killing.
@@ -4598,7 +4753,9 @@ class State:
             player_index = next(self.hand_killing_indices)
 
         if not self.hand_killing_statuses[player_index]:
-            raise ValueError('player cannot kill their hand')
+            raise ValueError(
+                f'The Player {player_index} cannot kill their hand.',
+            )
 
         return player_index
 
@@ -4741,7 +4898,7 @@ class State:
         :raises ValueError: If the chips pushing cannot be done.
         """
         if not self._pots:
-            raise ValueError('chips push not allowed')
+            raise ValueError('The chip pushing is not allowed.')
 
     def can_push_chips(self) -> bool:
         """Return whether the chips pushing can be done.
@@ -4952,7 +5109,7 @@ class State:
 
     def _verify_chips_pulling(self) -> None:
         if not any(self.chips_pulling_statuses):
-            raise ValueError('no one can pull chips')
+            raise ValueError('No one can pull chips.')
 
     def verify_chips_pulling(self, player_index: int | None = None) -> int:
         """Verify the chips pulling.
@@ -4967,7 +5124,7 @@ class State:
             player_index = next(self.chips_pulling_indices)
 
         if not self.chips_pulling_statuses[player_index]:
-            raise ValueError('no chip to be pulled')
+            raise ValueError('There is no chip to be pulled.')
 
         return player_index
 

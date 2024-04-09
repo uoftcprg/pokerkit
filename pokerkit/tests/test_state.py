@@ -12,6 +12,7 @@ from pokerkit.games import (
     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
     FixedLimitRazz,
     FixedLimitSevenCardStud,
+    NoLimitDeuceToSevenLowballSingleDraw,
     NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
 )
@@ -566,6 +567,90 @@ class StateTestCase(TestCase):
         state.stand_pat_or_discard(state.hole_cards[5])
         state.burn_card('??')
         state.check_or_call()
+
+    def test_turn_index(self) -> None:
+        state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.CARD_BURNING,
+                Automation.HOLE_DEALING,
+                Automation.BOARD_DEALING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            200,
+            6,
+        )
+
+        self.assertEqual(state.turn_index, 2)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 2)
+        self.assertEqual(state.showdown_index, None)
+        state.fold()
+        self.assertEqual(state.turn_index, 3)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 3)
+        self.assertEqual(state.showdown_index, None)
+        state.fold()
+        self.assertEqual(state.turn_index, 4)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 4)
+        self.assertEqual(state.showdown_index, None)
+        state.fold()
+        self.assertEqual(state.turn_index, 5)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 5)
+        self.assertEqual(state.showdown_index, None)
+        state.fold()
+        self.assertEqual(state.turn_index, 0)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 0)
+        self.assertEqual(state.showdown_index, None)
+        state.check_or_call()
+        self.assertEqual(state.turn_index, 1)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 1)
+        self.assertEqual(state.showdown_index, None)
+        state.check_or_call()
+
+        self.assertEqual(state.turn_index, 0)
+        self.assertEqual(state.stander_pat_or_discarder_index, 0)
+        self.assertEqual(state.actor_index, None)
+        self.assertEqual(state.showdown_index, None)
+        state.stand_pat_or_discard()
+        self.assertEqual(state.turn_index, 1)
+        self.assertEqual(state.stander_pat_or_discarder_index, 1)
+        self.assertEqual(state.actor_index, None)
+        self.assertEqual(state.showdown_index, None)
+        state.stand_pat_or_discard()
+
+        self.assertEqual(state.turn_index, 0)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 0)
+        self.assertEqual(state.showdown_index, None)
+        state.check_or_call()
+        self.assertEqual(state.turn_index, 1)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, 1)
+        self.assertEqual(state.showdown_index, None)
+        state.check_or_call()
+
+        self.assertEqual(state.turn_index, 0)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, None)
+        self.assertEqual(state.showdown_index, 0)
+        state.show_or_muck_hole_cards()
+        self.assertEqual(state.turn_index, 1)
+        self.assertEqual(state.stander_pat_or_discarder_index, None)
+        self.assertEqual(state.actor_index, None)
+        self.assertEqual(state.showdown_index, 1)
 
     def test_reshuffling(self) -> None:
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(

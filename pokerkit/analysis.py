@@ -63,7 +63,13 @@ def __parse_range(
         i3 = index(r3)
 
         if i1 - i0 != i3 - i2:
-            raise ValueError(f'error in pattern {repr(raw_range)}')
+            raise ValueError(
+                (
+                    f'Pattern {repr(raw_range)} is invalid because the two'
+                    ' pairs of ranks that bounds the dash-separated notation'
+                    ' must be a shifted version of the other.'
+                ),
+            )
 
         if i0 > i2:
             i0, i1, i2, i3 = i2, i3, i0, i1

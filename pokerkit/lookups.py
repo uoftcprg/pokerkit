@@ -153,7 +153,7 @@ class Lookup(ABC):
 
     @abstractmethod
     def _add_entries(self) -> None:
-        pass
+        pass  # pragma: no cover
 
     def __reset_ranks(self) -> None:
         indices = set()
@@ -206,7 +206,7 @@ class Lookup(ABC):
         >>> entry = lookup.get_entry('Ah6h7s8c2s')
         Traceback (most recent call last):
             ...
-        ValueError: cards form an invalid hand
+        ValueError: The cards 'Ah6h7s8c2s' form an invalid hand.
 
         :param cards: The cards to look up.
         :return: The corresponding lookup entry.
@@ -215,7 +215,7 @@ class Lookup(ABC):
         key = self._get_key(cards)
 
         if key not in self.__entries:
-            raise ValueError('cards form an invalid hand')
+            raise ValueError(f'The cards {repr(cards)} form an invalid hand.')
 
         return self.__entries[key]
 
@@ -227,7 +227,7 @@ class Lookup(ABC):
         >>> lookup.get_entry('Ah6h7s8c2s')
         Traceback (most recent call last):
             ...
-        ValueError: cards form an invalid hand
+        ValueError: The cards 'Ah6h7s8c2s' form an invalid hand.
         >>> lookup.get_entry_or_none('Ah6h7s8c2s') is None
         True
 
@@ -300,7 +300,7 @@ class StandardLookup(Lookup):
     >>> e2 = lookup.get_entry('AcAdAhAsAc')
     Traceback (most recent call last):
         ...
-    ValueError: cards form an invalid hand
+    ValueError: The cards 'AcAdAhAsAc' form an invalid hand.
     >>> e0 < e1
     True
     >>> e0.label
@@ -346,7 +346,7 @@ class ShortDeckHoldemLookup(Lookup):
     >>> e2 = lookup.get_entry('Ah2h3s4c5s')
     Traceback (most recent call last):
         ...
-    ValueError: cards form an invalid hand
+    ValueError: The cards 'Ah2h3s4c5s' form an invalid hand.
     >>> e0 < e1
     True
     >>> e0.label
@@ -406,7 +406,7 @@ class RegularLookup(Lookup):
     >>> e2 = lookup.get_entry('3s4sQhTc')
     Traceback (most recent call last):
         ...
-    ValueError: cards form an invalid hand
+    ValueError: The cards '3s4sQhTc' form an invalid hand.
     >>> e0 < e1
     True
     >>> e0.label
@@ -447,7 +447,7 @@ class BadugiLookup(Lookup):
     >>> e2 = lookup.get_entry('AcAdAhAs')
     Traceback (most recent call last):
         ...
-    ValueError: cards form an invalid hand
+    ValueError: The cards 'AcAdAhAs' form an invalid hand.
     >>> e0 > e1
     True
     >>> e0.label
@@ -466,7 +466,12 @@ class BadugiLookup(Lookup):
         cards = Card.clean(cards)
 
         if not Card.are_rainbow(cards):
-            raise ValueError('cards not rainbow')
+            raise ValueError(
+                (
+                    'Badugi hands must be rainbow (i.e. of distinct suits) but'
+                    f' the cards {repr(cards)} are not.'
+                ),
+            )
 
         return super()._get_key(cards)
 
@@ -495,7 +500,7 @@ class KuhnPokerLookup(Lookup):
     >>> e2 = lookup.get_entry('2?')
     Traceback (most recent call last):
         ...
-    ValueError: cards form an invalid hand
+    ValueError: The cards '2?' form an invalid hand.
     >>> e0 < e1
     True
     >>> e0.label

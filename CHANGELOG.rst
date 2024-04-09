@@ -4,6 +4,18 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.4.17 (April 9, 2024)
+------------------------------
+
+**Changed**
+
+- Make error/warning messages more descriptive.
+
+**Added**
+
+- Censored hole cards ``pokerkit.state.State.get_censored_hole_cards()``.
+- Turn index ``pokerkit.state.State.turn_index``.
+
 Version 0.4.16 (April 5, 2024)
 ------------------------------
 

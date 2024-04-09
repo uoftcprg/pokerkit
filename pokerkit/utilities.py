@@ -343,7 +343,7 @@ class Card:
         >>> Card.clean(None)
         Traceback (most recent call last):
             ...
-        ValueError: invalid values
+        ValueError: The card values None are invalid.
 
         :param values: The cards.
         :return: The cleaned cards.
@@ -357,7 +357,7 @@ class Card:
 
             values = tuple(values)
         else:
-            raise ValueError('invalid values')
+            raise ValueError(f'The card values {repr(values)} are invalid.')
 
         return values
 
@@ -371,10 +371,10 @@ class Card:
         [2c, 8d, 5s, Kh]
         >>> next(Card.parse('AcAh'))
         Ac
-        >>> next(Card.parse('AcA'))
+        >>> next(Card.parse('AcA'))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ValueError: content length not a multiple of 2
+        ValueError: The lengths of valid card representations must be multip...
         >>> next(Card.parse('1d'))
         Traceback (most recent call last):
             ...
@@ -391,7 +391,12 @@ class Card:
         for contents in raw_cards:
             for content in contents.split():
                 if len(content) % 2 != 0:
-                    raise ValueError('content length not a multiple of 2')
+                    raise ValueError(
+                        (
+                            'The lengths of valid card representations must be'
+                            f' multiples of 2, unlike {repr(content)}'
+                        ),
+                    )
 
                 for i in range(0, len(content), 2):
                     rank = Rank(content[i])
@@ -582,7 +587,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     >>> clean_values(None, 2)
     Traceback (most recent call last):
         ...
-    ValueError: invalid values
+    ValueError: The values None are invalid.
 
     :param values: The values.
     :param count: The number of values.
@@ -605,7 +610,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
 
         values = tuple(parsed_values)
     else:
-        raise ValueError('invalid values')
+        raise ValueError(f'The values {repr(values)} are invalid.')
 
     return values
 

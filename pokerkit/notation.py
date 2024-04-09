@@ -295,7 +295,13 @@ class HandHistory(Iterable[State]):
                 filtered_fields[key] = value
             else:
                 if not key.startswith('_'):
-                    warn(f'unexpected field \'{key}\'')
+                    warn(
+                        (
+                            f'The field {repr(key)} is an unexpected field and'
+                            ' should probably be prefixed with an underscore'
+                            ' character \'_\'.'
+                        ),
+                    )
 
                 filtered_fields['user_defined_fields'][key] = value
 
@@ -414,9 +420,9 @@ class HandHistory(Iterable[State]):
 
             if operation.commentary is not None:
                 if action is None:
-                    action = '# {operation.commentary}'
+                    action = f'# {operation.commentary}'
                 else:
-                    action = action.strip() + ' # {operation.commentary}'
+                    action = action.strip() + f' # {operation.commentary}'
 
             if action is not None:
                 actions.append(action.strip())
@@ -599,11 +605,22 @@ class HandHistory(Iterable[State]):
                             number cannot be determined.
         """
         if self.variant not in self.ACPC_PROTOCOL_VARIANTS:
-            raise ValueError('unsupported variant')
+            raise ValueError(
+                (
+                    f'The variant {repr(self.variant)} is not among the'
+                    ' supported ACPC variants'
+                    f' {repr(self.ACPC_PROTOCOL_VARIANTS)}.'
+                ),
+            )
 
         if hand_number is None:
             if self.hand is None:
-                raise ValueError('hand number is unknown')
+                raise ValueError(
+                    (
+                        'Since the hand number is not defined in the hand'
+                        ' history object, it must be passed as an argument.'
+                    ),
+                )
 
             hand_number = self.hand
 
@@ -617,7 +634,9 @@ class HandHistory(Iterable[State]):
 
         def egress() -> tuple[str, str]:
             if not all(raw_hole_cards[position]):
-                raise ValueError('the hole cards at position must be known')
+                raise ValueError(
+                    'The hole cards at the desired position must be known.',
+                )
 
             return 'S->', f'{match_state}\r\n'
 
@@ -717,12 +736,23 @@ class HandHistory(Iterable[State]):
         :raises ValueError: If the game is not supported or the hand
                             number cannot be determined.
         """
-        if self.variant not in self.ACPC_PROTOCOL_VARIANTS:
-            raise ValueError('unsupported variant')
+        if self.variant not in self.PLURIBUS_PROTOCOL_VARIANTS:
+            raise ValueError(
+                (
+                    f'The variant {repr(self.variant)} is not among the'
+                    ' supported variants for pluribus notation'
+                    f' {repr(self.PLURIBUS_PROTOCOL_VARIANTS)}.'
+                ),
+            )
 
         if hand_number is None:
             if self.hand is None:
-                raise ValueError('hand number is unknown')
+                raise ValueError(
+                    (
+                        'Since the hand number is not defined in the hand'
+                        ' history object, it must be passed as an argument.'
+                    ),
+                )
 
             hand_number = self.hand
 
@@ -814,7 +844,12 @@ def parse_action(
         label, parsed_index = player[:1], int(player[1:]) - 1
 
         if label != 'p' or parsed_index != index:
-            raise ValueError(f'invalid Player \'{player}\'')
+            raise ValueError(
+                (
+                    f'The player {repr(player)} is not a valid player for the'
+                    f' action {repr(action)}.'
+                ),
+            )
 
     commentary = action[action.index('#') + 2:] if '#' in action else None
     words = action.split()
@@ -861,4 +896,6 @@ def parse_action(
         case ():
             state.no_operate(commentary=commentary)
         case _:
-            raise ValueError(f'invalid action \'{action}\'')
+            raise ValueError(
+                f'The action {repr(action)} is an invalid action.',
+            )
