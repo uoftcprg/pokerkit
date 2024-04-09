@@ -128,7 +128,7 @@ The first method is simply by giving the cards that make up a hand.
    >>> h2 = ShortDeckHoldemHand('2c2d2h2s3h')
    Traceback (most recent call last):
        ...
-   ValueError: invalid hand '2c2d2h2s3h'
+   ValueError: The cards '2c2d2h2s3h' form an invalid ShortDeckHoldemHand hand.
    >>> h0
    6s7s8s9sTs
    >>> h1
