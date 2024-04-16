@@ -41,11 +41,11 @@ class BettingStructure(StrEnum):
     <BettingStructure.NO_LIMIT: 'No-limit'>
     """
 
-    FIXED_LIMIT = 'Fixed-limit'
+    FIXED_LIMIT: str = 'Fixed-limit'
     """The fixed-limit."""
-    POT_LIMIT = 'Pot-limit'
+    POT_LIMIT: str = 'Pot-limit'
     """The pot-limit."""
-    NO_LIMIT = 'No-limit'
+    NO_LIMIT: str = 'No-limit'
     """The no-limit."""
 
 
@@ -59,20 +59,20 @@ class Opening(StrEnum):
     <Opening.LOW_HAND: 'Low hand'>
     """
 
-    POSITION = 'Position'
+    POSITION: str = 'Position'
     """The opener is decided by position.
 
     If blinds or straddles are present, they are taken account of.
     """
-    LOW_CARD = 'Low card'
+    LOW_CARD: str = 'Low card'
     """The opener is decided by having the lowest exposed card."""
-    HIGH_CARD = 'High card'
+    HIGH_CARD: str = 'High card'
     """The opener is decided by having the highest exposed card."""
-    LOW_HAND = 'Low hand'
+    LOW_HAND: str = 'Low hand'
     """The opener is decided by having the lowest exposed hand, then
     position.
     """
-    HIGH_HAND = 'High hand'
+    HIGH_HAND: str = 'High hand'
     """The opener is decided by having the highest exposed hand, then
     position.
     """
@@ -263,25 +263,25 @@ class Automation(StrEnum):
     <Automation.CARD_BURNING: 'Card burning'>
     """
 
-    ANTE_POSTING = 'Ante posting'
+    ANTE_POSTING: str = 'Ante posting'
     """The ante posting automation."""
-    BET_COLLECTION = 'Bet collection'
+    BET_COLLECTION: str = 'Bet collection'
     """The bet collection automation."""
-    BLIND_OR_STRADDLE_POSTING = 'Blind or straddle posting'
+    BLIND_OR_STRADDLE_POSTING: str = 'Blind or straddle posting'
     """The blind or straddle posting automation."""
-    CARD_BURNING = 'Card burning'
+    CARD_BURNING: str = 'Card burning'
     """The card burning automation."""
-    HOLE_DEALING = 'Hole dealing'
+    HOLE_DEALING: str = 'Hole dealing'
     """The hole dealing automation."""
-    BOARD_DEALING = 'Board dealing'
+    BOARD_DEALING: str = 'Board dealing'
     """The board dealing automation."""
-    HOLE_CARDS_SHOWING_OR_MUCKING = 'Hole cards showing or mucking'
+    HOLE_CARDS_SHOWING_OR_MUCKING: str = 'Hole cards showing or mucking'
     """The hole cards showing or mucking automation."""
-    HAND_KILLING = 'Hand killing'
+    HAND_KILLING: str = 'Hand killing'
     """The hand killing automation."""
-    CHIPS_PUSHING = 'Chips pushing'
+    CHIPS_PUSHING: str = 'Chips pushing'
     """The chips pushing automation."""
-    CHIPS_PULLING = 'Chips pulling'
+    CHIPS_PULLING: str = 'Chips pulling'
     """The chips pulling automation."""
 
 
