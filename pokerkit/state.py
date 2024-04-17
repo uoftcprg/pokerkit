@@ -275,6 +275,11 @@ class Automation(StrEnum):
     """The hole dealing automation."""
     BOARD_DEALING: str = 'Board dealing'
     """The board dealing automation."""
+    RUNOUT_COUNT_SELECTION: str = 'Runout-count selection'
+    """The runout-count selection automation. This automation is useless
+    in tournament mode, as tournament mode automatically skips
+    runout-count selection phase since only 1 runout is done, by rule.
+    """
     HOLE_CARDS_SHOWING_OR_MUCKING: str = 'Hole cards showing or mucking'
     """The hole cards showing or mucking automation."""
     HAND_KILLING: str = 'Hand killing'
@@ -283,6 +288,26 @@ class Automation(StrEnum):
     """The chips pushing automation."""
     CHIPS_PULLING: str = 'Chips pulling'
     """The chips pulling automation."""
+
+
+@unique
+class Mode(StrEnum):
+    """The enum class for poker state types.
+
+    Depending on whether the poker state is of a tournament or a
+    cash-game, its behavior is different. Tournament settings tend to be
+    stricter.
+
+    >>> Mode.TOURNAMENT
+    <Mode.TOURNAMENT: 'Tournament'>
+    >>> Mode.CASH_GAME
+    <Mode.CASH_GAME: 'Cash-game'>
+    """
+
+    TOURNAMENT = 'Tournament'
+    """The tournament poker state type."""
+    CASH_GAME = 'Cash-game'
+    """The cash-game poker state type."""
 
 
 @dataclass(frozen=True)
@@ -434,6 +459,16 @@ class CompletionBettingOrRaisingTo(Operation):
     """The player index."""
     amount: int
     """The amount."""
+
+
+@dataclass(frozen=True)
+class RunoutCountSelection(Operation):
+    """The class for runout-count selection."""
+
+    player_index: int
+    """The player index."""
+    runout_count: int | None
+    """The runout-count."""
 
 
 @dataclass(frozen=True)
@@ -874,12 +909,15 @@ class State:
     """The raw starting stacks."""
     player_count: int
     """The number of players."""
-    divmod: Callable[[int, int], tuple[int, int]] = field(default=divmod)
-    """The divmod function."""
-    rake: Callable[[int], tuple[Any, int]] = field(
-        default=partial(rake, rake=0),
-    )
-    """The rake function."""
+    _: KW_ONLY
+    mode: Mode = Mode.TOURNAMENT
+    """The mode. Defaults to tournament mode."""
+    divmod: Callable[[int, int], tuple[int, int]] = divmod
+    """The divmod function. Defaults to PokerKit's that detects integral
+    or real values automatically.
+    """
+    rake: Callable[[int], tuple[Any, int]] = partial(rake, rake=0)
+    """The rake function. Defaults to zero rake."""
     antes: tuple[int, ...] = field(init=False)
     """The antes."""
     blinds_or_straddles: tuple[int, ...] = field(init=False)
@@ -888,7 +926,7 @@ class State:
     """The starting stacks."""
     deck_cards: deque[Card] = field(default_factory=deque, init=False)
     """The deck cards."""
-    board_cards: list[Card] = field(default_factory=list, init=False)
+    board_cards: list[list[Card]] = field(default_factory=list, init=False)
     """The board cards."""
     mucked_cards: list[Card] = field(default_factory=list, init=False)
     """The mucked cards."""
@@ -914,6 +952,8 @@ class State:
     """The discards."""
     street_index: int | None = field(default=None, init=False)
     """The street index."""
+    street_return_indices: list[int] = field(default_factory=list, init=False)
+    """The street return indices."""
     all_in_status: bool = field(default=False, init=False)
     """The all-in status."""
     status: bool = field(default=True, init=False)
@@ -1364,6 +1404,47 @@ class State:
 
         return player_index
 
+    @property
+    def board_count(self) -> int:
+        """Return the number of boards. Should equal to the number of
+        runouts, if set, at the end of the game.
+
+        If no card was dealt to the board, ``1`` is returned.
+
+        :return: The number of boards.
+        """
+        return max(map(len, self.board_cards), default=1)
+
+    @property
+    def board_indices(self) -> range:
+        """Return the number of boards. Should equal to the number of
+        runouts, if set, at the end of the game.
+
+        :return: The number of boards.
+        """
+        return range(self.board_count)
+
+    def get_board_cards(self, board_index: int) -> Iterator[Card]:
+        """Return the board at the ``board_index`` (i.e.
+        ``board_index``'th runout).
+
+        In most games, there are only one runout, so, setting the
+        ``board_index`` argument to ``0`` should do the job.
+
+        If multiple runouts were performed, one can supply a different
+        argument.
+
+        :param: The board index.
+        :return: The board at the desired index.
+        """
+        if board_index not in self.board_indices:
+            raise ValueError(
+                f'The board index {board_index} is not a valid board index.',
+            )
+
+        for cards in self.board_cards:
+            yield cards[min(board_index, len(cards) - 1)]
+
     def get_censored_hole_cards(self, player_index: int) -> Iterator[Card]:
         """Return the censored hole cards of the player.
 
@@ -1520,8 +1601,18 @@ class State:
             if status:
                 yield card
 
-    def get_hand(self, player_index: int, hand_type_index: int) -> Hand | None:
+    def get_hand(
+            self,
+            player_index: int,
+            board_index: int,
+            hand_type_index: int,
+    ) -> Hand | None:
         """Return the corresponding hand of the player.
+
+        The player whose hand must be evaluated must be provided
+        through ``player_index``. Which hand type to evaluate must be
+        provided through ``hand_type_index``. Since they may be multiple
+        boards, so does ``board_index``.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -1541,9 +1632,9 @@ class State:
         ...     (50, 100),
         ...     2,
         ... )
-        >>> state.get_hand(0, 0) is None
+        >>> state.get_hand(0, 0, 0) is None
         True
-        >>> state.get_hand(1, 0) is None
+        >>> state.get_hand(1, 0, 0) is None
         True
 
         Pre-flop.
@@ -1552,9 +1643,9 @@ class State:
         HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad), statuse...
         >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
         HoleDealing(commentary=None, player_index=1, cards=(Ks, Qs), statuse...
-        >>> state.get_hand(0, 0) is None
+        >>> state.get_hand(0, 0, 0) is None
         True
-        >>> state.get_hand(1, 0) is None
+        >>> state.get_hand(1, 0, 0) is None
         True
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=1, amount=1)
@@ -1567,11 +1658,11 @@ class State:
         CardBurning(commentary=None, card=??)
         >>> state.deal_board('JsTs2c')
         BoardDealing(commentary=None, cards=(Js, Ts, 2c))
-        >>> state.get_hand(0, 0)
+        >>> state.get_hand(0, 0, 0)
         AcAdJsTs2c
-        >>> str(state.get_hand(0, 0))
+        >>> str(state.get_hand(0, 0, 0))
         'One pair (AcAdJsTs2c)'
-        >>> str(state.get_hand(1, 0))
+        >>> str(state.get_hand(1, 0, 0))
         'High card (KsQsJsTs2c)'
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
@@ -1584,9 +1675,9 @@ class State:
         CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ah')
         BoardDealing(commentary=None, cards=(Ah,))
-        >>> str(state.get_hand(0, 0))
+        >>> str(state.get_hand(0, 0, 0))
         'Three of a kind (AcAdJsTsAh)'
-        >>> str(state.get_hand(1, 0))
+        >>> str(state.get_hand(1, 0, 0))
         'Straight (KsQsJsTsAh)'
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
@@ -1599,20 +1690,21 @@ class State:
         CardBurning(commentary=None, card=??)
         >>> state.deal_board('As')
         BoardDealing(commentary=None, cards=(As,))
-        >>> str(state.get_hand(0, 0))
+        >>> str(state.get_hand(0, 0, 0))
         'Four of a kind (AcAdJsAhAs)'
-        >>> str(state.get_hand(1, 0))
+        >>> str(state.get_hand(1, 0, 0))
         'Straight flush (KsQsJsTsAs)'
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=1, amount=0)
-        >>> state.get_hand(0, 0) is None
+        >>> state.get_hand(0, 0, 0) is None
         True
-        >>> str(state.get_hand(1, 0))
+        >>> str(state.get_hand(1, 0, 0))
         'Straight flush (KsQsJsTsAs)'
 
         :param player_index: The player index.
+        :param board_index: The board index.
         :param hand_type_index: The hand type index.
         :return: The corresponding hand of the player if applicable,
                  otherwise ``None``.
@@ -1623,7 +1715,7 @@ class State:
         try:
             hand = self.hand_types[hand_type_index].from_game(
                 self.hole_cards[player_index],
-                self.board_cards,
+                self.get_board_cards(board_index),
             )
         except (KeyError, ValueError):
             hand = None
@@ -1633,9 +1725,15 @@ class State:
     def get_up_hand(
             self,
             player_index: int,
+            board_index: int,
             hand_type_index: int,
     ) -> Hand | None:
         """Return the corresponding hand of the player from up cards.
+
+        The player whose hand must be evaluated must be provided
+        through ``player_index``. Which hand type to evaluate must be
+        provided through ``hand_type_index``. Since they may be multiple
+        boards, so does ``board_index``.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -1655,9 +1753,9 @@ class State:
         ...     (50, 100),
         ...     2,
         ... )
-        >>> state.get_up_hand(0, 0) is None
+        >>> state.get_up_hand(0, 0, 0) is None
         True
-        >>> state.get_up_hand(1, 0) is None
+        >>> state.get_up_hand(1, 0, 0) is None
         True
 
         Pre-flop.
@@ -1666,9 +1764,9 @@ class State:
         HoleDealing(commentary=None, player_index=0, cards=(Ac, Ad), statuse...
         >>> state.deal_hole('KsQs')  # doctest: +ELLIPSIS
         HoleDealing(commentary=None, player_index=1, cards=(Ks, Qs), statuse...
-        >>> state.get_up_hand(0, 0) is None
+        >>> state.get_up_hand(0, 0, 0) is None
         True
-        >>> state.get_up_hand(1, 0) is None
+        >>> state.get_up_hand(1, 0, 0) is None
         True
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=1, amount=1)
@@ -1681,9 +1779,9 @@ class State:
         CardBurning(commentary=None, card=??)
         >>> state.deal_board('JsTs2c')
         BoardDealing(commentary=None, cards=(Js, Ts, 2c))
-        >>> state.get_up_hand(0, 0) is None
+        >>> state.get_up_hand(0, 0, 0) is None
         True
-        >>> state.get_up_hand(1, 0) is None
+        >>> state.get_up_hand(1, 0, 0) is None
         True
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
@@ -1696,9 +1794,9 @@ class State:
         CardBurning(commentary=None, card=??)
         >>> state.deal_board('Ah')
         BoardDealing(commentary=None, cards=(Ah,))
-        >>> state.get_up_hand(0, 0) is None
+        >>> state.get_up_hand(0, 0, 0) is None
         True
-        >>> state.get_up_hand(1, 0) is None
+        >>> state.get_up_hand(1, 0, 0) is None
         True
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
@@ -1711,20 +1809,21 @@ class State:
         CardBurning(commentary=None, card=??)
         >>> state.deal_board('As')
         BoardDealing(commentary=None, cards=(As,))
-        >>> str(state.get_up_hand(0, 0))
+        >>> str(state.get_up_hand(0, 0, 0))
         'One pair (JsTs2cAhAs)'
-        >>> str(state.get_up_hand(1, 0))
+        >>> str(state.get_up_hand(1, 0, 0))
         'One pair (JsTs2cAhAs)'
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=1, amount=0)
-        >>> state.get_up_hand(0, 0) is None
+        >>> state.get_up_hand(0, 0, 0) is None
         True
-        >>> str(state.get_up_hand(1, 0))
+        >>> str(state.get_up_hand(1, 0, 0))
         'Straight flush (KsQsJsTsAs)'
 
         :param player_index: The player index.
+        :param board_index: The board index.
         :param hand_type_index: The hand type index.
         :return: The corresponding hand of the player.
         """
@@ -1734,15 +1833,23 @@ class State:
         try:
             hand = self.hand_types[hand_type_index].from_game(
                 self.get_up_cards(player_index),
-                self.board_cards,
+                self.get_board_cards(board_index),
             )
         except ValueError:
             hand = None
 
         return hand
 
-    def get_up_hands(self, hand_type_index: int) -> Iterator[Hand | None]:
+    def get_up_hands(
+            self,
+            board_index: int,
+            hand_type_index: int,
+    ) -> Iterator[Hand | None]:
         """Return the optional corresponding hands from up cards.
+
+        Which hand type to evaluate must be provided through
+        ``hand_type_index``. Since they may be multiple boards, so does
+        ``board_index``.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -1762,9 +1869,9 @@ class State:
         ...     (50, 100),
         ...     2,
         ... )
-        >>> state.get_up_hands(0)  # doctest: +ELLIPSIS
+        >>> state.get_up_hands(0, 0)  # doctest: +ELLIPSIS
         <generator object State.get_up_hands at 0x...>
-        >>> tuple(state.get_up_hands(0))
+        >>> tuple(state.get_up_hands(0, 0))
         (None, None)
 
         Pre-flop.
@@ -1808,18 +1915,19 @@ class State:
         BoardDealing(commentary=None, cards=(As,))
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=0, amount=0)
-        >>> tuple(state.get_up_hands(0))
+        >>> tuple(state.get_up_hands(0, 0))
         (JsTs2cAhAs, JsTs2cAhAs)
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=1, amount=0)
-        >>> tuple(state.get_up_hands(0))
+        >>> tuple(state.get_up_hands(0, 0))
         (None, KsQsJsTsAs)
 
+        :param board_index: The board index.
         :param hand_type_index: The hand type index.
         :return: The optional corresponding hands from up cards.
         """
         for i in self.player_indices:
-            yield self.get_up_hand(i, hand_type_index)
+            yield self.get_up_hand(i, board_index, hand_type_index)
 
     def can_win_now(self, player_index: int) -> bool:
         """Return whether if the player might win pots based on
@@ -1907,22 +2015,26 @@ class State:
         :param player_index: The player index.
         :return: ``True`` if the player can win, otherwise ``False``.
         """
-        for i in self.hand_type_indices:
-            hands = tuple(self.get_up_hands(i))
-            hand = self.get_hand(player_index, i)
+        for i in self.board_indices:
+            for j in self.hand_type_indices:
+                hands = tuple(self.get_up_hands(i, j))
+                hand = self.get_hand(player_index, i, j)
 
-            for pot in self.pots:
-                max_hand = max_or_none(
-                    map(partial(getitem, hands), pot.player_indices),
-                )
+                for pot in self.pots:
+                    max_hand = max_or_none(
+                        map(partial(getitem, hands), pot.player_indices),
+                    )
 
-                if hand is not None and (max_hand is None or max_hand <= hand):
-                    return True
+                    if (
+                            hand is not None
+                            and (max_hand is None or max_hand <= hand)
+                    ):
+                        return True
 
         return False
 
     @property
-    def reserved_cards(self) -> tuple[Card, ...]:
+    def reserved_cards(self) -> Iterator[Card]:
         """Iterate through the reserved cards.
 
         These are either in the burn, muck, or discards and used when
@@ -1930,19 +2042,17 @@ class State:
 
         :return: The reserved cards.
         """
-        return tuple(
-            filterfalse(
-                Card.unknown_status.__get__,
-                chain(
-                    self.burn_cards,
-                    self.mucked_cards,
-                    chain.from_iterable(self.discarded_cards),
-                ),
+        return filterfalse(
+            Card.unknown_status.__get__,
+            chain(
+                self.burn_cards,
+                self.mucked_cards,
+                chain.from_iterable(self.discarded_cards),
             ),
         )
 
     @property
-    def cards_in_play(self) -> tuple[Card, ...]:
+    def cards_in_play(self) -> Iterator[Card]:
         """Iterate through the cards in play.
 
         These are visible by players still in the pot.
@@ -1951,18 +2061,16 @@ class State:
 
         :return: The cards in play.
         """
-        return tuple(
-            filterfalse(
-                Card.unknown_status.__get__,
-                chain(
-                    self.board_cards,
-                    chain.from_iterable(self.hole_cards),
-                ),
+        return filterfalse(
+            Card.unknown_status.__get__,
+            chain(
+                chain.from_iterable(self.board_cards),
+                chain.from_iterable(self.hole_cards),
             ),
         )
 
     @property
-    def cards_not_in_play(self) -> tuple[Card, ...]:
+    def cards_not_in_play(self) -> Iterator[Card]:
         """Iterate through the cards not in play.
 
         These are invisible by players still in the pot.
@@ -1971,34 +2079,34 @@ class State:
 
         :return: The cards not in play.
         """
-        return tuple(
-            filterfalse(
-                Card.unknown_status.__get__,
-                chain(
-                    self.deck_cards,
-                    self.burn_cards,
-                    self.mucked_cards,
-                    chain.from_iterable(self.discarded_cards),
-                ),
+        return filterfalse(
+            Card.unknown_status.__get__,
+            chain(
+                self.deck_cards,
+                self.burn_cards,
+                self.mucked_cards,
+                chain.from_iterable(self.discarded_cards),
             ),
         )
 
     def get_dealable_cards(
             self,
             deal_count: int | None = None,
-    ) -> tuple[Card, ...]:
+    ) -> Iterator[Card]:
         """Iterate through the available cards that can be dealt or
         burned.
 
-        :param deal_count: The number of dealt cards.
-        :return: The recommended dealable cards, from deck and backup.
+        :param deal_count: The number of dealt cards, maybe ``None`` to
+                           denote an arbitrary number of cards.
+        :return: The recommended dealable cards, from deck and maybe
+                 reserve.
         """
         cards = tuple(self.deck_cards)
 
         if deal_count is None or deal_count > len(self.deck_cards):
             cards += tuple(shuffled(self.reserved_cards))
 
-        return cards
+        yield from cards
 
     def _muck_hole_cards(self, player_index: int) -> None:
         assert self.statuses[player_index]
@@ -2029,7 +2137,7 @@ class State:
             cards: CardsLike | int,
     ) -> tuple[Card, ...]:
         if isinstance(cards, int):
-            dealable_cards = self.get_dealable_cards(cards)
+            dealable_cards = tuple(self.get_dealable_cards(cards))
 
             if len(dealable_cards) < cards:
                 raise ValueError('There are not enough cards to be dealt.')
@@ -2037,7 +2145,7 @@ class State:
             cards = dealable_cards[:cards]
         else:
             cards = Card.clean(cards)
-            dealable_cards = self.get_dealable_cards(len(cards))
+            dealable_cards = tuple(self.get_dealable_cards(len(cards)))
 
             for card in cards:
                 if card not in dealable_cards and not card.unknown_status:
@@ -2726,6 +2834,9 @@ class State:
     def _end_bet_collection(self) -> None:
         assert not self.bet_collection_status
 
+        if self.street is self.streets[-1] and self.street_return_indices:
+            self.street_index = self.street_return_indices.pop()
+
         if sum(self.statuses) == 1:
             self._begin_chips_pushing()
         elif self.street is None:
@@ -3067,7 +3178,7 @@ class State:
 
         if (
                 sum(map(len, self.hole_dealing_statuses))
-                > len(self.get_dealable_cards())
+                > len(tuple(self.get_dealable_cards()))
         ):
             self.board_dealing_count += len(self.street.hole_dealing_statuses)
 
@@ -3245,10 +3356,12 @@ class State:
     def verify_hole_dealing(
             self,
             cards: CardsLike | int | None = None,
-    ) -> tuple[Card, ...]:
+            player_index: int | None = None,
+    ) -> tuple[tuple[Card, ...], int]:
         """Verify the hole dealing.
 
         :param cards: The optional cards.
+        :param player_index: The optional target dealee.
         :return: The dealt hole cards.
         :raises ValueError: If the hole dealing cannot be done.
         """
@@ -3257,11 +3370,20 @@ class State:
         cards = self._verify_cards_consumption(
             1 if cards is None else cards,
         )
-        player_index = self.hole_dealee_index
+
+        if player_index is None:
+            player_index = self.hole_dealee_index
 
         assert player_index is not None
 
-        if not 0 < len(cards) <= len(self.hole_dealing_statuses[player_index]):
+        if not self.hole_dealing_statuses[player_index]:
+            raise ValueError(
+                f'The Player {player_index} cannot be dealt any hole cards.',
+            )
+        elif (
+                len(cards)
+                not in range(len(self.hole_dealing_statuses[player_index]) + 1)
+        ):
             raise ValueError(
                 (
                     'The number of cards dealt must be non-zero and less than'
@@ -3271,17 +3393,22 @@ class State:
                 ),
             )
 
-        return cards
+        return cards, player_index
 
-    def can_deal_hole(self, cards: CardsLike | int | None = None) -> bool:
+    def can_deal_hole(
+            self,
+            cards: CardsLike | int | None = None,
+            player_index: int | None = None,
+    ) -> bool:
         """Return whether the hole dealing can be done.
 
         :param cards: The optional cards.
+        :param player_index: The optional target dealee.
         :return: ``True`` if the hole dealing can be done, otherwise
                  ``False``.
         """
         try:
-            self.verify_hole_dealing(cards)
+            self.verify_hole_dealing(cards, player_index)
         except (ValueError, UserWarning):
             return False
 
@@ -3290,18 +3417,19 @@ class State:
     def deal_hole(
             self,
             cards: CardsLike | int | None = None,
+            player_index: int | None = None,
             *,
             commentary: str | None = None,
     ) -> HoleDealing:
         """Deal the hole.
 
         :param cards: The optional cards.
+        :param player_index: The optional target dealee.
         :param commentary: The optional commentary.
         :return: The hole dealing.
         :raises ValueError: If the hole dealing cannot be done.
         """
-        cards = self.verify_hole_dealing(cards)
-        player_index = self.hole_dealee_index
+        cards, player_index = self.verify_hole_dealing(cards, player_index)
         statuses = []
 
         assert player_index is not None
@@ -3390,11 +3518,31 @@ class State:
         cards = self.verify_board_dealing(cards)
 
         assert self.board_dealing_count
+        assert self.street_index is not None
+        assert self.street is not None
 
         self._consume_cards(cards)
 
+        index = 0
+
+        for i in range(self.street_index):
+            index += self.streets[i].board_dealing_count
+
+        index += max(
+            self.street.board_dealing_count - self.board_dealing_count,
+            0,
+        )
         self.board_dealing_count -= len(cards)
-        self.board_cards.extend(cards)
+
+        for card in cards:
+            assert index <= len(self.board_cards)
+
+            if index == len(self.board_cards):
+                self.board_cards.append([])
+
+            self.board_cards[index].append(card)
+
+            index += 1
 
         operation = BoardDealing(cards, commentary=commentary)
 
@@ -4281,14 +4429,44 @@ class State:
 
     # showdown
 
+    runout_count_selector_statuses: list[bool] = field(
+        default_factory=list,
+        init=False,
+    )
+    """The runout-count selector indices."""
+    runout_count: int | None = field(default=None, init=False)
+    """The number of runouts."""
+    runout_count_selection_flag: bool = field(default=False, init=False)
+    """The runout-count selector flag."""
+
     showdown_indices: deque[int] = field(default_factory=deque, init=False)
     """The showdown indices."""
 
     def _setup_showdown(self) -> None:
-        pass
+        assert not self.runout_count_selector_statuses
+
+        for _ in range(self.player_count):
+            self.runout_count_selector_statuses.append(False)
 
     def _begin_showdown(self) -> None:
+        assert not any(self.runout_count_selector_statuses)
         assert not self.showdown_indices
+        assert self.street_index is not None
+
+        if (
+                not self.runout_count_selection_flag
+                and self.mode != Mode.TOURNAMENT
+        ):
+            status = False
+
+            for i in range(self.street_index + 1, self.street_count):
+                if self.streets[i].board_dealing_count:
+                    status = True
+
+            if status:
+                for i in self.player_indices:
+                    if self.statuses[i]:
+                        self.runout_count_selector_statuses[i] = True
 
         self.showdown_indices = deque(self.player_indices)
 
@@ -4304,19 +4482,158 @@ class State:
     def _update_showdown(self, operation: Operation | None = None) -> None:
         self._update(operation)
 
-        if not self.showdown_indices:
+        if (
+                not any(self.runout_count_selector_statuses)
+                and not self.showdown_indices
+        ):
             self._end_showdown()
-        elif Automation.HOLE_CARDS_SHOWING_OR_MUCKING in self.automations:
-            while self.showdown_indices:
-                self.show_or_muck_hole_cards()
+        else:
+            if Automation.RUNOUT_COUNT_SELECTION in self.automations:
+                while any(self.runout_count_selector_statuses):
+                    self.select_runout_count()
+
+            if Automation.HOLE_CARDS_SHOWING_OR_MUCKING in self.automations:
+                while self.showdown_indices:
+                    self.show_or_muck_hole_cards()
 
     def _end_showdown(self) -> None:
+        assert not any(self.runout_count_selector_statuses)
         assert not self.showdown_indices
+        assert self.street_index is not None
+
+        if not self.runout_count_selection_flag:
+            self.runout_count_selection_flag = True
+
+            if self.runout_count is not None:
+                for _ in range(self.runout_count - 1):
+                    self.street_return_indices.append(self.street_index)
 
         if self.all_in_status and self.street is not self.streets[-1]:
             self._begin_dealing()
         else:
             self._begin_hand_killing()
+
+    @property
+    def runout_count_selector_indices(self) -> Iterator[int]:
+        """Iterate through players who can select the runout-count.
+
+        :return: The runout-count selectors.
+        """
+        try:
+            self._verify_runout_count_selection()
+        except (ValueError, UserWarning):
+            return
+
+        for i in self.player_indices:
+            if self.runout_count_selector_statuses[i]:
+                yield i
+
+    def _verify_runout_count_selection(self) -> None:
+        if not any(self.runout_count_selector_statuses):
+            raise ValueError('Nobody can choose the number of runouts.')
+
+    def verify_runout_count_selection(
+            self,
+            runout_count: int | None = None,
+            player_index: int | None = None,
+    ) -> int:
+        """Verify the runout-count selection.
+
+        If the ``runout_count`` is ``None``, it is considered to be
+        "no-preference".
+
+        :param runout_count: The number of runouts, defaults to
+                             ``None``.
+        :param player_index: The optional player index.
+        :return: The selecting player index.
+        :raises ValueError: If the runout-count selection cannot be
+                            done.
+        """
+        self._verify_runout_count_selection()
+
+        if player_index is None:
+            player_index = next(self.runout_count_selector_indices)
+
+        if not self.runout_count_selector_statuses[player_index]:
+            raise ValueError(
+                (
+                    f'The Player {player_index} cannot choose the number of'
+                    ' runouts.'
+                ),
+            )
+        elif runout_count is not None and runout_count < 1:
+            raise ValueError(
+                f'The runout count {runout_count} is not positive.',
+            )
+
+        return player_index
+
+    def can_select_runout_count(
+            self,
+            runout_count: int | None = None,
+            player_index: int | None = None,
+    ) -> bool:
+        """Return whether the runout-count selection can be done.
+
+        If the ``runout_count`` is ``None``, it is considered to be
+        "no-preference".
+
+        :param runout_count: The number of runouts, defaults to
+                             ``None``.
+        :param player_index: The optional player index.
+        :return: ``True`` if the runout-count selection can be done,
+                 otherwise ``False``.
+        """
+        try:
+            self.verify_runout_count_selection(player_index)
+        except (ValueError, UserWarning):
+            return False
+
+        return True
+
+    def select_runout_count(
+            self,
+            runout_count: int | None = None,
+            player_index: int | None = None,
+            *,
+            commentary: str | None = None,
+    ) -> RunoutCountSelection:
+        """Select the runout-count.
+
+        If the ``runout_count`` is ``None``, it is considered to be
+        "no-preference".
+
+        :param runout_count: The number of runouts, defaults to
+                             ``None``.
+        :param player_index: The optional player index.
+        :param commentary: The optional commentary.
+        :return: The runout-count selection.
+        :raises ValueError: If the runout-count selection cannot be
+                            done.
+        """
+        player_index = self.verify_runout_count_selection(player_index)
+
+        assert self.runout_count_selector_statuses[player_index]
+
+        self.runout_count_selector_statuses[player_index] = False
+
+        if runout_count is not None:
+            if self.runout_count is None:
+                self.runout_count = runout_count
+            elif self.runout_count != runout_count:
+                self.runout_count = 1
+
+            assert self.runout_count == runout_count or self.runout_count == 1
+
+        operation = RunoutCountSelection(
+            player_index,
+            runout_count,
+            commentary=commentary,
+        )
+
+        self._update_showdown(operation)
+
+        return operation
 
     @property
     def showdown_index(self) -> int | None:
@@ -4417,9 +4734,6 @@ class State:
 
         return self.showdown_indices[0]
 
-    def _pop_showdown_index(self) -> int:
-        return self.showdown_indices.popleft()
-
     def _verify_hole_cards_showing_or_mucking(self) -> None:
         if not self.showdown_indices:
             raise ValueError('There is no player to showdown.')
@@ -4427,19 +4741,28 @@ class State:
     def verify_hole_cards_showing_or_mucking(
             self,
             status_or_hole_cards: bool | CardsLike | None = None,
-    ) -> tuple[bool, tuple[Card, ...] | None]:
+            player_index: int | None = None,
+    ) -> tuple[bool, tuple[Card, ...] | None, int]:
         """Verify the hole card showing or mucking.
 
         :param status_or_hole_cards: The optional status or hole cards.
-        :return: The status.
+        :param player_index: The optional player index to override the
+                             showdown order.
+        :return: The status, what cards are shown, and player index.
         :raises ValueError: If hole card showing or mucking cannot be
                             done.
         """
         self._verify_hole_cards_showing_or_mucking()
 
-        player_index = self.showdown_index
+        if player_index is None:
+            player_index = self.showdown_index
 
         assert player_index is not None
+
+        if player_index not in self.showdown_indices:
+            raise ValueError(
+                f'The Player {player_index} cannot perform a showdown.',
+            )
 
         if isinstance(status_or_hole_cards, bool):
             status = status_or_hole_cards
@@ -4469,11 +4792,12 @@ class State:
                 if card.unknown_status:
                     raise ValueError('An unknown card is shown.')
 
-        return status, hole_cards
+        return status, hole_cards, player_index
 
     def can_show_or_muck_hole_cards(
             self,
             status_or_hole_cards: bool | CardsLike | None = None,
+            player_index: int | None = None,
     ) -> bool:
         """Return whether the hole card showing or mucking can be done.
 
@@ -4564,11 +4888,16 @@ class State:
         HoleCardsShowingOrMucking(commentary=None, player_index=2, hole_card...
 
         :param status_or_hole_cards: The optional status or hole cards.
+        :param player_index: The optional player index to override the
+                             showdown order.
         :return: ``True`` if the hole crad showing or mucking can be
                  done, otherwise ``False``.
         """
         try:
-            self.verify_hole_cards_showing_or_mucking(status_or_hole_cards)
+            self.verify_hole_cards_showing_or_mucking(
+                status_or_hole_cards,
+                player_index,
+            )
         except (ValueError, UserWarning):
             return False
 
@@ -4577,6 +4906,7 @@ class State:
     def show_or_muck_hole_cards(
             self,
             status_or_hole_cards: bool | CardsLike | None = None,
+            player_index: int | None = None,
             *,
             commentary: str | None = None,
     ) -> HoleCardsShowingOrMucking:
@@ -4587,13 +4917,19 @@ class State:
         will be mucked.
 
         :param status_or_hole_cards: The optional status or hole cards.
+        :param player_index: The optional player index to override the
+                             showdown order.
         :param commentary: The optional commentary.
         :return: The hole cards showing or mucking.
         """
-        status, hole_cards = self.verify_hole_cards_showing_or_mucking(
-            status_or_hole_cards,
+        status, hole_cards, player_index = (
+            self.verify_hole_cards_showing_or_mucking(
+                status_or_hole_cards,
+                player_index,
+            )
         )
-        player_index = self._pop_showdown_index()
+
+        self.showdown_indices.remove(player_index)
 
         if status:
             assert (
@@ -4980,35 +5316,46 @@ class State:
 
                     self.bets[k] += sub_amount
 
-            hand_type_indices = []
+            pushed_amount_quotient, pushed_amount_remainder = self.divmod(
+                pushed_amount,
+                self.board_count,
+            )
 
-            for i in self.hand_type_indices:
-                for hand in self.get_up_hands(i):
-                    if hand is not None:
-                        hand_type_indices.append(i)
-
-                        break
-
-            hand_type_count = len(hand_type_indices)
-
-            for i in hand_type_indices:
-                hands = tuple(self.get_up_hands(i))
-                max_hand = max_or_none(
-                    map(partial(getitem, hands), pot.player_indices),
-                )
-                player_indices = [
-                    j for j in pot.player_indices if hands[j] == max_hand
-                ]
-                quotient, remainder = self.divmod(
-                    pushed_amount,
-                    hand_type_count,
-                )
-                amount = quotient
+            for i in self.board_indices:
+                pushed_amount = pushed_amount_quotient
 
                 if not i:
-                    amount += remainder
+                    pushed_amount += pushed_amount_remainder
 
-                push(player_indices, amount)
+                hand_type_indices = []
+
+                for j in self.hand_type_indices:
+                    for hand in self.get_up_hands(i, j):
+                        if hand is not None:
+                            hand_type_indices.append(j)
+
+                            break
+
+                hand_type_count = len(hand_type_indices)
+
+                for j in hand_type_indices:
+                    hands = tuple(self.get_up_hands(i, j))
+                    max_hand = max_or_none(
+                        map(partial(getitem, hands), pot.player_indices),
+                    )
+                    player_indices = [
+                        k for k in pot.player_indices if hands[k] == max_hand
+                    ]
+                    quotient, remainder = self.divmod(
+                        pushed_amount,
+                        hand_type_count,
+                    )
+                    amount = quotient
+
+                    if not j:
+                        amount += remainder
+
+                    push(player_indices, amount)
 
         operation = ChipsPushing(
             tuple(starmap(sub, zip(self.bets, bets))),

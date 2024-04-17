@@ -655,6 +655,108 @@ class Kim2024TestCase(TestCase):
 
 
 class READMETestCase(TestCase):
+    def test_hellmuth_wiggins(self) -> None:
+        # The 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest
+        # Wiggins.
+        # Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
+
+        from pokerkit import Automation, Mode, NoLimitTexasHoldem
+
+        # Set up the game.
+
+        state = NoLimitTexasHoldem.create_state(
+            # Automations
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+            ),
+            False,  # Uniform antes?
+            {-1: 600},  # Antes
+            (200, 400, 800),  # Blinds or straddles
+            400,  # Min-bet
+            (999999, 116400, 86900, 999999, 50000, 999999),  # Starting stacks
+            6,  # Number of players
+            mode=Mode.CASH_GAME,
+        )
+
+        # Below are the pre-flop dealings and actions.
+
+        state.deal_hole('JsTh')  # Tony G
+        state.deal_hole('Ah9d')  # Hellmuth
+        state.deal_hole('KsKc')  # Wiggins
+        state.deal_hole('5c2h')  # Negreanu
+        state.deal_hole('6h5h')  # Brunson
+        state.deal_hole('6s3s')  # Laak
+
+        state.fold()  # Negreanu
+        state.complete_bet_or_raise_to(2800)  # Brunson
+        state.fold()  # Laak
+        state.check_or_call()  # Tony G
+        state.complete_bet_or_raise_to(12600)  # Hellmuth
+        state.check_or_call()  # Wiggins
+        state.check_or_call()  # Brunson
+        state.check_or_call()  # Tony G
+
+        # Below are the flop dealing and actions.
+
+        state.burn_card('??')
+        state.deal_board('9hTs9s')
+
+        state.check_or_call()  # Tony G
+        state.complete_bet_or_raise_to(17000)  # Hellmuth
+        state.complete_bet_or_raise_to(36000)  # Wiggins
+        state.fold()  # Brunson
+        state.fold()  # Tony G
+        state.complete_bet_or_raise_to(103800)  # Hellmuth
+        state.check_or_call()  # Wiggins
+
+        # Below is selecting the number of runouts.
+
+        state.select_runout_count(4)  # Hellmuth
+        state.select_runout_count(None)  # Wiggins
+
+        # Below is the first runout.
+
+        state.burn_card('??')
+        state.deal_board('Jh')  # Turn
+        state.burn_card('??')
+        state.deal_board('Ad')  # River
+
+        # Below is the second runout.
+
+        state.burn_card('??')
+        state.deal_board('Kh')  # Turn
+        state.burn_card('??')
+        state.deal_board('3c')  # River
+
+        # Below is the third runout.
+
+        state.burn_card('??')
+        state.deal_board('7s')  # Turn
+        state.burn_card('??')
+        state.deal_board('8s')  # River
+
+        # Below is the fourth runout.
+
+        state.burn_card('??')
+        state.deal_board('Qc')  # Turn
+        state.burn_card('??')
+        state.deal_board('Kd')  # River
+
+        # Below show the final stacks.
+
+        # print(state.stacks)  # [987399, 79400, 149700, 999999, 37400, 999399]
+
+        self.assertEqual(
+            state.stacks,
+            [987399, 79400, 149700, 999999, 37400, 999399],
+        )
+
     def test_dwan_ivey(self) -> None:
         # The first televised million dollar pot between Tom Dwan and Phil
         # Ivey.
