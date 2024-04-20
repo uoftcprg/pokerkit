@@ -38,6 +38,7 @@ class Poker(ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param bring_in: The bring-in.
+    :param starting_board_count: The starting board count.
     :param mode: The mode.
     :param divmod: The divmod function.
     :param rake: The rake function.
@@ -59,6 +60,7 @@ class Poker(ABC):
             raw_blinds_or_straddles: ValuesLike,
             bring_in: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -80,6 +82,8 @@ class Poker(ABC):
         """The raw blinds or straddles."""
         self.bring_in: int = bring_in
         """The bring-in."""
+        self.starting_board_count: int = starting_board_count
+        """The starting board count."""
         self.mode: Mode = mode
         """The mode."""
         self.divmod: Callable[[int, int], tuple[int, int]] = divmod
@@ -104,6 +108,7 @@ class Poker(ABC):
             self.bring_in,
             raw_starting_stacks,
             player_count,
+            starting_board_count=self.starting_board_count,
             mode=self.mode,
             divmod=self.divmod,
             rake=self.rake,
@@ -274,6 +279,7 @@ class Holdem(Poker, ABC):
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
+    :param starting_board_count: The starting board count.
     :param mode: The mode.
     :param divmod: The divmod function.
     :param rake: The rake function.
@@ -293,6 +299,7 @@ class Holdem(Poker, ABC):
             small_bet: int,
             big_bet: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -341,6 +348,7 @@ class Holdem(Poker, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -355,6 +363,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param min_bet: The minimum bet.
+    :param starting_board_count: The starting board count.
     :param mode: The mode.
     :param divmod: The divmod function.
     :param rake: The rake function.
@@ -370,6 +379,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -381,6 +391,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_blinds_or_straddles,
             min_bet,
             min_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -410,6 +421,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -465,6 +477,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -477,6 +490,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -501,6 +515,7 @@ class NoLimitTexasHoldem(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -599,6 +614,7 @@ class NoLimitTexasHoldem(
         :param min_bet: The min bet.
         :param raw_starting_stacks: The starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -610,6 +626,7 @@ class NoLimitTexasHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -634,6 +651,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -731,6 +749,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
         :param min_bet: The min bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -742,6 +761,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -775,6 +795,7 @@ class PotLimitOmahaHoldem(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -874,6 +895,7 @@ class PotLimitOmahaHoldem(
         :param min_bet: The min bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -885,6 +907,7 @@ class PotLimitOmahaHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -917,6 +940,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -932,6 +956,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -944,6 +969,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -959,6 +985,7 @@ class SevenCardStud(Poker, ABC):
     :param bring_in: The bring-in.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
+    :param starting_board_count: The starting board count.
     :param mode: The mode.
     :param divmod: The divmod function.
     :param rake: The rake function.
@@ -978,6 +1005,7 @@ class SevenCardStud(Poker, ABC):
             small_bet: int,
             big_bet: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1035,6 +1063,7 @@ class SevenCardStud(Poker, ABC):
             raw_antes,
             0,
             bring_in,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1060,6 +1089,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1074,6 +1104,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -1086,6 +1117,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1119,6 +1151,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1134,6 +1167,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -1146,6 +1180,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             bring_in,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1171,6 +1206,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1185,6 +1221,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -1197,6 +1234,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1220,6 +1258,7 @@ class SingleDraw(Draw, ABC):
     :param raw_antes: The raw antes.
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param min_bet: The min bet.
+    :param starting_board_count: The starting board count.
     :param mode: The mode.
     :param divmod: The divmod function.
     :param rake: The rake function.
@@ -1233,6 +1272,7 @@ class SingleDraw(Draw, ABC):
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1263,6 +1303,7 @@ class SingleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1278,6 +1319,7 @@ class TripleDraw(Draw, ABC):
     :param raw_blinds_or_straddles: The raw blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
+    :param starting_board_count: The starting board count.
     :param mode: The mode.
     :param divmod: The divmod function.
     :param rake: The rake function.
@@ -1292,6 +1334,7 @@ class TripleDraw(Draw, ABC):
             small_bet: int,
             big_bet: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1340,6 +1383,7 @@ class TripleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1373,6 +1417,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1386,6 +1431,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
         :param min_bet: The min bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -1397,6 +1443,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1424,6 +1471,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1536,6 +1584,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -1548,6 +1597,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,
@@ -1573,6 +1623,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
+            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
@@ -1715,6 +1766,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         :param big_bet: The big bet.
         :param raw_starting_stacks: The raw starting stacks.
         :param player_count: The number of players.
+        :param starting_board_count: The starting board count.
         :param mode: The mode.
         :param divmod: The divmod function.
         :param rake: The rake function.
@@ -1727,6 +1779,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
+            starting_board_count=starting_board_count,
             mode=mode,
             divmod=divmod,
             rake=rake,

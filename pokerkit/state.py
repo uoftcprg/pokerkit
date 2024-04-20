@@ -912,6 +912,8 @@ class State:
     _: KW_ONLY
     mode: Mode = Mode.TOURNAMENT
     """The mode. Defaults to tournament mode."""
+    starting_board_count: int = 1
+    """The number of boards at the start of the game. Defaults to 1."""
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function. Defaults to PokerKit's that detects integral
     or real values automatically.
@@ -952,8 +954,10 @@ class State:
     """The discards."""
     street_index: int | None = field(default=None, init=False)
     """The street index."""
-    street_return_indices: list[int] = field(default_factory=list, init=False)
-    """The street return indices."""
+    street_return_index: int | None = field(default=None, init=False)
+    """The street return index."""
+    street_return_count: int | None = field(default=0, init=False)
+    """The street return count."""
     all_in_status: bool = field(default=False, init=False)
     """The all-in status."""
     status: bool = field(default=True, init=False)
@@ -1016,6 +1020,13 @@ class State:
                 (
                     'There must be at least 2 players (currently'
                     f' {self.player_count}).'
+                ),
+            )
+        elif self.starting_board_count <= 0:
+            raise ValueError(
+                (
+                    f'The starting board count {self.starting_board_count}'
+                    ' must be positive.'
                 ),
             )
 
@@ -1413,7 +1424,14 @@ class State:
 
         :return: The number of boards.
         """
-        return max(map(len, self.board_cards), default=1)
+        if self.street_return_index is not None:
+            assert self.runout_count is not None
+
+            board_count = self.starting_board_count * self.runout_count
+        else:
+            board_count = self.starting_board_count
+
+        return board_count
 
     @property
     def board_indices(self) -> range:
@@ -1442,8 +1460,26 @@ class State:
                 f'The board index {board_index} is not a valid board index.',
             )
 
-        for cards in self.board_cards:
-            yield cards[min(board_index, len(cards) - 1)]
+        if self.street_return_index is not None:
+            assert self.runout_count is not None
+
+            mid = 0
+
+            for i in range(self.street_return_index + 1):
+                mid += self.streets[i].board_dealing_count
+
+            for i, cards in enumerate(self.board_cards):
+                index = board_index
+
+                if i < mid:
+                    index //= self.runout_count
+
+                if index < len(cards):
+                    yield cards[index]
+        else:
+            for cards in self.board_cards:
+                if board_index < len(cards):
+                    yield cards[board_index]
 
     def get_censored_hole_cards(self, player_index: int) -> Iterator[Card]:
         """Return the censored hole cards of the player.
@@ -2834,8 +2870,9 @@ class State:
     def _end_bet_collection(self) -> None:
         assert not self.bet_collection_status
 
-        if self.street is self.streets[-1] and self.street_return_indices:
-            self.street_index = self.street_return_indices.pop()
+        if self.street is self.streets[-1] and self.street_return_count:
+            self.street_index = self.street_return_index
+            self.street_return_count -= 1
 
         if sum(self.statuses) == 1:
             self._begin_chips_pushing()
@@ -3134,8 +3171,8 @@ class State:
         init=False,
     )
     """The hole dealing statuses."""
-    board_dealing_count: int = field(default=0, init=False)
-    """The board dealing count."""
+    board_dealing_counts: list[int] = field(default_factory=list, init=False)
+    """The board dealing counts."""
     standing_pat_or_discarding_statuses: list[bool] = field(
         default_factory=list,
         init=False,
@@ -3150,10 +3187,13 @@ class State:
             self.hole_dealing_statuses.append(deque())
             self.standing_pat_or_discarding_statuses.append(False)
 
+        for _ in range(self.starting_board_count):
+            self.board_dealing_counts.append(0)
+
     def _begin_dealing(self) -> None:
         assert not self.card_burning_status
         assert not any(self.hole_dealing_statuses)
-        assert not self.board_dealing_count
+        assert not any(self.board_dealing_counts)
         assert not any(self.standing_pat_or_discarding_statuses)
 
         if self.street_index is None:
@@ -3165,7 +3205,10 @@ class State:
         assert self.street is not None
 
         self.card_burning_status = self.street.card_burning_status
-        self.board_dealing_count = self.street.board_dealing_count
+        self.board_dealing_counts = (
+            [self.street.board_dealing_count]
+            * self.starting_board_count
+        )
 
         for i in self.player_indices:
             if self.statuses[i]:
@@ -3180,14 +3223,17 @@ class State:
                 sum(map(len, self.hole_dealing_statuses))
                 > len(tuple(self.get_dealable_cards()))
         ):
-            self.board_dealing_count += len(self.street.hole_dealing_statuses)
+            for i in range(self.starting_board_count):
+                self.board_dealing_counts[i] += (
+                    len(self.street.hole_dealing_statuses)
+                )
 
             for i in self.player_indices:
                 self.hole_dealing_statuses[i].clear()
 
         assert (
             any(self.hole_dealing_statuses)
-            or self.board_dealing_count
+            or any(self.board_dealing_counts)
             or any(self.standing_pat_or_discarding_statuses)
         )
 
@@ -3199,7 +3245,7 @@ class State:
         if (
                 not self.card_burning_status
                 and not any(self.hole_dealing_statuses)
-                and not self.board_dealing_count
+                and not any(self.board_dealing_counts)
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
@@ -3217,14 +3263,14 @@ class State:
 
                 if (
                         Automation.BOARD_DEALING in self.automations
-                        and self.board_dealing_count
+                        and any(self.board_dealing_counts)
                 ):
                     self.deal_board()
 
     def _end_dealing(self) -> None:
         assert not self.card_burning_status
         assert not any(self.hole_dealing_statuses)
-        assert not self.board_dealing_count
+        assert not any(self.board_dealing_counts)
         assert not any(self.standing_pat_or_discarding_statuses)
 
         self._begin_betting()
@@ -3297,7 +3343,7 @@ class State:
         assert self.street is not None
         assert (
             any(self.hole_dealing_statuses)
-            or self.board_dealing_count
+            or any(self.board_dealing_counts)
             or self.street.draw_status
         )
 
@@ -3455,6 +3501,29 @@ class State:
 
         return operation
 
+    @property
+    def board_dealing_count(self) -> int | None:
+        """Return the number of pending board dealings.
+
+        :return: The number of board dealings.
+        """
+        try:
+            self._verify_board_dealing()
+        except ValueError:
+            board_dealing_count = None
+        else:
+            board_dealing_count = next(filter(None, self.board_dealing_counts))
+
+        return board_dealing_count
+
+    def _verify_board_dealing(self) -> None:
+        if self.card_burning_status:
+            raise ValueError('A card must be burnt before board dealing.')
+        elif not any(self.board_dealing_counts):
+            raise ValueError('No board dealing is pending.')
+        elif any(self.standing_pat_or_discarding_statuses):
+            raise ValueError('Not all have stood pat or discarded.')
+
     def verify_board_dealing(
             self,
             cards: CardsLike | int | None = None,
@@ -3465,12 +3534,9 @@ class State:
         :return: The dealt board cards.
         :raises ValueError: If the board dealing cannot be done.
         """
-        if self.card_burning_status:
-            raise ValueError('A card must be burnt before board dealing.')
-        elif not self.board_dealing_count:
-            raise ValueError('No board dealing is pending.')
-        elif any(self.standing_pat_or_discarding_statuses):
-            raise ValueError('Not all have stood pat or discarded.')
+        self._verify_board_dealing()
+
+        assert self.board_dealing_count is not None
 
         cards = self._verify_cards_consumption(
             self.board_dealing_count if cards is None else cards,
@@ -3517,7 +3583,7 @@ class State:
         """
         cards = self.verify_board_dealing(cards)
 
-        assert self.board_dealing_count
+        assert self.board_dealing_count is not None
         assert self.street_index is not None
         assert self.street is not None
 
@@ -3532,7 +3598,8 @@ class State:
             self.street.board_dealing_count - self.board_dealing_count,
             0,
         )
-        self.board_dealing_count -= len(cards)
+        board_index = self.board_dealing_counts.index(self.board_dealing_count)
+        self.board_dealing_counts[board_index] -= len(cards)
 
         for card in cards:
             assert index <= len(self.board_cards)
@@ -4505,8 +4572,8 @@ class State:
             self.runout_count_selection_flag = True
 
             if self.runout_count is not None:
-                for _ in range(self.runout_count - 1):
-                    self.street_return_indices.append(self.street_index)
+                self.street_return_index = self.street_index
+                self.street_return_count = self.runout_count - 1
 
         if self.all_in_status and self.street is not self.streets[-1]:
             self._begin_dealing()
