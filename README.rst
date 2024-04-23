@@ -33,8 +33,6 @@ Below shows the 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest 
 
 Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
 
-Set up the game.
-
 .. code-block:: python
 
    from pokerkit import Automation, Mode, NoLimitTexasHoldem
@@ -149,8 +147,6 @@ A Sample No-Limit Texas Hold'em Hand
 Below shows the first televised million-dollar pot between Tom Dwan and Phil Ivey.
 
 Link: https://youtu.be/GnxFohpljqM
-
-Set up the game.
 
 .. code-block:: python
 

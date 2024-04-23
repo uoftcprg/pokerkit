@@ -437,114 +437,171 @@ class Kim2024TestCase(TestCase):
         self.assertEqual(s, hh.dumps())
 
     def test_arieh_yockey_2019(self) -> None:
-        s = dedent(
-            '''\
-            # A bad beat between Yockey and Arieh.
-            # Link: https://youtu.be/pChCqb2FNxY
+        for s in map(
+            dedent,
+            (
+                '''\
+                # A bad beat between Yockey and Arieh.
+                # Link: https://youtu.be/pChCqb2FNxY
 
-            variant = "F2L3D"
-            ante_trimming_status = true
-            antes = [0, 0, 0, 0]
-            blinds_or_straddles = [75000, 150000, 0, 0]
-            small_bet = 150000
-            big_bet = 300000
-            starting_stacks = [1180000, 4340000, 5910000, 10765000]
-            actions = [
-              # Pre-draw
+                variant = "F2L3D"
+                ante_trimming_status = true
+                antes = [0, 0, 0, 0]
+                blinds_or_straddles = [75000, 150000, 0, 0]
+                small_bet = 150000
+                big_bet = 300000
+                starting_stacks = [1180000, 4340000, 5910000, 10765000]
+                actions = [
+                  # Pre-draw
 
-              "d dh p1 7h6c4c3d2c",  # Yockey
-              "d dh p2 ??????????",  # Hui
-              "d dh p3 ??????????",  # Esposito
-              "d dh p4 AsQs6s5c3c",  # Arieh
+                  "d dh p1 7h6c4c3d2c",  # Yockey
+                  "d dh p2 ??????????",  # Hui
+                  "d dh p3 ??????????",  # Esposito
+                  "d dh p4 AsQs6s5c3c",  # Arieh
 
-              "p3 f",  # Esposito
-              "p4 cbr 300000",  # Arieh
-              "p1 cbr 450000",  # Yockey
-              "p2 f",  # Hui
-              "p4 cc",  # Arieh
+                  "p3 f",  # Esposito
+                  "p4 cbr 300000",  # Arieh
+                  "p1 cbr 450000",  # Yockey
+                  "p2 f",  # Hui
+                  "p4 cc",  # Arieh
 
-              # First draw
+                  # First draw
 
-              "p1 sd",  # Yockey
-              "p4 sd AsQs",  # Arieh
-              "d dh p4 2hQh",  # Arieh
+                  "p1 sd",  # Yockey
+                  "p4 sd AsQs",  # Arieh
+                  "d dh p4 2hQh",  # Arieh
 
-              "p1 cbr 150000",  # Yockey
-              "p4 cc",  # Arieh
+                  "p1 cbr 150000",  # Yockey
+                  "p4 cc",  # Arieh
 
-              # Second draw
+                  # Second draw
 
-              "p1 sd",  # Yockey
-              "p4 sd Qh",  # Arieh
-              "d dh p4 4d",  # Arieh
+                  "p1 sd",  # Yockey
+                  "p4 sd Qh",  # Arieh
+                  "d dh p4 4d",  # Arieh
 
-              "p1 cbr 300000",  # Yockey
-              "p4 cc",  # Arieh
+                  "p1 cbr 300000",  # Yockey
+                  "p4 cc",  # Arieh
 
-              # Third draw
+                  # Third draw
 
-              "p1 sd",  # Yockey
-              "p4 sd 6s",  # Arieh
-              "d dh p4 7c",  # Arieh
+                  "p1 sd",  # Yockey
+                  "p4 sd 6s",  # Arieh
+                  "d dh p4 7c",  # Arieh
 
-              "p1 cbr 280000",  # Yockey
-              "p4 cc",  # Arieh
+                  "p1 cbr 280000",  # Yockey
+                  "p4 cc",  # Arieh
 
-              # Showdown
+                  # Showdown
 
-              "p1 sm 7h6c4c3d2c",  # Yockey
-              "p4 sm 2h4d7c5c3c",  # Arieh
-            ]
-            author = "Juho Kim"
-            event = """2019 World Series of Poker Event #58: $50,000 Poker \\
-            Players Championship | Day 5"""
-            city = "Las Vegas"
-            region = "Nevada"
-            country = "United States of America"
-            day = 28
-            month = 6
-            year = 2019
-            players = [
-              "Bryce Yockey",
-              "Phil Hui",
-              "John Esposito",
-              "Josh Arieh",
-            ]
-            '''
-        )
-        hh = HandHistory.loads(s)
-        it = iter(hh)
-        state = next(it)
-
-        while state.status:
+                  "p1 sm 7h6c4c3d2c",  # Yockey
+                  "p4 sm 2h4d7c5c3c",  # Arieh
+                ]
+                author = "Juho Kim"
+                event = """2019 World Series of Poker Event #58: $50,000 \\
+                Poker Players Championship | Day 5"""
+                city = "Las Vegas"
+                region = "Nevada"
+                country = "United States of America"
+                day = 28
+                month = 6
+                year = 2019
+                players = [
+                  "Bryce Yockey",
+                  "Phil Hui",
+                  "John Esposito",
+                  "Josh Arieh",
+                ]
+                ''',
+                '''
+                # A bad beat between Yockey and Arieh.
+                variant = "F2L3D"
+                antes = [0, 0, 0, 0]
+                blinds_or_straddles = [
+                75000, 150000, 0, 0,
+                ]
+                small_bet = 150000
+                big_bet = 300000
+                starting_stacks = [
+                  1180000, 4340000, 5910000, 10765000,
+                ]
+                actions = [
+                  "d dh p1 7h6c4c3d2c", # Yockey
+                  "d dh p2 ??????????", # Hui
+                  "d dh p3 ??????????", # Esposito
+                  "d dh p4 AsQs6s5c3c", # Arieh
+                  "p3 f", # Esposito
+                  "p4 cbr 300000", # Arieh
+                  "p1 cbr 450000", # Yockey
+                  "p2 f", # Hui
+                  "p4 cc", # Arieh
+                  "p1 sd", # First draw; Yockey
+                  "p4 sd AsQs", # Arieh
+                  "d dh p4 2hQh", # Arieh
+                  "p1 cbr 150000", # Yockey
+                  "p4 cc", # Arieh
+                  "p1 sd", # Second draw; Yockey
+                  "p4 sd Qh", # Arieh
+                  "d dh p4 4d", # Arieh
+                  "p1 cbr 300000", # Yockey
+                  "p4 cc", # Arieh
+                  "p1 sd", # Third draw; Yockey
+                  "p4 sd 6s", # Arieh
+                  "d dh p4 7c", # Arieh
+                  "p1 cbr 280000", # Yockey
+                  "p4 cc", # Arieh
+                  "p1 sm 7h6c4c3d2c", # Showdown; Yockey
+                  "p4 sm 2h4d7c5c3c", # Arieh
+                ]
+                event = "2019 WSOP Event #58"
+                city = "Las Vegas"
+                region = "Nevada"
+                country = "United States of America"
+                day = 28
+                month = 6
+                year = 2019
+                players = [
+                  "Bryce Yockey", "Phil Hui",
+                  "John Esposito", "Josh Arieh",
+                ]
+                ''',
+            ),
+        ):
+            hh = HandHistory.loads(s)
+            it = iter(hh)
             state = next(it)
 
-        self.assertRaises(StopIteration, next, it)
-        self.assertEqual(state.stacks, [0, 4190000, 5910000, 12095000])
+            while state.status:
+                state = next(it)
 
-        s = hh.dumps()
-        hh = HandHistory.loads(s)
-        new_state = tuple(hh)[-1]
+            self.assertRaises(StopIteration, next, it)
+            self.assertEqual(state.stacks, [0, 4190000, 5910000, 12095000])
 
-        self.assertEqual(
-            list(map(itemgetter(1), hh.iter_state_actions())),
-            [None] + hh.actions,
-        )
-        self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
-        self.assertEqual(new_state.operations, state.operations)
-        self.assertEqual(s, hh.dumps())
+            s = hh.dumps()
+            hh = HandHistory.loads(s)
+            new_state = tuple(hh)[-1]
 
-        hh = HandHistory.loads(s, automations=())
-        new_state = tuple(hh)[-1]
+            self.assertEqual(
+                list(map(itemgetter(1), hh.iter_state_actions())),
+                [None] + hh.actions,
+            )
+            self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
+            self.assertEqual(new_state.operations, state.operations)
+            self.assertEqual(s, hh.dumps())
 
-        self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
-        self.assertEqual(
-            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
-            hh.actions,
-        )
-        self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
-        self.assertEqual(new_state.operations, state.operations)
-        self.assertEqual(s, hh.dumps())
+            hh = HandHistory.loads(s, automations=())
+            new_state = tuple(hh)[-1]
+
+            self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
+            self.assertEqual(
+                list(
+                    filter(None, map(itemgetter(1), hh.iter_state_actions())),
+                ),
+                hh.actions,
+            )
+            self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
+            self.assertEqual(new_state.operations, state.operations)
+            self.assertEqual(s, hh.dumps())
 
     def test_alice_carol_wikipedia(self) -> None:
         s = dedent(
@@ -748,7 +805,7 @@ class READMETestCase(TestCase):
         state.burn_card('??')
         state.deal_board('Kd')  # River
 
-        # Below show the final stacks.
+        # Below are the final stacks.
 
         # print(state.stacks)  # [987399, 79400, 149700, 999999, 37400, 999399]
 
@@ -758,8 +815,9 @@ class READMETestCase(TestCase):
         )
 
     def test_dwan_ivey(self) -> None:
-        # The first televised million dollar pot between Tom Dwan and Phil
-        # Ivey.
+        # Below shows the first televised million-dollar pot between Tom Dwan
+        # and Phil Ivey.
+        #
         # Link: https://youtu.be/GnxFohpljqM
 
         from pokerkit import Automation, NoLimitTexasHoldem
@@ -782,7 +840,7 @@ class READMETestCase(TestCase):
             3,
         )
 
-        # Below shows the pre-flop dealings and actions.
+        # Below are the pre-flop dealings and actions.
 
         state.deal_hole('Ac2d')  # Ivey
         state.deal_hole('????')  # Antonius
@@ -793,7 +851,7 @@ class READMETestCase(TestCase):
         state.fold()  # Antonius
         state.check_or_call()  # Dwan
 
-        # Below shows the flop dealing and actions.
+        # Below are the flop dealing and actions.
 
         state.burn_card('??')
         state.deal_board('Jc3d5c')
@@ -801,7 +859,7 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to(35000)  # Ivey
         state.check_or_call()  # Dwan
 
-        # Below shows the turn dealing and actions.
+        # Below are the turn dealing and actions.
 
         state.burn_card('??')
         state.deal_board('4h')
@@ -811,19 +869,20 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to(1067100)  # Ivey
         state.check_or_call()  # Dwan
 
-        # Below shows the river dealing.
+        # Below is the river dealing.
 
         state.burn_card('??')
         state.deal_board('Jh')
 
-        # Below show the final stacks.
+        # Below are the final stacks.
 
         # print(state.stacks)  # [572100, 1997500, 1109500]
 
         self.assertEqual(state.stacks, [572100, 1997500, 1109500])
 
     def test_phua_xuan(self) -> None:
-        # An all-in hand between Xuan and Phua.
+        # Below shows an all-in hand between Xuan and Phua.
+        #
         # Link: https://youtu.be/QlgCcphLjaQ
 
         from pokerkit import Automation, NoLimitShortDeckHoldem
@@ -846,7 +905,7 @@ class READMETestCase(TestCase):
             6,
         )
 
-        # Below shows the pre-flop dealings and actions.
+        # Below are the pre-flop dealings and actions.
 
         state.deal_hole('Th8h')  # Badziakouski
         state.deal_hole('QsJd')  # Zhong
@@ -865,22 +924,22 @@ class READMETestCase(TestCase):
         state.fold()  # Zhong
         state.check_or_call()  # Xuan
 
-        # Below shows the flop dealing.
+        # Below is the flop dealing.
 
         state.burn_card('??')
         state.deal_board('9h6cKc')
 
-        # Below shows the turn dealing.
+        # Below is the turn dealing.
 
         state.burn_card('??')
         state.deal_board('Jh')
 
-        # Below shows the river dealing.
+        # Below is the river dealing.
 
         state.burn_card('??')
         state.deal_board('Ts')
 
-        # Below show the final stacks.
+        # Below are the final stacks.
 
         # print(state.stacks)  # [489000, 226000, 684000, 400000, 0, 198000]
 
@@ -890,8 +949,9 @@ class READMETestCase(TestCase):
         )
 
     def test_antonius_blom(self) -> None:
-        # The largest online poker pot every played between Patrik Antonius and
-        # Viktor Blom.
+        # Below shows the largest online poker pot ever played between Patrik
+        # Antonius and Viktor Blom.
+        #
         # Link: https://youtu.be/UMBm66Id2AA
 
         from pokerkit import Automation, PotLimitOmahaHoldem
@@ -914,7 +974,7 @@ class READMETestCase(TestCase):
             2,
         )
 
-        # Below shows the pre-flop dealings and actions.
+        # Below are the pre-flop dealings and actions.
 
         state.deal_hole('Ah3sKsKh')  # Antonius
         state.deal_hole('6d9s7d8h')  # Blom
@@ -925,7 +985,7 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to(81000)  # Antonius
         state.check_or_call()  # Blom
 
-        # Below shows the flop dealing and actions.
+        # Below are the flop dealing and actions.
 
         state.burn_card('??')
         state.deal_board('4s5c2h')
@@ -935,24 +995,25 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to(779000)  # Antonius
         state.check_or_call()  # Blom
 
-        # Below shows the turn dealing.
+        # Below is the turn dealing.
 
         state.burn_card('??')
         state.deal_board('5h')
 
-        # Below shows the river dealing.
+        # Below is the river dealing.
 
         state.burn_card('??')
         state.deal_board('9c')
 
-        # Below show the final stacks.
+        # Below are the final stacks.
 
         # print(state.stacks)  # [1937923.75, 0.0]
 
         self.assertEqual(state.stacks, [1937923.75, 0.0])
 
     def test_yockey_arieh(self) -> None:
-        # A bad beat between Yockey and Arieh.
+        # Below shows a bad beat between Yockey and Arieh.
+        #
         # Link: https://youtu.be/pChCqb2FNxY
 
         from pokerkit import (
@@ -979,7 +1040,7 @@ class READMETestCase(TestCase):
             4,
         )
 
-        # Below shows the pre-flop dealings and actions.
+        # Below are the pre-flop dealings and actions.
 
         state.deal_hole('7h6c4c3d2c')  # Yockey
         state.deal_hole('??????????')  # Hui
@@ -992,7 +1053,7 @@ class READMETestCase(TestCase):
         state.fold()  # Hui
         state.check_or_call()  # Arieh
 
-        # Below shows the first draw and actions.
+        # Below are the first draw and actions.
 
         state.stand_pat_or_discard()  # Yockey
         state.stand_pat_or_discard('AsQs')  # Arieh
@@ -1002,7 +1063,7 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to()  # Yockey
         state.check_or_call()  # Arieh
 
-        # Below shows the second draw and actions.
+        # Below are the second draw and actions.
 
         state.stand_pat_or_discard()  # Yockey
         state.stand_pat_or_discard('Qh')  # Arieh
@@ -1012,7 +1073,7 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to()  # Yockey
         state.check_or_call()  # Arieh
 
-        # Below shows the third draw and actions.
+        # Below are the third draw and actions.
 
         state.stand_pat_or_discard()  # Yockey
         state.stand_pat_or_discard('6s')  # Arieh
@@ -1022,14 +1083,15 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to()  # Yockey
         state.check_or_call()  # Arieh
 
-        # Below show the final stacks.
+        # Below are the final stacks.
 
         # print(state.stacks)  # [0, 4190000, 5910000, 12095000]
 
         self.assertEqual(state.stacks, [0, 4190000, 5910000, 12095000])
 
     def test_alice_carol(self) -> None:
-        # An example badugi hand from Wikipedia.
+        # Below shows an example badugi hand from Wikipedia.
+        #
         # Link: https://en.wikipedia.org/wiki/Badugi
 
         from pokerkit import Automation, FixedLimitBadugi
@@ -1052,7 +1114,7 @@ class READMETestCase(TestCase):
             4,
         )
 
-        # Below shows the pre-flop dealings and actions.
+        # Below are the pre-flop dealings and actions.
 
         state.deal_hole('????????')  # Bob
         state.deal_hole('????????')  # Carol
@@ -1064,7 +1126,7 @@ class READMETestCase(TestCase):
         state.check_or_call()  # Bob
         state.check_or_call()  # Carol
 
-        # Below shows the first draw and actions.
+        # Below are the first draw and actions.
 
         state.stand_pat_or_discard('????')  # Bob
         state.stand_pat_or_discard('????')  # Carol
@@ -1079,7 +1141,7 @@ class READMETestCase(TestCase):
         state.check_or_call()  # Alice
         state.check_or_call()  # Bob
 
-        # Below shows the second draw and actions.
+        # Below are the second draw and actions.
 
         state.stand_pat_or_discard('??')  # Bob
         state.stand_pat_or_discard()  # Carol
@@ -1094,7 +1156,7 @@ class READMETestCase(TestCase):
         state.fold()  # Bob
         state.check_or_call()  # Carol
 
-        # Below shows the third draw and actions.
+        # Below are the third draw and actions.
 
         state.stand_pat_or_discard('??')  # Carol
         state.stand_pat_or_discard()  # Alice
@@ -1105,12 +1167,12 @@ class READMETestCase(TestCase):
         state.complete_bet_or_raise_to()  # Alice
         state.check_or_call()  # Carol
 
-        # Below show the showdown.
+        # Below is the showdown.
 
         state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
         state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
 
-        # Below show the final stacks.
+        # Below are the final stacks.
 
         # print(state.stacks)  # [196, 220, 200, 184]
 
