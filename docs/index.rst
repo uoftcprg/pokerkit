@@ -6,7 +6,7 @@
 .. include:: ../README.rst
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    examples
@@ -14,7 +14,7 @@
    evaluation
    notation
    analysis
-   snippets
+   tips
    contributing
    changelog
    reference

@@ -20,7 +20,9 @@ This version release introduces a number of backward incompatible changes. Pleas
 
   - In theory, people choose number of runouts before they show their hands. But, this isn't always followed. It is also unclear who must select the number of runouts first. As such, after all-in, when showdown takes place, 
 
+- Multi-board games.
 - More degree of freedom in hole dealing/showdown order.
+- Docstring and documentation overhaul.
 
 **Changed**
 
@@ -32,6 +34,9 @@ This version release introduces a number of backward incompatible changes. Pleas
   - The properties/method ``pokerkit.state.State.reserved_cards``, ``pokerkit.state.State.cards_in_play``, ``pokerkit.state.State.cards_not_in_play``, and ``pokerkit.state.State.get_dealable_cards(deal_count: int)`` now return ``Iterator[Card]`` instead of ``tuple[Card, ...]``.
   - The method triplets for the hole dealing and showdown operation ``pokerkit.state.State.verify_hole_dealing()``, ``pokerkit.state.State.can_deal_hole()``, ``pokerkit.state.State.deal_hole()``, ``pokerkit.state.State.verify_hole_cards_showing_or_mucking()``, ``pokerkit.state.State.can_show_or_muck_hole_cards()``, and ``pokerkit.state.State.show_or_muck_hole_cards()`` also accepts an optional positional argument ``player_index`` to control the dealee, or the showdown performer. The verifiers also returns a player dealt if the dealee is not specified.
 
+- The card-burning-related methods ``pokerkit.state.State.verify_card_burning``, ``pokerkit.state.State.can_burn_card``, and ``pokerkit.state.State.burn_card`` also accept a singleton card iterable.
+- The ``pokerkit.state.State.all_in_show_status`` was renamed to ``pokerkit.state.State.all_in_status``.
+
 **Added**
 
 - New enum class ``pokerkit.state.State.Mode`` for setting tournament/cash-game mode while initializing poker states.
@@ -42,8 +47,9 @@ This version release introduces a number of backward incompatible changes. Pleas
     - In all-in situations, players have a chance to choose the number of runouts during showdown.
 
 - New parameter ``mode`` in relevant poker game/state initialization methods. It defaults to tournament mode.
+- New parameter ``starting_board_count`` in relevant poker game/state initialization methods. It defaults to ``1``. This allow multiple boards to be dealt if wished.
 - New automation ``pokerkit.state.State.Automation.RUNOUT_COUNT_SELECTION`` which instructs PokerKit to carry out only one run-out.
-- New ``pokerkit.state.RUNOUT_COUNT_SELECTION`` operation.
+- New ``pokerkit.state.RunoutCountSelection`` operation.
 
   - Arguments: ``runout_count`` and ``player_index`` who gives out the selection.
   - Querier: ``pokerkit.state.State.can_select_runout_count(player_index: int | None = None, runout_count: int | None = None)``.
@@ -53,7 +59,7 @@ This version release introduces a number of backward incompatible changes. Pleas
   - If ``runout_count`` are in disagreement among active players, only ``1`` runout is performed.
   - When multiple runs are selected, the state will be incompatible with the PHH file format, as it stands.
 
-- New attribute ``pokerkit.state.State.street_return_indices`` that internally keeps track of at the end of what street to return to ensure multiple runouts are performed.
+- New attributes ``pokerkit.state.State.street_return_index`` and ``pokerkit.state.State.street_return_count`` that internally keeps track what street to return to and how many times to do so during multiple runouts.
 - New attribute ``pokerkit.state.State.runout_count`` that shows the players' preferences on the number of runouts. It maybe ``None`` in which case the runout selection was skipped due to the state being of tournament mode or all players showed no preference by passing in ``None`` (or leaving empty) for the ``runout_count`` argument during the corresponding method call of ``pokerkit.state.select_runout_count()``.
 - New attributes ``pokerkit.state.State.board_count`` and ``pokerkit.state.State.board_indices`` on the number of boards and the range of its indices. The number of boards is at least ``1`` but may be more due to multiple runouts or the variant being played.
 - New method ``pokerkit.state.State.get_board_cards(board_index: int)`` on getting the ``board_index``'th board.
@@ -62,10 +68,6 @@ This version release introduces a number of backward incompatible changes. Pleas
 
 - New attribute ``pokerkit.state.State.runout_count_selector_statuses`` that keeps track of who can select the number of runouts.
 - New attribute ``pokerkit.state.State.runout_count_selection_flag`` that keeps track of whether the runout count selection has been carried out.
-
-**Pending changes**
-
-- Double/triple/etc. board variants.
 
 Version 0.4.17 (April 9, 2024)
 ------------------------------

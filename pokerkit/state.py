@@ -39,14 +39,51 @@ class BettingStructure(StrEnum):
     <BettingStructure.FIXED_LIMIT: 'Fixed-limit'>
     >>> BettingStructure.NO_LIMIT
     <BettingStructure.NO_LIMIT: 'No-limit'>
+
+    It tells PokerKit what betting limit (e.g. No-Limit, Pot-Limit,
+    etc.) the variant uses.
+
+    The limit may set the limitations on the maximum bet/raise amounts.
+
+    Some commentators put cap-limit as possible betting structure, but
+    we disagree in this aspect since the "cap-limit" is equivalent to
+    simply having lesser starting stack values.
+
+    The number of maximum bet/raises and the min-bet are set by streets'
+    :attr:`pokerkit.state.Street.max_completion_betting_or_raising_count`
+    attribute.
     """
 
     FIXED_LIMIT: str = 'Fixed-limit'
-    """The fixed-limit."""
+    """The fixed-limit.
+
+    Here, min and max amounts are identical.
+
+    Typically, the number of bet/raises permitted is also limited. This
+    is not the case in some tournament settings when heads-up play is
+    reached.
+    """
     POT_LIMIT: str = 'Pot-limit'
-    """The pot-limit."""
+    """The pot-limit.
+
+    This limits the bet/raise amount to the pot bet amount, following
+    the following formula ``M = (3L + T) + S`` where ``M`` is the
+    maximum bet, ``L`` is the last wager, ``T`` is the trail (action
+    prior to the previous bet), and ``S`` the starting pot (source:
+    https://en.wikipedia.org/wiki/Betting_in_poker).
+
+    The number of bet/raises is typically unlimited when this limit is
+    used.
+    """
     NO_LIMIT: str = 'No-limit'
-    """The no-limit."""
+    """The no-limit.
+
+    This denotes unlimited bet/raises in both the amounts (limited by
+    the stack/cap).
+
+    The number of them per betting round is typically unlimited in
+    no-limit games.
+    """
 
 
 @unique
@@ -157,55 +194,36 @@ class Street:
     False
     >>> street.hole_dealing_statuses
     (False, False)
-
-    >>> street = Street(
-    ...     False,
-    ...     (False, False),
-    ...     -1,
-    ...     False,
-    ...     Opening.POSITION,
-    ...     2,
-    ...     None,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: The number of dealt cards -1 is negative.
-    >>> street = Street(
-    ...     True,
-    ...     (False, False),
-    ...     0,
-    ...     False,
-    ...     Opening.POSITION,
-    ...     0,
-    ...     None,
-    ... )  # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    ValueError: Non-positive minimum completion, betting, or raising amount ...
-    >>> street = Street(
-    ...     True,
-    ...     (False, False),
-    ...     0,
-    ...     False,
-    ...     Opening.POSITION,
-    ...     2,
-    ...     -1,
-    ... )  # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    ValueError: Negative maximum number of completion, bets, or raises -1 wa...
     """
 
     card_burning_status: bool
-    """Whether to burn card."""
+    """Whether to burn card (``True`` if this is so)."""
     hole_dealing_statuses: tuple[bool, ...]
-    """The statuses of dealt hole cards."""
+    """The statuses of dealt hole cards.
+
+    The length of this ``tuple`` denotes the number of hole cards dealt
+    in the current street. Each item denotes whether to deal a card as
+    an up card (``True``) or a down card (``False``).
+    """
     board_dealing_count: int
-    """The number of dealt board cards."""
+    """The number of dealt board cards (``0`` if none).
+
+    This number of cards is dealt for each board (for multi-board
+    games).
+    """
     draw_status: bool
-    """Whether to draw cards prior to betting."""
+    """Whether to draw cards prior to betting (``True`` if this is so).
+
+    This flag is mutually exclusive with the enabling of hole dealings.
+    In other words, if this is ``True``,
+    :attr:`pokerkit.state.Street.hole_dealing_statuses` should be
+    ``()``.
+    """
     opening: Opening
-    """The opening."""
+    """The opening.
+
+    It decides who acts first for each betting round.
+    """
     min_completion_betting_or_raising_amount: int
     """The minimum completion, betting, or raising amount."""
     max_completion_betting_or_raising_count: int | None
@@ -261,33 +279,73 @@ class Automation(StrEnum):
     <Automation.ANTE_POSTING: 'Ante posting'>
     >>> Automation.CARD_BURNING
     <Automation.CARD_BURNING: 'Card burning'>
+
+    Each member of this enum specify what specific capability in
+    PokerKit the user is not interested in handling and therefore should
+    be reasonably handled by the library.
     """
 
     ANTE_POSTING: str = 'Ante posting'
-    """The ante posting automation."""
+    """The ante posting automation.
+
+    By default, the players' antes are posted in order of their player
+    indices.
+    """
     BET_COLLECTION: str = 'Bet collection'
     """The bet collection automation."""
     BLIND_OR_STRADDLE_POSTING: str = 'Blind or straddle posting'
-    """The blind or straddle posting automation."""
+    """The blind or straddle posting automation.
+
+    On automation, the players' antes are posted in order of their
+    player indices.
+    """
     CARD_BURNING: str = 'Card burning'
-    """The card burning automation."""
+    """The card burning automation.
+
+    When automated, the burnt card is dealt from the deck.
+    """
     HOLE_DEALING: str = 'Hole dealing'
-    """The hole dealing automation."""
+    """The hole dealing automation.
+
+    When automated, the hole cards are dealt from the deck, in proper
+    hole card dealing order (in accordance to player indices).
+    """
     BOARD_DEALING: str = 'Board dealing'
-    """The board dealing automation."""
+    """The board dealing automation.
+
+    The automated dealing behavior is simply drawing from the deck.
+    """
     RUNOUT_COUNT_SELECTION: str = 'Runout-count selection'
-    """The runout-count selection automation. This automation is useless
-    in tournament mode, as tournament mode automatically skips
-    runout-count selection phase since only 1 runout is done, by rule.
+    """The runout-count selection automation.
+
+    This automation is useless in tournament mode, as tournament mode
+    automatically skips runout-count selection phase since only 1
+    runout is done, by rule.
     """
     HOLE_CARDS_SHOWING_OR_MUCKING: str = 'Hole cards showing or mucking'
-    """The hole cards showing or mucking automation."""
+    """The hole cards showing or mucking automation.
+
+    By default, proper showdown order is followed and players show only
+    when necessary.
+    """
     HAND_KILLING: str = 'Hand killing'
-    """The hand killing automation."""
+    """The hand killing automation.
+
+    When automated, the hand killing is done in the order of player
+    indices.
+    """
     CHIPS_PUSHING: str = 'Chips pushing'
-    """The chips pushing automation."""
+    """The chips pushing automation.
+
+    When automated, the chips pushing is done one by one, for each
+    main/side pot.
+    """
     CHIPS_PULLING: str = 'Chips pulling'
-    """The chips pulling automation."""
+    """The chips pulling automation.
+
+    When automated, the chips-pulling is done in the order of player
+    indices.
+    """
 
 
 @unique
@@ -302,6 +360,9 @@ class Mode(StrEnum):
     <Mode.TOURNAMENT: 'Tournament'>
     >>> Mode.CASH_GAME
     <Mode.CASH_GAME: 'Cash-game'>
+
+    Tournament mode sets limitation on some of the operations: the
+    number of runouts in all-in situations is always ``1``.
     """
 
     TOURNAMENT = 'Tournament'
@@ -327,9 +388,13 @@ class Pot:
     """
 
     amount: int
-    """The amount."""
+    """The amount (unraked)."""
     player_indices: tuple[int, ...]
-    """The player indices of those who contributed."""
+    """The player indices of those who are eligible to win.
+
+    This means A: they contributed to this pot and B: they are still
+    active (in the hand).
+    """
 
     def __post_init__(self) -> None:
         if self.amount < 0:
@@ -679,291 +744,232 @@ class State:
 
     >>> state.status
     False
-
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (1,) * 2,
-    ...     (0,) * 2,
-    ...     0,
-    ...     (2,) * 2,
-    ...     2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: The streets are empty.
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             True,
-    ...             (),
-    ...             3,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (1,) * 2,
-    ...     (0,) * 2,
-    ...     0,
-    ...     (2,) * 2,
-    ...     2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: The first street must be of hole dealing.
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (-1,) * 2,
-    ...     (0,) * 2,
-    ...     0,
-    ...     (2,) * 2,
-    ...     2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: Negative antes, blinds, straddles, or bring-in was supplied.
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (0,) * 2,
-    ...     (0,) * 2,
-    ...     0,
-    ...     (2,) * 2,
-    ...     2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: No antes, blinds, straddles, or bring-in was supplied.
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (1,) * 2,
-    ...     (0,) * 2,
-    ...     0,
-    ...     (2, 0),
-    ...     2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: Non-positive starting stacks was supplied.
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (0,) * 2,
-    ...     (1,) * 2,
-    ...     1,
-    ...     (2,) * 2,
-    ...     2,
-    ... )  # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    ValueError: Only one of bring-in or (blinds or straddles) must specified...
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (0,) * 2,
-    ...     (0,) * 2,
-    ...     1,
-    ...     (2,) * 2,
-    ...     2,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: The bring-in must be less than the min bet.
-    >>> state = State(
-    ...     (),
-    ...     Deck.KUHN_POKER,
-    ...     (KuhnPokerHand,),
-    ...     (
-    ...         Street(
-    ...             False,
-    ...             (False,),
-    ...             0,
-    ...             False,
-    ...             Opening.POSITION,
-    ...             1,
-    ...             None,
-    ...         ),
-    ...     ),
-    ...     BettingStructure.FIXED_LIMIT,
-    ...     True,
-    ...     (1,),
-    ...     (0,),
-    ...     0,
-    ...     (2,),
-    ...     1,
-    ... )
-    Traceback (most recent call last):
-        ...
-    ValueError: There must be at least 2 players (currently 1).
     """
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
     __high_hand_opening_lookup = _HighHandOpeningLookup()
     automations: tuple[Automation, ...]
-    """The automations."""
+    """The automations.
+
+    Allows the user to specify what steps they do not care about and
+    therefore should be automatically handled by PokerKit.
+    """
     deck: Deck
-    """The deck."""
+    """The deck.
+
+    Different variants use different decks, which must be specified.
+    """
     hand_types: tuple[type[Hand], ...]
-    """The hand types."""
+    """The hand types.
+
+    While most poker games use just a single hand type, there exists
+    variants where multiple hand types should be considered when
+    evaluating hand strengths, namely in high/low-split contexts.
+
+    In PokerKit, each concept of high and low hands are separately
+    considered, through the use of multiple hand types.
+    """
     streets: tuple[Street, ...]
-    """The streets."""
+    """The streets.
+
+    Each street contains information about the corresponding betting
+    round and corresponding dealing/draw stage before it occurs.
+    """
     betting_structure: BettingStructure
-    """The betting structure."""
+    """The betting structure.
+
+    This class attribute determines the betting limits of a particular
+    game (e.g. no-limit, pot-limit, or fixed-limit).
+    """
     ante_trimming_status: bool
     """The ante trimming status.
 
-    Usually, if you want uniform antes, set this to ``True``.
-    If you want non-uniform antes like big blind antes, set
-    this to ``False``.
+    It denotes whether or not to activate the ``trimming`` behavior
+    during bet collection immediately after the antes are posted.
+
+    Usually, if you want uniform antes, set this to ``True``.  If you
+    want non-uniform antes like big blind antes, set this to ``False``.
     """
     raw_antes: InitVar[ValuesLike]
-    """The raw antes."""
+    """The "raw" antes.
+
+    In PokerKit, the term ``raw`` is used to denote the fact that they
+    can be supplied in many forms and will be "parsed" or "evaluated"
+    further to convert them into a more ideal form.
+
+    For instance, ``0`` will be interpreted as no ante for all players.
+    Another value will be interpreted as that value as the antes for
+    all. ``[0, 2]`` and ``{1: 2} will be considered as the big blind
+    ante whereas ``{-1: 2}`` will be considered as the button ante.
+    """
     raw_blinds_or_straddles: InitVar[ValuesLike]
-    """The raw blinds or straddles."""
+    """The "raw" blinds or straddles.
+
+    Just like for the antes, the blinds/straddles are also "interpreted"
+    by PokerKit in the same fashion.
+    """
     bring_in: int
-    """The bring-in."""
+    """The bring-in.
+
+    Some poker games do not have the bring-in, in which case ``0``
+    should be its value.
+    """
     raw_starting_stacks: InitVar[ValuesLike]
-    """The raw starting stacks."""
+    """The "raw" starting stacks.
+
+    Similar to "raw" antes and "raw" blinds/straddles, the starting
+    stacks can be represented in different ways which PokerKit
+    interprets when creating the games. Not all representations
+    explicitly express the number of players and therefore this value is
+    accepted as a separate parameter ``player_count``.
+    """
     player_count: int
     """The number of players."""
     _: KW_ONLY
     mode: Mode = Mode.TOURNAMENT
-    """The mode. Defaults to tournament mode."""
+    """The mode. Defaults to tournament mode.
+
+    There are two modes available to be set: the tournament and
+    cash-game mode. Tournaments use a stricter rule-set than typical
+    cash-games. For more details, please consult
+    :class:`pokerkit.state.Mode`.
+    """
     starting_board_count: int = 1
-    """The number of boards at the start of the game. Defaults to 1."""
+    """The number of boards at the start of the game. Defaults to 1.
+
+    For most poker games, it should be ``1``. Of course, for double
+    board games, it should be ``2``. Triple/Quadruple/etc. board games
+    are almost unheard of. Therefore, this value should mostly be ``1``
+    or sometimes ``2``.
+
+    The actual number of boards may change depending on the number of
+    runouts (during all-ins).
+    """
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function. Defaults to PokerKit's that detects integral
     or real values automatically.
+
+    This is used to denote how pots are divided up (for multiple boards,
+    multiple winners, multiple hand types, etc.).
     """
     rake: Callable[[int], tuple[Any, int]] = partial(rake, rake=0)
-    """The rake function. Defaults to zero rake."""
+    """The rake function. Defaults to zero rake.
+
+    Rake functions are used in PokerKit to denote how the rakes are
+    collected from the pot. Multiple pots may exist (side-pots) in which
+    case the method is called for each pot.
+    """
     antes: tuple[int, ...] = field(init=False)
-    """The antes."""
+    """The antes.
+
+    This value is "interpreted" version of the "raw" antes.
+    """
     blinds_or_straddles: tuple[int, ...] = field(init=False)
-    """The blinds or straddles."""
+    """The blinds or straddles.
+
+    This value is "interpreted" version of the "raw" blinds/straddles.
+    """
     starting_stacks: tuple[int, ...] = field(init=False)
-    """The starting stacks."""
+    """The starting stacks.
+
+    This value is "interpreted" version of the "raw" starting stacks.
+    """
     deck_cards: deque[Card] = field(default_factory=deque, init=False)
-    """The deck cards."""
+    """The deck cards.
+
+    The cards in this deck are shuffled and popped from throughout the
+    state's lifespan.
+    """
     board_cards: list[list[Card]] = field(default_factory=list, init=False)
-    """The board cards."""
+    """The board cards.
+
+    This is a 2D list as cards may be parallel to each other for games
+    with multiple boards or in the case of multiple runouts (during
+    all-ins).
+    """
     mucked_cards: list[Card] = field(default_factory=list, init=False)
-    """The mucked cards."""
+    """The mucked cards.
+
+    Cards that are folded or mucked are added here. These may be used
+    later to replenish the deck (should it run out).
+    """
     burn_cards: list[Card] = field(default_factory=list, init=False)
-    """The burn cards."""
+    """The burn cards.
+
+    Cards that are burned are added here. These may be used later to
+    replenish the deck (should it run out).
+    """
     statuses: list[bool] = field(default_factory=list, init=False)
-    """The player statuses."""
+    """The player statuses.
+
+    If the corresponding item is ``True`` one can say the player at that
+    index is still "in the hand".
+    """
     bets: list[int] = field(default_factory=list, init=False)
     """The player bets."""
     stacks: list[int] = field(default_factory=list, init=False)
     """The player stacks."""
     hole_cards: list[list[Card]] = field(default_factory=list, init=False)
-    """The player hole cards."""
+    """The player hole cards.
+
+    In PokerKit, the concept of hole cards is slightly warped as it
+    includes both up and down cards.
+    """
     hole_card_statuses: list[list[bool]] = field(
         default_factory=list,
         init=False,
     )
-    """The player hole card statuses."""
+    """The player hole card statuses.
+
+    The corresponding hole card is an up card if ``True``, and down if
+    ``False``.
+    """
     discarded_cards: list[list[Card]] = field(
         default_factory=list,
         init=False,
     )
-    """The discards."""
+    """The discards.
+
+    The discarded cards are added here. They may be used to replenish
+    the deck when it runs out.
+    """
     street_index: int | None = field(default=None, init=False)
-    """The street index."""
+    """The street index.
+
+    If it is not ``None``, it denotes what street the state is at
+    currently. The actual street instance can be accessed through
+    :attr:`pokerkit.state.State.street`.
+    """
     street_return_index: int | None = field(default=None, init=False)
-    """The street return index."""
+    """The street return index.
+
+    This is not ``None`` if and only if multiple runouts are
+    performed/performing.
+    """
     street_return_count: int | None = field(default=0, init=False)
-    """The street return count."""
+    """The street return count.
+
+    This is non-zero if there are pending runouts not underway already.
+
+    This value gets decremented before the start of each runout.
+    """
     all_in_status: bool = field(default=False, init=False)
-    """The all-in status."""
+    """The all-in status.
+
+    Simply put, are all active players all-in? ``True`` if yes,
+    ``False`` otherwise.
+    """
     status: bool = field(default=True, init=False)
-    """The game status."""
+    """The game status.
+
+    ``True`` if the state is not terminal. If it is not terminal, some
+    operation can still be performed.
+    """
     operations: list[Operation] = field(default_factory=list, init=False)
-    """The operations."""
+    """The operations that were applied to this state.
+
+    Each subsequent operation appends to this list.
+    """
 
     def __post_init__(
             self,
@@ -1074,6 +1080,9 @@ class State:
     def hand_type_count(self) -> int:
         """Return the number of hand types.
 
+        Typically, this is ``1``. ``2`` hand types are used for
+        split-pot games.
+
         >>> from pokerkit import (
         ...     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
         ...     NoLimitTexasHoldem,
@@ -1149,6 +1158,11 @@ class State:
     @property
     def draw_statuses(self) -> Iterator[bool]:
         """Return the draw statuses.
+
+        Each yielded item corresponds to the draw status of each street.
+
+        A draw status is ``True`` if discard/draw is performed for that
+        street.
 
         >>> from pokerkit import (
         ...     NoLimitTexasHoldem,
@@ -1417,10 +1431,13 @@ class State:
 
     @property
     def board_count(self) -> int:
-        """Return the number of boards. Should equal to the number of
-        runouts, if set, at the end of the game.
+        """Return the number of boards.
 
-        If no card was dealt to the board, ``1`` is returned.
+        It should equal to the number of runouts, if set, at the end of
+        the game.
+
+        If no card was dealt to the board, the
+        :attr:`pokerkit.state.State.starting_board_count` is returned.
 
         :return: The number of boards.
         """
@@ -1435,22 +1452,29 @@ class State:
 
     @property
     def board_indices(self) -> range:
-        """Return the number of boards. Should equal to the number of
-        runouts, if set, at the end of the game.
+        """Return the board indices.
 
-        :return: The number of boards.
+        :return: The board indices.
         """
         return range(self.board_count)
 
     def get_board_cards(self, board_index: int) -> Iterator[Card]:
         """Return the board at the ``board_index`` (i.e.
-        ``board_index``'th runout).
+        ``board_index``'th board, accounting for runout).
 
-        In most games, there are only one runout, so, setting the
-        ``board_index`` argument to ``0`` should do the job.
+        In most games, there are only one board and runout, so, setting
+        the ``board_index`` argument to ``0`` should do the job.
 
-        If multiple runouts were performed, one can supply a different
+        If multiple boards/runouts were used, one can supply a different
         argument.
+
+        Consider the following board:
+        ``[[A, D], [B, E], [C, F], [G, H], [I, J, K, L]]``.
+
+        The alphabets denote cards dealt and defined to reflect the
+        proper dealing order. Here, there are 4 boards. The first is
+        ``ABCGI``, the second is ``ABCHJ``, the third is ``DEFHK``, and
+        fourth is ``DEFHL``.
 
         :param: The board index.
         :return: The board at the desired index.
@@ -1465,7 +1489,7 @@ class State:
 
             mid = 0
 
-            for i in range(self.street_return_index + 1):
+            for i in range(self.street_return_index):
                 mid += self.streets[i].board_dealing_count
 
             for i, cards in enumerate(self.board_cards):
@@ -1521,6 +1545,7 @@ class State:
         >>> tuple(state.get_censored_hole_cards(1))
         (??, ??, Kh)
 
+        :param player_index: The player index.
         :return: The censored hole cards.
         """
         for card, status in zip(
@@ -1650,6 +1675,8 @@ class State:
         provided through ``hand_type_index``. Since they may be multiple
         boards, so does ``board_index``.
 
+        The down cards *are* considered here.
+
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
         ...     (
@@ -1770,6 +1797,8 @@ class State:
         through ``player_index``. Which hand type to evaluate must be
         provided through ``hand_type_index``. Since they may be multiple
         boards, so does ``board_index``.
+
+        The down cards *are not* considered here.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -1969,7 +1998,9 @@ class State:
         """Return whether if the player might win pots based on
         the available information to a player.
 
-        It is assumed that no more card is dealt.
+        This basically means that nobody has yet shown a hand that
+        prevents the player from winning even a tiny portion of any
+        main/side pots.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -2091,7 +2122,7 @@ class State:
     def cards_in_play(self) -> Iterator[Card]:
         """Iterate through the cards in play.
 
-        These are visible by players still in the pot.
+        These are visible by at least one player still in the pot.
 
         These are either in the board or holes.
 
@@ -2132,9 +2163,23 @@ class State:
         """Iterate through the available cards that can be dealt or
         burned.
 
+        The returned cards can be thought of as representing the
+        "recommended" to be dealt. If only one card is to be dealt and
+        there are multiple cards in the deck still remaining, then, one
+        should select one of the cards in the deck (this is returned).
+
+        Conversely, if one wants to deal ``3`` cards but there aren't
+        enough cards left, the deck and the reserve must both be
+        considered since the deck will run out amid dealing them and
+        will be replenished. Thus, in this scenario, the merger of the
+        deck and reserve are returned.
+
+        If any dealing is performed with cards not part of the value
+        to be returned in this method, a warning is issued by PokerKit.
+
         :param deal_count: The number of dealt cards, maybe ``None`` to
                            denote an arbitrary number of cards.
-        :return: The recommended dealable cards, from deck and maybe
+        :return: The "recommended" dealable cards, from deck and maybe
                  reserve.
         """
         cards = tuple(self.deck_cards)
@@ -2188,7 +2233,9 @@ class State:
                     warn(
                         (
                             f'A card being dealt {repr(card)} is not'
-                            ' recommended to be dealt.'
+                            ' recommended to be dealt. For more details,'
+                            ' please consult the method'
+                            ' \'pokerkit.state.State.get_dealable_cards()\''
                         ),
                     )
 
@@ -2221,6 +2268,12 @@ class State:
     def get_effective_stack(self, player_index: int) -> int:
         """Return the effective stack of the player.
 
+        It denotes the amount the player "can possibly lose".
+
+        For example, if the player has the largest stack, then the
+        second largest stack value owned by an active player will be
+        returned.
+
         :param player_index: The player index.
         :return: The effective stack of the player.
         """
@@ -2248,6 +2301,8 @@ class State:
 
         The first pot (if any) is the main pot of this game. The
         subsequent pots are side pots.
+
+        The amounts returned are unraked.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -2338,7 +2393,7 @@ class State:
 
     @property
     def total_pot_amount(self) -> int:
-        """Return the total pot amount.
+        """Return the total pot amount (unraked).
 
         This value also includes the bets.
 
@@ -2644,7 +2699,13 @@ class State:
     # ante posting
 
     ante_posting_statuses: list[bool] = field(default_factory=list, init=False)
-    """The player ante posting statuses."""
+    """The player ante posting statuses.
+
+    Each item denotes whether a player at that index can post the ante
+    (``True``) or cannot (``False``).
+
+    Each ante posting operation swithces one ``True`` item to ``False``.
+    """
 
     def _setup_ante_posting(self) -> None:
         assert not self.ante_posting_statuses
@@ -2677,6 +2738,9 @@ class State:
     def get_effective_ante(self, player_index: int) -> int:
         """Return the effective ante of the player.
 
+        The "effective" ante is effective in that it considers players'
+        stacks being too low to post the full ante.
+
         :param player_index: The player index.
         :return: The effective ante.
         """
@@ -2690,6 +2754,8 @@ class State:
     @property
     def ante_poster_indices(self) -> Iterator[int]:
         """Iterate through players who can post antes.
+
+        The yielded indices are sorted by player indices.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -2747,6 +2813,9 @@ class State:
     def verify_ante_posting(self, player_index: int | None = None) -> int:
         """Verify the ante posting.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.post_ante`.
+
         :param player_index: The optional player index.
         :return: The anteing player index.
         :raises ValueError: If the ante posting cannot be done.
@@ -2765,6 +2834,9 @@ class State:
 
     def can_post_ante(self, player_index: int | None = None) -> bool:
         """Return whether the ante posting can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.post_ante`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -2818,6 +2890,12 @@ class State:
     ) -> AntePosting:
         """Post the ante.
 
+        In this operation, a single player posts the ante.
+
+        The players who can post can be iterated through with
+        :attr:`pokerkit.state.State.ante_poster_indices`. The first
+        player in this iterable is posted if no player is specified.
+
         :param player_index: The optional player index.
         :param commentary: The optional commentary.
         :return: The ante posting.
@@ -2843,7 +2921,11 @@ class State:
     # bet collection
 
     bet_collection_status: bool = field(default=False, init=False)
-    """The bet collection status."""
+    """The bet collection status.
+
+    If ``True``, then bet collection is pending. The operation will set
+    this to ``False``.
+    """
 
     def _setup_bet_collection(self) -> None:
         assert not self.bet_collection_status
@@ -2871,7 +2953,9 @@ class State:
         assert not self.bet_collection_status
 
         if self.street is self.streets[-1] and self.street_return_count:
-            self.street_index = self.street_return_index
+            assert self.street_return_index is not None
+
+            self.street_index = self.street_return_index - 1
             self.street_return_count -= 1
 
         if sum(self.statuses) == 1:
@@ -2886,6 +2970,9 @@ class State:
     def verify_bet_collection(self) -> None:
         """Verify the bet collection.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.collect_bets`.
+
         :return: ``None``.
         :raises ValueError: If the bet collection cannot be done.
         """
@@ -2894,6 +2981,9 @@ class State:
 
     def can_collect_bets(self) -> bool:
         """Return whether the bet collection can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.collect_bets`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -2924,6 +3014,8 @@ class State:
 
     def collect_bets(self, *, commentary: str | None = None) -> BetCollection:
         """Collect the bets.
+
+        In this operation, the outstanding bets are collected into the pot.
 
         :param commentary: The optional commentary.
         :return: The bet collection.
@@ -2969,7 +3061,14 @@ class State:
         default_factory=list,
         init=False,
     )
-    """The player blind or straddle statuses."""
+    """The player blind or straddle statuses.
+
+    Each item denotes whether a player at that index can post the
+    blind/straddle (``True``) or cannot (``False``).
+
+    Each blind/straddle posting operation swithces one ``True`` item to
+    ``False``.
+    """
 
     def _setup_blind_or_straddle_posting(self) -> None:
         assert not self.blind_or_straddle_posting_statuses
@@ -3005,7 +3104,10 @@ class State:
         self._begin_dealing()
 
     def get_effective_blind_or_straddle(self, player_index: int) -> int:
-        """Return the effective blind or straddle of the player.
+        """Return the "effective" blind or straddle of the player.
+
+        The "effective" blind/straddle is effective in that it considers
+        players' stacks being too low to post the full ante.
 
         :param player_index: The player index.
         :return: The effective blind or straddle.
@@ -3067,6 +3169,9 @@ class State:
     ) -> int:
         """Verify the blind or straddle posting.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.post_blind_or_straddle`.
+
         :param player_index: The optional player index.
         :return: The blinding or straddling player index.
         :raises ValueError: If blind or straddle posting cannot be done.
@@ -3088,6 +3193,9 @@ class State:
             player_index: int | None = None,
     ) -> bool:
         """Return whether the blind or straddle posting can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.post_blind_or_straddle`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -3135,6 +3243,13 @@ class State:
     ) -> BlindOrStraddlePosting:
         """Post the blind or straddle of the player.
 
+        In this operation, a single player posts the blind/straddle.
+
+        The players who can post can be iterated through with
+        :attr:`pokerkit.state.State.blind_or_straddle_poster_indices`.
+        The first player in this iterable is posted if no player is
+        specified.
+
         :param player_index: The optional player index.
         :param commentary: The optional commentary.
         :return: The blind or straddle posting.
@@ -3165,19 +3280,34 @@ class State:
     # dealing
 
     card_burning_status: bool = field(default=False, init=False)
-    """The card burning status."""
+    """The card burning status.
+
+    If ``True``, a card burning is pending.
+    """
     hole_dealing_statuses: list[deque[bool]] = field(
         default_factory=list,
         init=False,
     )
-    """The hole dealing statuses."""
+    """The hole dealing statuses.
+
+    If an item is non-empty, hole dealings are pending for that player
+    (up if ``True``, down if ``False``).
+    """
     board_dealing_counts: list[int] = field(default_factory=list, init=False)
-    """The board dealing counts."""
+    """The board dealing counts.
+
+    This is a list, as there may be multiple pending board dealings (due
+    to multiple boards).
+    """
     standing_pat_or_discarding_statuses: list[bool] = field(
         default_factory=list,
         init=False,
     )
-    """The standing pat or discarding statuses."""
+    """The standing pat or discarding statuses.
+
+    If an item is ``True``, then the player should perform a draw
+    action (or stand pat).
+    """
 
     def _setup_dealing(self) -> None:
         assert not self.hole_dealing_statuses
@@ -3277,9 +3407,12 @@ class State:
 
     def verify_card_burning(
             self,
-            card: Card | str | None = None,
+            card: CardsLike | None = None,
     ) -> Card:
         """Verify the card burning.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.burn_card`.
 
         :param card: The optional card.
         :return: The burn card.
@@ -3310,8 +3443,11 @@ class State:
 
         return card
 
-    def can_burn_card(self, card: Card | str | None = None) -> bool:
+    def can_burn_card(self, card: CardsLike | None = None) -> bool:
         """Return whether the card burning can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.burn_card`.
 
         :param card: The optional card.
         :return: ``True`` if the card burning can be done, otherwise
@@ -3326,11 +3462,17 @@ class State:
 
     def burn_card(
             self,
-            card: Card | str | None = None,
+            card: CardsLike | None = None,
             *,
             commentary: str | None = None,
     ) -> CardBurning:
         """Burn a card.
+
+        If the ``card`` is not specified, a card is drawn from the deck.
+        The deck, if empty, will be replenished from the reserve.
+
+        If a string representation is used, only a single card must be
+        described.
 
         :param card: The optional card.
         :param commentary: The optional commentary.
@@ -3361,6 +3503,11 @@ class State:
     @property
     def hole_dealee_index(self) -> int | None:
         """Return the hole dealee index.
+
+        This index is that of the player in turn to be dealt the hole
+        cards.
+
+        Of course, this may be overridden in the actual operation.
 
         :return: The hole dealee index if applicable, otherwise
                  ``None``.
@@ -3406,6 +3553,9 @@ class State:
     ) -> tuple[tuple[Card, ...], int]:
         """Verify the hole dealing.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.deal_hole`.
+
         :param cards: The optional cards.
         :param player_index: The optional target dealee.
         :return: The dealt hole cards.
@@ -3428,7 +3578,10 @@ class State:
             )
         elif (
                 len(cards)
-                not in range(len(self.hole_dealing_statuses[player_index]) + 1)
+                not in range(
+                    1,
+                    len(self.hole_dealing_statuses[player_index]) + 1,
+                )
         ):
             raise ValueError(
                 (
@@ -3447,6 +3600,9 @@ class State:
             player_index: int | None = None,
     ) -> bool:
         """Return whether the hole dealing can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.deal_hole`.
 
         :param cards: The optional cards.
         :param player_index: The optional target dealee.
@@ -3468,6 +3624,16 @@ class State:
             commentary: str | None = None,
     ) -> HoleDealing:
         """Deal the hole.
+
+        The number of dealt hole cards should be less than or equal to
+        the number of pending hole dealings to the player.
+
+        If unspecified, the cards will be drawn from the deck (and
+        possibly replenished from the reserve).
+
+        If the player is not specified, they will be automatically
+        determined. The automatic dealee is available at
+        :attr:`pokerkit.state.State.hole_dealee_index`.
 
         :param cards: The optional cards.
         :param player_index: The optional target dealee.
@@ -3530,6 +3696,9 @@ class State:
     ) -> tuple[Card, ...]:
         """Verify the board dealing.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.deal_board`.
+
         :param cards: The optional cards.
         :return: The dealt board cards.
         :raises ValueError: If the board dealing cannot be done.
@@ -3556,6 +3725,9 @@ class State:
     def can_deal_board(self, cards: CardsLike | int | None = None) -> bool:
         """Return whether the board dealing can be done.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.deal_board`.
+
         :param cards: The optional cards.
         :param player_index: The optional player index.
         :return: ``True`` if the board dealing can be done, otherwise
@@ -3575,6 +3747,9 @@ class State:
             commentary: str | None = None,
     ) -> BoardDealing:
         """Deal the board.
+
+        The cards, if unspecified, will be drawn from the deck (and
+        possibly replenished from the reserve).
 
         :param cards: The optional cards.
         :param commentary: The optional commentary.
@@ -3641,6 +3816,9 @@ class State:
     ) -> tuple[Card, ...]:
         """Verify the discard.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.stand_pat_or_discard`.
+
         :param cards: The discarded cards, defaults to empty.
         :return: The discarded cards.
         :raises ValueError: If the discard cannot be done.
@@ -3666,6 +3844,9 @@ class State:
     def can_stand_pat_or_discard(self, cards: CardsLike = ()) -> bool:
         """Return whether the discard can be done.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.stand_pat_or_discard`.
+
         :param cards: The optional discarded cards, defaults to empty.
         :return: ``True`` if the discard can be done, otherwise
                  ``False``.
@@ -3683,7 +3864,17 @@ class State:
             *,
             commentary: str | None = None,
     ) -> StandingPatOrDiscarding:
-        """Discard hole cards.
+        """Stand pat or discard hole cards.
+
+        The specified cards (if any) should be a subset of the player's
+        hole cards.
+
+        The player currently standing pat/discarding can be accessed via
+        :attr:`pokerkit.state.State.stander_pat_or_discarder_index`.
+
+        After the standing pat or discarding is done for all pending
+        players, their hole should be replenished by the subsequent hole
+        dealing operations to each player.
 
         :param cards: The optional discarded cards.
         :param commentary: The optional commentary.
@@ -3722,17 +3913,40 @@ class State:
     # betting
 
     opener_index: int | None = field(default=None, init=False)
-    """The opener index."""
+    """The opener index.
+
+    At the beginning of a betting round, this denotes who opened the
+    round. If someone bets or raises, this attribute is updated to
+    reflect who opened the betting round.
+    """
     bring_in_status: bool = field(default=False, init=False)
-    """The bring-in status."""
+    """The bring-in status.
+
+    If ``True``, the player should at least post a bring-in (therefore
+    cannot fold).
+    """
     completion_status: bool = field(default=False, init=False)
-    """The completion status."""
+    """The completion status.
+
+    If ``True``, the player is facing a bring-in and hence a completion
+    is pending.
+    """
     actor_indices: deque[int] = field(default_factory=deque, init=False)
-    """The actor indices."""
+    """The actor indices.
+
+    The order of actors to act (i.e. turn indices). The first item
+    denotes who is in action.
+    """
     completion_betting_or_raising_amount: int = field(default=0, init=False)
-    """The last completion, betting, or raising amount."""
+    """The last completion, betting, or raising amount.
+
+    This attribute is updated with each completion/bet/raises.
+    """
     completion_betting_or_raising_count: int = field(default=0, init=False)
-    """The number of completions, bettings, or raisings."""
+    """The number of completions, bettings, or raisings.
+
+    This attribute is incremented with each completion/bet/raises.
+    """
 
     def _setup_betting(self) -> None:
         pass
@@ -3879,6 +4093,9 @@ class State:
     def actor_index(self) -> int | None:
         """Return the actor index.
 
+        The returned index denotes the index of the current actor (in
+        turn to act).
+
         :return: The actor index if applicable, otherwise ``None``.
         """
         if not self.actor_indices:
@@ -3890,6 +4107,9 @@ class State:
 
     def verify_folding(self) -> None:
         """Verify the folding.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.fold`.
 
         :return: ``None``.
         :raises ValueError: If the folding cannot be done.
@@ -3908,6 +4128,9 @@ class State:
 
     def can_fold(self) -> bool:
         """Return whether theing fold can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.fold`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -3962,6 +4185,12 @@ class State:
     def fold(self, *, commentary: str | None = None) -> Folding:
         """Fold.
 
+        This mucks the player's cards and signifies that the player
+        relinquishes the right to win any of the pots.
+
+        The actor can be accessed through
+        :attr:`pokerkit.state.State.actor_index`.
+
         :param commentary: The optional commentary.
         :return: The folding.
         :raises ValueError: If the folding cannot be done.
@@ -4006,6 +4235,9 @@ class State:
     def verify_checking_or_calling(self) -> None:
         """Verify the checking or calling.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.check_or_call`.
+
         :return: ``None``.
         :raises ValueError: If the checking or calling cannot be done.
         """
@@ -4016,6 +4248,9 @@ class State:
 
     def can_check_or_call(self) -> bool:
         """Return whether the checking or calling can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.check_or_call`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -4068,6 +4303,13 @@ class State:
     ) -> CheckingOrCalling:
         """Check or call.
 
+        This entails matching or trying to match the largest outstanding
+        bet by others. If nobody has yet bet in the current betting
+        round, the player is said to check.
+
+        The actor can be accessed through
+        :attr:`pokerkit.state.State.actor_index`.
+
         :param commentary: The optional commentary.
         :return: The checking or calling.
         :raises ValueError: If the checking or calling cannot be done.
@@ -4114,6 +4356,9 @@ class State:
     def verify_bring_in_posting(self) -> None:
         """Verify the bring-in posting.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.post_bring_in`.
+
         :return: ``None``.
         :raises ValueError: If the bring-in posting cannot be done.
         """
@@ -4124,6 +4369,9 @@ class State:
 
     def can_post_bring_in(self) -> bool:
         """Return whether the bring-in posting can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.post_bring_in`.
 
         :return: ``True`` if the bring-in posting can be done, otherwise
                  ``False``.
@@ -4141,6 +4389,9 @@ class State:
             commentary: str | None = None,
     ) -> BringInPosting:
         """Post the bring-in.
+
+        The actor can be accessed through
+        :attr:`pokerkit.state.State.actor_index`.
 
         :param commentary: The optional commentary.
         :return: The bring-in posting.
@@ -4300,6 +4551,9 @@ class State:
     ) -> int:
         """Verify the completion, betting, or raising to.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.complete_bet_or_raise_to`.
+
         :param amount: The optional completion, betting, or raising to
                        amount.
         :return: The completion, betting, or raising to amount.
@@ -4337,6 +4591,9 @@ class State:
     ) -> bool:
         """Return whether the completion, betting, or raising can be
         done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.complete_bet_or_raise_to`.
 
         >>> from pokerkit import (
         ...     NoLimitTexasHoldem,
@@ -4451,6 +4708,12 @@ class State:
     ) -> CompletionBettingOrRaisingTo:
         """Complete, bet, or raise to an amount.
 
+        This opens the new betting round where the active players are
+        forced to try to match the new bet to stay in the pot.
+
+        The actor can be accessed through
+        :attr:`pokerkit.state.State.actor_index`.
+
         :param amount: The optional completion, betting, or raising to
                        amount.
         :param commentary: The optional commentary.
@@ -4500,14 +4763,33 @@ class State:
         default_factory=list,
         init=False,
     )
-    """The runout-count selector indices."""
-    runout_count: int | None = field(default=None, init=False)
-    """The number of runouts."""
-    runout_count_selection_flag: bool = field(default=False, init=False)
-    """The runout-count selector flag."""
+    """The runout-count selector statuses.
 
+    Each element denotes whether a player at that index is pending
+    runout-count selection (``True``).
+    """
+    runout_count: int | None = field(default=None, init=False)
+    """The number of runouts.
+
+    This attribute reflects a concensus on the number of runouts
+    selected by each player.
+
+    If no one selects a preference or the hand is never all-in by all
+    those who are active, this value is ``None``. If at least one person
+    expresses a preference, a concensus is established and thus this
+    value is not ``None``.
+    """
+    runout_count_selection_flag: bool = field(default=False, init=False)
+    """The runout-count selector flag.
+
+    It is ``True`` if everyone had a chance to select the number of
+    runouts.
+    """
     showdown_indices: deque[int] = field(default_factory=deque, init=False)
-    """The showdown indices."""
+    """The showdown indices.
+
+    The items also reflect a showdown order.
+    """
 
     def _setup_showdown(self) -> None:
         assert not self.runout_count_selector_statuses
@@ -4572,7 +4854,7 @@ class State:
             self.runout_count_selection_flag = True
 
             if self.runout_count is not None:
-                self.street_return_index = self.street_index
+                self.street_return_index = self.street_index + 1
                 self.street_return_count = self.runout_count - 1
 
         if self.all_in_status and self.street is not self.streets[-1]:
@@ -4606,8 +4888,8 @@ class State:
     ) -> int:
         """Verify the runout-count selection.
 
-        If the ``runout_count`` is ``None``, it is considered to be
-        "no-preference".
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.select_runout_count`.
 
         :param runout_count: The number of runouts, defaults to
                              ``None``.
@@ -4642,8 +4924,8 @@ class State:
     ) -> bool:
         """Return whether the runout-count selection can be done.
 
-        If the ``runout_count`` is ``None``, it is considered to be
-        "no-preference".
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.select_runout_count`.
 
         :param runout_count: The number of runouts, defaults to
                              ``None``.
@@ -4669,6 +4951,14 @@ class State:
 
         If the ``runout_count`` is ``None``, it is considered to be
         "no-preference".
+
+        The runout-count selection can be performed prior to or after
+        the showing/mucking of the hole cards. Both are permitted by
+        PokerKit.
+
+        If the player index is not specified, the first item of
+        :attr:`pokerkit.state.State.runout_count_selector_indices` will
+        be used.
 
         :param runout_count: The number of runouts, defaults to
                              ``None``.
@@ -4705,6 +4995,15 @@ class State:
     @property
     def showdown_index(self) -> int | None:
         """Return the showdown index.
+
+        The index denotes who should show/muck their cards next.
+
+        Typically, in poker games, the showdown order is determined
+        through action. The last bettor/raiser must show first.
+
+        In practice, it is encouraged for people who know they won
+        for sure to show first. This means that the "ideal" showdown
+        order may deviate from the actually practiced showdown order.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -4812,6 +5111,9 @@ class State:
     ) -> tuple[bool, tuple[Card, ...] | None, int]:
         """Verify the hole card showing or mucking.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.show_or_muck_hole_cards`.
+
         :param status_or_hole_cards: The optional status or hole cards.
         :param player_index: The optional player index to override the
                              showdown order.
@@ -4867,6 +5169,9 @@ class State:
             player_index: int | None = None,
     ) -> bool:
         """Return whether the hole card showing or mucking can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.show_or_muck_hole_cards`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -4982,6 +5287,9 @@ class State:
         If the status is not given, the hole cards will be shown if and
         only if there is chance of winning the pot. Otherwise, the hand
         will be mucked.
+
+        If the player index is not specified, it defaults to
+        :attr:`pokerkit.state.State.showdown_index`.
 
         :param status_or_hole_cards: The optional status or hole cards.
         :param player_index: The optional player index to override the
@@ -5146,6 +5454,9 @@ class State:
     def verify_hand_killing(self, player_index: int | None = None) -> int:
         """Verify the hand killing.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.kill_hand`.
+
         :param player_index: The optional player index.
         :return: The hand killing index.
         :raises ValueError: If the hand killing cannot be done.
@@ -5164,6 +5475,9 @@ class State:
 
     def can_kill_hand(self, player_index: int | None = None) -> bool:
         """Return whether the hand killing can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.kill_hand`.
 
         >>> from pokerkit import NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
@@ -5246,6 +5560,14 @@ class State:
     ) -> HandKilling:
         """Kill hand.
 
+        In real-life, this is performed by the dealer to "kill" and
+        remove an irrelevant hand (i.e. cannot win anything) so that
+        only the relevant hands (i.e. can win at least a portion) are
+        left open prior to pushing the chips to the respective winners.
+
+        If the player is not specified, the first item of
+        :attr:`pokerkit.state.State.hand_killing_indices` will be used.
+
         :param player_index: The optional player index.
         :param commentary: The optional commentary.
         :return: The hand killing.
@@ -5297,6 +5619,9 @@ class State:
     def verify_chips_pushing(self) -> None:
         """Verify the chips pushing.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.push_chips`.
+
         :return: ``None``.
         :raises ValueError: If the chips pushing cannot be done.
         """
@@ -5305,6 +5630,9 @@ class State:
 
     def can_push_chips(self) -> bool:
         """Return whether the chips pushing can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.push_chips`.
 
         >>> from pokerkit import FixedLimitDeuceToSevenLowballTripleDraw
         >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
@@ -5347,6 +5675,8 @@ class State:
 
     def push_chips(self, *, commentary: str | None = None) -> ChipsPushing:
         """Push chips.
+
+        Each call of this operation will push a single main/side pot.
 
         :param commentary: The optional commentary.
         :return: The chips pushing.
@@ -5528,6 +5858,9 @@ class State:
     def verify_chips_pulling(self, player_index: int | None = None) -> int:
         """Verify the chips pulling.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.pull_chips`.
+
         :param player_index: The optional player index.
         :return: The chips pulling index.
         :raises ValueError: If the chips pulling cannot be done.
@@ -5544,6 +5877,9 @@ class State:
 
     def can_pull_chips(self, player_index: int | None = None) -> bool:
         """Return whether the chips pulling can be done.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.pull_chips`.
 
         >>> from pokerkit import FixedLimitDeuceToSevenLowballTripleDraw
         >>> state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
@@ -5600,6 +5936,12 @@ class State:
     ) -> ChipsPulling:
         """Pull chips.
 
+        Here, the won chip in front of a player is incorporated back
+        into his/her stack.
+
+        If the player is not specified, the first item of
+        :attr:`pokerkit.state.State.chips_pulling_indices` will be used.
+
         :param player_index: The optional player index.
         :param commentary: The optional commentary.
         :return: The chips pulling.
@@ -5621,12 +5963,18 @@ class State:
     def verify_no_operation(self) -> None:
         """Verify the no-operation.
 
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.no_operate`.
+
         :return: ``None``.
         """
         pass
 
     def can_no_operate(self) -> bool:
         """Return whether the no-operation can be done. Always ``True``.
+
+        For more details on this operation, please consult the method
+        :attr:`pokerkit.state.State.no_operate`.
 
         :return: ``True``.
         """

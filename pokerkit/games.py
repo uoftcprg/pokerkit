@@ -1,4 +1,9 @@
-""":mod:`pokerkit.games` implements various poker game definitions."""
+""":mod:`pokerkit.games` implements various poker game definitions.
+
+The classes here allow users to "save" certain configurations to create
+poker states in a simple manner. This is crucial, as poker states require
+tons of parameters to be specified.
+"""
 
 from __future__ import annotations
 
@@ -32,24 +37,45 @@ from pokerkit.utilities import Deck, divmod, rake, RankOrder, ValuesLike
 class Poker(ABC):
     """The abstract base class for poker games.
 
+    The instances of this class serves two purposes. First, it allows
+    the users to save state initialization parameters so they do not
+    have to be specified each time a new state is created. Second, the
+    number and complexities of parameters that has to be specified to
+    initialize the state is reduced.
+
     :param automations: The automations.
     :param streets: The streets.
     :param ante_trimming_status: The ante trimming status.
-    :param raw_antes: The raw antes.
-    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param raw_antes: The "raw" antes.
+    :param raw_blinds_or_straddles: The "raw" blinds or straddles.
     :param bring_in: The bring-in.
-    :param starting_board_count: The starting board count.
     :param mode: The mode.
+    :param starting_board_count: The starting board count.
     :param divmod: The divmod function.
     :param rake: The rake function.
     """
 
     deck: ClassVar[Deck]
-    """The deck."""
+    """The deck.
+
+    Different variants use different decks, which must be specified.
+    """
     hand_types: ClassVar[tuple[type[Hand], ...]]
-    """The hand types."""
+    """The hand types.
+
+    While most poker games use just a single hand type, there exists
+    variants where multiple hand types should be considered when
+    evaluating hand strengths, namely in high/low-split contexts.
+
+    In PokerKit, each concept of high and low hands are separately
+    considered, through the use of multiple hand types.
+    """
     betting_structure: ClassVar[BettingStructure]
-    """The betting structure."""
+    """The betting structure.
+
+    This class attribute determines the betting limits of a particular
+    game (e.g. no-limit, pot-limit, or fixed-limit).
+    """
 
     def __init__(
             self,
@@ -60,42 +86,106 @@ class Poker(ABC):
             raw_blinds_or_straddles: ValuesLike,
             bring_in: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> None:
         self.automations: tuple[Automation, ...] = automations
-        """The automations."""
+        """The automations.
+
+        Allows the user to specify what steps they do not care about and
+        therefore should be automatically handled by PokerKit.
+        """
         self.streets: tuple[Street, ...] = streets
-        """The streets."""
+        """The streets.
+
+        Each street contains information about the corresponding betting
+        round and corresponding dealing/draw stage before it occurs.
+        """
         self.ante_trimming_status: bool = ante_trimming_status
         """The ante trimming status.
 
-        Usually, if you want uniform antes, set this to ``True``.
-        If you want non-uniform antes like big blind antes, set
-        this to ``False``.
+        It denotes whether or not to activate the ``trimming`` behavior
+        during bet collection immediately after the antes are posted.
+
+        Usually, if you want uniform antes, set this to ``True``.  If
+        you want non-uniform antes like big blind antes, set this to
+        ``False``.
         """
         self.raw_antes: ValuesLike = raw_antes
-        """The raw antes."""
+        """The "raw" antes.
+
+        In PokerKit, the term ``raw`` is used to denote the fact that
+        they can be supplied in many forms and will be "parsed" or
+        "evaluated" further to convert them into a more ideal form.
+
+        For instance, ``0`` will be interpreted as no ante for all
+        players. Another value will be interpreted as that value as the
+        antes for all. ``[0, 2]`` and ``{1: 2} will be considered as the
+        big blind ante whereas ``{-1: 2}`` will be considered as the
+        button ante.
+        """
         self.raw_blinds_or_straddles: ValuesLike = raw_blinds_or_straddles
-        """The raw blinds or straddles."""
+        """The "raw" blinds or straddles.
+
+        Just like for the antes, the blinds/straddles are also
+        "interpreted" by PokerKit in the same fashion.
+        """
         self.bring_in: int = bring_in
-        """The bring-in."""
-        self.starting_board_count: int = starting_board_count
-        """The starting board count."""
+        """The bring-in.
+
+        Some poker games do not have the bring-in, in which case ``0``
+        should be its value.
+        """
         self.mode: Mode = mode
-        """The mode."""
+        """The mode.
+
+        There are two modes available to be set: the tournament and
+        cash-game mode. Tournaments use a stricter rule-set than typical
+        cash-games. For more details, please consult
+        :class:`pokerkit.state.Mode`.
+        """
+        self.starting_board_count: int = starting_board_count
+        """The starting board count.
+
+        For most poker games, it should be ``1``. Of course, for double
+        board games, it should be ``2``. Triple/Quadruple/etc. board
+        games are almost unheard of. Therefore, this value should mostly
+        be ``1`` or sometimes ``2``.
+        """
         self.divmod: Callable[[int, int], tuple[int, int]] = divmod
-        """The divmod function."""
+        """The divmod function.
+
+        This is used to denote how pots are divided up (for multiple
+        boards, multiple winners, multiple hand types, etc.).
+        """
         self.rake: Callable[[int], tuple[int, int]] = rake
-        """The rake function."""
+        """The rake function.
+
+        Rake functions are used in PokerKit to denote how the rakes are
+        collected from the pot. Multiple pots may exist (side-pots) in
+        which case the method is called for each pot.
+        """
 
     def __call__(
             self,
             raw_starting_stacks: ValuesLike,
             player_count: int,
     ) -> State:
+        """Create the poker state based on the game definition's
+        attributes and the desired starting stacks.
+
+        Similar to "raw" antes and "raw" blinds/straddles, the starting
+        stacks can be represented in different ways which PokerKit
+        interprets when creating the games. Not all representations
+        explicitly express the number of players and therefore this
+        value is accepted as a separate parameter ``player_count``.
+
+        :param raw_starting_stacks: The "raw" starting stacks.
+        :param player_count: The number of players.
+        :return: The created poker game.
+        """
         return State(
             self.automations,
             self.deck,
@@ -108,15 +198,20 @@ class Poker(ABC):
             self.bring_in,
             raw_starting_stacks,
             player_count,
-            starting_board_count=self.starting_board_count,
             mode=self.mode,
+            starting_board_count=self.starting_board_count,
             divmod=self.divmod,
             rake=self.rake,
         )
 
     @property
     def button_status(self) -> bool:
-        """Return the button status.
+        """Return whether this game is a button game (i.e. has a rotating
+        button).
+
+        We deem that a variant is a button game if it has betting round
+        whose opener is decided based on position (not up card/hand like
+        in stud).
 
         >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
         >>> game.button_status
@@ -134,7 +229,8 @@ class Poker(ABC):
 
     @property
     def max_hole_card_count(self) -> int:
-        """Return the maximum number of hole cards.
+        """Return the maximum number of hole cards a single player can
+        have.
 
         >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
         >>> game.max_hole_card_count
@@ -152,7 +248,8 @@ class Poker(ABC):
 
     @property
     def max_down_card_count(self) -> int:
-        """Return the maximum number of down cards.
+        """Return the maximum number of down cards a single player can
+        have.
 
         >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
         >>> game.max_down_card_count
@@ -172,7 +269,8 @@ class Poker(ABC):
 
     @property
     def max_up_card_count(self) -> int:
-        """Return the maximum number of up cards.
+        """Return the maximum number of up cards a single player can
+        have.
 
         >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
         >>> game.max_up_card_count
@@ -190,7 +288,7 @@ class Poker(ABC):
 
     @property
     def max_board_card_count(self) -> int:
-        """Return the maximum number of board cards.
+        """Return the maximum number of board cards that can be dealt.
 
         >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
         >>> game.max_board_card_count
@@ -206,7 +304,10 @@ class Poker(ABC):
 
     @property
     def rank_orders(self) -> tuple[RankOrder, ...]:
-        """Return the rank orders.
+        """Return the rank orders for each hand type used.
+
+        A hand type may use different rank orderings (deuce-low,
+        ace-low, etc.).
 
         >>> game = NoLimitTexasHoldem((), True, 0, (1, 2), 2)
         >>> game.rank_orders  # doctest: +ELLIPSIS
@@ -226,6 +327,11 @@ class Poker(ABC):
     def small_bet(self) -> int:
         """Return the small bet.
 
+        This is the min-bet amount of the first street.
+
+        It may be different from the big bet (primarily in fixed-limit
+        games).
+
         :return: The small bet.
         """
         return self.streets[0].min_completion_betting_or_raising_amount
@@ -233,6 +339,11 @@ class Poker(ABC):
     @property
     def big_bet(self) -> int:
         """Return the big bet.
+
+        This is the min-bet amount of the last street.
+
+        It may be different from the small bet (primarily in fixed-limit
+        games).
 
         :return: The big bet.
         """
@@ -243,7 +354,17 @@ class Poker(ABC):
         """Return the min bet.
 
         :return: The min bet.
+        :raises ValueError: If the small and big bets are not identical.
         """
+        if self.small_bet != self.big_bet:
+            raise ValueError(
+                (
+                    f'This variant has unequal small bet ({self.small_bet})'
+                    f' and big bet ({self.big_bet}) amounts and therefore the'
+                    ' concept of min-bet cannot apply here.'
+                ),
+            )
+
         return self.small_bet
 
 
@@ -275,12 +396,12 @@ class Holdem(Poker, ABC):
 
     :param automations: The automations.
     :param ante_trimming_status: The ante trimming status.
-    :param raw_antes: The raw antes.
-    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param raw_antes: The "raw" antes.
+    :param raw_blinds_or_straddles: The "raw" blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
-    :param starting_board_count: The starting board count.
     :param mode: The mode.
+    :param starting_board_count: The starting board count.
     :param divmod: The divmod function.
     :param rake: The rake function.
     """
@@ -299,8 +420,8 @@ class Holdem(Poker, ABC):
             small_bet: int,
             big_bet: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> None:
@@ -348,8 +469,8 @@ class Holdem(Poker, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )
@@ -360,11 +481,11 @@ class UnfixedLimitHoldem(Holdem, ABC):
 
     :param automations: The automations.
     :param ante_trimming_status: The ante trimming status.
-    :param raw_antes: The raw antes.
-    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param raw_antes: The "raw" antes.
+    :param raw_blinds_or_straddles: The "raw" blinds or straddles.
     :param min_bet: The minimum bet.
-    :param starting_board_count: The starting board count.
     :param mode: The mode.
+    :param starting_board_count: The starting board count.
     :param divmod: The divmod function.
     :param rake: The rake function.
     """
@@ -379,8 +500,8 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> None:
@@ -391,8 +512,8 @@ class UnfixedLimitHoldem(Holdem, ABC):
             raw_blinds_or_straddles,
             min_bet,
             min_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )
@@ -421,8 +542,8 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -490,8 +611,8 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -515,12 +636,155 @@ class NoLimitTexasHoldem(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
         """Create a no-limit Texas hold'em game.
+
+        Below shows the 4-runout hand between Phil Hellmuth and the
+        Loose Cannon Ernest Wiggins.
+
+        Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
+
+        >>> from pokerkit import Automation, Mode, NoLimitTexasHoldem
+        >>> state = NoLimitTexasHoldem.create_state(
+        ...     (
+        ...         Automation.ANTE_POSTING,
+        ...         Automation.BET_COLLECTION,
+        ...         Automation.BLIND_OR_STRADDLE_POSTING,
+        ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        ...         Automation.HAND_KILLING,
+        ...         Automation.CHIPS_PUSHING,
+        ...         Automation.CHIPS_PULLING,
+        ...     ),
+        ...     False,
+        ...     {-1: 600},
+        ...     (200, 400, 800),
+        ...     400,
+        ...     (999999, 116400, 86900, 999999, 50000, 999999),
+        ...     6,
+        ...     mode=Mode.CASH_GAME,
+        ... )
+
+        Below are the pre-flop dealings and actions.
+
+        >>> state.deal_hole('JsTh')  # Tony G  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=0, cards=(Js, Th), statuse...
+        >>> state.deal_hole('Ah9d')  # Hellmuth  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=1, cards=(Ah, 9d), statuse...
+        >>> state.deal_hole('KsKc')  # Wiggins  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=2, cards=(Ks, Kc), statuse...
+        >>> state.deal_hole('5c2h')  # Negreanu  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=3, cards=(5c, 2h), statuse...
+        >>> state.deal_hole('6h5h')  # Brunson  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=4, cards=(6h, 5h), statuse...
+        >>> state.deal_hole('6s3s')  # Laak  # doctest: +ELLIPSIS
+        HoleDealing(commentary=None, player_index=5, cards=(6s, 3s), statuse...
+        >>> state.fold()  # Negreanu
+        Folding(commentary=None, player_index=3)
+        >>> state.complete_bet_or_raise_to(
+        ...     2800,
+        ... )  # Brunson  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=4, amount...
+        >>> state.fold()  # Laak
+        Folding(commentary=None, player_index=5)
+        >>> state.check_or_call()  # Tony G
+        CheckingOrCalling(commentary=None, player_index=0, amount=2600)
+        >>> state.complete_bet_or_raise_to(
+        ...     12600,
+        ... )  # Hellmuth  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+        >>> state.check_or_call()  # Wiggins
+        CheckingOrCalling(commentary=None, player_index=2, amount=11800)
+        >>> state.check_or_call()  # Brunson
+        CheckingOrCalling(commentary=None, player_index=4, amount=9800)
+        >>> state.check_or_call()  # Tony G
+        CheckingOrCalling(commentary=None, player_index=0, amount=9800)
+
+        Below are the flop dealing and actions.
+
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('9hTs9s')
+        BoardDealing(commentary=None, cards=(9h, Ts, 9s))
+        >>> state.check_or_call()  # Tony G
+        CheckingOrCalling(commentary=None, player_index=0, amount=0)
+        >>> state.complete_bet_or_raise_to(
+        ...     17000,
+        ... )  # Hellmuth  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+        >>> state.complete_bet_or_raise_to(
+        ...     36000,
+        ... )  # Wiggins  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
+        >>> state.fold()  # Brunson
+        Folding(commentary=None, player_index=4)
+        >>> state.fold()  # Tony G
+        Folding(commentary=None, player_index=0)
+        >>> state.complete_bet_or_raise_to(
+        ...     103800,
+        ... )  # Hellmuth  # doctest: +ELLIPSIS
+        CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+        >>> state.check_or_call()  # Wiggins
+        CheckingOrCalling(commentary=None, player_index=2, amount=38300)
+
+        Below is selecting the number of runouts.
+
+        >>> state.select_runout_count(4)  # Hellmuth
+        RunoutCountSelection(commentary=None, player_index=1, runout_count=4)
+        >>> state.select_runout_count(None)  # Wiggins  # doctest: +ELLIPSIS
+        RunoutCountSelection(commentary=None, player_index=2, runout_count=N...
+
+        Below is the first runout.
+
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('Jh')  # Turn
+        BoardDealing(commentary=None, cards=(Jh,))
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('Ad')  # River
+        BoardDealing(commentary=None, cards=(Ad,))
+
+        Below is the second runout.
+
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('Kh')  # Turn
+        BoardDealing(commentary=None, cards=(Kh,))
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('3c')  # River
+        BoardDealing(commentary=None, cards=(3c,))
+
+        Below is the third runout.
+
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('7s')  # Turn
+        BoardDealing(commentary=None, cards=(7s,))
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('8s')  # River
+        BoardDealing(commentary=None, cards=(8s,))
+
+        Below is the fourth runout.
+
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('Qc')  # Turn
+        BoardDealing(commentary=None, cards=(Qc,))
+        >>> state.burn_card('??')
+        CardBurning(commentary=None, card=??)
+        >>> state.deal_board('Kd')  # River
+        BoardDealing(commentary=None, cards=(Kd,))
+
+        Below are the final stacks.
+
+        >>> state.stacks
+        [987399, 79400, 149700, 999999, 37400, 999399]
 
         Below shows the first televised million dollar pot between
         Tom Dwan and Phil Ivey.
@@ -602,7 +866,7 @@ class NoLimitTexasHoldem(
         >>> state.deal_board('Jh')
         BoardDealing(commentary=None, cards=(Jh,))
 
-        Below show the final stacks.
+        Below shows the final stacks.
 
         >>> state.stacks
         [572100, 1997500, 1109500]
@@ -626,8 +890,8 @@ class NoLimitTexasHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -651,8 +915,8 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -744,10 +1008,10 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
-        :param raw_blinds_or_straddles: The raw blinds or straddles.
+        :param raw_antes: The "raw" antes.
+        :param raw_blinds_or_straddles: The "raw" blinds or straddles.
         :param min_bet: The min bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -761,8 +1025,8 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -795,8 +1059,8 @@ class PotLimitOmahaHoldem(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -890,10 +1154,10 @@ class PotLimitOmahaHoldem(
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
-        :param raw_blinds_or_straddles: The raw blinds or straddles.
+        :param raw_antes: The "raw" antes.
+        :param raw_blinds_or_straddles: The "raw" blinds or straddles.
         :param min_bet: The min bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -907,8 +1171,8 @@ class PotLimitOmahaHoldem(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -940,8 +1204,8 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -950,11 +1214,11 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
-        :param raw_blinds_or_straddles: The raw blinds or straddles.
+        :param raw_antes: The "raw" antes.
+        :param raw_blinds_or_straddles: The "raw" blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -969,8 +1233,8 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -981,12 +1245,12 @@ class SevenCardStud(Poker, ABC):
 
     :param automations: The automations.
     :param ante_trimming_status: The ante trimming status.
-    :param raw_antes: The raw antes.
+    :param raw_antes: The "raw" antes.
     :param bring_in: The bring-in.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
-    :param starting_board_count: The starting board count.
     :param mode: The mode.
+    :param starting_board_count: The starting board count.
     :param divmod: The divmod function.
     :param rake: The rake function.
     """
@@ -1005,8 +1269,8 @@ class SevenCardStud(Poker, ABC):
             small_bet: int,
             big_bet: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> None:
@@ -1063,8 +1327,8 @@ class SevenCardStud(Poker, ABC):
             raw_antes,
             0,
             bring_in,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )
@@ -1089,8 +1353,8 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -1098,11 +1362,11 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
+        :param raw_antes: The "raw" antes.
         :param bring_in: The bring-in.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -1117,8 +1381,8 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -1151,8 +1415,8 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -1161,11 +1425,11 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
+        :param raw_antes: The "raw" antes.
         :param bring_in: The bring-in.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -1180,8 +1444,8 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             bring_in,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -1206,8 +1470,8 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -1215,11 +1479,11 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
+        :param raw_antes: The "raw" antes.
         :param bring_in: The bring-in.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -1234,8 +1498,8 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             bring_in,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -1255,11 +1519,11 @@ class SingleDraw(Draw, ABC):
 
     :param automations: The automations.
     :param ante_trimming_status: The ante trimming status.
-    :param raw_antes: The raw antes.
-    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param raw_antes: The "raw" antes.
+    :param raw_blinds_or_straddles: The "raw" blinds or straddles.
     :param min_bet: The min bet.
-    :param starting_board_count: The starting board count.
     :param mode: The mode.
+    :param starting_board_count: The starting board count.
     :param divmod: The divmod function.
     :param rake: The rake function.
     """
@@ -1272,8 +1536,8 @@ class SingleDraw(Draw, ABC):
             raw_blinds_or_straddles: ValuesLike,
             min_bet: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> None:
@@ -1303,8 +1567,8 @@ class SingleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )
@@ -1315,12 +1579,12 @@ class TripleDraw(Draw, ABC):
 
     :param automations: The automations.
     :param ante_trimming_status: The ante trimming status.
-    :param raw_antes: The raw antes.
-    :param raw_blinds_or_straddles: The raw blinds or straddles.
+    :param raw_antes: The "raw" antes.
+    :param raw_blinds_or_straddles: The "raw" blinds or straddles.
     :param small_bet: The small bet.
     :param big_bet: The big bet.
-    :param starting_board_count: The starting board count.
     :param mode: The mode.
+    :param starting_board_count: The starting board count.
     :param divmod: The divmod function.
     :param rake: The rake function.
     """
@@ -1334,8 +1598,8 @@ class TripleDraw(Draw, ABC):
             small_bet: int,
             big_bet: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> None:
@@ -1383,8 +1647,8 @@ class TripleDraw(Draw, ABC):
             raw_antes,
             raw_blinds_or_straddles,
             0,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )
@@ -1417,8 +1681,8 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -1426,10 +1690,10 @@ class NoLimitDeuceToSevenLowballSingleDraw(
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
-        :param raw_blinds_or_straddles: The raw blinds or straddles.
+        :param raw_antes: The "raw" antes.
+        :param raw_blinds_or_straddles: The "raw" blinds or straddles.
         :param min_bet: The min bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -1443,8 +1707,8 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             raw_antes,
             raw_blinds_or_straddles,
             min_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -1471,8 +1735,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -1578,11 +1842,11 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
-        :param raw_blinds_or_straddles: The raw blinds or straddles.
+        :param raw_antes: The "raw" antes.
+        :param raw_blinds_or_straddles: The "raw" blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -1597,8 +1861,8 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)
@@ -1623,8 +1887,8 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             raw_starting_stacks: ValuesLike,
             player_count: int,
             *,
-            starting_board_count: int = 1,
             mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
     ) -> State:
@@ -1760,11 +2024,11 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
-        :param raw_antes: The raw antes.
-        :param raw_blinds_or_straddles: The raw blinds or straddles.
+        :param raw_antes: The "raw" antes.
+        :param raw_blinds_or_straddles: The "raw" blinds or straddles.
         :param small_bet: The small bet.
         :param big_bet: The big bet.
-        :param raw_starting_stacks: The raw starting stacks.
+        :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
         :param starting_board_count: The starting board count.
         :param mode: The mode.
@@ -1779,8 +2043,8 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             raw_blinds_or_straddles,
             small_bet,
             big_bet,
-            starting_board_count=starting_board_count,
             mode=mode,
+            starting_board_count=starting_board_count,
             divmod=divmod,
             rake=rake,
         )(raw_starting_stacks, player_count)

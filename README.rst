@@ -24,7 +24,12 @@ The PokerKit library can be installed using pip:
 Usages
 ------
 
-**The 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest Wiggins.**
+Example usages of PokerKit is shown below.
+
+Multi-Runout in an All-In Situation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows the 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest Wiggins.
 
 Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
 
@@ -138,7 +143,10 @@ Below are the final stacks.
 
    print(state.stacks)  # [987399, 79400, 149700, 999999, 37400, 999399]
 
-**The first televised million-dollar pot between Tom Dwan and Phil Ivey.**
+A Sample No-Limit Texas Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows the first televised million-dollar pot between Tom Dwan and Phil Ivey.
 
 Link: https://youtu.be/GnxFohpljqM
 
@@ -215,7 +223,10 @@ Below are the final stacks.
 
    print(state.stacks)  # [572100, 1997500, 1109500]
 
-**An all-in hand between Xuan and Phua.**
+A Sample Short-Deck Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows an all-in hand between Xuan and Phua.
 
 Link: https://youtu.be/QlgCcphLjaQ
 
@@ -290,8 +301,10 @@ Below are the final stacks.
 
    print(state.stacks)  # [489000, 226000, 684000, 400000, 0, 198000]
 
-**The largest online poker pot ever played between Patrik Antonius and Viktor
-Blom.**
+A Sample Pot-Limit Omaha Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows the largest online poker pot ever played between Patrik Antonius and Viktor Blom.
 
 Link: https://youtu.be/UMBm66Id2AA
 
@@ -363,7 +376,10 @@ Below are the final stacks.
 
    print(state.stacks)  # [1937923.75, 0.0]
 
-**A bad beat between Yockey and Arieh.**
+A Sample Fixed-Limit Deuce-To-Seven Lowball Triple Draw Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows a bad beat between Yockey and Arieh.
 
 Link: https://youtu.be/pChCqb2FNxY
 
@@ -448,7 +464,10 @@ Below are the final stacks.
 
    print(state.stacks)  # [0, 4190000, 5910000, 12095000]
 
-**An example badugi hand from Wikipedia.**
+A Sample Badugi Hand
+^^^^^^^^^^^^^^^^^^^^
+
+Below shows an example badugi hand from Wikipedia.
 
 Link: https://en.wikipedia.org/wiki/Badugi
 

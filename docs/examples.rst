@@ -1,12 +1,17 @@
 Motivational Examples
 =====================
 
-The functionalities of PokerKit primarily fall into two categories: game simulations and hand evaluations. Game simulations encompass creating an environment where poker games can be played out programmatically, simulating real-world scenarios with high fidelity. On the other hand, hand evaluations are concerned with determining the strength of particular poker hands.
+The functionalities of PokerKit primarily fall into two categories: game simulations, hand evaluations, and statistical analysis. Game simulations encompass creating an environment where poker games can be played out programmatically, simulating real-world scenarios with high fidelity. On the other hand, hand evaluations are concerned with determining the strength of particular poker hands. Statistical analysis helps review hand histories or analyze certain poker situations.
 
-Some motivational examples of poker games being played through PokerKit are shown in this page.
+Game Simulation
+---------------
 
-A Fixed-Limit Texas Hold'em Hand that Folds around
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Some motivational examples of poker games being played through PokerKit are shown in this section.
+
+A Fixed-Limit Texas Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows a heads-up hand that folds around.
 
 .. code-block:: pycon
 
@@ -54,8 +59,173 @@ Below are the final stacks.
    >>> state.stacks
    [204, 196]
 
-Dwan vs. Ivey (The First Televised Million-Dollar Pot)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Multi-Runout in an All-In Situation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows the 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest Wiggins.
+   
+Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
+   
+.. code-block:: pycon
+
+   >>> from pokerkit import Automation, Mode, NoLimitTexasHoldem
+   >>> state = NoLimitTexasHoldem.create_state(
+   ...     (
+   ...         Automation.ANTE_POSTING,
+   ...         Automation.BET_COLLECTION,
+   ...         Automation.BLIND_OR_STRADDLE_POSTING,
+   ...         Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+   ...         Automation.HAND_KILLING,
+   ...         Automation.CHIPS_PUSHING,
+   ...         Automation.CHIPS_PULLING,
+   ...     ),
+   ...     False,
+   ...     {-1: 600},
+   ...     (200, 400, 800),
+   ...     400,
+   ...     (999999, 116400, 86900, 999999, 50000, 999999),
+   ...     6,
+   ...     mode=Mode.CASH_GAME,
+   ... )
+   
+Below are the pre-flop dealings and actions.
+   
+.. code-block:: pycon
+
+   >>> state.deal_hole('JsTh')  # Tony G  # doctest: +ELLIPSIS
+   HoleDealing(commentary=None, player_index=0, cards=(Js, Th), statuse...
+   >>> state.deal_hole('Ah9d')  # Hellmuth  # doctest: +ELLIPSIS
+   HoleDealing(commentary=None, player_index=1, cards=(Ah, 9d), statuse...
+   >>> state.deal_hole('KsKc')  # Wiggins  # doctest: +ELLIPSIS
+   HoleDealing(commentary=None, player_index=2, cards=(Ks, Kc), statuse...
+   >>> state.deal_hole('5c2h')  # Negreanu  # doctest: +ELLIPSIS
+   HoleDealing(commentary=None, player_index=3, cards=(5c, 2h), statuse...
+   >>> state.deal_hole('6h5h')  # Brunson  # doctest: +ELLIPSIS
+   HoleDealing(commentary=None, player_index=4, cards=(6h, 5h), statuse...
+   >>> state.deal_hole('6s3s')  # Laak  # doctest: +ELLIPSIS
+   HoleDealing(commentary=None, player_index=5, cards=(6s, 3s), statuse...
+   >>> state.fold()  # Negreanu
+   Folding(commentary=None, player_index=3)
+   >>> state.complete_bet_or_raise_to(
+   ...     2800,
+   ... )  # Brunson  # doctest: +ELLIPSIS
+   CompletionBettingOrRaisingTo(commentary=None, player_index=4, amount...
+   >>> state.fold()  # Laak
+   Folding(commentary=None, player_index=5)
+   >>> state.check_or_call()  # Tony G
+   CheckingOrCalling(commentary=None, player_index=0, amount=2600)
+   >>> state.complete_bet_or_raise_to(
+   ...     12600,
+   ... )  # Hellmuth  # doctest: +ELLIPSIS
+   CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+   >>> state.check_or_call()  # Wiggins
+   CheckingOrCalling(commentary=None, player_index=2, amount=11800)
+   >>> state.check_or_call()  # Brunson
+   CheckingOrCalling(commentary=None, player_index=4, amount=9800)
+   >>> state.check_or_call()  # Tony G
+   CheckingOrCalling(commentary=None, player_index=0, amount=9800)
+   
+Below are the flop dealing and actions.
+   
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('9hTs9s')
+   BoardDealing(commentary=None, cards=(9h, Ts, 9s))
+   >>> state.check_or_call()  # Tony G
+   CheckingOrCalling(commentary=None, player_index=0, amount=0)
+   >>> state.complete_bet_or_raise_to(
+   ...     17000,
+   ... )  # Hellmuth  # doctest: +ELLIPSIS
+   CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+   >>> state.complete_bet_or_raise_to(
+   ...     36000,
+   ... )  # Wiggins  # doctest: +ELLIPSIS
+   CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
+   >>> state.fold()  # Brunson
+   Folding(commentary=None, player_index=4)
+   >>> state.fold()  # Tony G
+   Folding(commentary=None, player_index=0)
+   >>> state.complete_bet_or_raise_to(
+   ...     103800,
+   ... )  # Hellmuth  # doctest: +ELLIPSIS
+   CompletionBettingOrRaisingTo(commentary=None, player_index=1, amount...
+   >>> state.check_or_call()  # Wiggins
+   CheckingOrCalling(commentary=None, player_index=2, amount=38300)
+   
+Below is selecting the number of runouts.
+   
+.. code-block:: pycon
+
+   >>> state.select_runout_count(4)  # Hellmuth
+   RunoutCountSelection(commentary=None, player_index=1, runout_count=4)
+   >>> state.select_runout_count(None)  # Wiggins  # doctest: +ELLIPSIS
+   RunoutCountSelection(commentary=None, player_index=2, runout_count=N...
+   
+Below is the first runout.
+   
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('Jh')  # Turn
+   BoardDealing(commentary=None, cards=(Jh,))
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('Ad')  # River
+   BoardDealing(commentary=None, cards=(Ad,))
+   
+Below is the second runout.
+   
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('Kh')  # Turn
+   BoardDealing(commentary=None, cards=(Kh,))
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('3c')  # River
+   BoardDealing(commentary=None, cards=(3c,))
+   
+Below is the third runout.
+   
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('7s')  # Turn
+   BoardDealing(commentary=None, cards=(7s,))
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('8s')  # River
+   BoardDealing(commentary=None, cards=(8s,))
+   
+Below is the fourth runout.
+   
+.. code-block:: pycon
+
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('Qc')  # Turn
+   BoardDealing(commentary=None, cards=(Qc,))
+   >>> state.burn_card('??')
+   CardBurning(commentary=None, card=??)
+   >>> state.deal_board('Kd')  # River
+   BoardDealing(commentary=None, cards=(Kd,))
+   
+Below are the final stacks.
+   
+.. code-block:: pycon
+
+   >>> state.stacks
+   [987399, 79400, 149700, 999999, 37400, 999399]
+
+A Sample No-Limit Texas Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows the first televised million-dollar pot between Tom Dwan and Phil Ivey.
 
 Link: https://youtu.be/GnxFohpljqM
 
@@ -152,8 +322,10 @@ Below are the final stacks.
    >>> state.stacks
    [572100, 1997500, 1109500]
 
-Xuan vs. Phua (An All-In Short-Deck Pot)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Sample Short-Deck Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows an all-in hand between Xuan and Phua.
 
 Link: https://youtu.be/QlgCcphLjaQ
 
@@ -249,8 +421,10 @@ Below are the final stacks.
    >>> state.stacks
    [489000, 226000, 684000, 400000, 0, 198000]
 
-Antonius vs. Isildur1 (The Largest Online Pot Ever)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Sample Pot-Limit Omaha Hold'em Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows the largest online poker pot ever played between Patrik Antonius and Viktor Blom.
 
 Link: https://youtu.be/UMBm66Id2AA
 
@@ -347,8 +521,10 @@ Below are the final stacks.
    >>> state.stacks
    [1937923.75, 0.0]
 
-Yockey vs. Arieh (Bad Beat)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Sample Fixed-Limit Deuce-To-Seven Lowball Triple Draw Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below shows a bad beat between Yockey and Arieh.
 
 Link: https://youtu.be/pChCqb2FNxY
 
@@ -459,8 +635,10 @@ Below are the final stacks.
    >>> state.stacks
    [0, 4190000, 5910000, 12095000]
 
-Wikipedia Badugi Hand
-^^^^^^^^^^^^^^^^^^^^^
+A Sample Badugi Hand
+^^^^^^^^^^^^^^^^^^^^
+
+Below shows an example badugi hand from Wikipedia.
 
 Link: https://en.wikipedia.org/wiki/Badugi
 
@@ -602,3 +780,92 @@ Below are the final stacks.
 
    >>> state.stacks
    [196, 220, 200, 184]
+
+Hand Evaluation
+---------------
+
+Below are example short-deck hold'em hand evaluations.
+
+Note that hands are compared through the comparison operators.
+
+.. code-block:: pycon
+
+   >>> from pokerkit import *
+   >>> h0 = ShortDeckHoldemHand('6s7s8s9sTs')
+   >>> h1 = ShortDeckHoldemHand('7c8c9cTcJc')
+   >>> h2 = ShortDeckHoldemHand('2c2d2h2s3h')  # doctest: +ELLIPSIS
+   Traceback (most recent call last):
+       ...
+   ValueError: The cards '2c2d2h2s3h' form an invalid ShortDeckHoldemHand h...
+   >>> h0
+   6s7s8s9sTs
+   >>> h1
+   7c8c9cTcJc
+   >>> print(h0)
+   Straight flush (6s7s8s9sTs)
+   >>> h0 < h1
+   True
+
+Statistical Analysis
+--------------------
+
+Various tools in PokerKit exists to facilitate poker analysis.
+
+Monte-Carlo Evaluations
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Below are example player equity/hand strength calculations.
+
+.. code-block:: pycon
+
+   >>> from concurrent.futures import ProcessPoolExecutor
+   >>> from pokerkit import *
+   >>> with ProcessPoolExecutor() as executor:
+   ...     calculate_equities(
+   ...         (
+   ...             parse_range('AK'),
+   ...             parse_range('22'),
+   ...         ),
+   ...         (),
+   ...         2,
+   ...         5,
+   ...         Deck.STANDARD,
+   ...         (StandardHighHand,),
+   ...         sample_count=10000,
+   ...         executor=executor,
+   ...     )
+   ... 
+   [0.4807, 0.5193]
+   >>> with ProcessPoolExecutor() as executor:
+   ...     calculate_hand_strength(
+   ...         2,
+   ...         parse_range('AsKs'),
+   ...         Card.parse('Kc8h8d'),
+   ...         2,
+   ...         5,
+   ...         Deck.STANDARD,
+   ...         (StandardHighHand,),
+   ...         sample_count=1000,
+   ...         executor=executor,
+   ...     )
+   ... 
+   0.885
+
+Hand Histories
+^^^^^^^^^^^^^^
+
+One can also save/load hand histories and analyze them.
+
+.. code-block:: python
+
+   from pokerkit import *
+
+   hh0 = ...
+   hh1 = ...
+   hh2 = ...
+   ...
+
+   ss = Statistics.from_hand_history(hh0, hh1, hh2, ...)
+
+   print(ss['John Doe'].payoff_mean)  # in chips/hand
+   print(ss['John Doe'].payoff_stdev)  # in chips/hand

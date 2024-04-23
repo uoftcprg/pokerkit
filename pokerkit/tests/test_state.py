@@ -16,11 +16,15 @@ from pokerkit.games import (
     NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
 )
+from pokerkit.hands import KuhnPokerHand
 from pokerkit.state import (
     Automation,
+    BettingStructure,
     _HighHandOpeningLookup,
     _LowHandOpeningLookup,
+    Opening,
     State,
+    Street,
 )
 from pokerkit.tests.test_lookups import LookupTestCaseMixin
 from pokerkit.utilities import Deck, rake, ValuesLike
@@ -66,7 +70,236 @@ class HighHandOpeningLookupTestCase(LookupTestCaseMixin, TestCase):
         )
 
 
+class StreetTestCase(TestCase):
+    def test_init(self) -> None:
+        self.assertRaises(
+            ValueError,
+            Street,
+            False,
+            (False, False),
+            -1,
+            False,
+            Opening.POSITION,
+            2,
+            None,
+        )
+        self.assertRaises(
+            ValueError,
+            Street,
+            True,
+            (False, False),
+            0,
+            False,
+            Opening.POSITION,
+            0,
+            None,
+        )
+        self.assertRaises(
+            ValueError,
+            Street,
+            True,
+            (False, False),
+            0,
+            False,
+            Opening.POSITION,
+            2,
+            -1,
+        )
+
+
 class StateTestCase(TestCase):
+    def test_init(self) -> None:
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (1,) * 2,
+            (0,) * 2,
+            0,
+            (2,) * 2,
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    True,
+                    (),
+                    3,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (1,) * 2,
+            (0,) * 2,
+            0,
+            (2,) * 2,
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (-1,) * 2,
+            (0,) * 2,
+            0,
+            (2,) * 2,
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (0,) * 2,
+            (0,) * 2,
+            0,
+            (2,) * 2,
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (1,) * 2,
+            (0,) * 2,
+            0,
+            (2, 0),
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (0,) * 2,
+            (1,) * 2,
+            1,
+            (2,) * 2,
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (0,) * 2,
+            (0,) * 2,
+            1,
+            (2,) * 2,
+            2,
+        )
+        self.assertRaises(
+            ValueError,
+            State,
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    None,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (1,),
+            (0,),
+            0,
+            (2,),
+            1,
+        )
+
     def test_all_ins(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (
