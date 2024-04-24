@@ -1051,7 +1051,7 @@ class StateTestCase(TestCase):
             2,
             (100, 10),
             2,
-            rake=partial(rake, rake=0.1),
+            rake=partial(rake, percentage=0.1),
         )
 
         state.deal_hole('2c3c')
@@ -1083,7 +1083,7 @@ class StateTestCase(TestCase):
             2,
             (100, 10, 1000),
             3,
-            rake=partial(rake, rake=0.1),
+            rake=partial(rake, percentage=0.1),
         )
 
         state.deal_hole('2c3c')
@@ -1118,7 +1118,7 @@ class StateTestCase(TestCase):
             2,
             (100, 10, 10000, 1000),
             4,
-            rake=partial(rake, rake=0.1),
+            rake=partial(rake, percentage=0.1),
         )
 
         state.deal_hole('2c3c')
@@ -1156,7 +1156,7 @@ class StateTestCase(TestCase):
             2,
             (100, 10, 100000, 10000, 1000),
             5,
-            rake=partial(rake, rake=0.1),
+            rake=partial(rake, percentage=0.1),
         )
 
         state.deal_hole('2c3c')
@@ -1181,6 +1181,62 @@ class StateTestCase(TestCase):
         state.push_chips()
         self.assertFalse(state.status)
         self.assertEqual(state.stacks, [90, 9, 99000, 9000, 900])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            100,
+            2,
+            rake=partial(rake, percentage=0.1),
+        )
+
+        state.deal_hole('????')
+        state.deal_hole('????')
+        state.complete_bet_or_raise_to(6)
+        state.complete_bet_or_raise_to(18)
+        state.complete_bet_or_raise_to(54)
+        state.fold()
+        state.push_chips()
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [82, 116])
+
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PULLING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            100,
+            2,
+            rake=partial(rake, percentage=0.1, no_flop_no_drop=True),
+        )
+
+        state.deal_hole('????')
+        state.deal_hole('????')
+        state.complete_bet_or_raise_to(6)
+        state.complete_bet_or_raise_to(18)
+        state.complete_bet_or_raise_to(54)
+        state.fold()
+        state.push_chips()
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [82, 118])
 
     def test_unknown_showdown(self) -> None:
         state = NoLimitTexasHoldem.create_state(

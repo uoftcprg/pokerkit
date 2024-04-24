@@ -614,7 +614,7 @@ The programmer can also define a custom function that divides up the pot to tail
 Optional: Rake
 ^^^^^^^^^^^^^^
 
-This is an optional parameter. It is a callable that takes a rake from the pot(s). By default, PokerKit states take no rake. The default :func:`pokerkit.utilities.rake` function can accept parameters to take a non-zero rake. You can use ``functools.partial`` with it and supply it as the rake function. Of course, the user can define their own to do something more complex like min-rake or max-rake per pot.
+This is an optional parameter. It is a callable that takes a rake from the pot(s). By default, PokerKit states take no rake. The default :func:`pokerkit.utilities.rake` function can accept parameters to take a non-zero rake, have a rake-cap, or facilitate the no-flop-no-drop rule. You can use ``functools.partial`` with it and supply it as the rake function. Of course, the user can define their own to do something more complex like min-rake or max-rake per pot depending on the poker state.
 
 Methods and Attributes
 ^^^^^^^^^^^^^^^^^^^^^^

@@ -1,5 +1,7 @@
 """:mod:`pokerkit.state` implements classes related to poker states."""
 
+from __future__ import annotations
+
 from abc import ABC
 from collections.abc import Callable, Iterable, Iterator
 from collections import Counter, deque
@@ -9,7 +11,6 @@ from functools import partial
 from itertools import chain, filterfalse, islice, starmap
 from operator import getitem, sub
 from random import shuffle
-from typing import Any
 from warnings import warn
 
 from pokerkit.hands import Hand
@@ -373,22 +374,16 @@ class Mode(StrEnum):
 
 @dataclass(frozen=True)
 class Pot:
-    """The class for pots.
+    """The class for pots."""
 
-    >>> pot = Pot(100, (1, 3))
-    >>> pot.amount
-    100
-    >>> pot.player_indices
-    (1, 3)
-
-    >>> pot = Pot(-1, (1, 3))
-    Traceback (most recent call last):
-        ...
-    ValueError: The pot amount -1 is negative.
+    raked_amount: int
+    """The raked amount (from the original amount
+    :attr:`pokerkit.state.Pot`).
     """
-
-    amount: int
-    """The amount (unraked)."""
+    unraked_amount: int
+    """The unraked amount (remaining from the original amount
+    :attr:`pokerkit.state.Pot`).
+    """
     player_indices: tuple[int, ...]
     """The player indices of those who are eligible to win.
 
@@ -397,8 +392,25 @@ class Pot:
     """
 
     def __post_init__(self) -> None:
-        if self.amount < 0:
-            raise ValueError(f'The pot amount {self.amount} is negative.')
+        if self.raked_amount < 0:
+            raise ValueError(
+                f'The raked amount {self.raked_amount} is negative.',
+            )
+        elif self.unraked_amount < 0:
+            raise ValueError(
+                f'The unraked amount {self.unraked_amount} is negative.',
+            )
+
+    @property
+    def amount(self) -> int:
+        """Return the pot amount.
+
+        This is the sum of the portion it is raked and the remaining
+        pot.
+
+        :return: The pot amount.
+        """
+        return self.raked_amount + self.unraked_amount
 
 
 @dataclass(frozen=True)
@@ -560,8 +572,19 @@ class ChipsPushing(Operation):
 
     amounts: tuple[int, ...]
     """The amounts."""
-    rake: int
-    """The rake."""
+    raked_amount: int
+    """The raked amount."""
+
+    @property
+    def unraked_amount(self) -> int:
+        """Return the amount that was not raked and therefore pushed.
+
+        This is identical to the sum of values in
+        :attr:`pokerkit.state.ChipsPushing.amounts`.
+
+        :return: The unraked amount.
+        """
+        return sum(self.amounts)
 
     @property
     def total_amount(self) -> int:
@@ -573,7 +596,7 @@ class ChipsPushing(Operation):
 
         :return: The total amount.
         """
-        return sum(self.amounts) + self.rake
+        return self.raked_amount + self.unraked_amount
 
 
 @dataclass(frozen=True)
@@ -736,7 +759,7 @@ class State:
     >>> state.collect_bets()
     BetCollection(commentary=None, bets=(0, 0))
     >>> state.push_chips()
-    ChipsPushing(commentary=None, amounts=(0, 2), rake=0)
+    ChipsPushing(commentary=None, amounts=(0, 2), raked_amount=0)
     >>> state.pull_chips(1)
     ChipsPulling(commentary=None, player_index=1, amount=3)
 
@@ -852,12 +875,17 @@ class State:
     This is used to denote how pots are divided up (for multiple boards,
     multiple winners, multiple hand types, etc.).
     """
-    rake: Callable[[int], tuple[Any, int]] = partial(rake, rake=0)
+    rake: Callable[[int, State], tuple[int, int]] = rake
     """The rake function. Defaults to zero rake.
 
     Rake functions are used in PokerKit to denote how the rakes are
     collected from the pot. Multiple pots may exist (side-pots) in which
     case the method is called for each pot.
+
+    The user may supply a custom rake function. This function must
+    accept two positional arguments: the state and the amount to be
+    raked. Its return value should be a tuple consisting of two values:
+    the raked amount and the remaining, unraked amount.
     """
     antes: tuple[int, ...] = field(init=False)
     """The antes.
@@ -1362,7 +1390,7 @@ class State:
         Teardown.
 
         >>> state.push_chips()
-        ChipsPushing(commentary=None, amounts=(6, 0), rake=0)
+        ChipsPushing(commentary=None, amounts=(6, 0), raked_amount=0)
         >>> state.street is None
         True
         >>> state.pull_chips()
@@ -2507,7 +2535,7 @@ class State:
         Teardown.
 
         >>> state.push_chips()
-        ChipsPushing(commentary=None, amounts=(66, 0), rake=0)
+        ChipsPushing(commentary=None, amounts=(66, 0), raked_amount=0)
         >>> state.total_pot_amount
         66
         >>> state.pull_chips()
@@ -2607,17 +2635,17 @@ class State:
         ()
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=1, amount=98)
-        >>> next(state.pots)
-        Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
+        >>> next(state.pots)  # doctest: +ELLIPSIS
+        Pot(raked_amount=0, unraked_amount=300, player_indices=(0, 1, 2, 3, ...
         >>> pots = tuple(state.pots)
         >>> len(pots)
         3
-        >>> pots[0]
-        Pot(amount=300, player_indices=(0, 1, 2, 3, 4, 5))
+        >>> pots[0]  # doctest: +ELLIPSIS
+        Pot(raked_amount=0, unraked_amount=300, player_indices=(0, 1, 2, 3, ...
         >>> pots[1]
-        Pot(amount=250, player_indices=(1, 2, 3, 4, 5))
+        Pot(raked_amount=0, unraked_amount=250, player_indices=(1, 2, 3, 4, 5))
         >>> pots[2]
-        Pot(amount=300, player_indices=(2, 3, 4))
+        Pot(raked_amount=0, unraked_amount=300, player_indices=(2, 3, 4))
 
         Flop.
 
@@ -2689,7 +2717,10 @@ class State:
                 amount += pots.pop().amount
 
             if amount:
-                pots.append(Pot(amount, tuple(player_indices)))
+                raked_amount, unraked_amount = self.rake(amount, self)
+                pot = Pot(raked_amount, unraked_amount, tuple(player_indices))
+
+                pots.append(pot)
 
             amount = 0
             previous_contribution = contribution
@@ -3016,6 +3047,10 @@ class State:
         """Collect the bets.
 
         In this operation, the outstanding bets are collected into the pot.
+
+        Note that, when the hand is folded, the last aggressor's bet is
+        returned to his/her stack. The rest of the outstanding bets are
+        collected to the pot.
 
         :param commentary: The optional commentary.
         :return: The bet collection.
@@ -5687,13 +5722,12 @@ class State:
         assert self._pots is not None and self._pots
 
         pot = self._pots.pop()
-        raked_amount, pushed_amount = self.rake(pot.amount)
         bets = self.bets.copy()
 
         if sum(self.statuses) == 1:
             assert len(pot.player_indices) == 1
 
-            self.bets[pot.player_indices[0]] += pushed_amount
+            self.bets[pot.player_indices[0]] += pot.unraked_amount
         else:
 
             def push(player_indices: list[int], amount: int) -> None:
@@ -5714,7 +5748,7 @@ class State:
                     self.bets[k] += sub_amount
 
             pushed_amount_quotient, pushed_amount_remainder = self.divmod(
-                pushed_amount,
+                pot.unraked_amount,
                 self.board_count,
             )
 
@@ -5756,7 +5790,7 @@ class State:
 
         operation = ChipsPushing(
             tuple(starmap(sub, zip(self.bets, bets))),
-            raked_amount,
+            pot.raked_amount,
             commentary=commentary,
         )
 

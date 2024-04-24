@@ -36,6 +36,8 @@ This version release introduces a number of backward incompatible changes. Pleas
 
 - The card-burning-related methods ``pokerkit.state.State.verify_card_burning``, ``pokerkit.state.State.can_burn_card``, and ``pokerkit.state.State.burn_card`` also accept a singleton card iterable.
 - The ``pokerkit.state.State.all_in_show_status`` was renamed to ``pokerkit.state.State.all_in_status``.
+- Renamed ``pokerkit.state.ChipsPushing.rake`` to ``pokerkit.state.ChipsPushing.raked_amount``.
+- The attribute ``pokerkit.state.Pot.amount`` is now a property and no longer a parameter during initialization.
 
 **Added**
 
@@ -68,6 +70,9 @@ This version release introduces a number of backward incompatible changes. Pleas
 
 - New attribute ``pokerkit.state.State.runout_count_selector_statuses`` that keeps track of who can select the number of runouts.
 - New attribute ``pokerkit.state.State.runout_count_selection_flag`` that keeps track of whether the runout count selection has been carried out.
+- In ``pokerkit.utilities.rake``, added parameters ``state``, ``cap``, and ``no_flop_no_drop``, and ``rake`` is now renamed as ``percentage`` and is a keyword parameter.
+- New attributes ``pokerkit.state.Pot.raked_amount`` and ``pokerkit.state.Pot.unraked_amount`` that gives the raked and the unraked amounts of the pot.
+- New property ``pokerkit.state.ChipsPushing.unraked_amount``.
 
 Version 0.4.17 (April 9, 2024)
 ------------------------------

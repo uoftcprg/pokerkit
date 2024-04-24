@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from abc import ABC
 from collections.abc import Callable
-from functools import partial
 from typing import ClassVar
 
 from pokerkit.hands import (
@@ -89,7 +88,7 @@ class Poker(ABC):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> None:
         self.automations: tuple[Automation, ...] = automations
         """The automations.
@@ -160,7 +159,7 @@ class Poker(ABC):
         This is used to denote how pots are divided up (for multiple
         boards, multiple winners, multiple hand types, etc.).
         """
-        self.rake: Callable[[int], tuple[int, int]] = rake
+        self.rake: Callable[[int, State], tuple[int, int]] = rake
         """The rake function.
 
         Rake functions are used in PokerKit to denote how the rakes are
@@ -423,7 +422,7 @@ class Holdem(Poker, ABC):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> None:
         super().__init__(
             automations,
@@ -503,7 +502,7 @@ class UnfixedLimitHoldem(Holdem, ABC):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> None:
         super().__init__(
             automations,
@@ -545,7 +544,7 @@ class FixedLimitTexasHoldem(FixedLimitPokerMixin, TexasHoldemMixin, Holdem):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit Texas hold'em game.
 
@@ -639,7 +638,7 @@ class NoLimitTexasHoldem(
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a no-limit Texas hold'em game.
 
@@ -918,7 +917,7 @@ class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a no-limit short-deck hold'em game.
 
@@ -1062,7 +1061,7 @@ class PotLimitOmahaHoldem(
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a pot-limit Omaha hold'em game.
 
@@ -1207,7 +1206,7 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit Omaha hold'em high/low-split eight or better
         low game.
@@ -1272,7 +1271,7 @@ class SevenCardStud(Poker, ABC):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> None:
         super().__init__(
             automations,
@@ -1356,7 +1355,7 @@ class FixedLimitSevenCardStud(FixedLimitPokerMixin, SevenCardStud):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit seven card stud game.
 
@@ -1418,7 +1417,7 @@ class FixedLimitSevenCardStudHighLowSplitEightOrBetter(
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit seven card stud high/low-split eight or
         better low game.
@@ -1473,7 +1472,7 @@ class FixedLimitRazz(FixedLimitPokerMixin, SevenCardStud):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit razz game.
 
@@ -1539,7 +1538,7 @@ class SingleDraw(Draw, ABC):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> None:
         super().__init__(
             automations,
@@ -1601,7 +1600,7 @@ class TripleDraw(Draw, ABC):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> None:
         super().__init__(
             automations,
@@ -1684,7 +1683,7 @@ class NoLimitDeuceToSevenLowballSingleDraw(
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a no-limit deuce-to-seven lowball single draw game.
 
@@ -1738,7 +1737,7 @@ class FixedLimitDeuceToSevenLowballTripleDraw(
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit deuce-to-seven lowball triple draw game.
 
@@ -1890,7 +1889,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
             mode: Mode = Mode.TOURNAMENT,
             starting_board_count: int = 1,
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
-            rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0),
+            rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
         """Create a fixed-limit badugi game.
 
