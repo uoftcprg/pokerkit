@@ -107,7 +107,7 @@ class HandHistory(Iterable[State]):
                   to :attr:`pokerkit.notation.HandHistory.seats`.
     :param seat_count: The number of seats. For more information, please
                        refer to
-                      :attr:`pokerkit.notation.HandHistory.seat_count`.
+                       :attr:`pokerkit.notation.HandHistory.seat_count`.
     :param table: The table number. For more information, please refer
                   to :attr:`pokerkit.notation.HandHistory.table`.
     :param players: The player names. For more information, please refer
