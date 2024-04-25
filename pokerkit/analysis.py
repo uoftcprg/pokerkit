@@ -415,7 +415,10 @@ def calculate_hand_strength(
 
 @dataclass
 class Statistics:
-    """The class for player statistics."""
+    """The class for player statistics.
+
+    :param payoffs: The payoffs of each hand.
+    """
 
     payoffs: list[int]
     """The payoffs."""

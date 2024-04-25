@@ -195,6 +195,38 @@ class Street:
     False
     >>> street.hole_dealing_statuses
     (False, False)
+
+    :param card_burning_status: Whether to burn card (``True`` if this
+                                is so). For more information, please
+                                refer to
+                                :attr:`pokerkit.state.Street.card_burning_status`.
+    :param hole_dealing_statuses: The statuses of dealt hole cards. For
+                                  more information, please refer to
+                                  :attr:`pokerkit.state.Street.hole_dealing_statuses`.
+    :param board_dealing_count: The number of dealt board cards (``0``
+                                if none). For more information, please
+                                refer to
+                                :attr:`pokerkit.state.Street.board_dealing_count`.
+    :param draw_status: Whether to draw cards prior to betting (``True``
+                        if this is so). For more information, please
+                        refer to :attr:`pokerkit.state.Street.draw_status`.
+    :param opening: The opening. For more information, please refer to
+                    :attr:`pokerkit.state.Street.opening`.
+    :param min_completion_betting_or_raising_amount: The minimum
+                                                     completion,
+                                                     betting, or raising
+                                                     amount. For more
+                                                     information, please
+                                                     refer to
+                                                     :attr:`pokerkit.state.Street.min_completion_betting_or_raising_amount`.
+    :param max_completion_betting_or_raising_count: The maximum number
+                                                    of completions,
+                                                    bettings, or
+                                                    raisings. For more
+                                                    information, please
+                                                    refer to
+                                                    :attr:`pokerkit.state.Street.max_completion_betting_or_raising_count`.
+    :raises ValueError: If the arguments are invalid.
     """
 
     card_burning_status: bool
@@ -205,12 +237,18 @@ class Street:
     The length of this ``tuple`` denotes the number of hole cards dealt
     in the current street. Each item denotes whether to deal a card as
     an up card (``True``) or a down card (``False``).
+
+    If there is no board dealing and no drawing, this value should be
+    non-empty. If drawing, this should be left empty.
     """
     board_dealing_count: int
     """The number of dealt board cards (``0`` if none).
 
     This number of cards is dealt for each board (for multi-board
     games).
+
+    If there is no hole dealing and no drawing, this value should be
+    non-empty.
     """
     draw_status: bool
     """Whether to draw cards prior to betting (``True`` if this is so).
@@ -219,6 +257,9 @@ class Street:
     In other words, if this is ``True``,
     :attr:`pokerkit.state.Street.hole_dealing_statuses` should be
     ``()``.
+
+    If there is no hole dealing and no board dealing, this value should
+    be non-empty.
     """
     opening: Opening
     """The opening.
@@ -374,15 +415,32 @@ class Mode(StrEnum):
 
 @dataclass(frozen=True)
 class Pot:
-    """The class for pots."""
+    """The class for pots.
+
+
+    :param raked_amount: The raked amount. For more details, please
+                         refer to
+                         :attr:`pokerkit.state.Pot.raked_amount`.
+    :param unraked_amount: The unraked amount. For more details, please
+                           refer to
+                           :attr:`pokerkit.state.Pot.unraked_amount`.
+    :param player_indices: The player indices. For more details, please
+                           refer to
+                           :attr:`pokerkit.state.Pot.player_indices`.
+    :raises ValueError: If the arguments are invalid.
+    """
 
     raked_amount: int
     """The raked amount (from the original amount
     :attr:`pokerkit.state.Pot`).
+
+    This value must be non-negative.
     """
     unraked_amount: int
     """The unraked amount (remaining from the original amount
     :attr:`pokerkit.state.Pot`).
+
+    This vealue must be non-negative.
     """
     player_indices: tuple[int, ...]
     """The player indices of those who are eligible to win.
@@ -767,6 +825,46 @@ class State:
 
     >>> state.status
     False
+
+    :param automations: The automations. For more details, please refer
+                        to :attr:`pokerkit.state.State.automations`.
+    :param deck: The deck. For more details, please refer to
+                 :attr:`pokerkit.state.State.deck`.
+    :param hand_types: The hand types. For more details, please refer to
+                       :attr:`pokerkit.state.State.hand_types`.
+    :param streets: The streets. For more details, please refer to
+                    :attr:`pokerkit.state.State.streets`.
+    :param betting_structure: The betting structure. For more details,
+                              please refer to
+                              :attr:`pokerkit.state.State.betting_structure`.
+    :param ante_trimming_status: The ante trimming status. For more
+                                 details, please refer to
+                                 :attr:`pokerkit.state.State.ante_trimming_status`.
+    :param raw_antes: The "raw" antes. For more details, please refer to
+                      :attr:`pokerkit.state.State.raw_antes`.
+    :param raw_blinds_or_straddles: The "raw" blinds/straddles. For more
+                                    details, please refer to
+                                    :attr:`pokerkit.state.State.raw_blinds_or_straddles`.
+    :param bring_in: The bring-in. For more details, please refer to
+                     :attr:`pokerkit.state.State.bring_in`.
+    :param raw_starting_stacks: The "raw" starting stacks. For more
+                                details, please refer to
+                                :attr:`pokerkit.state.State.raw_starting_stacks`.
+    :param player_count: The number of players. For more details, please
+                         refer to
+                         :attr:`pokerkit.state.State.player_count`.
+    :param mode: The mode. Defaults to tournament mode. For more
+                 details, please refer to
+                 :attr:`pokerkit.state.State.mode`.
+    :param starting_board_count: The number of boards at the start of
+                                 the game. For more details, please
+                                 refer to
+                                 :attr:`pokerkit.state.State.starting_board_count`.
+    :param divmod: The divmod function. For more details, please refer
+                   to :attr:`pokerkit.state.State.divmod`.
+    :param rake: The rake function. For more details, please refer to
+                 :attr:`pokerkit.state.State.rake`.
+    :raises ValueError: If the arguments are invalid.
     """
 
     __low_hand_opening_lookup = _LowHandOpeningLookup()
@@ -797,6 +895,9 @@ class State:
 
     Each street contains information about the corresponding betting
     round and corresponding dealing/draw stage before it occurs.
+
+    This attribute must be non-empty and its first item must be of
+    hole-dealing.
     """
     betting_structure: BettingStructure
     """The betting structure.
@@ -824,18 +925,32 @@ class State:
     Another value will be interpreted as that value as the antes for
     all. ``[0, 2]`` and ``{1: 2} will be considered as the big blind
     ante whereas ``{-1: 2}`` will be considered as the button ante.
+
+    All of its ante values must be non-negative.
     """
     raw_blinds_or_straddles: InitVar[ValuesLike]
     """The "raw" blinds or straddles.
 
     Just like for the antes, the blinds/straddles are also "interpreted"
     by PokerKit in the same fashion.
+
+    All of its blind/straddle values must be non-negative.
+
+    If the bring-in is non-zero, the all blind/straddle values must be
+    zero. If any of the bring-in is zero, there must be at least one
+    positive blind/straddle value.
     """
     bring_in: int
     """The bring-in.
 
     Some poker games do not have the bring-in, in which case ``0``
     should be its value.
+
+    This value must be non-negative. If all blind/straddle values are
+    zero, the bring-in must be positive. If any of the blind/straddle
+    values are non-zero, the bring-in must be zero.
+
+    It must be less than the min-bet.
     """
     raw_starting_stacks: InitVar[ValuesLike]
     """The "raw" starting stacks.
@@ -845,9 +960,14 @@ class State:
     interprets when creating the games. Not all representations
     explicitly express the number of players and therefore this value is
     accepted as a separate parameter ``player_count``.
+
+    All items must be positive.
     """
     player_count: int
-    """The number of players."""
+    """The number of players.
+
+    This value must be at least ``2``.
+    """
     _: KW_ONLY
     mode: Mode = Mode.TOURNAMENT
     """The mode. Defaults to tournament mode.
@@ -867,6 +987,8 @@ class State:
 
     The actual number of boards may change depending on the number of
     runouts (during all-ins).
+
+    This value must be positive.
     """
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function. Defaults to PokerKit's that detects integral

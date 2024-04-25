@@ -24,10 +24,11 @@ When making changes, please follow these guidelines:
 - Document your changes in the code and update the `README <README.rst>`_ file if necessary.
 - After making changes, please validate your changes.
 
-1. Run static type checking with ``--strict`` flag: ``mypy --strict pokerkit``
-2. Run style checking: ``flake8 pokerkit``
-3. Run unit tests: ``python -m unittest``
-4. Run doctests: ``python -m doctest pokerkit/*.py``
+1. Run style checking: ``flake8 pokerkit``
+2. Run static type checking with ``--strict`` flag: ``mypy --strict pokerkit``
+3. Run checks for missing docstrings: ``interrogate -f 100 -i -m -n -p -s -r '^\w+TestCase' pokerkit``
+4. Run unit tests: ``python -m unittest``
+5. Run doctests: ``python -m doctest pokerkit/*.py``
 
 Submitting a Pull Request
 -------------------------

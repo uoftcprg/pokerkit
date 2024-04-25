@@ -233,12 +233,17 @@ class Card:
     >>> from collections.abc import Hashable
     >>> isinstance(card, Hashable)
     True
+
+    :param rank: The rank. For more details, please refer to
+                 :attr:`pokerkit.utilities.Card.rank`.
+    :param suit: The suit. For more details, please refer to
+                 :attr:`pokerkit.utilities.Card.suit`.
     """
 
     rank: Rank
-    """The rank."""
+    """The rank of the card."""
     suit: Suit
-    """The suit."""
+    """The suit of the card."""
 
     @classmethod
     def get_ranks(cls, cards: CardsLike) -> Iterator[Rank]:
@@ -417,6 +422,13 @@ class Card:
 
     @property
     def unknown_status(self) -> bool:
+        """Return the unknown-ness of the card.
+
+        A card is "unknown" if both or either one of its rank or suit is
+        unknown.
+
+        :return: The unknown-ness of the card.
+        """
         return self.rank == Rank.UNKNOWN or self.suit == Suit.UNKNOWN
 
 
@@ -597,6 +609,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     :param values: The values.
     :param count: The number of values.
     :return: The cleaned integers.
+    :raises ValueError: If the values are invalid.
     """
     if isinstance(values, int | float):
         values = (values,) * count
@@ -670,7 +683,7 @@ def rake(
 ) -> tuple[int, int]:
     """Rake the amount.
 
-    Note that the percentage value are expected to be within range
+    Note that the percentage value is expected to be within range
     [``0``, ``1``]. For instance, ``0.1`` represents 10%.
 
     >>> rake(100)

@@ -56,6 +56,9 @@ class Hand(Hashable, ABC):
     >>> h0 = ShortDeckHoldemHand('6s7s8s9sTs')
     >>> h1 = ShortDeckHoldemHand('7c8c9cTcJc')
     >>> hands = {h0, h1}
+
+    :param cards: The cards that form the hand.
+    :raises ValueError: If the cards form an invalid hand.
     """
 
     lookup: ClassVar[Lookup]

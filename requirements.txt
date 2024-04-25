@@ -1,6 +1,7 @@
 build~=1.0.3
 coverage~=7.3.2
 flake8~=6.1.0
+interrogate~=1.7.0
 mypy~=1.7.1
 Sphinx~=7.2.6
 sphinx_rtd_theme~=2.0.0

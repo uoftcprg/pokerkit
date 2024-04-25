@@ -45,6 +45,99 @@ from pokerkit.utilities import Card, divmod, parse_value, rake
 
 @dataclass
 class HandHistory(Iterable[State]):
+    """The class for hand histories.
+
+    :param variant: The variant name. For more information, please refer
+                    to :attr:`pokerkit.notation.HandHistory.variant`.
+    :param ante_trimming_status: The ante trimming status. For more
+                                 information, please refer to
+                                 :attr:`pokerkit.notation.HandHistory.ante_trimming_status`.
+    :param antes: The antes. For more information, please refer to
+                  :attr:`pokerkit.notation.HandHistory.antes`.
+    :param blinds_or_straddles: The blinds or straddles. For more
+                                information, please refer to
+                                :attr:`pokerkit.notation.HandHistory.blinds_or_straddles`.
+    :param bring_in: The bring-in. For more information, please refer to
+                     :attr:`pokerkit.notation.HandHistory.bring_in`.
+    :param small_bet: The small bet. For more information, please refer
+                      to
+                      :attr:`pokerkit.notation.HandHistory.small_bet`.
+    :param big_bet: The big bet. For more information, please refer to
+                    :attr:`pokerkit.notation.HandHistory.big_bet`.
+    :param min_bet: The minimum bet. For more information, please refer
+                    to :attr:`pokerkit.notation.HandHistory.min_bet`.
+    :param starting_stacks: The starting stacks. For more information,
+                            please refer to
+                            :attr:`pokerkit.notation.HandHistory.starting_stacks`.
+    :param actions: The actions. For more information, please refer to
+                    :attr:`pokerkit.notation.HandHistory.actions`.
+    :param author: The author. For more information, please refer to
+                   :attr:`pokerkit.notation.HandHistory.author`.
+    :param event: The event. For more information, please refer to
+                  :attr:`pokerkit.notation.HandHistory.event`.
+    :param url: The url. For more information, please refer to
+                :attr:`pokerkit.notation.HandHistory.url`.
+    :param address: The address. For more information, please refer to
+                    :attr:`pokerkit.notation.HandHistory.address`.
+    :param city: The city. For more information, please refer to
+                 :attr:`pokerkit.notation.HandHistory.city`.
+    :param region: The region. For more information, please refer to
+                   :attr:`pokerkit.notation.HandHistory.region`.
+    :param postal_code: The postal code. For more information, please
+                        refer to
+                        :attr:`pokerkit.notation.HandHistory.postal_code`.
+    :param country: The country. For more information, please refer to
+                    :attr:`pokerkit.notation.HandHistory.country`.
+    :param time: The time. For more information, please refer to
+                 :attr:`pokerkit.notation.HandHistory.time`.
+    :param time_zone: The time zone. For more information, please refer
+                      to
+                      :attr:`pokerkit.notation.HandHistory.time_zone`.
+    :param day: The day. For more information, please refer to
+                :attr:`pokerkit.notation.HandHistory.day`.
+    :param month: The month. For more information, please refer to
+                  :attr:`pokerkit.notation.HandHistory.month`.
+    :param year: The year. For more information, please refer to
+                 :attr:`pokerkit.notation.HandHistory.year`.
+    :param hand: The hand number. For more information, please refer to
+                 :attr:`pokerkit.notation.HandHistory.hand`.
+    :param level: The level. For more information, please refer to
+                  :attr:`pokerkit.notation.HandHistory.level`.
+    :param seats: The seat numbers. For more information, please refer
+                  to :attr:`pokerkit.notation.HandHistory.seats`.
+    :param seat_count: The number of seats. For more information, please
+                       refer to
+                      :attr:`pokerkit.notation.HandHistory.seat_count`.
+    :param table: The table number. For more information, please refer
+                  to :attr:`pokerkit.notation.HandHistory.table`.
+    :param players: The player names. For more information, please refer
+                    to :attr:`pokerkit.notation.HandHistory.players`.
+    :param finishing_stacks: The finishing stacks. For more information,
+                             please refer to
+                             :attr:`pokerkit.notation.HandHistory.finishing_stacks`.
+    :param currency: The currency. For more information, please refer to
+                     :attr:`pokerkit.notation.HandHistory.currency`.
+    :param time_limit: The time limit. For more information, please
+                       refer to
+                       :attr:`pokerkit.notation.HandHistory.time_limit`.
+    :param time_banks: The time banks. For more information, please
+                       refer to
+                       :attr:`pokerkit.notation.HandHistory.time_banks`.
+    :param user_defined_fields: The user-defined fields. For more
+                                information, please refer to
+                                :attr:`pokerkit.notation.HandHistory.user_defined_fields`.
+    :param automations: The automations. For more information, please
+                        refer to
+                        :attr:`pokerkit.notation.HandHistory.automations`.
+    :param divmod: The divmod function. For more information, please
+                   refer to :attr:`pokerkit.notation.HandHistory.divmod`.
+    :param rake: The rake function. For more information, please refer
+                 to :attr:`pokerkit.notation.HandHistory.rake`.
+    :param parse_value: The value parsing function. For more
+                        information, please refer to
+                        :attr:`pokerkit.notation.HandHistory.parse_value`.
+    """
+
     game_types: ClassVar[dict[str, type[Poker]]] = {
         'FT': FixedLimitTexasHoldem,
         'NT': NoLimitTexasHoldem,

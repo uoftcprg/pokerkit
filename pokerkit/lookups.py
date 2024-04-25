@@ -77,6 +77,9 @@ class Entry:
     0
     >>> e0.label
     <Label.HIGH_CARD: 'High card'>
+
+    :param index: The index of the entry.
+    :param label: The label of the hand.
     """
 
     index: int
