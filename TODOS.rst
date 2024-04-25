@@ -10,10 +10,6 @@ Here are some of the features that are planned to be implemented in the future.
   - This is demonstrably different from blinds or straddles
   - As an optional parameter
 
-- Unknown stacks support.
-
-  - One can pass ``math.inf`` as the unknown starting stack.
-
 - Fully comply with the Poker Hand History file format specs.
 
   - URL: https://arxiv.org/abs/2312.11753

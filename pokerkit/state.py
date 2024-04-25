@@ -1059,6 +1059,14 @@ class State:
     """The player bets."""
     stacks: list[int] = field(default_factory=list, init=False)
     """The player stacks."""
+    payoffs: list[int] = field(default_factory=list, init=False)
+    """The player payoffs.
+
+    Note that a ``payoff = stack - starting_stack`` for each player.
+
+    Negated versions of these values can be thought of as contributions
+    to the hand by the individual players.
+    """
     hole_cards: list[list[Card]] = field(default_factory=list, init=False)
     """The player hole cards.
 
@@ -1198,6 +1206,7 @@ class State:
             self.statuses.append(True)
             self.bets.append(0)
             self.stacks.append(self.starting_stacks[i])
+            self.payoffs.append(0)
             self.hole_cards.append([])
             self.hole_card_statuses.append([])
 
@@ -2796,18 +2805,18 @@ class State:
             yield from self._pots
 
             return
-        elif sum(self.stacks) + sum(self.bets) == sum(self.starting_stacks):
+        elif sum(self.payoffs) == -sum(self.bets):
             return
 
-        contributions = list(self.starting_stacks)
-        pending_contributions = list(self.starting_stacks)
+        contributions = []
+        pending_contributions = []
         amount = 0
 
         for i in self.player_indices:
-            assert self.stacks[i] <= self.starting_stacks[i]
+            assert self.payoffs[i] <= 0
 
-            contributions[i] -= self.bets[i] + self.stacks[i]
-            pending_contributions[i] -= self.stacks[i]
+            contributions.append(-self.payoffs[i] - self.bets[i])
+            pending_contributions.append(-self.payoffs[i])
 
         if not self.ante_trimming_status:
             amount = 0
@@ -3064,6 +3073,7 @@ class State:
         self.ante_posting_statuses[player_index] = False
         self.bets[player_index] = amount
         self.stacks[player_index] -= amount
+        self.payoffs[player_index] -= amount
 
         operation = AntePosting(player_index, amount, commentary=commentary)
 
@@ -3200,7 +3210,9 @@ class State:
                 if self.bets[i] > bet_cutoff:
                     assert self.statuses[i]
 
-                    self.stacks[i] += self.bets[i] - bet_cutoff
+                    overbet = self.bets[i] - bet_cutoff
+                    self.stacks[i] += overbet
+                    self.payoffs[i] += overbet
                     bets[i] = bet_cutoff
 
         for i in player_indices:
@@ -3423,6 +3435,7 @@ class State:
         self.blind_or_straddle_posting_statuses[player_index] = False
         self.bets[player_index] = amount
         self.stacks[player_index] -= amount
+        self.payoffs[player_index] -= amount
 
         operation = BlindOrStraddlePosting(
             player_index,
@@ -4479,8 +4492,9 @@ class State:
         assert self.stacks[player_index]
         assert amount is not None
 
-        self.stacks[player_index] -= amount
         self.bets[player_index] += amount
+        self.stacks[player_index] -= amount
+        self.payoffs[player_index] -= amount
 
         operation = CheckingOrCalling(
             player_index,
@@ -4566,8 +4580,9 @@ class State:
         assert self.completion_status
         assert self.actor_indices
 
-        self.stacks[player_index] -= amount
         self.bets[player_index] += amount
+        self.stacks[player_index] -= amount
+        self.payoffs[player_index] -= amount
         self.bring_in_status = False
 
         operation = BringInPosting(player_index, amount, commentary=commentary)
@@ -4882,8 +4897,10 @@ class State:
         player_index = self._pop_actor_index()
 
         completion_betting_or_raising_amount = amount - max(self.bets)
-        self.stacks[player_index] -= amount - self.bets[player_index]
+        delta = amount - self.bets[player_index]
         self.bets[player_index] = amount
+        self.stacks[player_index] -= delta
+        self.payoffs[player_index] -= delta
         self.bring_in_status = False
         self.completion_status = False
         self.actor_indices = deque(self.player_indices)
@@ -6107,6 +6124,7 @@ class State:
         amount = self.bets[player_index]
 
         self.stacks[player_index] += amount
+        self.payoffs[player_index] += amount
         self.bets[player_index] = 0
         self.chips_pulling_statuses[player_index] = False
 

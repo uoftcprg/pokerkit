@@ -579,7 +579,7 @@ The usage of blinds/straddles and bring-ins is mutually exclusive. In other word
 "Raw" Starting Stacks
 ^^^^^^^^^^^^^^^^^^^^^
 
-This parameter states the starting stacks. Again, the values are interpreted intelligently by PokerKit.
+This parameter states the starting stacks. Again, the values are interpreted intelligently by PokerKit. If a user's starting stack is unknown, his/her starting stack can be set to be ``math.inf``.
 
 Player Count
 ^^^^^^^^^^^^
@@ -646,6 +646,7 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.statuses`                Whether or not a player at the corresponding position is still in the hand (i.e. active).
 :attr:`pokerkit.state.State.bets`                    Outstanding bets.
 :attr:`pokerkit.state.State.stacks`                  Stack sizes.
+:attr:`pokerkit.state.State.payoffs`                 Payoffs (i.e. rewards).
 :attr:`pokerkit.state.State.hole_cards`              Private cards.
 :attr:`pokerkit.state.State.hole_card_statuses`      Whether each private card is an up card or a down card.
 :attr:`pokerkit.state.State.discarded_cards`         Cards that were discarded for each player.

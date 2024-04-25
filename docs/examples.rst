@@ -65,9 +65,12 @@ Multi-Runout in an All-In Situation
 Below shows the 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest Wiggins.
    
 Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
+
+Note that the starting stacks for some players are set to be ``math.inf`` as they are not mentioned.
    
 .. code-block:: pycon
 
+   >>> from math import inf
    >>> from pokerkit import Automation, Mode, NoLimitTexasHoldem
    >>> state = NoLimitTexasHoldem.create_state(
    ...     (
@@ -83,7 +86,7 @@ Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
    ...     {-1: 600},
    ...     (200, 400, 800),
    ...     400,
-   ...     (999999, 116400, 86900, 999999, 50000, 999999),
+   ...     (inf, 116400, 86900, inf, 50000, inf),
    ...     6,
    ...     mode=Mode.CASH_GAME,
    ... )
@@ -220,7 +223,7 @@ Below are the final stacks.
 .. code-block:: pycon
 
    >>> state.stacks
-   [987399, 79400, 149700, 999999, 37400, 999399]
+   [inf, 79400, 149700, inf, 37400, inf]
 
 A Sample No-Limit Texas Hold'em Hand
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -229,8 +232,11 @@ Below shows the first televised million-dollar pot between Tom Dwan and Phil Ive
 
 Link: https://youtu.be/GnxFohpljqM
 
+Note that the starting stack of Patrik Antonius is set to be ``math.inf`` as it is not mentioned.
+
 .. code-block:: pycon
 
+   >>> from math import inf
    >>> from pokerkit import *
    >>> state = NoLimitTexasHoldem.create_state(
    ...     (
@@ -246,7 +252,7 @@ Link: https://youtu.be/GnxFohpljqM
    ...     500,
    ...     (1000, 2000),
    ...     2000,
-   ...     (1125600, 2000000, 553500),
+   ...     (1125600, inf, 553500),
    ...     3,
    ... )
 
@@ -320,7 +326,7 @@ Below are the final stacks.
 .. code-block:: pycon
 
    >>> state.stacks
-   [572100, 1997500, 1109500]
+   [572100, inf, 1109500]
 
 A Sample Short-Deck Hold'em Hand
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -642,8 +648,11 @@ Below shows an example badugi hand from Wikipedia.
 
 Link: https://en.wikipedia.org/wiki/Badugi
 
+Note that the starting stacks are set to be ``math.inf`` as they are not mentioned.
+
 .. code-block:: pycon
 
+   >>> from math import inf
    >>> from pokerkit import *
    >>> state = FixedLimitBadugi.create_state(
    ...     (
@@ -659,7 +668,7 @@ Link: https://en.wikipedia.org/wiki/Badugi
    ...     (1, 2),
    ...     2,
    ...     4,
-   ...     200,
+   ...     inf,
    ...     4,
    ... )
 
@@ -779,7 +788,9 @@ Below are the final stacks.
 .. code-block:: pycon
 
    >>> state.stacks
-   [196, 220, 200, 184]
+   [inf, inf, inf, inf]
+   >>> state.payoffs
+   [-4, 20, 0, -16]
 
 Hand Evaluation
 ---------------

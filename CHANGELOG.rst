@@ -23,6 +23,8 @@ This version release introduces a number of backward incompatible changes. Pleas
 - Multi-board games.
 - More degree of freedom in hole dealing/showdown order.
 - Docstring and documentation overhaul.
+- Unknown starting stacks can be expressed with ``math.inf``.
+- More flexible raking system.
 
 **Changed**
 
@@ -73,6 +75,7 @@ This version release introduces a number of backward incompatible changes. Pleas
 - In ``pokerkit.utilities.rake``, added parameters ``state``, ``cap``, and ``no_flop_no_drop``, and ``rake`` is now renamed as ``percentage`` and is a keyword parameter.
 - New attributes ``pokerkit.state.Pot.raked_amount`` and ``pokerkit.state.Pot.unraked_amount`` that gives the raked and the unraked amounts of the pot.
 - New property ``pokerkit.state.ChipsPushing.unraked_amount``.
+- New attribute ``pokerkit.state.payoffs`` for keeping track of payoffs (rewards).
 
 Version 0.4.17 (April 9, 2024)
 ------------------------------

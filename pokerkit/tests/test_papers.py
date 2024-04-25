@@ -715,7 +715,13 @@ class READMETestCase(TestCase):
     def test_hellmuth_wiggins(self) -> None:
         # The 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest
         # Wiggins.
+        #
         # Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
+        #
+        # Note that the starting stacks for some players are set to be
+        # ``math.inf`` as they are not mentioned.
+
+        from math import inf
 
         from pokerkit import Automation, Mode, NoLimitTexasHoldem
 
@@ -736,7 +742,7 @@ class READMETestCase(TestCase):
             {-1: 600},  # Antes
             (200, 400, 800),  # Blinds or straddles
             400,  # Min-bet
-            (999999, 116400, 86900, 999999, 50000, 999999),  # Starting stacks
+            (inf, 116400, 86900, inf, 50000, inf),  # type: ignore[arg-type]  # Starting stacks  # noqa: E501
             6,  # Number of players
             mode=Mode.CASH_GAME,
         )
@@ -807,11 +813,11 @@ class READMETestCase(TestCase):
 
         # Below are the final stacks.
 
-        # print(state.stacks)  # [987399, 79400, 149700, 999999, 37400, 999399]
+        # print(state.stacks)  # [inf, 79400, 149700, inf, 37400, inf]
 
         self.assertEqual(
             state.stacks,
-            [987399, 79400, 149700, 999999, 37400, 999399],
+            [inf, 79400, 149700, inf, 37400, inf],
         )
 
     def test_dwan_ivey(self) -> None:
@@ -819,10 +825,16 @@ class READMETestCase(TestCase):
         # and Phil Ivey.
         #
         # Link: https://youtu.be/GnxFohpljqM
+        #
+        # Note that the starting stack of Patrik Antonius is set to be
+        # ``math.inf`` as it is not mentioned.
+
+        from math import inf
 
         from pokerkit import Automation, NoLimitTexasHoldem
 
         state = NoLimitTexasHoldem.create_state(
+            # Automations
             (
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
@@ -832,12 +844,12 @@ class READMETestCase(TestCase):
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
-            True,
-            500,
-            (1000, 2000),
-            2000,
-            (1125600, 2000000, 553500),
-            3,
+            True,  # Uniform antes?
+            500,  # Antes
+            (1000, 2000),  # Blinds or straddles
+            2000,  # Min-bet
+            (1125600, inf, 553500),  # type: ignore[arg-type]  # Starting stacks  # noqa: E501
+            3,  # Number of players
         )
 
         # Below are the pre-flop dealings and actions.
@@ -876,9 +888,9 @@ class READMETestCase(TestCase):
 
         # Below are the final stacks.
 
-        # print(state.stacks)  # [572100, 1997500, 1109500]
+        # print(state.stacks)  # [572100, inf, 1109500]
 
-        self.assertEqual(state.stacks, [572100, 1997500, 1109500])
+        self.assertEqual(state.stacks, [572100, inf, 1109500])
 
     def test_phua_xuan(self) -> None:
         # Below shows an all-in hand between Xuan and Phua.
@@ -888,6 +900,7 @@ class READMETestCase(TestCase):
         from pokerkit import Automation, NoLimitShortDeckHoldem
 
         state = NoLimitShortDeckHoldem.create_state(
+            # Automations
             (
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
@@ -897,12 +910,12 @@ class READMETestCase(TestCase):
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
-            True,
-            3000,
-            {-1: 3000},
-            3000,
-            (495000, 232000, 362000, 403000, 301000, 204000),
-            6,
+            True,  # Uniform antes?
+            3000,  # Antes
+            {-1: 3000},  # Blinds or straddles
+            3000,  # Min-bet
+            (495000, 232000, 362000, 403000, 301000, 204000),  # Starting stacks  # noqa: E501
+            6,  # Number of players
         )
 
         # Below are the pre-flop dealings and actions.
@@ -957,6 +970,7 @@ class READMETestCase(TestCase):
         from pokerkit import Automation, PotLimitOmahaHoldem
 
         state = PotLimitOmahaHoldem.create_state(
+            # Automations
             (
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
@@ -966,12 +980,12 @@ class READMETestCase(TestCase):
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
-            True,
-            0,
-            (500, 1000),
-            2000,
-            (1259450.25, 678473.5),  # type: ignore[arg-type]
-            2,
+            True,  # Uniform antes?
+            0,  # Antes
+            (500, 1000),  # Blinds or straddles
+            1000,  # Min-bet
+            (1259450.25, 678473.5),  # type: ignore[arg-type]  # Starting stacks  # noqa: E501
+            2,  # Number of players
         )
 
         # Below are the pre-flop dealings and actions.
@@ -1022,6 +1036,7 @@ class READMETestCase(TestCase):
         )
 
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
+            # Automations
             (
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
@@ -1031,13 +1046,13 @@ class READMETestCase(TestCase):
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
-            True,
-            0,
-            (75000, 150000),
-            150000,
-            300000,
-            (1180000, 4340000, 5910000, 10765000),
-            4,
+            True,  # Uniform antes?
+            0,  # Antes
+            (75000, 150000),  # Blinds or straddles
+            150000,  # Small-bet
+            300000,  # Big-bet
+            (1180000, 4340000, 5910000, 10765000),  # Starting stacks
+            4,  # Number of players
         )
 
         # Below are the pre-flop dealings and actions.
@@ -1093,10 +1108,16 @@ class READMETestCase(TestCase):
         # Below shows an example badugi hand from Wikipedia.
         #
         # Link: https://en.wikipedia.org/wiki/Badugi
+        #
+        # Note that the starting stacks are set to be ``math.inf`` as they are
+        # not mentioned.
+
+        from math import inf
 
         from pokerkit import Automation, FixedLimitBadugi
 
         state = FixedLimitBadugi.create_state(
+            # Automations
             (
                 Automation.ANTE_POSTING,
                 Automation.BET_COLLECTION,
@@ -1105,13 +1126,13 @@ class READMETestCase(TestCase):
                 Automation.CHIPS_PUSHING,
                 Automation.CHIPS_PULLING,
             ),
-            True,
-            0,
-            (1, 2),
-            2,
-            4,
-            200,
-            4,
+            True,  # Uniform antes?
+            0,  # Antes
+            (1, 2),  # Blinds or straddles
+            2,  # Small-bet
+            4,  # Big-bet
+            inf,  # type: ignore[arg-type]  # Starting stacks
+            4,  # Number of players
         )
 
         # Below are the pre-flop dealings and actions.
@@ -1174,9 +1195,11 @@ class READMETestCase(TestCase):
 
         # Below are the final stacks.
 
-        # print(state.stacks)  # [196, 220, 200, 184]
+        # print(state.stacks)  # [inf, inf, inf, inf]
+        # print(state.payoffs)  # [-4, 20, 0, -16]
 
-        self.assertEqual(state.stacks, [196, 220, 200, 184])
+        self.assertEqual(state.stacks, [inf, inf, inf, inf])
+        self.assertEqual(state.payoffs, [-4, 20, 0, -16])
 
 
 if __name__ == '__main__':

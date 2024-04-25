@@ -764,10 +764,7 @@ class HandHistory(Iterable[State]):
                         case 'FT':
                             action = 'r'
                         case 'NT':
-                            amount = (
-                                state.starting_stacks[operation.player_index]
-                                - state.stacks[operation.player_index]
-                            )
+                            amount = -state.payoffs[operation.player_index]
                             action = f'r{amount}'
                         case _:
                             raise AssertionError
@@ -864,10 +861,7 @@ class HandHistory(Iterable[State]):
                 elif isinstance(operation, CheckingOrCalling):
                     actions += 'c'
                 elif isinstance(operation, CompletionBettingOrRaisingTo):
-                    amount = (
-                        state.starting_stacks[operation.player_index]
-                        - state.stacks[operation.player_index]
-                    )
+                    amount = -state.payoffs[operation.player_index]
                     actions += f'r{amount}'
                 elif isinstance(operation, HoleDealing):
                     for i, card in enumerate(operation.cards):

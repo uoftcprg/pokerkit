@@ -647,6 +647,7 @@ class NoLimitTexasHoldem(
 
         Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
 
+        >>> from math import inf
         >>> from pokerkit import Automation, Mode, NoLimitTexasHoldem
         >>> state = NoLimitTexasHoldem.create_state(
         ...     (
@@ -662,7 +663,7 @@ class NoLimitTexasHoldem(
         ...     {-1: 600},
         ...     (200, 400, 800),
         ...     400,
-        ...     (999999, 116400, 86900, 999999, 50000, 999999),
+        ...     (inf, 116400, 86900, inf, 50000, inf),
         ...     6,
         ...     mode=Mode.CASH_GAME,
         ... )
@@ -783,7 +784,7 @@ class NoLimitTexasHoldem(
         Below are the final stacks.
 
         >>> state.stacks
-        [987399, 79400, 149700, 999999, 37400, 999399]
+        [inf, 79400, 149700, inf, 37400, inf]
 
         Below shows the first televised million dollar pot between
         Tom Dwan and Phil Ivey.
@@ -804,7 +805,7 @@ class NoLimitTexasHoldem(
         ...     500,
         ...     (1000, 2000),
         ...     2000,
-        ...     (1125600, 2000000, 553500),
+        ...     (1125600, inf, 553500),
         ...     3,
         ... )
 
@@ -868,7 +869,7 @@ class NoLimitTexasHoldem(
         Below shows the final stacks.
 
         >>> state.stacks
-        [572100, 1997500, 1109500]
+        [572100, inf, 1109500]
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
@@ -1897,6 +1898,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
 
         Link: https://en.wikipedia.org/wiki/Badugi
 
+        >>> from math import inf
         >>> state = FixedLimitBadugi.create_state(
         ...     (
         ...         Automation.ANTE_POSTING,
@@ -1911,7 +1913,7 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         ...     (1, 2),
         ...     2,
         ...     4,
-        ...     200,
+        ...     inf,
         ...     4,
         ... )
 
@@ -2019,7 +2021,9 @@ class FixedLimitBadugi(FixedLimitPokerMixin, TripleDraw):
         Below show the final stacks.
 
         >>> state.stacks
-        [196, 220, 200, 184]
+        [inf, inf, inf, inf]
+        >>> state.payoffs
+        [-4, 20, 0, -16]
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.

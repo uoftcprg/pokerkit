@@ -61,3 +61,8 @@ Read-only and Read-Write Values
 Some fields/attributes in PokerKit are designed to be readonly. Most of these accesses (but not all) are enforced at the Python's ``dataclasses.dataclass`` level. An exception is for the attributes of :class:`pokerkit.state.State`. They should never be modified but instead let PokerKit modify them through public method calls. In other words, the user must only read from the state's attributes or call public methods (which may modify them).
 
 In general, one should never call protected (denoted with a preceding ``_`` character in their names) or private methods for anything in PokerKit.
+
+Assertions
+----------
+
+Inside PokerKit, assertions are only used for sanity checks. It is **never** used for anything meaningful in PokerKit. As there are many assertions throughout the code, if speed is a concern, one can safely disable assertions in Python by turning on appropriate optimizations for the Python interpreter (e.g. ``-O`` flag or the ``PYTHONOPTIMIZE`` environmental variable).
