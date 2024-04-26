@@ -4,8 +4,8 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.5.0 (Under Development)
----------------------------------
+Version 0.5.0 (April 25, 2024)
+------------------------------
 
 This version release introduces a number of backward incompatible changes. Please read the below content carefully!
 
