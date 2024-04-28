@@ -2496,10 +2496,10 @@ class State:
 
         >>> state.complete_bet_or_raise_to(200)  # doctest: +ELLIPSIS
         CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
-        >>> state.complete_bet_or_raise_to(1000)
+        >>> state.complete_bet_or_raise_to(1000)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ValueError: There is no reason to complete, bet, or raise.
+        ValueError: There is no reason to complete, bet, or raise since ever...
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=3, amount=200)
         >>> state.check_or_call()
@@ -2750,10 +2750,10 @@ class State:
 
         >>> state.complete_bet_or_raise_to(200)  # doctest: +ELLIPSIS
         CompletionBettingOrRaisingTo(commentary=None, player_index=2, amount...
-        >>> state.complete_bet_or_raise_to(1000)
+        >>> state.complete_bet_or_raise_to(1000)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ValueError: There is no reason to complete, bet, or raise.
+        ValueError: There is no reason to complete, bet, or raise since ever...
         >>> state.check_or_call()
         CheckingOrCalling(commentary=None, player_index=3, amount=200)
         >>> state.check_or_call()
@@ -4705,7 +4705,13 @@ class State:
                 self.stacks[player_index]
                 <= max(self.bets) - self.bets[player_index]
         ):
-            raise ValueError('There are not enough chips in stack.')
+            raise ValueError(
+                (
+                    'The player is already covered by a previous bet/raise.'
+                    ' You most likely want to just call here with'
+                    ' ``pokerkit.state.State.check_or_call()``.'
+                ),
+            )
 
         for i in self.player_indices:
             if (
@@ -4715,7 +4721,12 @@ class State:
             ):
                 break
         else:
-            raise ValueError('There is no reason to complete, bet, or raise.')
+            raise ValueError(
+                (
+                    'There is no reason to complete, bet, or raise since every'
+                    ' other player has either folded or gone all-in.'
+                ),
+            )
 
     def verify_completion_betting_or_raising_to(
             self,
