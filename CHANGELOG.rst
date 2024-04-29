@@ -14,7 +14,7 @@ This version release introduces a number of backward incompatible changes. Pleas
 - Minor cleanup that **may** break older code.
 - Option to choose cash-game vs. tournament (default) mode (defaults to tournament mode).
 
-  - Unlike in tourneys, in cash-games, players can select the number of runouts during all-in situations or opt to not show their hand after an all-in.
+  - Unlike in tourneys, in cash-games, players can select the number of runouts during all-in situations.
 
 - Option to choose the number of runouts during all-in situations (disabled in tournament mode).
 
