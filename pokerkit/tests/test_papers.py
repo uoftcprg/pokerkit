@@ -713,8 +713,8 @@ class Kim2024TestCase(TestCase):
 
 class READMETestCase(TestCase):
     def test_hellmuth_wiggins(self) -> None:
-        # The 4-runout hand between Phil Hellmuth and the Loose Cannon Ernest
-        # Wiggins.
+        # The 4-runout hand between Phil Hellmuth and the Loose Cannon
+        # Ernest Wiggins.
         #
         # Link: https://youtu.be/cnjJv7x0HMY?si=4l05Ez7lQVczt8DI&t=638
         #
@@ -821,8 +821,8 @@ class READMETestCase(TestCase):
         )
 
     def test_dwan_ivey(self) -> None:
-        # Below shows the first televised million-dollar pot between Tom Dwan
-        # and Phil Ivey.
+        # Below shows the first televised million-dollar pot between Tom
+        # Dwan and Phil Ivey.
         #
         # Link: https://youtu.be/GnxFohpljqM
         #
@@ -962,8 +962,8 @@ class READMETestCase(TestCase):
         )
 
     def test_antonius_blom(self) -> None:
-        # Below shows the largest online poker pot ever played between Patrik
-        # Antonius and Viktor Blom.
+        # Below shows the largest online poker pot ever played between
+        # Patrik Antonius and Viktor Blom.
         #
         # Link: https://youtu.be/UMBm66Id2AA
 
@@ -1109,8 +1109,8 @@ class READMETestCase(TestCase):
         #
         # Link: https://en.wikipedia.org/wiki/Badugi
         #
-        # Note that the starting stacks are set to be ``math.inf`` as they are
-        # not mentioned.
+        # Note that the starting stacks are set to be ``math.inf`` as
+        # they are not mentioned.
 
         from math import inf
 
