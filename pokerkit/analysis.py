@@ -439,8 +439,8 @@ class Statistics:
 
     @classmethod
     def from_hand_history(cls, *hhs: HandHistory) -> dict[str, Statistics]:
-        """Obtain statistics for each position and players (if any) for a
-        hand history or hand histories.
+        """Obtain statistics for each position and players (if any) for
+        a hand history or hand histories.
 
         :param hh: The hand history/histories to analyze.
         :return: The hand history statistics.

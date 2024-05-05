@@ -209,7 +209,8 @@ class Street:
                                 :attr:`pokerkit.state.Street.board_dealing_count`.
     :param draw_status: Whether to draw cards prior to betting (``True``
                         if this is so). For more information, please
-                        refer to :attr:`pokerkit.state.Street.draw_status`.
+                        refer to
+                        :attr:`pokerkit.state.Street.draw_status`.
     :param opening: The opening. For more information, please refer to
                     :attr:`pokerkit.state.Street.opening`.
     :param min_completion_betting_or_raising_amount: The minimum

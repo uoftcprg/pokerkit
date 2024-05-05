@@ -1,8 +1,8 @@
 """:mod:`pokerkit.games` implements various poker game definitions.
 
 The classes here allow users to "save" certain configurations to create
-poker states in a simple manner. This is crucial, as poker states require
-tons of parameters to be specified.
+poker states in a simple manner. This is crucial, as poker states
+require tons of parameters to be specified.
 """
 
 from __future__ import annotations
@@ -205,8 +205,8 @@ class Poker(ABC):
 
     @property
     def button_status(self) -> bool:
-        """Return whether this game is a button game (i.e. has a rotating
-        button).
+        """Return whether this game is a button game (i.e. has a
+        rotating button).
 
         We deem that a variant is a button game if it has betting round
         whose opener is decided based on position (not up card/hand like
@@ -1209,8 +1209,8 @@ class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
             divmod: Callable[[int, int], tuple[int, int]] = divmod,
             rake: Callable[[int, State], tuple[int, int]] = rake,
     ) -> State:
-        """Create a fixed-limit Omaha hold'em high/low-split eight or better
-        low game.
+        """Create a fixed-limit Omaha hold'em high/low-split eight or
+        better low game.
 
         :param automations: The automations.
         :param ante_trimming_status: The ante trimming status.
