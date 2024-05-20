@@ -8,7 +8,7 @@ Setting up Your Development Environment
 ---------------------------------------
 
 1. Fork the PokerKit repository on GitHub.
-2. Clone your fork locally: ``git clone git@github.com:username/pokerkit.git``
+2. Clone your fork locally: ``git clone git@github.com:uoftcprg/pokerkit.git``
 3. Setup virtual environment: ``python -m venv venv``
 4. Activate the virtual environment: ``source venv/bin/activate``
 5. Install requirements: ``pip install -r requirements.txt``
