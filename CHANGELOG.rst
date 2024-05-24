@@ -4,8 +4,12 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.5.1 (Planned)
------------------------
+Version 0.5.1 (May 24, 2024)
+----------------------------
+
+**Added**
+
+- Add standard error property ``pokerkit.analysis.Statistics.payoff_stderr`` to statistics.
 
 Version 0.5.0 (April 25, 2024)
 ------------------------------

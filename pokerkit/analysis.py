@@ -17,6 +17,7 @@ from itertools import (
     repeat,
     starmap,
 )
+from math import sqrt
 from operator import eq
 from random import choices, sample
 from statistics import mean, stdev
@@ -448,9 +449,8 @@ class Statistics:
         statistics = defaultdict[str, list[Statistics]](list)
 
         for hh in hhs:
-            end_state = tuple(hh)[-1]
-
             if hh.finishing_stacks is None:
+                end_state = tuple(hh)[-1]
                 finishing_stacks = end_state.stacks
             else:
                 finishing_stacks = hh.finishing_stacks
@@ -502,6 +502,14 @@ class Statistics:
     def payoff_stdev(self) -> float:
         """Return the payoff standard deviation.
 
-        :return: The payoff stdev.
+        :return: The payoff standard deviation.
         """
         return stdev(self.payoffs)
+
+    @property
+    def payoff_stderr(self) -> float:
+        """Return the payoff standard error.
+
+        :return: The payoff standard error.
+        """
+        return self.payoff_stdev / sqrt(self.sample_count)
