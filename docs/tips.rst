@@ -66,3 +66,8 @@ Assertions
 ----------
 
 Inside PokerKit, assertions are only used for sanity checks. It is **never** used for anything meaningful in PokerKit. As there are many assertions throughout the code, if speed is a concern, one can safely disable assertions in Python by turning on appropriate optimizations for the Python interpreter (e.g. ``-O`` flag or the ``PYTHONOPTIMIZE`` environmental variable).
+
+Standpatters
+------------
+
+Unfortunately, when I was writing this library, I did not realize the word "standpatter" (or "stand-patter") exists (see `this Wikipedia entry <https://en.wikipedia.org/wiki/Standpatter_Republican>`_). This is why I used the term "stander-pat" instead (e.g. :attr:`stander_pat_or_discarder_index`). If I had known this earlier, I would have named the attribute differently.
