@@ -18,6 +18,7 @@ Version 0.5.2 (June 13, 2024)
 **Added**
 
 - Added ``pokerkit.state.ChipsPushing.pot_index``, ``pokerkit.state.ChipsPushing.board_index``, and ``pokerkit.state.ChipsPushing.hand_type_index`` attributes to provide information on what portion of the pot was pushed.
+- Added ICM calculation ``pokerkit.analysis.calculate_icm`` function.
 
 Version 0.5.1 (May 24, 2024)
 ----------------------------

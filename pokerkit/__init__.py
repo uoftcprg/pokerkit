@@ -16,6 +16,7 @@ __all__ = (
     'BringInPosting',
     'calculate_equities',
     'calculate_hand_strength',
+    'calculate_icm',
     'Card',
     'CardBurning',
     'CardsLike',
@@ -105,6 +106,7 @@ __all__ = (
 from pokerkit.analysis import (
     calculate_equities,
     calculate_hand_strength,
+    calculate_icm,
     parse_range,
     Statistics,
 )
