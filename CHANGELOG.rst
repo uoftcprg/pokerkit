@@ -7,6 +7,15 @@ All notable changes to this project will be documented in this file.
 Version 0.5.1 (May 24, 2024)
 ----------------------------
 
+**Changed**
+
+- Allow ``numbers.Number`` like ``decimal.Decimal`` to be used as chip values.
+  While documented to be allowed, usage of non-``int`` or non-``float``
+  resulted in error.
+
+Version 0.5.1 (May 24, 2024)
+----------------------------
+
 **Added**
 
 - Add standard error property ``pokerkit.analysis.Statistics.payoff_stderr`` to statistics.

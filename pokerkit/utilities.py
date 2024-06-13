@@ -11,6 +11,7 @@ from functools import partial
 from itertools import product, starmap
 from math import inf
 from numbers import Integral
+from numbers import Number
 from operator import is_not
 from random import shuffle
 from typing import Any, cast, TYPE_CHECKING, TypeVar
@@ -611,8 +612,8 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
     :return: The cleaned integers.
     :raises ValueError: If the values are invalid.
     """
-    if isinstance(values, int | float):
-        values = (values,) * count
+    if isinstance(values, Number):
+        values = cast(tuple[int, ...], (values,) * count)
     elif isinstance(values, Mapping):
         parsed_values = [0] * count
 
