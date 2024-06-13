@@ -1325,6 +1325,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.push_chips()
         state.pull_chips()
         state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
@@ -1617,6 +1618,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
         state.show_or_muck_hole_cards()
 
+        state.push_chips()
         state.push_chips()
         state.pull_chips()
         state.pull_chips()
@@ -3895,6 +3897,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.push_chips()
         state.pull_chips()
         state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
@@ -4081,6 +4084,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.push_chips()
         state.pull_chips()
         state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
@@ -4204,6 +4208,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
         state.show_or_muck_hole_cards()
 
+        state.push_chips()
         state.push_chips()
         state.pull_chips()
         state.pull_chips()
@@ -6173,6 +6178,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
 
         state.push_chips()
+        state.push_chips()
         state.pull_chips()
         state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
@@ -6470,6 +6476,7 @@ class StateTestCase(TestCase):
 
         state.kill_hand()
         state.push_chips()
+        state.push_chips()
         state.pull_chips()
         state.pull_chips()
         self.assertEqual(state.total_pot_amount, 0)
@@ -6564,6 +6571,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
         state.show_or_muck_hole_cards()
 
+        state.push_chips()
         state.push_chips()
         state.pull_chips()
         state.pull_chips()
@@ -6662,6 +6670,7 @@ class StateTestCase(TestCase):
         state.show_or_muck_hole_cards()
         state.show_or_muck_hole_cards()
 
+        state.push_chips()
         state.push_chips()
         state.pull_chips()
         state.pull_chips()

@@ -23,6 +23,7 @@ from pokerkit.state import (
     _HighHandOpeningLookup,
     _LowHandOpeningLookup,
     Opening,
+    Pot,
     State,
     Street,
 )
@@ -1288,9 +1289,9 @@ class StateTestCase(TestCase):
             self.assertEqual(state.show_or_muck_hole_cards().hole_cards, ())
 
         self.assertFalse(state.status)
-        self.assertEqual(tuple(state.pots), ())
-        self.assertEqual(tuple(state.pot_amounts), ())
-        self.assertEqual(state.total_pot_amount, 0)
+        self.assertEqual(tuple(state.pots), (Pot(0, 6, ()),))
+        self.assertEqual(tuple(state.pot_amounts), (6,))
+        self.assertEqual(state.total_pot_amount, 6)
         self.assertEqual(state.starting_stacks, (200,) * 3)
         self.assertEqual(state.stacks, [198] * 3)
 

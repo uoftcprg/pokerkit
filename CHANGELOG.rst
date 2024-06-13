@@ -4,14 +4,20 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.5.1 (May 24, 2024)
+Version 0.5.2 (June 13, 2024)
 ----------------------------
 
 **Changed**
 
-- Allow ``numbers.Number`` like ``decimal.Decimal`` to be used as chip values.
-  While documented to be allowed, usage of non-``int`` or non-``float``
-  resulted in error.
+- Allow ``numbers.Number`` like ``decimal.Decimal`` to be used as chip values. While documented as allowed, usage of non-``int`` or non-``float`` used to result in error.
+- The main pot is pushed first, followed by side pots (reverse was true previously).
+- Chips pushing operation is more fine-grained in that each operation pushes a portion of the main/side pot should there be multiple boards or hand types.
+- Removed ``pokerkit.state.ChipsPushing.raked_amount`` attribute.
+- Removed ``pokerkit.state.ChipsPushing.unraked_amount`` property.
+
+**Added**
+
+- Added ``pokerkit.state.ChipsPushing.pot_index``, ``pokerkit.state.ChipsPushing.board_index``, and ``pokerkit.state.ChipsPushing.hand_type_index`` attributes to provide information on what portion of the pot was pushed.
 
 Version 0.5.1 (May 24, 2024)
 ----------------------------

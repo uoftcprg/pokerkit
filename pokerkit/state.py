@@ -414,7 +414,7 @@ class Mode(StrEnum):
     """The cash-game poker state type."""
 
 
-@dataclass(frozen=True)
+@dataclass
 class Pot:
     """The class for pots.
 
@@ -631,11 +631,21 @@ class ChipsPushing(Operation):
 
     amounts: tuple[int, ...]
     """The amounts."""
-    raked_amount: int
-    """The raked amount."""
+    pot_index: int
+    """The index of the pot (or portion of the pot) that was pushed."""
+    board_index: int
+    """The index of the board used to evaluate players' hands.
+
+    If the push was during a folded or mucked pot, this value is ``-1``.
+    """
+    hand_type_index: int
+    """The index of the hand type used to evaluate players' hands.
+
+    If the push was during a folded or mucked pot, this value is ``-1``.
+    """
 
     @property
-    def unraked_amount(self) -> int:
+    def total_amount(self) -> int:
         """Return the amount that was not raked and therefore pushed.
 
         This is identical to the sum of values in
@@ -644,18 +654,6 @@ class ChipsPushing(Operation):
         :return: The unraked amount.
         """
         return sum(self.amounts)
-
-    @property
-    def total_amount(self) -> int:
-        """Return the total amount.
-
-        >>> chips_pushing = ChipsPushing((1, 2, 3), 0)
-        >>> chips_pushing.total_amount
-        6
-
-        :return: The total amount.
-        """
-        return self.raked_amount + self.unraked_amount
 
 
 @dataclass(frozen=True)
@@ -817,8 +815,8 @@ class State:
 
     >>> state.collect_bets()
     BetCollection(commentary=None, bets=(0, 0))
-    >>> state.push_chips()
-    ChipsPushing(commentary=None, amounts=(0, 2), raked_amount=0)
+    >>> state.push_chips()  # doctest: +ELLIPSIS
+    ChipsPushing(commentary=None, amounts=(0, 2), pot_index=0, board_index=-...
     >>> state.pull_chips(1)
     ChipsPulling(commentary=None, player_index=1, amount=3)
 
@@ -1521,8 +1519,8 @@ class State:
 
         Teardown.
 
-        >>> state.push_chips()
-        ChipsPushing(commentary=None, amounts=(6, 0), raked_amount=0)
+        >>> state.push_chips()  # doctest: +ELLIPSIS
+        ChipsPushing(commentary=None, amounts=(6, 0), pot_index=0, board_ind...
         >>> state.street is None
         True
         >>> state.pull_chips()
@@ -2539,14 +2537,8 @@ class State:
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
         BoardDealing(commentary=None, cards=(...,))
-        >>> next(state.pot_amounts)
-        Traceback (most recent call last):
-            ...
-        StopIteration
-        >>> tuple(state.pot_amounts)
-        ()
 
-        :return: The list of main and side pots (if any).
+        :return: The list of main and side pot (if any) amounts.
         """
         for pot in self.pots:
             yield pot.amount
@@ -2666,8 +2658,8 @@ class State:
 
         Teardown.
 
-        >>> state.push_chips()
-        ChipsPushing(commentary=None, amounts=(66, 0), raked_amount=0)
+        >>> state.push_chips()  # doctest: +ELLIPSIS
+        ChipsPushing(commentary=None, amounts=(66, 0), pot_index=0, board_in...
         >>> state.total_pot_amount
         66
         >>> state.pull_chips()
@@ -2793,12 +2785,6 @@ class State:
 
         >>> state.deal_board()  # doctest: +ELLIPSIS
         BoardDealing(commentary=None, cards=(...,))
-        >>> next(state.pots)
-        Traceback (most recent call last):
-            ...
-        StopIteration
-        >>> tuple(state.pots)
-        ()
 
         :return: The list of main and side pots (if any).
         """
@@ -5773,15 +5759,58 @@ class State:
     # chips pushing
 
     _pots: list[Pot] | None = field(default=None, init=False)
+    _sub_pots: list[tuple[int, int, int, int]] = field(
+        default_factory=list,
+        init=False,
+    )
 
     def _setup_chips_pushing(self) -> None:
         pass
 
     def _begin_chips_pushing(self) -> None:
         assert self._pots is None
+        assert not self._sub_pots
 
         self.street_index = None
         self._pots = list(self.pots)
+
+        if sum(self.statuses) == 1:
+            for i, pot in enumerate(self._pots):
+                self._sub_pots.append((pot.unraked_amount, i, -1, -1))
+        elif sum(self.statuses) > 1:
+            for i, pot in enumerate(self._pots):
+                amount = pot.unraked_amount
+                quotient, remainder = self.divmod(amount, self.board_count)
+
+                for j in self.board_indices:
+                    sub_amount = quotient
+
+                    if not j:
+                        sub_amount += remainder
+
+                    hand_type_indices = []
+
+                    for k in self.hand_type_indices:
+                        for hand in self.get_up_hands(j, k):
+                            if hand is not None:
+                                hand_type_indices.append(k)
+
+                                break
+
+                    hand_type_count = len(hand_type_indices)
+                    sub_quotient, sub_remainder = self.divmod(
+                        sub_amount,
+                        hand_type_count,
+                    )
+
+                    for k in hand_type_indices:
+                        sub_sub_amount = sub_quotient
+
+                        if k == hand_type_indices[0]:
+                            sub_sub_amount += sub_remainder
+
+                        if sub_sub_amount:
+                            self._sub_pots.append((sub_sub_amount, i, j, k))
 
         self._update_chips_pushing()
 
@@ -5791,14 +5820,15 @@ class State:
     ) -> None:
         self._update(operation)
 
-        if not self._pots:
+        if not self._sub_pots:
             self._end_chips_pushing()
         elif Automation.CHIPS_PUSHING in self.automations:
-            while self._pots:
+            while self._sub_pots:
                 self.push_chips()
 
     def _end_chips_pushing(self) -> None:
-        assert not self._pots
+        assert self._pots is not None
+        assert not self._sub_pots
 
         self._begin_chips_pulling()
 
@@ -5811,7 +5841,7 @@ class State:
         :return: ``None``.
         :raises ValueError: If the chips pushing cannot be done.
         """
-        if not self._pots:
+        if not self._sub_pots:
             raise ValueError('The chip pushing is not allowed.')
 
     def can_push_chips(self) -> bool:
@@ -5870,78 +5900,48 @@ class State:
         """
         self.verify_chips_pushing()
 
-        assert self._pots is not None and self._pots
+        assert self._pots is not None and self._sub_pots
 
-        pot = self._pots.pop()
         bets = self.bets.copy()
+        amount, pot_index, board_index, hand_type_index = self._sub_pots.pop(0)
+        pot = self._pots[pot_index]
+        pot.unraked_amount -= amount
+
+        assert pot.unraked_amount >= 0
 
         if sum(self.statuses) == 1:
             assert len(pot.player_indices) == 1
+            assert board_index == hand_type_index == -1
 
-            self.bets[pot.player_indices[0]] += pot.unraked_amount
+            self.bets[pot.player_indices[0]] += amount
         else:
+            assert 0 <= board_index < self.board_count
+            assert 0 <= hand_type_index < self.hand_type_count
 
-            def push(player_indices: list[int], amount: int) -> None:
-                player_indices.sort()
-
-                for j, k in enumerate(player_indices):
-                    assert self.statuses[k]
-
-                    quotient, remainder = self.divmod(
-                        amount,
-                        len(player_indices),
-                    )
-                    sub_amount = quotient
-
-                    if not j:
-                        sub_amount += remainder
-
-                    self.bets[k] += sub_amount
-
-            pushed_amount_quotient, pushed_amount_remainder = self.divmod(
-                pot.unraked_amount,
-                self.board_count,
+            hands = tuple(self.get_up_hands(board_index, hand_type_index))
+            max_hand = max_or_none(
+                map(partial(getitem, hands), pot.player_indices),
             )
+            player_indices = [
+                i for i in pot.player_indices if hands[i] == max_hand
+            ]
+            quotient, remainder = self.divmod(amount, len(player_indices))
 
-            for i in self.board_indices:
-                pushed_amount = pushed_amount_quotient
+            for i in player_indices:
+                assert self.statuses[i]
 
-                if not i:
-                    pushed_amount += pushed_amount_remainder
+                sub_sub_sub_amount = quotient
 
-                hand_type_indices = []
+                if i == player_indices[0]:
+                    sub_sub_sub_amount += remainder
 
-                for j in self.hand_type_indices:
-                    for hand in self.get_up_hands(i, j):
-                        if hand is not None:
-                            hand_type_indices.append(j)
-
-                            break
-
-                hand_type_count = len(hand_type_indices)
-
-                for j in hand_type_indices:
-                    hands = tuple(self.get_up_hands(i, j))
-                    max_hand = max_or_none(
-                        map(partial(getitem, hands), pot.player_indices),
-                    )
-                    player_indices = [
-                        k for k in pot.player_indices if hands[k] == max_hand
-                    ]
-                    quotient, remainder = self.divmod(
-                        pushed_amount,
-                        hand_type_count,
-                    )
-                    amount = quotient
-
-                    if not j:
-                        amount += remainder
-
-                    push(player_indices, amount)
+                self.bets[i] += sub_sub_sub_amount
 
         operation = ChipsPushing(
             tuple(starmap(sub, zip(self.bets, bets))),
-            pot.raked_amount,
+            pot_index,
+            board_index,
+            hand_type_index,
             commentary=commentary,
         )
 
