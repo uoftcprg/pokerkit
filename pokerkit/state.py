@@ -381,7 +381,7 @@ class Automation(StrEnum):
     """The chips pushing automation.
 
     When automated, the chips pushing is done one by one, for each
-    main/side pot.
+    split main/side pot.
     """
     CHIPS_PULLING: str = 'Chips pulling'
     """The chips pulling automation.
@@ -5892,7 +5892,8 @@ class State:
     def push_chips(self, *, commentary: str | None = None) -> ChipsPushing:
         """Push chips.
 
-        Each call of this operation will push a single main/side pot.
+        Each call of this operation will push a single split main/side
+        pot.
 
         :param commentary: The optional commentary.
         :return: The chips pushing.

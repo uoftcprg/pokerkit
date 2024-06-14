@@ -1038,7 +1038,7 @@ Helper Method/Attribute                            Description
 Chips Pushing Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.push_chips`) corresponds to pushing the chips to the winner(s). Each call pushes one pot (main/side). If multiple players with differing starting stack sizes are all-in and are entitled to the piece of the pot, multiple pots (main + side) will exist and therefore, this method must be invoked multiple times until all pots are pushed to the players.
+This operation (:meth:`pokerkit.state.State.push_chips`) corresponds to pushing the chips to the winner(s). Each call pushes one split pot (main/side). If there are multiple hand types (or boards) and/or multiple players with differing starting stack sizes that are all-in and are entitled to the piece of the pot, multiple split pots (main + side) will exist and therefore, this method must be invoked multiple times until all pots are pushed to the players.
 
 Chips Pulling Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
