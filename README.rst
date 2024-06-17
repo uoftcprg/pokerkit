@@ -15,7 +15,7 @@ Features
 Installation
 ------------
 
-The PokerKit library can be installed using pip:
+The PokerKit library requires Python Version 3.11 or above and can be installed using pip:
 
 .. code-block:: bash
 
