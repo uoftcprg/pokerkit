@@ -792,8 +792,8 @@ class HandHistory(Iterable[State]):
                 elif isinstance(operation, HoleCardsShowingOrMucking):
                     for i, card in enumerate(operation.hole_cards):
                         if not card.unknown_status:
-                            raw_hole_cards[operation.player_index][i] = (
-                                repr(card)
+                            raw_hole_cards[operation.player_index][i] = repr(
+                                card,
                             )
 
                 if isinstance(operation, BoardDealing):
@@ -872,8 +872,8 @@ class HandHistory(Iterable[State]):
                 elif isinstance(operation, HoleCardsShowingOrMucking):
                     for i, card in enumerate(operation.hole_cards):
                         if not card.unknown_status:
-                            raw_hole_cards[operation.player_index][i] = (
-                                repr(card)
+                            raw_hole_cards[operation.player_index][i] = repr(
+                                card,
                             )
                 elif isinstance(operation, BoardDealing):
                     actions += '/'

@@ -3511,8 +3511,8 @@ class State:
                 > len(tuple(self.get_dealable_cards()))
         ):
             for i in range(self.starting_board_count):
-                self.board_dealing_counts[i] += (
-                    len(self.street.hole_dealing_statuses)
+                self.board_dealing_counts[i] += len(
+                    self.street.hole_dealing_statuses,
                 )
 
             for i in self.player_indices:
@@ -4205,7 +4205,7 @@ class State:
             status=(
                 len(self.actor_indices) == 1
                 and self.bets[self.actor_indices[0]] >= max(self.bets)
-            )
+            ),
         )
 
     def _update_betting(
@@ -4632,7 +4632,7 @@ class State:
                 self.min_completion_betting_or_raising_to_amount,
                 2 * max(self.bets) - self.bets[player_index]
                 + self.total_pot_amount,
-            )
+            ),
         )
 
     @property
