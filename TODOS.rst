@@ -28,5 +28,6 @@ Here are some of the features that are planned to be implemented in the future.
 
   - Do not care about errors
 
-- If both hole and board dealings are pending, card burning can be deferred so that one of the dealings is carried out before.
+- If both hole and board dealings are pending, card burning can be deferred so that one of the dealings is carried out before (for Courchevel).
 - In non-uniform ante situations (e.g. button ante, BB ante), the paid ante(s) does not impact the pot bet during pre-flop (after flop, ante contributions are also considered to calculate the pot value).
+- Faster hand evaluation for 6/7 card combinations.
