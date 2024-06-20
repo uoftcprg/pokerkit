@@ -304,7 +304,7 @@ def calculate_equities(
     for selection in product(*hole_ranges):
         counter = Counter(chain(chain.from_iterable(selection), board_cards))
 
-        if all(count == 1 for count in counter.values()):
+        if all(map(partial(eq, 1), counter.values())):
             hole_cards.append(selection)
             deck_cards.append(list(set(deck) - counter.keys()))
 
