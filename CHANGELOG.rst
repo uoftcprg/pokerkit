@@ -4,8 +4,15 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.5.3 (September 1, 2024)
+---------------------------------
+
+**Changed**
+
+- Fix incorrect implementation of ``pokerkit.hands.StandardBadugi.from_game``.
+
 Version 0.5.2 (June 13, 2024)
-----------------------------
+-----------------------------
 
 **Changed**
 

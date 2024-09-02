@@ -661,24 +661,40 @@ class BadugiHand(Hand):
         >>> h0 == h1
         True
 
+        >>> h0 = StandardBadugiHand.from_game('2s3d3c4d')
+        >>> h1 = StandardBadugiHand.from_game('2s3c3d4d')
+        >>> h0 == h1
+        True
+
         :param hole_cards: The hole cards.
         :param board_cards: The optional board cards.
         :return: The strongest hand from possible card combinations.
         """
-        ranks = set()
-        suits = set()
-        cards = set()
+        cards = tuple(chain(Card.clean(hole_cards), Card.clean(board_cards)))
+        max_hand = None
 
-        for card in sorted(
-                chain(Card.clean(hole_cards), Card.clean(board_cards)),
-                key=lambda card: cls.lookup.rank_order.index(card.rank),
-        ):
-            if card.rank not in ranks and card.suit not in suits:
-                ranks.add(card.rank)
-                suits.add(card.suit)
-                cards.add(card)
+        for count in range(4, 0, -1):
+            for combination in combinations(cards, count):
+                try:
+                    hand = cls(combination)
+                except ValueError:
+                    pass
+                else:
+                    if max_hand is None or hand > max_hand:
+                        max_hand = hand
 
-        return cls(cards)
+            if max_hand is not None:
+                break
+
+        if max_hand is None:
+            raise ValueError(
+                (
+                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    ' from the hole and board cards.'
+                ),
+            )
+
+        return max_hand
 
 
 class StandardBadugiHand(BadugiHand):
