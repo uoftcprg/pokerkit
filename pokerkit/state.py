@@ -4600,7 +4600,7 @@ class State:
         )
 
         if not self.completion_status:
-            amount += max(self.bets)
+            amount = max(self.bets)
 
         player_index = self.actor_index
 
