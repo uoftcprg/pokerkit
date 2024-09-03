@@ -2836,6 +2836,8 @@ class State:
 
             if amount:
                 raked_amount, unraked_amount = self.rake(amount, self)
+                if unraked_amount < 0 and unraked_amount > 1e-18:
+                    unraked_amount = 0.0
                 pot = Pot(raked_amount, unraked_amount, tuple(player_indices))
 
                 pots.append(pot)
