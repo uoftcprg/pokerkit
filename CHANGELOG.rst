@@ -4,6 +4,24 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.5.4 (September 7, 2024)
+---------------------------------
+
+**Added**
+
+- Post bet support.
+
+  - Post bets are a type of forced bet which a player who just seated must pay to play right away instead of waiting for the button to pass.
+  - To denote a post bet, it must be passed alongside ``raw_blinds_or_straddles`` variable during state construction.
+
+    - For example, say UTG+1 wants to put a post-bet in a 6-max game. Then, ``[1, 2, 0, -2, 0, 0]`` or, equivalently, ``{0: 1, 1: 2, 3: -2}``.
+
+- ``pokerkit.notation.HandHistory.state_actions`` is a new alias for ``pokerkit.notation.HandHistory.iter_state_actions()``.
+
+**Deprecated**
+
+- ``pokerkit.notation.HandHistory.iter_state_actions()`` due to poor naming. It is superceded by ``pokerkit.notation.HandHistory.state_actions`` which behaves identically. This method will be removed in PokerKit Version 0.6.
+
 Version 0.5.3 (September 1, 2024)
 ---------------------------------
 

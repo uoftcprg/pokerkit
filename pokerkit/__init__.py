@@ -85,6 +85,7 @@ __all__ = (
     'ShortDeckHoldemHand',
     'ShortDeckHoldemLookup',
     'shuffled',
+    'sign',
     'SingleDraw',
     'StandardBadugiHand',
     'StandardBadugiLookup',
@@ -208,6 +209,7 @@ from pokerkit.utilities import (
     Rank,
     RankOrder,
     shuffled,
+    sign,
     Suit,
     ValuesLike,
 )

@@ -4,12 +4,6 @@ Todos
 
 Here are some of the features that are planned to be implemented in the future.
 
-- Post bets support.
-
-  - Post bets are posted when a player wants to play a game immediately after joining without waiting for the button to pass him or her.
-  - This is demonstrably different from blinds or straddles
-  - As an optional parameter
-
 - Fully comply with the Poker Hand History file format specs.
 
   - URL: https://arxiv.org/abs/2312.11753

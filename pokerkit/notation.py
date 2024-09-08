@@ -547,10 +547,17 @@ class HandHistory(Iterable[State]):
         return HandHistory(**cls._filter_non_fields(**kwargs))
 
     def __iter__(self) -> Iterator[State]:
-        yield from map(itemgetter(0), self.iter_state_actions())
+        yield from map(itemgetter(0), self.state_actions)
 
-    def iter_state_actions(self) -> Iterator[tuple[State, str | None]]:
+    @property
+    def state_actions(self) -> Iterator[tuple[State, str | None]]:
         """Iterate through state-actions.
+
+        If an action from the
+        :attr:`pokerkit.notation.HandHistory.actions` field was just
+        applied, the ``str`` representation of the action is yielded
+        alongside the newly transitioned state. Otherwise, the
+        corresponding second value of the pair is ``None``.
 
         :return: The state actions.
         """
@@ -588,6 +595,24 @@ class HandHistory(Iterable[State]):
                 parse_action(state, action, self.parse_value)
 
             yield state, action
+
+    def iter_state_actions(self) -> Iterator[tuple[State, str | None]]:
+        """Deprecated. Now, an alias of
+        :attr:`pokerkit.notation.HandHistory.state_actions`.
+
+        This method will be removed in PokerKit Version 0.6.
+
+        :return: The state-actions.
+        """
+        warn(
+            (
+                'pokerkit.notation.HandHistory.iter_state_actions() is'
+                ' deprecated and will be removed on PokerKit Version 0.6'
+            ),
+            DeprecationWarning,
+        )
+
+        yield from self.state_actions
 
     @property
     def game_type(self) -> type[Poker]:

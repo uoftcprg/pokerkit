@@ -30,7 +30,7 @@ Reading hands
        ...
 
    # Iterate through each action step
-   for state, action in hh.iter_state_actions():
+   for state, action in hh.state_actions:
        ...
 
 It is possible to supply your own chip value parsing function, divmod, or rake function to construct the game states. Additionally, the default value parsing function is defined as :func:`pokerkit.utilities.parse_value`. This parser automatically parses integers or floats based on the raw string value. You may supply your own number-type parsers as well.

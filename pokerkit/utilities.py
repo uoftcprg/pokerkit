@@ -772,3 +772,24 @@ def parse_value(raw_value: str) -> int:
         value = float(raw_value)
 
     return cast(int, value)
+
+
+def sign(value: int) -> int:
+    """Get sign of a value.
+
+    >>> sign(-5)
+    -1
+    >>> sign(10)
+    1
+    >>> sign(0)
+    0
+
+    :param value: The value to get a sign from.
+    :return: The sign.
+    """
+    if value > 0:
+        return 1
+    elif value < 0:
+        return -1
+    else:
+        return 0

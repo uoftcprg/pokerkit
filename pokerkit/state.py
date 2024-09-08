@@ -9,7 +9,7 @@ from dataclasses import InitVar, dataclass, field, KW_ONLY
 from enum import StrEnum, unique
 from functools import partial
 from itertools import chain, filterfalse, islice, starmap
-from operator import getitem, sub
+from operator import getitem, gt, sub
 from random import shuffle
 from warnings import warn
 
@@ -27,6 +27,7 @@ from pokerkit.utilities import (
     Rank,
     RankOrder,
     shuffled,
+    sign,
     Suit,
     ValuesLike,
 )
@@ -938,6 +939,10 @@ class State:
     If the bring-in is non-zero, the all blind/straddle values must be
     zero. If any of the bring-in is zero, there must be at least one
     positive blind/straddle value.
+
+    Negative value is interpreted as a post bet, used to denote what a
+    player who just got seated pays to begin playing right away without
+    waiting for the button.
     """
     bring_in: int
     """The bring-in.
@@ -1148,14 +1153,8 @@ class State:
             raise ValueError('The streets are empty.')
         elif not self.streets[0].hole_dealing_statuses:
             raise ValueError('The first street must be of hole dealing.')
-        elif (
-                min(self.antes) < 0
-                or min(self.blinds_or_straddles) < 0
-                or self.bring_in < 0
-        ):
-            raise ValueError(
-                'Negative antes, blinds, straddles, or bring-in was supplied.',
-            )
+        elif min(self.antes) < 0 or self.bring_in < 0:
+            raise ValueError('Negative antes or bring-in was supplied.')
         elif (
                 not any(self.antes)
                 and not any(self.blinds_or_straddles)
@@ -1166,7 +1165,10 @@ class State:
             )
         elif min(self.starting_stacks) <= 0:
             raise ValueError('Non-positive starting stacks was supplied.')
-        elif any(self.blinds_or_straddles) and self.bring_in:
+        elif (
+                any(map(partial(gt, 0), self.blinds_or_straddles))
+                and self.bring_in
+        ):
             raise ValueError(
                 (
                     'Only one of bring-in or (blinds or straddles) must'
@@ -3269,9 +3271,9 @@ class State:
         :return: The effective blind or straddle.
         """
         if self.player_count == 2:
-            blind_or_straddle = self.blinds_or_straddles[not player_index]
+            blind_or_straddle = abs(self.blinds_or_straddles[not player_index])
         else:
-            blind_or_straddle = self.blinds_or_straddles[player_index]
+            blind_or_straddle = abs(self.blinds_or_straddles[player_index])
 
         return min(
             blind_or_straddle,
@@ -4121,7 +4123,9 @@ class State:
             case Opening.POSITION:
                 max_bet_index = max(
                     self.player_indices,
-                    key=lambda i: (self.bets[i], i),
+                    key=lambda i: (
+                        (self.bets[i] * sign(self.blinds_or_straddles[i]), i)
+                    ),
                 )
                 self.opener_index = (max_bet_index + 1) % self.player_count
             case Opening.LOW_CARD:

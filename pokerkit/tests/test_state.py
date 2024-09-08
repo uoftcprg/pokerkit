@@ -20,6 +20,7 @@ from pokerkit.hands import KuhnPokerHand
 from pokerkit.state import (
     Automation,
     BettingStructure,
+    CheckingOrCalling,
     _HighHandOpeningLookup,
     _LowHandOpeningLookup,
     Opening,
@@ -1294,6 +1295,76 @@ class StateTestCase(TestCase):
         self.assertEqual(state.total_pot_amount, 6)
         self.assertEqual(state.starting_stacks, (200,) * 3)
         self.assertEqual(state.stacks, [198] * 3)
+
+    def test_post_bets(self) -> None:
+        def create_state(blinds_or_straddles: ValuesLike) -> State:
+            return NoLimitTexasHoldem.create_state(
+                (
+                    Automation.ANTE_POSTING,
+                    Automation.BET_COLLECTION,
+                    Automation.BLIND_OR_STRADDLE_POSTING,
+                    Automation.CARD_BURNING,
+                    Automation.HOLE_DEALING,
+                    Automation.BOARD_DEALING,
+                    Automation.RUNOUT_COUNT_SELECTION,
+                    Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                    Automation.HAND_KILLING,
+                    Automation.CHIPS_PUSHING,
+                    Automation.CHIPS_PULLING,
+                ),
+                True,
+                0,
+                blinds_or_straddles,
+                2,
+                200,
+                6,
+            )
+
+        self.assertEqual(create_state({0: 1, 1: 2}).actor_index, 2)
+        self.assertEqual(create_state({0: 1, 1: 2, 2: -2}).actor_index, 2)
+        self.assertEqual(create_state({0: 1, 1: 2, 3: -2}).actor_index, 2)
+        self.assertEqual(create_state({0: 1, 1: 2, 4: -2}).actor_index, 2)
+        self.assertEqual(
+            create_state({0: 1, 1: 2, 2: -2, 5: -2}).actor_index,
+            2,
+        )
+        self.assertEqual(create_state({0: 2, 1: 2}).actor_index, 2)
+        self.assertEqual(create_state({0: 1, 1: 2, 2: 4}).actor_index, 3)
+        self.assertEqual(
+            create_state({0: 1, 1: 2, 2: 4, 3: -2, 4: -2}).actor_index,
+            3,
+        )
+
+        state = create_state({0: 1, 1: 2, 4: -2, 5: -2})
+
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=2, amount=2),
+        )
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=3, amount=2),
+        )
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=4, amount=0),
+        )
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=5, amount=0),
+        )
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=0, amount=1),
+        )
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=1, amount=0),
+        )
+        self.assertEqual(
+            state.check_or_call(),
+            CheckingOrCalling(commentary=None, player_index=0, amount=0),
+        )
 
 
 if __name__ == '__main__':

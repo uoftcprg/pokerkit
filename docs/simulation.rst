@@ -637,7 +637,7 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.divmod`                  (Defined during initialization and described above in this page)
 :attr:`pokerkit.state.State.rake`                    (Defined during initialization and described above in this page)
 :attr:`pokerkit.state.State.antes`                   Cleaned ante amounts.
-:attr:`pokerkit.state.State.blinds_or_straddles`     Cleaned blind/straddle amounts.
+:attr:`pokerkit.state.State.blinds_or_straddles`     Cleaned blind/straddle/post-bet amounts. If a value is a post bet, it must be negated (i.e. ``[1, 2, 0, 0, -2, 0]``). This is to tell PokerKit that this forced bet does not impact who opens the preflop action.
 :attr:`pokerkit.state.State.starting_stacks`         Cleaned starting stack chip amounts.
 :attr:`pokerkit.state.State.deck_cards`              Shuffled deck from which cards are drawn.
 :attr:`pokerkit.state.State.board_cards`             Community cards.

@@ -218,7 +218,7 @@ class Kim2024TestCase(TestCase):
         new_state = tuple(hh)[-1]
 
         self.assertEqual(
-            list(map(itemgetter(1), hh.iter_state_actions())),
+            list(map(itemgetter(1), hh.state_actions)),
             [None] + hh.actions,
         )
         self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
@@ -230,7 +230,7 @@ class Kim2024TestCase(TestCase):
 
         self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
         self.assertEqual(
-            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            list(filter(None, map(itemgetter(1), hh.state_actions))),
             hh.actions,
         )
         self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
@@ -323,7 +323,7 @@ class Kim2024TestCase(TestCase):
         new_state = tuple(hh)[-1]
 
         self.assertEqual(
-            list(map(itemgetter(1), hh.iter_state_actions())),
+            list(map(itemgetter(1), hh.state_actions)),
             [None] + hh.actions,
         )
         self.assertEqual(
@@ -338,7 +338,7 @@ class Kim2024TestCase(TestCase):
 
         self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
         self.assertEqual(
-            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            list(filter(None, map(itemgetter(1), hh.state_actions))),
             hh.actions,
         )
         self.assertEqual(
@@ -417,7 +417,7 @@ class Kim2024TestCase(TestCase):
         new_state = tuple(hh)[-1]
 
         self.assertEqual(
-            list(map(itemgetter(1), hh.iter_state_actions())),
+            list(map(itemgetter(1), hh.state_actions)),
             [None] + hh.actions,
         )
         self.assertEqual(new_state.stacks, [1937923.75, 0.0])
@@ -429,7 +429,7 @@ class Kim2024TestCase(TestCase):
 
         self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
         self.assertEqual(
-            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            list(filter(None, map(itemgetter(1), hh.state_actions))),
             hh.actions,
         )
         self.assertEqual(new_state.stacks, [1937923.75, 0.0])
@@ -582,7 +582,7 @@ class Kim2024TestCase(TestCase):
             new_state = tuple(hh)[-1]
 
             self.assertEqual(
-                list(map(itemgetter(1), hh.iter_state_actions())),
+                list(map(itemgetter(1), hh.state_actions)),
                 [None] + hh.actions,
             )
             self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
@@ -594,9 +594,7 @@ class Kim2024TestCase(TestCase):
 
             self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
             self.assertEqual(
-                list(
-                    filter(None, map(itemgetter(1), hh.iter_state_actions())),
-                ),
+                list(filter(None, map(itemgetter(1), hh.state_actions))),
                 hh.actions,
             )
             self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
@@ -691,7 +689,7 @@ class Kim2024TestCase(TestCase):
         new_state = tuple(hh)[-1]
 
         self.assertEqual(
-            list(map(itemgetter(1), hh.iter_state_actions())),
+            list(map(itemgetter(1), hh.state_actions)),
             [None] + hh.actions,
         )
         self.assertEqual(new_state.stacks, [196, 220, 200, 184])
@@ -703,7 +701,7 @@ class Kim2024TestCase(TestCase):
 
         self.assertEqual(len(tuple(hh)), len(new_state.operations) + 1)
         self.assertEqual(
-            list(filter(None, map(itemgetter(1), hh.iter_state_actions()))),
+            list(filter(None, map(itemgetter(1), hh.state_actions))),
             hh.actions,
         )
         self.assertEqual(new_state.stacks, [196, 220, 200, 184])
