@@ -24,7 +24,6 @@ from pokerkit.utilities import (
     max_or_none,
     min_or_none,
     rake,
-    Rank,
     RankOrder,
     shuffled,
     sign,
@@ -405,8 +404,11 @@ class Mode(StrEnum):
     >>> Mode.CASH_GAME
     <Mode.CASH_GAME: 'Cash-game'>
 
-    Tournament mode sets limitation on some of the operations: the
-    number of runouts in all-in situations is always ``1``.
+    Tournament mode sets limitation on some of the operations:
+
+    - The number of runouts in all-in situations is always ``1``.
+    - In all-in situations, hole cards must be shown.
+    - When showing hole cards, all hole cards must be shown.
     """
 
     TOURNAMENT = 'Tournament'
@@ -1715,7 +1717,7 @@ class State:
             if status:
                 yield card
             else:
-                yield Card(Rank.UNKNOWN, Suit.UNKNOWN)
+                yield Card.UNKNOWN
 
     def get_down_cards(self, player_index: int) -> Iterator[Card]:
         """Return the down cards of the player.
@@ -2269,8 +2271,8 @@ class State:
 
         :return: The reserved cards.
         """
-        return filterfalse(
-            Card.unknown_status.__get__,
+        return filter(
+            None,
             chain(
                 self.burn_cards,
                 self.mucked_cards,
@@ -2288,8 +2290,8 @@ class State:
 
         :return: The cards in play.
         """
-        return filterfalse(
-            Card.unknown_status.__get__,
+        return filter(
+            None,
             chain(
                 chain.from_iterable(self.board_cards),
                 chain.from_iterable(self.hole_cards),
@@ -2306,8 +2308,8 @@ class State:
 
         :return: The cards not in play.
         """
-        return filterfalse(
-            Card.unknown_status.__get__,
+        return filter(
+            None,
             chain(
                 self.deck_cards,
                 self.burn_cards,
@@ -2359,18 +2361,9 @@ class State:
         self.hole_cards[player_index].clear()
         self.hole_card_statuses[player_index].clear()
 
-    def _show_hole_cards(self, player_index: int) -> None:
-        assert self.statuses[player_index]
-
-        for i in range(len(self.hole_cards[player_index])):
-            self.hole_card_statuses[player_index][i] = True
-
     def _produce_cards(self, cards: Iterable[Card]) -> None:
         self.deck_cards.extend(
-            filterfalse(
-                self.deck_cards.__contains__,
-                filterfalse(Card.unknown_status.__get__, cards),
-            ),
+            filterfalse(self.deck_cards.__contains__, filter(None, cards)),
         )
 
     def _verify_cards_consumption(
@@ -2389,7 +2382,7 @@ class State:
             dealable_cards = tuple(self.get_dealable_cards(len(cards)))
 
             for card in cards:
-                if card not in dealable_cards and not card.unknown_status:
+                if card not in dealable_cards and card:
                     warn(
                         (
                             f'A card being dealt {repr(card)} is not'
@@ -4285,7 +4278,12 @@ class State:
         assert player_index is not None
 
         if self.bets[player_index] >= max(self.bets):
-            raise ValueError('There is no reason for this player to fold.')
+            message = 'There is no reason for this player to fold.'
+
+            if self.mode == Mode.TOURNAMENT:
+                raise ValueError(message)
+            else:
+                warn(message)
 
     def can_fold(self) -> bool:
         """Return whether theing fold can be done.
@@ -5284,7 +5282,13 @@ class State:
             self,
             status_or_hole_cards: bool | CardsLike | None = None,
             player_index: int | None = None,
-    ) -> tuple[bool, tuple[Card, ...] | None, int]:
+    ) -> tuple[
+            bool,
+            tuple[Card, ...],
+            tuple[Card, ...],
+            tuple[bool, ...],
+            int,
+    ]:
         """Verify the hole card showing or mucking.
 
         For more details on this operation, please consult the method
@@ -5293,7 +5297,8 @@ class State:
         :param status_or_hole_cards: The optional status or hole cards.
         :param player_index: The optional player index to override the
                              showdown order.
-        :return: The status, what cards are shown, and player index.
+        :return: The status, what cards are shown, new hole cards, new
+                 hole card statuses, and player index.
         :raises ValueError: If hole card showing or mucking cannot be
                             done.
         """
@@ -5311,33 +5316,95 @@ class State:
 
         if isinstance(status_or_hole_cards, bool):
             status = status_or_hole_cards
+            cards = None
             hole_cards = None
+            hole_card_statuses = None
         elif status_or_hole_cards is None:
             status = self.all_in_status or self.can_win_now(player_index)
+            cards = None
             hole_cards = None
+            hole_card_statuses = None
         else:
             status = True
-            hole_cards = Card.clean(status_or_hole_cards)
+            cards = Card.clean(status_or_hole_cards)
+
+            if len(cards) > len(self.hole_cards[player_index]):
+                raise ValueError('too many cards shown')
+
+            count = len(self.hole_cards[player_index]) - len(cards)
+            cards += (Card.UNKNOWN,) * count
+            hole_cards = tuple(filter(None, cards))
+            hole_card_statuses = (True,) * len(hole_cards)
+
+            if self.street is not self.streets[-1]:
+                count = len(self.hole_cards[player_index]) - len(hole_cards)
+                hole_cards += tuple(
+                    filterfalse(
+                        hole_cards.__contains__,
+                        filter(None, self.hole_cards[player_index]),
+                    )
+                )[:count]
+
+            count = len(self.hole_cards[player_index]) - len(hole_cards)
+            hole_cards += (Card.UNKNOWN,) * count
+            count = (
+                len(self.hole_cards[player_index])
+                - len(hole_card_statuses)
+            )
+            hole_card_statuses += (False,) * count
 
             self._verify_cards_consumption(
-                filterfalse(
-                    self.hole_cards[player_index].__contains__,
-                    hole_cards,
-                ),
+                set(hole_cards) - set(self.hole_cards[player_index]),
             )
 
-        if not status and self.all_in_status:
-            raise ValueError('The player must show in an all-in situation.')
+        if cards is None or hole_cards is None or hole_card_statuses is None:
+            assert (
+                cards is None
+                and hole_cards is None
+                and hole_card_statuses is None
+            )
 
-        if hole_cards is None and status:
-            hole_cards = tuple(self.hole_cards[player_index])
+            if status:
+                cards = tuple(self.hole_cards[player_index])
+                hole_cards = cards
+                hole_card_statuses = (True,) * len(cards)
+            else:
+                cards = ()
+                hole_cards = ()
+                hole_card_statuses = ()
 
-        if hole_cards is not None and status:
-            for card in hole_cards:
-                if card.unknown_status:
-                    raise ValueError('An unknown card is shown.')
+        if (
+                self.mode == Mode.TOURNAMENT
+                and status
+                and sum(map(bool, cards)) < len(self.hole_cards[player_index])
+        ):
+            if self.all_in_status:
+                raise ValueError('The player must show when all-in.')
+            elif self.street is self.streets[-1]:
+                raise ValueError('A card is not shown in final showdown.')
+            else:
+                raise AssertionError
 
-        return status, hole_cards, player_index
+        for card, card_status in zip(hole_cards, hole_card_statuses):
+            if not card and card_status:
+                raise ValueError('An unknown card is shown.')
+
+        assert (
+            not status
+            or (
+                len(cards)
+                == len(hole_cards)
+                == len(self.hole_cards[player_index])
+                == len(hole_card_statuses)
+                == len(self.hole_card_statuses[player_index])
+            )
+        )
+        assert (
+            status
+            or (not cards and not hole_cards and not hole_card_statuses)
+        )
+
+        return status, cards, hole_cards, hole_card_statuses, player_index
 
     def can_show_or_muck_hole_cards(
             self,
@@ -5460,9 +5527,19 @@ class State:
     ) -> HoleCardsShowingOrMucking:
         """Show or muck hole cards.
 
-        If the status is not given, the hole cards will be shown if and
-        only if there is chance of winning the pot. Otherwise, the hand
-        will be mucked.
+        If the status is of type ``bool``, the hole cards of the
+        showdown player will be mucked if it is ``False`` or shown if it
+        is ``True``.
+
+        if the cards are passed in, the known cards among them will be
+        shown. Unknown cards or (incomplete known cards) means that some
+        hole cards are to be kept face down. This is only valid in
+        cash-game situations.
+
+        If the argument is not given (i.e. ``None``), the hole cards
+        will be shown if and only if there is a chance of winning the
+        pot or it is an all-in situation. Otherwise, the hand will be
+        mucked.
 
         If the player index is not specified, it defaults to
         :attr:`pokerkit.state.State.showdown_index`.
@@ -5473,7 +5550,7 @@ class State:
         :param commentary: The optional commentary.
         :return: The hole cards showing or mucking.
         """
-        status, hole_cards, player_index = (
+        status, cards, hole_cards, hole_card_statuses, player_index = (
             self.verify_hole_cards_showing_or_mucking(
                 status_or_hole_cards,
                 player_index,
@@ -5491,19 +5568,20 @@ class State:
                 or tuple(self.hole_cards[player_index]) == hole_cards
             )
 
-            if hole_cards is not None:
-                self._produce_cards(self.hole_cards[player_index])
-                self.hole_cards[player_index].clear()
-                self._consume_cards(hole_cards)
-                self.hole_cards[player_index].extend(hole_cards)
-
-            self._show_hole_cards(player_index)
+            self._produce_cards(self.hole_cards[player_index])
+            self._consume_cards(tuple(filter(None, hole_cards)))
+            self.hole_cards[player_index].clear()
+            self.hole_cards[player_index].extend(hole_cards)
+            self.hole_card_statuses[player_index].clear()
+            self.hole_card_statuses[player_index].extend(hole_card_statuses)
         else:
+            assert not cards and not hole_cards and not hole_card_statuses
+
             self._muck_hole_cards(player_index)
 
         operation = HoleCardsShowingOrMucking(
             player_index,
-            tuple(self.hole_cards[player_index]),
+            cards,
             commentary=commentary,
         )
 

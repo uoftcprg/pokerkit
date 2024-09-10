@@ -976,7 +976,7 @@ Helper Method/Attribute                                                  Descrip
 Folding Operation
 ^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.fold`) corresponds to a folding action. It accepts no positional argument. The actor is automatically kept track of by the state.
+This operation (:meth:`pokerkit.state.State.fold`) corresponds to a folding action. It accepts no positional argument. The actor is automatically kept track of by the state. Non-standard folds (i.e. even when there are no outstanding bets or raises) are only allowed in a cash-game mode (typically forbidden in tournaments).
 
 Checking/Calling Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1017,11 +1017,11 @@ This operation (:meth:`pokerkit.state.State.select_runout_count`) corresponds to
 Hole Cards Showing/Mucking Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.show_or_muck_hole_cards`) corresponds to showing or mucking of one's cards. It accepts one optional positional argument on whether to show or muck. If ``True``, this denotes that the player is showing all his/her hole cards. If ``False``, this denotes that the player is mucking his hand. If some card values are supplied, the caller is saying that the player is showing the supplied cards. This is useful when the hole cards previously dealt were unknown (e.g. ``"????"``). Note that even when known cards are held by the player, the caller can override what cards are shown with this method call. If no argument is supplied, whether or not the player shows or mucks their hand is decided automatically. If they hold a hand that may win a piece of the pot as it ties with or wins over all other shown hands, the player will opt to show. Otherwise, the player will automatically muck.
+This operation (:meth:`pokerkit.state.State.show_or_muck_hole_cards`) corresponds to showing or mucking of one's cards. It accepts one optional positional argument on whether to show or muck. If ``True``, this denotes that the player is showing all his/her hole cards. If ``False``, this denotes that the player is mucking his hand. If some card values are supplied, the caller is saying that the player is showing the supplied cards. This is useful when the hole cards previously dealt were unknown (e.g. ``"????"``). Note that even when known cards are held by the player, the caller can override what cards are shown with this method call. If no argument is supplied, whether or not the player shows or mucks their hand is decided automatically. If they hold a hand that may win a piece of the pot as it ties with or wins over all other shown hands or is in an all-in situation, the player will opt to show. Otherwise, the player will automatically muck.
 
-No matter what happens, the hand (if shown) must all be known (i.e. contains no question marks).
+In tournament mode, no matter what happens, if shown, the shown hole cards must all be known (i.e. contains no question marks). This restriction does not apply in cash-game mode (i.e. not a tournament). For instance, a player may opt to keep their hands (or part of their hole cards) face-down even when all-in and there are community cards still left to come (this is not allowed in tournaments to prevent chip dumping). Or, when a player has a chance to show their hands, they may only want to show part of their hand (again, typically prohibited in tournaments).
 
-Typically, in poker games, the showdown order is determined through action. The last bettor/raiser must show first. In practice, it is encouraged for people who know they won for sure to show first. This means that the "ideal" showdown order may deviate from the actually practiced showdown order.
+In poker games, the showdown order is determined through action. The last bettor/raiser must show first. In practice, it is encouraged for people who know they won for sure to show first. This means that the "correct" showdown order may deviate from the actually practiced showdown order.
 
 Hand Killing Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
