@@ -14,7 +14,7 @@ from numbers import Integral
 from numbers import Number
 from operator import is_not
 from random import shuffle
-from typing import Any, cast, TYPE_CHECKING, TypeVar
+from typing import Any, cast, ClassVar, TYPE_CHECKING, TypeVar
 import builtins
 
 if TYPE_CHECKING:
@@ -241,6 +241,8 @@ class Card:
                  :attr:`pokerkit.utilities.Card.suit`.
     """
 
+    UNKNOWN: ClassVar[Card]
+    """The unknown card."""
     rank: Rank
     """The rank of the card."""
     suit: Suit
@@ -380,6 +382,8 @@ class Card:
         <generator object Card.parse at 0x...>
         >>> list(Card.parse('2c8d5sKh'))
         [2c, 8d, 5s, Kh]
+        >>> list(Card.parse('2c, 8d, 5s, Kh'))
+        [2c, 8d, 5s, Kh]
         >>> next(Card.parse('AcAh'))
         Ac
         >>> next(Card.parse('AcA'))  # doctest: +ELLIPSIS
@@ -400,7 +404,7 @@ class Card:
         :raises ValueError: If any card representation is invalid.
         """
         for contents in raw_cards:
-            for content in contents.split():
+            for content in contents.replace(',', '').split():
                 if len(content) % 2 != 0:
                     raise ValueError(
                         (
@@ -421,6 +425,9 @@ class Card:
     def __str__(self) -> str:
         return f'{self.rank.name} OF {self.suit.name}S ({repr(self)})'
 
+    def __bool__(self) -> bool:
+        return not self.unknown_status
+
     @property
     def unknown_status(self) -> bool:
         """Return the unknown-ness of the card.
@@ -433,6 +440,7 @@ class Card:
         return self.rank == Rank.UNKNOWN or self.suit == Suit.UNKNOWN
 
 
+Card.UNKNOWN = Card(Rank.UNKNOWN, Suit.UNKNOWN)
 CardsLike = Iterable[Card] | Card | str
 
 
@@ -760,10 +768,13 @@ def parse_value(raw_value: str) -> int:
     3.0
     >>> parse_value('3.5')
     3.5
+    >>> parse_value('9,999.99')
+    9999.99
 
     :param raw_value: The raw value.
     :return: The converted value.
     """
+    raw_value = raw_value.replace(',', '')
     value: int | float
 
     try:
