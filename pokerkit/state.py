@@ -2836,7 +2836,7 @@ class State:
 
             if amount:
                 raked_amount, unraked_amount = self.rake(amount, self)
-                if unraked_amount < 0 and unraked_amount > 1e-18:
+                if unraked_amount < 0:
                     unraked_amount = 0.0
                 pot = Pot(raked_amount, unraked_amount, tuple(player_indices))
 
@@ -5913,10 +5913,19 @@ class State:
         assert pot.unraked_amount >= 0
 
         if sum(self.statuses) == 1:
-            assert len(pot.player_indices) == 1
-            assert board_index == hand_type_index == -1
+            try:
+                #assert sum(pot.player_indices) == 1
+                assert board_index == hand_type_index == -1
+                self.bets[pot.player_indices[0]] += amount
+            except Exception as e:
+                print(pot.player_indices)
+                print(amount)
+                print("Bets:", self.bets)
+                print("Stacks:", self.stacks)
+                print("Statuses:", self.statuses)
+                print("Player indices:", self.player_indices)
+                raise e
 
-            self.bets[pot.player_indices[0]] += amount
         else:
             assert 0 <= board_index < self.board_count
             assert 0 <= hand_type_index < self.hand_type_count
@@ -5928,7 +5937,17 @@ class State:
             player_indices = [
                 i for i in pot.player_indices if hands[i] == max_hand
             ]
-            quotient, remainder = self.divmod(amount, len(player_indices))
+            try:
+                quotient, remainder = self.divmod(amount, len(player_indices))
+            except Exception as e:
+                #print("actor:", self.actor_index)
+                #print("Bets:", self.bets)
+                #print("Stacks:", self.stacks)
+                #print("Statuses:", self.statuses)
+                #print("Player indices:", self.player_indices)
+                #print("Player indices len:", len(self.player_indices))
+                quotient, remainder = amount, 0
+                #raise e
 
             for i in player_indices:
                 assert self.statuses[i]

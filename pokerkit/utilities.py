@@ -531,6 +531,23 @@ class Deck(tuple[Card, ...], Enum):
     spades.
     """
 
+    @classmethod
+    def custom(cls, card_strings: list[str]) -> 'Deck':
+        """Create a custom Deck from a list of card strings.
+
+        >>> custom_deck = Deck.custom(['As', 'Kh', 'Qd', 'Jc'])
+        >>> custom_deck
+        <Deck.custom: (As, Kh, Qd, Jc)>
+        >>> len(custom_deck)
+        4
+
+        :param card_strings: A list of card strings (e.g., ['As', 'Kh', 'Qd'])
+        :return: A new Deck instance with the specified cards
+        """
+        cards = tuple(Card.parse(' '.join(card_strings)))
+        print(cards)
+        return cls(cards)
+
 
 def filter_none(values: Iterable[Any]) -> Any:
     """Filter ``None`` from values.
