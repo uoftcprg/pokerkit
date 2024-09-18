@@ -33,6 +33,62 @@ Reading hands
    for state, action in hh.state_actions:
        ...
 
+Logs from third-party platforms like online casinos or research environments can be loaded as well. Feel free to open an issue if incompatibilities are found.
+
+Supported Platforms are tabulated below.
+
+================================================= ==========================================================
+Platform                                          Method
+================================================= ==========================================================
+Absolute Poker                                    :func:`pokerkit.notation.HandHistory.from_absolute_poker`
+Full Tilt Poker                                   :func:`pokerkit.notation.HandHistory.from_full_tilt_poker`
+iPoker Network                                    :func:`pokerkit.notation.HandHistory.from_ipoker_network`
+OnGame Network                                    :func:`pokerkit.notation.HandHistory.from_ongame_network`
+PartyPoker                                        :func:`pokerkit.notation.HandHistory.from_partypoker`
+PokerStars                                        :func:`pokerkit.notation.HandHistory.from_pokerstars`
+ACPC (Annual Computer Poker Competition) Protocol :func:`pokerkit.notation.HandHistory.from_acpc_protocol`
+================================================= ==========================================================
+
+.. code-block:: python
+
+   from pokerkit import *
+
+   # Hand loading
+   with open("...", "rb") as file:
+       content = file.read()
+
+       # Absolute Poker
+       for hh in HandHistory.from_absolute_poker(content):
+           ...
+
+       # Full Tilt Poker
+       for hh in HandHistory.from_full_tilt_poker(content):
+           ...
+
+       # iPoker Network
+       for hh in HandHistory.from_ipoker_network(content):
+           ...
+
+       # OnGame Network
+       for hh in HandHistory.from_ongame_network(content):
+           ...
+
+       # PartyPoker
+       for hh in HandHistory.from_partypoker(content):
+           ...
+
+       # PokerStars
+       for hh in HandHistory.from_pokerstars(content):
+           ...
+
+       # ACPC Protocol
+       for hh in HandHistory.from_acpc_protocol(
+               content,
+               NoLimitTexasHoldem((), True, 0, (50, 100), 100),
+               20000,
+       ):
+           ...
+
 It is possible to supply your own chip value parsing function, divmod, or rake function to construct the game states. Additionally, the default value parsing function is defined as :func:`pokerkit.utilities.parse_value`. This parser automatically parses integers or floats based on the raw string value. You may supply your own number-type parsers as well.
 
 .. code-block:: python

@@ -4,13 +4,29 @@ notations.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator
+from abc import ABC, abstractmethod
+from collections.abc import Callable, Generator, Iterable, Iterator, Sequence
 from collections import defaultdict, deque
+from copy import deepcopy
 from dataclasses import asdict, dataclass, field, fields, KW_ONLY
+from decimal import Decimal
 from functools import partial
-from operator import itemgetter
+from math import inf
+from operator import add, itemgetter
+from re import (
+    compile,
+    DOTALL,
+    findall,
+    finditer,
+    Match,
+    match,
+    MULTILINE,
+    Pattern,
+    search,
+)
+from string import whitespace
 from tomllib import loads as loads_toml
-from typing import Any, ClassVar, BinaryIO
+from typing import Any, cast, ClassVar, BinaryIO
 from warnings import warn
 import datetime
 
@@ -23,6 +39,7 @@ from pokerkit.state import (
     Folding,
     HoleCardsShowingOrMucking,
     HoleDealing,
+    Mode,
     StandingPatOrDiscarding,
     State,
 )
@@ -40,7 +57,16 @@ from pokerkit.games import (
     Poker,
     PotLimitOmahaHoldem,
 )
-from pokerkit.utilities import Card, divmod, parse_value, rake
+from pokerkit.utilities import (
+    Card,
+    divmod,
+    parse_month,
+    parse_time,
+    parse_value,
+    rake,
+    rotated,
+    UNMATCHABLE_PATTERN,
+)
 
 
 @dataclass
@@ -77,6 +103,8 @@ class HandHistory(Iterable[State]):
                   :attr:`pokerkit.notation.HandHistory.event`.
     :param url: The url. For more information, please refer to
                 :attr:`pokerkit.notation.HandHistory.url`.
+    :param venue: The venue. For more information, please refer to
+                  :attr:`pokerkit.notation.HandHistory.venue`.
     :param address: The address. For more information, please refer to
                     :attr:`pokerkit.notation.HandHistory.address`.
     :param city: The city. For more information, please refer to
@@ -99,8 +127,8 @@ class HandHistory(Iterable[State]):
                   :attr:`pokerkit.notation.HandHistory.month`.
     :param year: The year. For more information, please refer to
                  :attr:`pokerkit.notation.HandHistory.year`.
-    :param hand: The hand number. For more information, please refer to
-                 :attr:`pokerkit.notation.HandHistory.hand`.
+    :param hand: The hand name or number. For more information, please
+                 refer to :attr:`pokerkit.notation.HandHistory.hand`.
     :param level: The level. For more information, please refer to
                   :attr:`pokerkit.notation.HandHistory.level`.
     :param seats: The seat numbers. For more information, please refer
@@ -115,8 +143,13 @@ class HandHistory(Iterable[State]):
     :param finishing_stacks: The finishing stacks. For more information,
                              please refer to
                              :attr:`pokerkit.notation.HandHistory.finishing_stacks`.
+    :param winnings: The winnings. For more information, please refer to
+                     :attr:`pokerkit.notation.HandHistory.winnings`.
     :param currency: The currency. For more information, please refer to
                      :attr:`pokerkit.notation.HandHistory.currency`.
+    :param currency_symbol: The currency symbol. For more information,
+                            please refer to
+                            :attr:`pokerkit.notation.HandHistory.currency_symbol`.
     :param time_limit: The time limit. For more information, please
                        refer to
                        :attr:`pokerkit.notation.HandHistory.time_limit`.
@@ -258,6 +291,7 @@ class HandHistory(Iterable[State]):
         'author',
         'event',
         'url',
+        'venue',
         'address',
         'city',
         'region',
@@ -275,15 +309,17 @@ class HandHistory(Iterable[State]):
         'table',
         'players',
         'finishing_stacks',
+        'winnings',
         'currency',
+        'currency_symbol',
         'ante_trimming_status',
         'time_limit',
         'time_banks',
     )
     """The optional field names."""
-    ACPC_PROTOCOL_VARIANTS = {'FT', 'NT'}
+    ACPC_PROTOCOL_VARIANTS: ClassVar[set[str]] = {'FT', 'NT'}
     """The variant codes supported by the ACPC protocol."""
-    PLURIBUS_PROTOCOL_VARIANTS = {'NT'}
+    PLURIBUS_PROTOCOL_VARIANTS: ClassVar[set[str]] = {'NT'}
     """The variant codes supported by the Pluribus protocol."""
     _: KW_ONLY
     variant: str
@@ -312,6 +348,8 @@ class HandHistory(Iterable[State]):
     """The event."""
     url: str | None = None
     """The url."""
+    venue: str | None = None
+    """The venue."""
     address: str | None = None
     """The address."""
     city: str | None = None
@@ -332,22 +370,26 @@ class HandHistory(Iterable[State]):
     """The month."""
     year: int | None = None
     """The year."""
-    hand: int | None = None
-    """The hand number."""
+    hand: str | int | None = None
+    """The hand name or number."""
     level: int | None = None
     """The level."""
     seats: list[int] | None = None
     """The seat numbers."""
     seat_count: int | None = None
     """The number of seats."""
-    table: int | None = None
-    """The table number."""
+    table: str | int | None = None
+    """The table name or number."""
     players: list[str] | None = None
     """The player names."""
     finishing_stacks: list[int] | None = None
     """The finishing stacks."""
+    winnings: list[int] | None = None
+    """The winnings."""
     currency: str | None = None
     """The currency."""
+    currency_symbol: str | None = None
+    """The currency symbol."""
     time_limit: int | None = None
     """The time limit."""
     time_banks: list[int] | None = None
@@ -359,6 +401,7 @@ class HandHistory(Iterable[State]):
         Automation.BET_COLLECTION,
         Automation.BLIND_OR_STRADDLE_POSTING,
         Automation.CARD_BURNING,
+        Automation.RUNOUT_COUNT_SELECTION,
         Automation.HAND_KILLING,
         Automation.CHIPS_PUSHING,
         Automation.CHIPS_PULLING,
@@ -447,13 +490,12 @@ class HandHistory(Iterable[State]):
         :param kwargs: The metadata.
         :return: The hand history.
         """
-
         action: str | None
 
         def append_dealing_actions() -> None:
             nonlocal action
 
-            for player_index in hole_cards:
+            for player_index in sorted(hole_cards):
                 if hole_cards[player_index]:
                     action = (
                         f'd dh p{player_index + 1} '
@@ -531,20 +573,210 @@ class HandHistory(Iterable[State]):
             if name not in field_names:
                 continue
 
-            try:
+            if hasattr(game, name):
                 attribute = getattr(game, name)
-            except AttributeError:
-                try:
-                    attribute = getattr(state, name)
-                except AttributeError:
-                    continue
+            elif hasattr(state, name):
+                attribute = getattr(state, name)
+            else:
+                continue
 
             if isinstance(attribute, Iterable):
                 attribute = list(attribute)
 
             kwargs.setdefault(name, attribute)
 
-        return HandHistory(**cls._filter_non_fields(**kwargs))
+        return cls(**cls._filter_non_fields(**kwargs))
+
+    @classmethod
+    def from_absolute_poker(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs from Absolute Poker.
+
+        If an error is encountered, an error is raised if
+        ``error_status`` is passed as ``True`` (by default, it is
+        ``False``). If ``False``, only warnings are shown.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to raise errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return AbsolutePokerParser()(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+
+    @classmethod
+    def from_full_tilt_poker(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs from Full Tilt Poker.
+
+        If an error is encountered, an error is raised if
+        ``error_status`` is passed as ``True`` (by default, it is
+        ``False``). If ``False``, only warnings are shown.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to raise errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return FullTiltPokerParser()(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+
+    @classmethod
+    def from_ipoker_network(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs from iPoker Network.
+
+        If an error is encountered, an error is raised if
+        ``error_status`` is passed as ``True`` (by default, it is
+        ``False``). If ``False``, only warnings are shown.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to raise errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return IPokerNetworkParser()(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+
+    @classmethod
+    def from_ongame_network(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs from Ongame Network.
+
+        If an error is encountered, an error is raised if
+        ``error_status`` is passed as ``True`` (by default, it is
+        ``False``). If ``False``, only warnings are shown.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to raise errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return OngameNetworkParser()(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+
+    @classmethod
+    def from_partypoker(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs from PartyPoker.
+
+        If an error is encountered, an error is raised. The error can be
+        disabled by setting ``error_status`` to be ``True``. Then,
+        errors will be warned.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to skip errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return PartyPokerParser()(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+
+    @classmethod
+    def from_pokerstars(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs from PokerStars.
+
+        If an error is encountered, an error is raised if
+        ``error_status`` is passed as ``True`` (by default, it is
+        ``False``). If ``False``, only warnings are shown.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to raise errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return PokerStarsParser()(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+
+    @classmethod
+    def from_acpc_protocol(
+            cls,
+            game: Poker,
+            starting_stack: int,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        """Parse hand history logs in ACPC Protocol.
+
+        If an error is encountered, an error is raised if
+        ``error_status`` is passed as ``True`` (by default, it is
+        ``False``). If ``False``, only warnings are shown.
+
+        :param s: The hand history logs.
+        :param parse_value: The value parser.
+        :param error_status: Set ``True`` to raise errors, otherwise
+                                  ``False``.
+        :return: The generator that iterates yields hand histories and
+                 returns the total number of hands parsed.
+        """
+        return ACPCProtocolParser(game, starting_stack)(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
 
     def __iter__(self) -> Iterator[State]:
         yield from map(itemgetter(0), self.state_actions)
@@ -563,56 +795,62 @@ class HandHistory(Iterable[State]):
         """
         state = self.create_state()
         actions = deque(self.actions)
+        action: str | None
 
         yield state, None
 
-        while state.status:
-            action = None
-
-            if state.can_post_ante():
-                state.post_ante()
-            elif state.can_collect_bets():
-                state.collect_bets()
-            elif state.can_post_blind_or_straddle():
-                state.post_blind_or_straddle()
-            elif state.can_burn_card():
-                state.burn_card('??')
-
-                if Automation.CARD_BURNING in self.automations:
-                    continue
-            elif state.can_kill_hand():
-                state.kill_hand()
-            elif state.can_push_chips():
-                state.push_chips()
-            elif state.can_pull_chips():
-                state.pull_chips()
-            else:
-                if not actions:
-                    break
-
+        while state.status or actions:
+            if actions:
                 action = actions.popleft()
 
-                parse_action(state, action, self.parse_value)
+                try:
+                    parse_action(state, action, self.parse_value)
+                except ValueError:
+                    actions.appendleft(action)
+
+                    action = None
+            else:
+                action = None
+
+            if action is None:
+                if state.can_post_ante():
+                    state.post_ante()
+                elif state.can_collect_bets():
+                    state.collect_bets()
+                elif state.can_post_blind_or_straddle():
+                    state.post_blind_or_straddle()
+                elif state.can_burn_card():
+                    state.burn_card('??')
+
+                    if Automation.CARD_BURNING in self.automations:
+                        continue
+                elif state.can_deal_hole():
+                    state.deal_hole('??')
+                elif (
+                        actions
+                        and not state.checking_or_calling_amount
+                        and state.can_check_or_call()
+                ):
+                    state.check_or_call()
+                elif actions and state.can_fold():
+                    state.fold()
+                elif state.status and state.can_show_or_muck_hole_cards(()):
+                    state.show_or_muck_hole_cards(())
+                elif state.can_select_runout_count():
+                    state.select_runout_count()
+                elif state.can_kill_hand():
+                    state.kill_hand()
+                elif state.can_push_chips():
+                    state.push_chips()
+                elif state.can_pull_chips():
+                    state.pull_chips()
+                else:
+                    break
 
             yield state, action
 
-    def iter_state_actions(self) -> Iterator[tuple[State, str | None]]:
-        """Deprecated. Now, an alias of
-        :attr:`pokerkit.notation.HandHistory.state_actions`.
-
-        This method will be removed in PokerKit Version 0.6.
-
-        :return: The state-actions.
-        """
-        warn(
-            (
-                'pokerkit.notation.HandHistory.iter_state_actions() is'
-                ' deprecated and will be removed on PokerKit Version 0.6'
-            ),
-            DeprecationWarning,
-        )
-
-        yield from self.state_actions
+        if actions:
+            raise ValueError('Unable to repair the hand history')
 
     @property
     def game_type(self) -> type[Poker]:
@@ -650,7 +888,7 @@ class HandHistory(Iterable[State]):
         kwargs.pop('starting_stacks')
         kwargs.pop('actions')
 
-        return self.game_type(**kwargs)
+        return self.game_type(**kwargs, mode=Mode.CASH_GAME)
 
     def create_state(self) -> State:
         """Create the initial state.
@@ -668,13 +906,35 @@ class HandHistory(Iterable[State]):
         :return: a ``str`` object.
         """
 
-        def clean(value: Any) -> str:
+        def clean_key(key: str) -> str:
+            if set(key) & set(whitespace):
+                key = f'\'{key}\''
+
+            return key
+
+        def clean_value(value: Any) -> str:
             cleaned_value: str
 
             if isinstance(value, bool):
                 cleaned_value = repr(value).lower()
             elif isinstance(value, datetime.time):
                 cleaned_value = str(value)
+            elif isinstance(value, Decimal):
+                cleaned_value = 'inf' if value == inf else str(value)
+            elif isinstance(value, list):
+                cleaned_value = '[' + ', '.join(map(clean_value, value)) + ']'
+            elif isinstance(value, dict):
+                keys = map(clean_key, value.keys())
+                values = map(clean_value, value.values())
+                pairs = map(' = '.join, zip(keys, values))
+                cleaned_value = '{' + ', '.join(pairs) + '}'
+            elif isinstance(value, str):
+                if '\'' in value:
+                    delimiter = '\'\'\''
+                else:
+                    delimiter = '\''
+
+                cleaned_value = delimiter + value + delimiter
             else:
                 cleaned_value = repr(value)
 
@@ -690,10 +950,11 @@ class HandHistory(Iterable[State]):
                     )
                     and value is not None
             ):
-                lines.append(f'{key} = {clean(value)}')
+                lines.append(f'{clean_key(key)} = {clean_value(value)}')
 
         for key, value in self.user_defined_fields.items():
-            lines.append(f'{key} = {clean(value)}')
+            if value is not None:
+                lines.append(f'{clean_key(key)} = {clean_value(value)}')
 
         return '\n'.join(lines)
 
@@ -732,7 +993,7 @@ class HandHistory(Iterable[State]):
             )
 
         if hand_number is None:
-            if self.hand is None:
+            if self.hand is None or not isinstance(self.hand, int):
                 raise ValueError(
                     (
                         'Since the hand number is not defined in the hand'
@@ -812,11 +1073,11 @@ class HandHistory(Iterable[State]):
                 if isinstance(operation, HoleDealing):
                     if operation.player_index == position:
                         for i, card in enumerate(operation.cards):
-                            if not card.unknown_status:
+                            if card:
                                 raw_hole_cards[position][i] = repr(card)
                 elif isinstance(operation, HoleCardsShowingOrMucking):
                     for i, card in enumerate(operation.hole_cards):
-                        if not card.unknown_status:
+                        if card:
                             raw_hole_cards[operation.player_index][i] = repr(
                                 card,
                             )
@@ -861,7 +1122,7 @@ class HandHistory(Iterable[State]):
             )
 
         if hand_number is None:
-            if self.hand is None:
+            if self.hand is None or not isinstance(self.hand, int):
                 raise ValueError(
                     (
                         'Since the hand number is not defined in the hand'
@@ -890,13 +1151,13 @@ class HandHistory(Iterable[State]):
                     actions += f'r{amount}'
                 elif isinstance(operation, HoleDealing):
                     for i, card in enumerate(operation.cards):
-                        if not card.unknown_status:
+                        if card:
                             raw_hole_cards[operation.player_index][i] = repr(
                                 card,
                             )
                 elif isinstance(operation, HoleCardsShowingOrMucking):
                     for i, card in enumerate(operation.hole_cards):
-                        if not card.unknown_status:
+                        if card:
                             raw_hole_cards[operation.player_index][i] = repr(
                                 card,
                             )
@@ -952,10 +1213,17 @@ def parse_action(
     :param parse_value: The value parsing function.
     :return: ``None``.
     """
-    def verify_player(index: int | None) -> None:
+
+    def get_player_index() -> int:
         label, parsed_index = player[:1], int(player[1:]) - 1
 
-        if label != 'p' or parsed_index != index:
+        if label != 'p':
+            raise ValueError(f'{repr(player)} is not a valid player label.')
+
+        return parsed_index
+
+    def verify_player(index: int | None) -> None:
+        if get_player_index() != index:
             raise ValueError(
                 (
                     f'The player {repr(player)} is not a valid player for the'
@@ -973,8 +1241,11 @@ def parse_action(
         case 'd', 'db', cards:
             state.deal_board(cards)
         case 'd', 'dh', player, cards:
-            verify_player(state.hole_dealee_index)
-            state.deal_hole(cards, commentary=commentary)
+            state.deal_hole(
+                cards,
+                get_player_index(),
+                commentary=commentary,
+            )
         case player, 'sd':
             verify_player(state.stander_pat_or_discarder_index)
             state.stand_pat_or_discard(commentary=commentary)
@@ -997,17 +1268,1392 @@ def parse_action(
                 commentary=commentary,
             )
         case player, 'sm':
-            verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(False, commentary=commentary)
+            state.show_or_muck_hole_cards(
+                False,
+                get_player_index(),
+                commentary=commentary,
+            )
         case player, 'sm', '-':
-            verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(True, commentary=commentary)
+            state.show_or_muck_hole_cards(
+                True,
+                get_player_index(),
+                commentary=commentary,
+            )
         case player, 'sm', cards:
-            verify_player(state.showdown_index)
-            state.show_or_muck_hole_cards(cards, commentary=commentary)
+            state.show_or_muck_hole_cards(
+                cards,
+                get_player_index(),
+                commentary=commentary,
+            )
         case ():
             state.no_operate(commentary=commentary)
         case _:
             raise ValueError(
                 f'The action {repr(action)} is an invalid action.',
             )
+
+
+@dataclass
+class Parser(ABC):
+    """An abstract base class for hand history parser.
+
+    Parsers, when called with raw hand history log string, return a
+    generator of poker hand histories.
+    """
+
+    @abstractmethod
+    def __call__(
+            self,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        pass
+
+
+@dataclass
+class REParser(Parser, ABC):
+    """An abstract base class for hand history parser using regular
+    expressions.
+    """
+
+    HAND: ClassVar[Pattern[str]]
+    """The hand pattern."""
+    FINAL_SEAT: ClassVar[Pattern[str]]
+    """Final seat pattern."""
+    SEATS: ClassVar[Pattern[str]]
+    """Seats pattern."""
+    VARIANT: ClassVar[Pattern[str]]
+    """Variant pattern."""
+    VARIANTS: ClassVar[dict[str, str]]
+    """Variant conversion lookup."""
+    ANTE_POSTING: ClassVar[Pattern[str]]
+    """Ante posting pattern."""
+    BLIND_OR_STRADDLE_POSTING: ClassVar[Pattern[str]]
+    """Blind or straddle posting pattern."""
+    STARTING_STACKS: ClassVar[Pattern[str]]
+    """Starting stacks pattern."""
+    HOLE_DEALING: ClassVar[Pattern[str]]
+    """Hole dealing pattern."""
+    BOARD_DEALING: ClassVar[Pattern[str]]
+    """Board dealing pattern."""
+    FOLDING: ClassVar[Pattern[str]]
+    """Folding pattern."""
+    CHECKING_OR_CALLING: ClassVar[Pattern[str]]
+    """Checking or calling pattern."""
+    COMPLETION_BETTING_OR_RAISING: ClassVar[Pattern[str]]
+    """Completion, betting, or raising to pattern."""
+    HOLE_CARDS_SHOWING: ClassVar[Pattern[str]]
+    """Hole cards showing pattern."""
+    CONSTANTS: ClassVar[dict[str, Any]] = {}
+    """Constants."""
+    VARIABLES: ClassVar[
+        dict[str, tuple[Pattern[str], Callable[[str], Any] | None]],
+    ]
+    """Variables."""
+    PLAYER_VARIABLES: ClassVar[
+        dict[
+            str,
+            tuple[
+                Pattern[str],
+                Callable[[str], Any] | None,
+                Callable[[], Any],
+                Callable[[Any, Any], Any],
+            ],
+        ],
+    ]
+    """Player variables."""
+
+    def __call__(
+            self,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        ss = findall(self.HAND, s)
+
+        for s in ss:
+            try:
+                hh = self._parse(s, parse_value)
+            except (KeyError, ValueError):
+                message = f'Unable to parse {repr(s)}.'
+
+                if error_status:
+                    raise ValueError(message)
+                else:
+                    warn(message)
+            else:
+                yield hh
+
+        return len(ss)
+
+    def _parse(self, s: str, parse_value: Callable[[str], int]) -> HandHistory:
+        final_seat = self._parse_final_seat(s)
+        parsed_seats = self._parse_seats(s)
+        parsed_players = self._parse_players(s)
+        variant = self._parse_variant(s)
+        parsed_antes = self._parse_antes(s, parse_value)
+        parsed_blinds_or_straddles = self._parse_blinds_or_straddles(
+            s,
+            parse_value,
+        )
+        parsed_starting_stacks = self._parse_starting_stacks(s, parse_value)
+        players = sorted(parsed_players, key=parsed_seats.__getitem__)
+        seats = list(map(parsed_seats.__getitem__, players))
+        players = self._get_ordered_players(
+            s,
+            final_seat,
+            parsed_blinds_or_straddles,
+            players,
+            seats,
+        )
+
+        for player in players[2:]:
+            parsed_blinds_or_straddles[player] = (
+                -parsed_blinds_or_straddles[player]
+            )
+
+        seats = list(map(parsed_seats.__getitem__, players))
+        antes = list(map(parsed_antes.__getitem__, players))
+        blinds_or_straddles = list(
+            map(parsed_blinds_or_straddles.__getitem__, players),
+        )
+        player_count = len(players)
+
+        if player_count == 2:
+            antes.reverse()
+            blinds_or_straddles.reverse()
+
+        starting_stacks = list(
+            map(parsed_starting_stacks.__getitem__, players),
+        )
+        actions = self._parse_actions(s, parse_value, players)
+        hh = HandHistory(
+            variant=variant,
+            antes=antes,
+            blinds_or_straddles=blinds_or_straddles,
+            min_bet=max(blinds_or_straddles[:2]),
+            starting_stacks=starting_stacks,
+            actions=actions,
+        )
+        game = hh.create_game()
+        state = tuple(hh)[-1]
+        hh = HandHistory.from_game_state(
+            game,
+            state,
+            seats=seats,
+            players=players,
+            **self.CONSTANTS,
+            **self._parse_variables(s, parse_value),
+            **{
+                key: cast(Any, list(map(value.__getitem__, players)))
+                for key, value
+                in self._parse_player_variables(s, parse_value).items()
+            },
+        )
+
+        return hh
+
+    def _parse_final_seat(self, s: str) -> int:
+        m = search(self.FINAL_SEAT, s)
+
+        if m is None:
+            raise ValueError('Unable to parse final seat.')
+
+        return int(m['final_seat'])
+
+    def _parse_seats(self, s: str) -> dict[str, int]:
+        seats = {}
+
+        for line in s.splitlines():
+            if m := search(self.SEATS, line):
+                seats[m['player']] = int(m['seat'])
+
+        return seats
+
+    def _parse_players(self, s: str) -> set[str]:
+        players = set()
+
+        for line in s.splitlines():
+            for pattern in (
+                    self.ANTE_POSTING,
+                    self.BLIND_OR_STRADDLE_POSTING,
+                    self.FOLDING,
+                    self.CHECKING_OR_CALLING,
+                    self.COMPLETION_BETTING_OR_RAISING,
+                    self.HOLE_CARDS_SHOWING,
+            ):
+                if m := search(pattern, line):
+                    players.add(m['player'])
+
+        return players
+
+    def _parse_variant(self, s: str) -> str:
+        m = search(self.VARIANT, s)
+
+        if m is None:
+            raise ValueError('Unable to parse variant.')
+
+        return self.VARIANTS[m['variant']]
+
+    def _parse_antes(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+    ) -> defaultdict[str, int]:
+        antes = defaultdict(int)
+
+        for line in s.splitlines():
+            if m := search(self.ANTE_POSTING, line):
+                antes[m['player']] = parse_value(m['ante'])
+
+        return antes
+
+    def _parse_blinds_or_straddles(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+    ) -> defaultdict[str, int]:
+        blinds_or_straddles = defaultdict(int)
+
+        for line in s.splitlines():
+            if m := search(self.BLIND_OR_STRADDLE_POSTING, line):
+                blinds_or_straddles[m['player']] = parse_value(
+                    m['blind_or_straddle'],
+                )
+
+        return blinds_or_straddles
+
+    def _parse_starting_stacks(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+    ) -> dict[str, int]:
+        starting_stacks = {}
+
+        for line in s.splitlines():
+            if m := search(self.STARTING_STACKS, line):
+                starting_stacks[m['player']] = parse_value(m['starting_stack'])
+
+        return starting_stacks
+
+    def _get_ordered_players(
+            self,
+            s: str,
+            final_seat: int,
+            parsed_blinds_or_straddles: defaultdict[str, int],
+            players: list[str],
+            seats: list[int],
+    ) -> list[str]:
+        if final_seat in seats:
+            final_player_index = seats.index(final_seat)
+        else:
+            if parsed_blinds_or_straddles:
+                initial_player = next(iter(parsed_blinds_or_straddles))
+                initial_player_index = players.index(initial_player)
+
+                if len(players) == 2:
+                    final_player_index = initial_player_index
+                else:
+                    final_player_index = initial_player_index - 1
+            else:
+                raise ValueError('Cannot find button.')
+
+        return list(rotated(players, -final_player_index - 1))
+
+    def _parse_actions(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+            players: Sequence[str],
+    ) -> list[str]:
+
+        def format_player(m: Match[str]) -> str:
+            player_index = players.index(m['player'])
+
+            return f'p{player_index + 1}'
+
+        bets = defaultdict(int)
+        actions = []
+
+        for line in s.splitlines():
+            action = None
+
+            if m := search(self.BLIND_OR_STRADDLE_POSTING, line):
+                bets[format_player(m)] = parse_value(m['blind_or_straddle'])
+            elif m := search(self.HOLE_DEALING, line):
+                action = (
+                    f'd dh {format_player(m)} {self._format_cards(m)}'
+                )
+            elif m := search(self.BOARD_DEALING, line):
+                action = f'd db {self._format_cards(m)}'
+
+                bets.clear()
+            elif m := search(self.FOLDING, line):
+                action = f'{format_player(m)} f'
+            elif m := search(self.CHECKING_OR_CALLING, line):
+                formatted_player = format_player(m)
+                action = f'{formatted_player} cc'
+                bets[formatted_player] = max(bets.values(), default=0)
+            elif m := search(self.COMPLETION_BETTING_OR_RAISING, line):
+                formatted_player = format_player(m)
+                max_bet = max(bets.values(), default=0)
+                bets[formatted_player] = (
+                    self._get_completion_betting_or_raising_to_amount(
+                        bets,
+                        formatted_player,
+                        parse_value(m['amount']),
+                        line,
+                    )
+                )
+
+                if bets[formatted_player] <= max_bet:
+                    action = f'{formatted_player} cc'
+                else:
+                    action = f'{formatted_player} cbr {bets[formatted_player]}'
+            elif m := search(self.HOLE_CARDS_SHOWING, line):
+                action = f'{format_player(m)} sm {self._format_cards(m)}'
+
+            if action is not None:
+                actions.append(action)
+
+        return actions
+
+    def _format_cards(self, m: Match[str]) -> str:
+        return ''.join(map(repr, Card.parse(m['cards'])))
+
+    def _get_completion_betting_or_raising_to_amount(
+            self,
+            bets: defaultdict[str, int],
+            player: str,
+            completion_betting_or_raising_amount: int,
+            line: str,
+    ) -> int:
+        return (
+            max(bets.values(), default=0)
+            + completion_betting_or_raising_amount
+        )
+
+    def _parse_variables(
+            self,
+            s: str,
+            parse_value: Callable[[str], Any],
+    ) -> dict[str, Any]:
+        variables = {}
+
+        for key, (pattern, parse_pattern) in self.VARIABLES.items():
+            if parse_pattern is None:
+                parse_pattern = parse_value
+
+            if (m := search(pattern, s)) and key in m.groupdict():
+                variables[key] = parse_pattern(m[key])
+
+        return variables
+
+    def _parse_player_variables(
+            self,
+            s: str,
+            parse_value: Callable[[str], Any],
+    ) -> dict[str, defaultdict[str, Any]]:
+        player_variables = {}
+
+        for (
+                key,
+                (pattern, parse_pattern, default_value_factory, merge),
+        ) in self.PLAYER_VARIABLES.items():
+            sub_player_variables = defaultdict[str, Any](default_value_factory)
+
+            if parse_pattern is None:
+                parse_pattern = parse_value
+
+            for line in s.splitlines():
+                if m := search(pattern, line):
+                    player = m['player']
+                    sub_player_variables[player] = merge(
+                        sub_player_variables[player],
+                        parse_pattern(m[key]),
+                    )
+
+            if sub_player_variables:
+                player_variables[key] = sub_player_variables
+
+        return player_variables
+
+
+@dataclass
+class AbsolutePokerParser(REParser):
+    """A class for Absolute Poker hand history parser."""
+
+    HAND = compile(r'^Stage #.+?(?=^\n{2,})', DOTALL | MULTILINE)
+    FINAL_SEAT = compile(r' Seat #(?P<final_seat>\d+) is the( dead)? dealer')
+    VARIANT = compile(r': (?P<variant>Holdem( \(1 on 1\))?  No Limit) ')
+    VARIANTS = {'Holdem  No Limit': 'NT', 'Holdem (1 on 1)  No Limit': 'NT'}
+    SEATS = compile(
+        r'Seat (?P<seat>\d+) - (?P<player>.+) \(\D?[0-9.,]+ in chips\)',
+    )
+    ANTE_POSTING = compile(r'(?P<player>.+) - Ante \D?(?P<ante>[0-9.,]+)')
+    BLIND_OR_STRADDLE_POSTING = compile(
+        (
+            r'(?P<player>.+)'
+            r' -'
+            r' Posts'
+            r' (small|big)'
+            r' blind'
+            r' \D?(?P<blind_or_straddle>[0-9.,]+)'
+        ),
+    )
+    STARTING_STACKS = compile(
+        (
+            r'Seat'
+            r' \d+'
+            r' -'
+            r' (?P<player>.+)'
+            r' \(\D?(?P<starting_stack>[0-9.,]+)'
+            r' in'
+            r' chips\)'
+        ),
+    )
+    HOLE_DEALING = UNMATCHABLE_PATTERN
+    BOARD_DEALING = compile(
+        (
+            r'\*\*\*'
+            r'('
+            r' (FLOP)'
+            r' \*\*\*'
+            r'|'
+            r' (TURN|RIVER)'
+            r' \*\*\*'
+            r' \[[0-9TJQKAcdhs ]+\]'
+            r')'
+            r' \[(?P<cards>[0-9TJQKAcdhs ]+)\]'
+        ),
+    )
+    FOLDING = compile(r'(?P<player>.+) - Folds')
+    CHECKING_OR_CALLING = compile(r'(?P<player>.+) - C(all|heck)s')
+    COMPLETION_BETTING_OR_RAISING = compile(
+        (
+            r'(?P<player>.+)'
+            r' -'
+            r' (Bets|Raises|All-In(\(Raise\))?)'
+            r' \D?(?P<amount>[0-9.,]+)'
+        ),
+    )
+    HOLE_CARDS_SHOWING = compile(
+        r'(?P<player>.+) - Shows \[(?P<cards>[0-9TJQKAcdhs ]+)\]',
+    )
+    CONSTANTS = {'venue': 'Absolute Poker'}
+    DATETIME: ClassVar[Pattern[str]] = compile(
+        (
+            r' -'
+            r' (?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)'
+            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' \((?P<time_zone_abbreviation>\S+)\)'
+        ),
+    )
+    """The datetime pattern."""
+    VARIABLES = {
+        'time': (DATETIME, parse_time),
+        'time_zone_abbreviation': (DATETIME, str),
+        'day': (DATETIME, int),
+        'month': (DATETIME, int),
+        'year': (DATETIME, int),
+        'hand': (compile(r'Stage #(?P<hand>\d+):'), int),
+        'seat_count': (compile(r'\((?P<seat_count>\d+) max\)'), int),
+        'table': (compile(r"Table: (?P<table>.+?) \("), str),
+        'currency_symbol': (
+            compile(r'\((?P<currency_symbol>\D?)[0-9.,]+ in chips\)'),
+            str,
+        ),
+    }
+    PLAYER_VARIABLES = {
+        'winnings': (
+            compile(
+                (
+                    r'Seat'
+                    r' \d+:'
+                    r' (?P<player>.+?)'
+                    r'( \(\D+\))?'
+                    r' collected'
+                    r' Total'
+                    r' \(\D?(?P<winnings>[0-9.,]+)\)'
+                ),
+            ),
+            None,
+            int,
+            add,
+        ),
+    }
+
+    def _get_completion_betting_or_raising_to_amount(
+            self,
+            bets: defaultdict[str, int],
+            player: str,
+            completion_betting_or_raising_amount: int,
+            line: str,
+    ) -> int:
+        return bets[player] + completion_betting_or_raising_amount
+
+
+@dataclass
+class FullTiltPokerParser(REParser):
+    """A class for Full Tilt Poker hand history parser."""
+
+    HAND = compile(
+        r'^Full Tilt Poker Game #.+?(?=^\n{2,})',
+        DOTALL | MULTILINE,
+    )
+    FINAL_SEAT = compile(r'The button is in seat #(?P<final_seat>\d+)')
+    VARIANT = compile(r" - (\D?\d+ Cap )?(?P<variant>No Limit Hold'em) - ")
+    VARIANTS = {'No Limit Hold\'em': 'NT'}
+    SEATS = compile(r'Seat (?P<seat>\d+): (?P<player>.+) \(')
+    ANTE_POSTING = UNMATCHABLE_PATTERN
+    BLIND_OR_STRADDLE_POSTING = compile(
+        (
+            r'(?P<player>.+)'
+            r' posts'
+            r' the'
+            r' (small|big)'
+            r' blind'
+            r' of'
+            r' \D?(?P<blind_or_straddle>[0-9.,]+)'
+        ),
+    )
+    STARTING_STACKS = compile(
+        r'Seat \d+: (?P<player>.+) \(\D?(?P<starting_stack>[0-9.,]+)\)',
+    )
+    HOLE_DEALING = UNMATCHABLE_PATTERN
+    BOARD_DEALING = compile(
+        (
+            r'\*\*\*'
+            r'('
+            r' (FLOP)'
+            r' \*\*\*'
+            r'|'
+            r' (TURN|RIVER)'
+            r' \*\*\*'
+            r' \[[1-9TJQKAcdhs ]+\]'
+            r')'
+            r' \[(?P<cards>[1-9TJQKAcdhs ]+)\]'
+        ),
+    )
+    FOLDING = compile(r'(?P<player>.+) folds')
+    CHECKING_OR_CALLING = compile(r'(?P<player>.+) c(all|heck)s')
+    COMPLETION_BETTING_OR_RAISING = compile(
+        r'(?P<player>.+) (bets|raises to) \D?(?P<amount>[0-9.,]+)',
+    )
+    HOLE_CARDS_SHOWING = compile(
+        r'(?P<player>.+) shows \[(?P<cards>[1-9TJQKAcdhs ]+)\]',
+    )
+    CAP: ClassVar[Pattern[str]] = compile(r' \D?(?P<cap>[0-9.,]+) Cap ')
+    CONSTANTS = {'venue': 'Full Tilt Poker'}
+    DATETIME: ClassVar[Pattern[str]] = compile(
+        (
+            r' -'
+            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time_zone_abbreviation>\S+)'
+            r' -'
+            r' (?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)'
+        ),
+    )
+    """The datetime pattern."""
+    VARIABLES = {
+        'time': (DATETIME, parse_time),
+        'time_zone_abbreviation': (DATETIME, str),
+        'day': (DATETIME, int),
+        'month': (DATETIME, int),
+        'year': (DATETIME, int),
+        'hand': (compile(r'Full Tilt Poker Game #(?P<hand>\d+):'), int),
+        'seat_count': (compile(r'\((?P<seat_count>\d+) max\)'), int),
+        'table': (compile(r"Table (?P<table>.+?) "), str),
+        'currency_symbol': (
+            compile(r'\((?P<currency_symbol>\D?)[0-9.,]+\)'),
+            str,
+        ),
+    }
+    PLAYER_VARIABLES = {
+        'winnings': (
+            compile(
+                (
+                    r'Seat'
+                    r' \d+:'
+                    r' (?P<player>.+)'
+                    r' collected'
+                    r' \(\D?(?P<winnings>[0-9.,]+)\)'
+                ),
+            ),
+            None,
+            int,
+            add,
+        ),
+    }
+
+    def _cap_starting_stacks(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+    ) -> int | None:
+        m = search(self.CAP, s)
+
+        if m is None:
+            cap = None
+        else:
+            cap = parse_value(m['cap'])
+
+        return cap
+
+    def _parse_starting_stacks(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+    ) -> dict[str, int]:
+        starting_stacks = super()._parse_starting_stacks(s, parse_value)
+        cap = self._cap_starting_stacks(s, parse_value)
+
+        if cap is not None:
+            for key, value in starting_stacks.items():
+                if value > cap:
+                    starting_stacks[key] = cap
+
+        return starting_stacks
+
+    def _get_completion_betting_or_raising_to_amount(
+            self,
+            bets: defaultdict[str, int],
+            player: str,
+            completion_betting_or_raising_amount: int,
+            line: str,
+    ) -> int:
+        return completion_betting_or_raising_amount
+
+
+@dataclass
+class IPokerNetworkParser(REParser):
+    """A class for iPoker Network hand history parser."""
+
+    HAND = compile(r'^<game gamecode=".+?</game>', DOTALL | MULTILINE)
+    FINAL_SEAT = compile(
+        r'<player\b.*\bseat="(?P<final_seat>\d+)".*\bdealer="1".*/>',
+    )
+    VARIANT = compile(r'(?P<variant>)')
+    VARIANTS = {'': 'NT'}
+    SEATS = compile(
+        (
+            r'<player\b'
+            r'.*\bseat="(?P<seat>\d+)"'
+            r'.*\bname="(?P<player>.+?)"'
+            r'.*/>'
+        ),
+    )
+    ANTE_POSTING = UNMATCHABLE_PATTERN
+    BLIND_OR_STRADDLE_POSTING = compile(
+        (
+            r'<action'
+            r'.*\bplayer="(?P<player>.+?)"'
+            r'.*\btype="(1|2)"'
+            r'.*\bsum="\D?(?P<blind_or_straddle>[0-9.,]+)"'
+            r'.*/>'
+        ),
+    )
+    STARTING_STACKS = compile(
+        (
+            r'<player\b'
+            r'.*\bname="(?P<player>.+?)"'
+            r'.*\bchips="\D?(?P<starting_stack>[0-9.,]+)"'
+            r'.*\bbet="\D?(?P<bet>[0-9.,]+)"'
+            r'.*/>'
+        ),
+    )
+    HOLE_DEALING = compile(
+        (
+            r'<cards\b'
+            r'.*\btype="Pocket"'
+            r'.*\bplayer="(?P<player>.+?)"'
+            r'.*>'
+            r'(?P<cards>[0-9TJQKAcdhs ]+)'
+            r'</cards>'
+        ),
+    )
+    BOARD_DEALING = compile(
+        (
+            r'<cards\b'
+            r'.*\btype="(Flop|Turn|River)"'
+            r'.*>'
+            r'(?P<cards>[0-9TJQKAcdhs ]+)'
+            r'</cards>'
+        ),
+    )
+    FOLDING = compile(r'<action\b.*\bplayer="(?P<player>.+?)".*\btype="0".*/>')
+    CHECKING_OR_CALLING = compile(
+        r'<action\b.*\bplayer="(?P<player>.+?)".*\btype="(3|4)".*/>',
+    )
+    COMPLETION_BETTING_OR_RAISING = compile(
+        (
+            r'<action\b'
+            r'.*\bplayer="(?P<player>.+?)"'
+            r'.*\btype="(5|6|23)"'
+            r'.*\bsum="\D?(?P<amount>[0-9.,]+)"'
+            r'.*/>'
+        ),
+    )
+    HOLE_CARDS_SHOWING = UNMATCHABLE_PATTERN
+    CONSTANTS = {'venue': 'iPoker Network'}
+    DATETIME: ClassVar[Pattern[str]] = compile(
+        (
+            r'<startdate>'
+            r'(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)'
+            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r'</startdate>'
+        ),
+    )
+    """The datetime pattern."""
+    VARIABLES = {
+        'time': (DATETIME, parse_time),
+        'day': (DATETIME, int),
+        'month': (DATETIME, int),
+        'year': (DATETIME, int),
+        'hand': (compile(r'gamecode="(?P<hand>\d+)"'), int),
+        'table': (compile(r'<tablename>(?P<table>.+)</tablename>'), str),
+        'currency': (compile(r'<currency>(?P<currency>\w+)</currency>'), str),
+        'currency_symbol': (
+            compile(r'chips="(?P<currency_symbol>\D?)[0-9.,]+"'),
+            str,
+        ),
+    }
+    PLAYER_VARIABLES = {
+        'winnings': (
+            compile(
+                (
+                    r'<player\b'
+                    r'.*\bname="(?P<player>.+)"'
+                    r'.*\bwin="\D?(?P<winnings>[0-9.,]+)"'
+                    r'.*/>'
+                ),
+            ),
+            None,
+            int,
+            add,
+        ),
+    }
+    PLACEHOLDER_STARTING_STACK: ClassVar[int] = 10000000
+
+    def __call__(
+            self,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        variables = self._parse_variables(s, parse_value)
+        it = super().__call__(
+            s,
+            parse_value=parse_value,
+            error_status=error_status,
+        )
+        return_value = None
+
+        while return_value is None:
+            try:
+                hh = next(it)
+            except StopIteration as e:
+                return_value = e.value
+            else:
+                for key, value in variables.items():
+                    setattr(hh, key, value)
+
+                yield hh
+
+        return return_value
+
+    def _parse_starting_stacks(
+            self,
+            s: str,
+            parse_value: Callable[[str], int],
+    ) -> dict[str, int]:
+        starting_stacks = super()._parse_starting_stacks(s, parse_value)
+
+        for key, value in starting_stacks.items():
+            if value == self.PLACEHOLDER_STARTING_STACK:
+                starting_stacks[key] = parse_value('inf')
+
+        return starting_stacks
+
+    def _get_ordered_players(
+            self,
+            s: str,
+            final_seat: int,
+            parsed_blinds_or_straddles: defaultdict[str, int],
+            players: list[str],
+            seats: list[int],
+    ) -> list[str]:
+        players = super()._get_ordered_players(
+            s,
+            final_seat,
+            parsed_blinds_or_straddles,
+            players,
+            seats,
+        )
+        players = players[:2]
+
+        for line in s.splitlines():
+            player = None
+
+            for pattern in (
+                    self.FOLDING,
+                    self.CHECKING_OR_CALLING,
+                    self.COMPLETION_BETTING_OR_RAISING,
+            ):
+                if m := search(pattern, line):
+                    player = m['player']
+
+            if player is None:
+                continue
+            elif player in players:
+                break
+
+            players.append(player)
+
+        return players
+
+    def _format_cards(self, m: Match[str]) -> str:
+        raw_cards = ''.join(
+            map(''.join, map(reversed, m['cards'].replace('10', 'T').split())),
+        )
+
+        return ''.join(map(repr, Card.parse(raw_cards)))
+
+    def _get_completion_betting_or_raising_to_amount(
+            self,
+            bets: defaultdict[str, int],
+            player: str,
+            completion_betting_or_raising_amount: int,
+            line: str,
+    ) -> int:
+        if 'type="6"' in line.split():
+            amount = bets[player] + completion_betting_or_raising_amount
+        else:
+            amount = completion_betting_or_raising_amount
+
+        return amount
+
+
+@dataclass
+class OngameNetworkParser(REParser):
+    """A class for Ongame Network hand history parser."""
+
+    HAND = compile(
+        r'^\*\*\*\*\* History for hand .+?(?=^\n{2,})',
+        DOTALL | MULTILINE,
+    )
+    FINAL_SEAT = compile(r'Button: seat (?P<final_seat>\d+)')
+    VARIANT = compile(r'\((?P<variant>NO_LIMIT TEXAS_HOLDEM) ')
+    VARIANTS = {'NO_LIMIT TEXAS_HOLDEM': 'NT'}
+    SEATS = compile(r'Seat (?P<seat>\d+): (?P<player>.+) \(\D?[0-9.,]+\)[^,]')
+    ANTE_POSTING = UNMATCHABLE_PATTERN
+    BLIND_OR_STRADDLE_POSTING = compile(
+        (
+            r'(?P<player>.+)'
+            r' posts'
+            r' (small|big)'
+            r' blind'
+            r' \(\D?(?P<blind_or_straddle>[0-9.,]+)\)'
+        ),
+    )
+    STARTING_STACKS = compile(
+        (
+            r'Seat'
+            r' \d+:'
+            r' (?P<player>.+)'
+            r' \(\D?(?P<starting_stack>[0-9.,]+)\)[^,]'
+        ),
+    )
+    HOLE_DEALING = UNMATCHABLE_PATTERN
+    BOARD_DEALING = compile(
+        (
+            r'---'
+            r' Dealing'
+            r' (flop|turn|river)'
+            r' \[(?P<cards>[1-9TJQKAcdhs ,]+)\]'
+        ),
+    )
+    FOLDING = compile(r'(?P<player>.+) folds')
+    CHECKING_OR_CALLING = compile(r'(?P<player>.+) c(all|heck)s')
+    COMPLETION_BETTING_OR_RAISING = compile(
+        (
+            r'(?P<player>.+)'
+            r' (bet|raise)s'
+            r' \D?(?P<amount>[0-9.,]+)'
+        ),
+    )
+    HOLE_CARDS_SHOWING = compile(
+        (
+            r'Seat'
+            r' \d+:'
+            r' (?P<player>.+)'
+            r' \(\D?[0-9.,]+\),'
+            r' net:'
+            r' (\+|-)?\D?[0-9.,]+,'
+            r' \[(?P<cards>[1-9TJQKAcdhs ,]+)\]'
+        ),
+    )
+    CONSTANTS = {'venue': 'Ongame Network'}
+    MONTHS: ClassVar[dict[str, int]] = {
+        'Jan': 1,
+        'Feb': 2,
+        'Mar': 3,
+        'Apr': 4,
+        'May': 5,
+        'Jun': 6,
+        'Jul': 7,
+        'Aug': 8,
+        'Sep': 9,
+        'Oct': 10,
+        'Nov': 11,
+        'Dec': 12,
+    }
+    """Months as written in Ongame network hand logs."""
+    DATETIME: ClassVar[Pattern[str]] = compile(
+        (
+            r'Start'
+            r' hand:'
+            r' \w+'
+            r' (?P<month>\w+)'
+            r' (?P<day>\d+)'
+            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time_zone_abbreviation>\S+)'
+            r' (?P<year>\d+)'
+        ),
+    )
+    """The datetime pattern."""
+    VARIABLES = {
+        'time': (DATETIME, parse_time),
+        'time_zone_abbreviation': (DATETIME, str),
+        'day': (DATETIME, int),
+        'month': (DATETIME, MONTHS.get),
+        'year': (DATETIME, int),
+        'hand': (
+            compile(r'\*\*\*\*\* History for hand (?P<hand>.+) \*\*\*\*\*'),
+            str,
+        ),
+        'table': (
+            compile(r'Table: (?P<table>\S+) \['),
+            str,
+        ),
+        'currency_symbol': (
+            compile(r'\((?P<currency_symbol>\D?)[0-9.,]+\)'),
+            str,
+        ),
+    }
+    PLAYER_VARIABLES = {
+        'finishing_stacks': (
+            compile(
+                (
+                    r'Seat'
+                    r' \d+:'
+                    r' (?P<player>.+)'
+                    r' \(\D?(?P<finishing_stacks>[0-9.,]+)\),'
+                    r' net:'
+                    r' (\+|-)?\D?[0-9.,]+'
+                ),
+            ),
+            None,
+            int,
+            add,
+        ),
+        'winnings': (
+            compile(
+                (
+                    r'pot: \D?[0-9.,]+'
+                    r' won'
+                    r' by'
+                    r' (?P<player>.+)'
+                    r' \(\D?(?P<winnings>[0-9.,]+)\)'
+                ),
+            ),
+            None,
+            int,
+            add,
+        ),
+    }
+
+    def _get_completion_betting_or_raising_to_amount(
+            self,
+            bets: defaultdict[str, int],
+            player: str,
+            completion_betting_or_raising_amount: int,
+            line: str,
+    ) -> int:
+        if 'bets' in line.split():
+            amount = completion_betting_or_raising_amount
+        else:
+            amount = bets[player] + completion_betting_or_raising_amount
+
+        return amount
+
+
+@dataclass
+class PartyPokerParser(REParser):
+    """A class for PartyPoker hand history parser."""
+
+    HAND = compile(r'^Game #.+?(?=^\n{2,})', DOTALL | MULTILINE)
+    FINAL_SEAT = compile(r'Seat (?P<final_seat>\d+) is the button')
+    VARIANT = compile(r" (?P<variant>NL Texas Hold'em) - ")
+    VARIANTS = {'NL Texas Hold\'em': 'NT'}
+    SEATS = compile(r'Seat (?P<seat>\d+): (?P<player>.+) \(')
+    ANTE_POSTING = UNMATCHABLE_PATTERN
+    BLIND_OR_STRADDLE_POSTING = compile(
+        (
+            r'(?P<player>.+)'
+            r' posts'
+            r' (small|big)'
+            r' blind'
+            r' \[\D?(?P<blind_or_straddle>[0-9.,]+)'
+            r' \w+\]\.'
+        ),
+    )
+    STARTING_STACKS = compile(
+        (
+            r'Seat'
+            r' \d+:'
+            r' (?P<player>.+)'
+            r' \('
+            r' \D?(?P<starting_stack>[0-9.,]+)'
+            r' \w+'
+            r' \)'
+        ),
+    )
+    HOLE_DEALING = UNMATCHABLE_PATTERN
+    BOARD_DEALING = compile(
+        (
+            r'\*\*'
+            r' Dealing'
+            r' (Flop|Turn|River)'
+            r' \*\*'
+            r' \[(?P<cards>[1-9TJQKAcdhs ,]+)\]'
+        ),
+    )
+    FOLDING = compile(r'(?P<player>.+) folds')
+    CHECKING_OR_CALLING = compile(r'(?P<player>.+) c(all|heck)s')
+    COMPLETION_BETTING_OR_RAISING = compile(
+        (
+            r'(?P<player>.+)'
+            r' (bets|raises|is all-In )'
+            r' \[\D?(?P<amount>[0-9.,]+)'
+            r' \w+\]'
+        ),
+    )
+    HOLE_CARDS_SHOWING = compile(
+        (
+            r'(?P<player>.+)'
+            r" shows"
+            r' \[(?P<cards>[1-9TJQKAcdhs ,]+)\]'
+        ),
+    )
+    CONSTANTS = {'venue': 'PartyPoker'}
+    DATETIME: ClassVar[Pattern[str]] = compile(
+        (
+            r' -'
+            r' \w+,'
+            r' (?P<month>\w+)'
+            r' (?P<day>\d+),'
+            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time_zone_abbreviation>\S+)'
+            r' (?P<year>\d+)'
+        ),
+    )
+    """The datetime pattern."""
+    VARIABLES = {
+        'time': (DATETIME, parse_time),
+        'time_zone_abbreviation': (DATETIME, str),
+        'day': (DATETIME, int),
+        'month': (DATETIME, parse_month),
+        'year': (DATETIME, int),
+        'hand': (
+            compile(
+                r'\*\*\*\*\* Hand History for Game (?P<hand>\d+) \*\*\*\*\*',
+            ),
+            int,
+        ),
+        'table': (compile(r'Table (?P<table>.+?) \('), str),
+        'currency': (compile(r'\( \D?[0-9.,]+ (?P<currency>\w+) \)'), str),
+        'currency_symbol': (
+            compile(r'\( (?P<currency_symbol>\D?)[0-9.,]+ \w+ \)'),
+            str,
+        ),
+    }
+    PLAYER_VARIABLES = {
+        'winnings': (
+            compile(
+                r'^(?P<player>\S+) wins \D?(?P<winnings>[0-9.,]+)',
+                MULTILINE,
+            ),
+            None,
+            int,
+            add,
+        ),
+    }
+
+    def _get_completion_betting_or_raising_to_amount(
+            self,
+            bets: defaultdict[str, int],
+            player: str,
+            completion_betting_or_raising_amount: int,
+            line: str,
+    ) -> int:
+        return bets[player] + completion_betting_or_raising_amount
+
+
+@dataclass
+class PokerStarsParser(REParser):
+    """A class for PokerStars hand history parser."""
+
+    HAND = compile(r'^PokerStars .+?(?=^\n{2,})', DOTALL | MULTILINE)
+    FINAL_SEAT = compile(r'#(?P<final_seat>\d+) is the button')
+    VARIANT = compile(r":  (?P<variant>Hold'em No Limit) \(")
+    VARIANTS = {'Hold\'em No Limit': 'NT'}
+    SEATS = compile(r'Seat (?P<seat>\d+): (?P<player>.+) \(')
+    ANTE_POSTING = UNMATCHABLE_PATTERN
+    BLIND_OR_STRADDLE_POSTING = compile(
+        (
+            r'(?P<player>.+):'
+            r' posts'
+            r' (small|big)'
+            r' blind'
+            r' \D?(?P<blind_or_straddle>[0-9.]+)'
+        ),
+    )
+    STARTING_STACKS = compile(
+        (
+            r'Seat'
+            r' \d+:'
+            r' (?P<player>.+)'
+            r' \(\D?(?P<starting_stack>[0-9.]+)'
+            r' in'
+            r' chips\)'
+        ),
+    )
+    HOLE_DEALING = compile(
+        r'Dealt to (?P<player>.+) \[(?P<cards>[1-9TJQKAcdhs ]+)\]',
+    )
+    BOARD_DEALING = compile(
+        (
+            r'\*\*\*'
+            r'('
+            r' (FLOP)'
+            r' \*\*\*'
+            r'|'
+            r' (TURN|RIVER)'
+            r' \*\*\*'
+            r' \[[1-9TJQKAcdhs ]+\]'
+            r')'
+            r' \[(?P<cards>[1-9TJQKAcdhs ]+)\]'
+        ),
+    )
+    FOLDING = compile(r'(?P<player>.+): folds')
+    CHECKING_OR_CALLING = compile(r'(?P<player>.+): c(all|heck)s')
+    COMPLETION_BETTING_OR_RAISING = compile(
+        r'(?P<player>.+): (bet|raise)s \D?(?P<amount>[0-9.]+)',
+    )
+    HOLE_CARDS_SHOWING = compile(
+        r'(?P<player>.+): shows \[(?P<cards>[1-9TJQKAcdhs ]+)\] (.+)',
+    )
+    CONSTANTS = {'venue': 'PokerStars'}
+    DATETIME: ClassVar[Pattern[str]] = compile(
+        (
+            r' -'
+            r' (?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)'
+            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time_zone_abbreviation>\S+)'
+        ),
+    )
+    """The datetime pattern."""
+    VARIABLES = {
+        'time': (DATETIME, parse_time),
+        'time_zone_abbreviation': (DATETIME, str),
+        'day': (DATETIME, int),
+        'month': (DATETIME, int),
+        'year': (DATETIME, int),
+        'hand': (compile(r'PokerStars (Hand|Game) #(?P<hand>\d+):'), int),
+        'seat_count': (compile(r' (?P<seat_count>\d+)-max '), int),
+        'table': (compile(r"Table '(?P<table>.+)'"), str),
+        'currency_symbol': (
+            compile(r'\((?P<currency_symbol>\D?)[0-9.,]+ in chips\)'),
+            str,
+        ),
+    }
+    PLAYER_VARIABLES = {
+        'winnings': (
+            compile(
+                (
+                    r'Seat'
+                    r' \d+:'
+                    r' (?P<player>.+)'
+                    r' collected'
+                    r' \(\D?(?P<winnings>[0-9.,]+)\)'
+                ),
+            ),
+            None,
+            int,
+            add,
+        ),
+    }
+
+
+@dataclass
+class ACPCProtocolParser(Parser):
+    """A class for ACPC Protocol hand history parser."""
+
+    HAND: ClassVar[tuple[Pattern[str], ...]] = (
+        compile(
+            (
+                r'^(?P<players>[^:\n]+)'
+                r':(?P<hand>\d+)'
+                r':(?P<actions>[^:\n]+)'
+                r':(?P<cards>[^:\n]+)'
+                r':(?P<results>[^:\n]+)$'
+            ),
+            MULTILINE,
+        ),
+        compile(
+            (
+                r'^STATE'
+                r':(?P<hand>\d+)'
+                r':(?P<actions>[^:\n]+)'
+                r':(?P<cards>[^:\n]+)'
+                r':(?P<results>[^:\n]+)'
+                r':(?P<players>[^:\n]+)$'
+            ),
+            MULTILINE,
+        ),
+    )
+    """The hand patterns."""
+    BLIND_POSTING: ClassVar[Pattern[str]] = compile(r'b(?P<blind>\d+)')
+    """The blind-posting pattern."""
+    FOLDING: ClassVar[Pattern[str]] = compile(r'f')
+    """The folding pattern."""
+    CHECKING_OR_CALLING: ClassVar[Pattern[str]] = compile(r'c(?P<amount>\d*)')
+    """The checking or calling pattern."""
+    BETTING_OR_RAISING_TO: ClassVar[Pattern[str]] = compile(
+        r'r(?P<amount>\d*)',
+    )
+    """The betting or raising_to pattern."""
+    BOARD_DEALING: ClassVar[Pattern[str]] = compile(r'/')
+    """The board-dealing pattern."""
+    AUTOMATIONS: ClassVar[tuple[Automation, ...]] = (
+        Automation.ANTE_POSTING,
+        Automation.BET_COLLECTION,
+        Automation.BLIND_OR_STRADDLE_POSTING,
+        Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        Automation.RUNOUT_COUNT_SELECTION,
+        Automation.HAND_KILLING,
+        Automation.CHIPS_PUSHING,
+        Automation.CHIPS_PULLING,
+    )
+    """The automations for the game being simulated."""
+    game: Poker
+    """The game being played."""
+    starting_stack: int
+    """The starting stacks."""
+
+    def __post_init__(self) -> None:
+        self.game = deepcopy(self.game)
+        self.game.automations = self.AUTOMATIONS
+        self.game.mode = Mode.CASH_GAME
+
+    def __call__(
+            self,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            error_status: bool = False,
+    ) -> Generator[HandHistory, None, int]:
+        count = 0
+
+        for pattern in self.HAND:
+            for m in finditer(pattern, s):
+                count += 1
+
+                try:
+                    hh = self._parse(m, parse_value)
+                except (KeyError, ValueError):
+                    message = f'Unable to parse {repr(s)}.'
+
+                    if error_status:
+                        raise ValueError(message)
+                    else:
+                        warn(message)
+                else:
+                    yield hh
+
+        return count
+
+    def _parse(
+            self,
+            m: Match[str],
+            parse_value: Callable[[str], int],
+    ) -> HandHistory:
+        hand = int(m['hand'])
+        actions = m['actions']
+        raw_hole_cards, *raw_board_cards = m['cards'].split('/')
+        hole_cards = deque(
+            map(list, map(Card.parse, raw_hole_cards.split('|'))),
+        )
+        board_cards = deque(map(list, map(Card.parse, raw_board_cards)))
+        results = list(map(parse_value, m['results'].split('|')))
+        players = m['players'].split('|')
+        state = self.game(self.starting_stack, len(players))
+
+        while hole_cards:
+            state.deal_hole(hole_cards.popleft())
+
+        assert not hole_cards
+
+        previous_max_amount = 0
+        max_amount = max(state.blinds_or_straddles)
+
+        while actions:
+            n: Match[str] | None = None
+
+            if n := match(self.BLIND_POSTING, actions):
+                pass
+            elif n := match(self.FOLDING, actions):
+                state.fold()
+            elif n := match(self.CHECKING_OR_CALLING, actions):
+                state.check_or_call()
+            elif n := match(self.BETTING_OR_RAISING_TO, actions):
+                raw_amount = n['amount']
+                amount = parse_value(raw_amount) if raw_amount else None
+
+                if amount is not None:
+                    max_amount = amount
+                    amount -= previous_max_amount
+
+                state.complete_bet_or_raise_to(amount)
+            elif n := match(self.BOARD_DEALING, actions):
+                state.burn_card('??')
+                state.deal_board(board_cards.popleft())
+
+                previous_max_amount = max_amount
+
+            if n is None:
+                raise ValueError(f'Invalid next action in {repr(actions)}.')
+
+            actions = actions[len(n.group()):]
+
+        while board_cards:
+            state.burn_card('??')
+            state.deal_board(board_cards.popleft())
+
+        if state.status:
+            raise ValueError('State is not terminal.')
+
+        hh = HandHistory.from_game_state(
+            self.game,
+            state,
+            hand=hand,
+            players=players,
+            _results=results,
+        )
+
+        return hh

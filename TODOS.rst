@@ -4,11 +4,6 @@ Todos
 
 Here are some of the features that are planned to be implemented in the future.
 
-- Fully comply with the Poker Hand History file format specs.
-
-  - URL: https://arxiv.org/abs/2312.11753
-
-- Parser for the PokerStars hand history file format.
 - Fully pre-define all variants in the 2023 World Series of Poker Tournament Rules.
 
   - URL: https://www.wsop.com/2022/2023-WSOP-Tournament-Rules.pdf

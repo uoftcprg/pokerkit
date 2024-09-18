@@ -1281,13 +1281,15 @@ class StateTestCase(TestCase):
         state.check_or_call()
 
         for _ in range(3):
-            self.assertTrue(state.can_show_or_muck_hole_cards())
             self.assertTrue(state.can_show_or_muck_hole_cards(False))
             self.assertFalse(state.can_show_or_muck_hole_cards(True))
             self.assertFalse(state.can_show_or_muck_hole_cards('????'))
             self.assertFalse(state.can_show_or_muck_hole_cards('??2d'))
             self.assertTrue(state.can_show_or_muck_hole_cards('TcJc'))
-            self.assertEqual(state.show_or_muck_hole_cards().hole_cards, ())
+            self.assertEqual(
+                state.show_or_muck_hole_cards(False).hole_cards,
+                (),
+            )
 
         self.assertFalse(state.status)
         self.assertEqual(tuple(state.pots), (Pot(0, 6, ()),))

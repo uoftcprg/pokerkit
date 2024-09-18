@@ -1939,7 +1939,7 @@ class State:
 
         try:
             hand = self.hand_types[hand_type_index].from_game(
-                self.hole_cards[player_index],
+                filter(None, self.hole_cards[player_index]),
                 self.get_board_cards(board_index),
             )
         except (KeyError, ValueError):
@@ -3190,8 +3190,6 @@ class State:
 
             for i in player_indices:
                 if self.bets[i] > bet_cutoff:
-                    assert self.statuses[i]
-
                     overbet = self.bets[i] - bet_cutoff
                     self.stacks[i] += overbet
                     self.payoffs[i] += overbet
@@ -5005,6 +5003,9 @@ class State:
     def _update_showdown(self, operation: Operation | None = None) -> None:
         self._update(operation)
 
+        if self.street is None:
+            return
+
         if (
                 not any(self.runout_count_selector_statuses)
                 and not self.showdown_indices
@@ -5272,10 +5273,10 @@ class State:
         except (ValueError, UserWarning):
             return None
 
-        return self.showdown_indices[0]
+        return self.showdown_indices[0] if self.showdown_indices else None
 
     def _verify_hole_cards_showing_or_mucking(self) -> None:
-        if not self.showdown_indices:
+        if not self.showdown_indices and self.street is not None:
             raise ValueError('There is no player to showdown.')
 
     def verify_hole_cards_showing_or_mucking(
@@ -5305,11 +5306,19 @@ class State:
         self._verify_hole_cards_showing_or_mucking()
 
         if player_index is None:
+            if self.street is None:
+                raise ValueError('Non-standard showdown must specify player.')
+
             player_index = self.showdown_index
 
         assert player_index is not None
 
-        if player_index not in self.showdown_indices:
+        if not self.statuses[player_index]:
+            raise ValueError('Player is not active.')
+        elif (
+                self.street is not None
+                and player_index not in self.showdown_indices
+        ):
             raise ValueError(
                 f'The Player {player_index} cannot perform a showdown.',
             )
@@ -5403,6 +5412,12 @@ class State:
             status
             or (not cards and not hole_cards and not hole_card_statuses)
         )
+
+        if (
+                self.street is None
+                and (not status or not all(hole_card_statuses))
+        ):
+            raise ValueError('Non-standard showdown must show all cards.')
 
         return status, cards, hole_cards, hole_card_statuses, player_index
 
@@ -5557,7 +5572,8 @@ class State:
             )
         )
 
-        self.showdown_indices.remove(player_index)
+        if self.street is not None:
+            self.showdown_indices.remove(player_index)
 
         if status:
             assert (

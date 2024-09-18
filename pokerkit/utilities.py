@@ -5,7 +5,10 @@ utilities.
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Mapping
+from collections import deque
 from dataclasses import dataclass
+from datetime import datetime, time
+from decimal import Decimal
 from enum import Enum, StrEnum, unique
 from functools import partial
 from itertools import product, starmap
@@ -14,6 +17,7 @@ from numbers import Integral
 from numbers import Number
 from operator import is_not
 from random import shuffle
+from re import compile, Pattern
 from typing import Any, cast, ClassVar, TYPE_CHECKING, TypeVar
 import builtins
 
@@ -21,6 +25,7 @@ if TYPE_CHECKING:
     from pokerkit.state import State
 
 _T = TypeVar('_T')
+UNMATCHABLE_PATTERN: Pattern[str] = compile(r'(?!)')
 
 
 @unique
@@ -404,7 +409,9 @@ class Card:
         :raises ValueError: If any card representation is invalid.
         """
         for contents in raw_cards:
-            for content in contents.replace(',', '').split():
+            contents = contents.replace('10', 'T').replace(',', '')
+
+            for content in contents.split():
                 if len(content) % 2 != 0:
                     raise ValueError(
                         (
@@ -661,6 +668,25 @@ def shuffled(values: Iterable[_T]) -> list[_T]:
     return values
 
 
+def rotated(values: Iterable[_T], count: int) -> deque[_T]:
+    """Rotate the values.
+
+    >>> rotated(['a', 'b', 'c', 'd'], 2)
+    deque(['c', 'd', 'a', 'b'])
+    >>> rotated(range(5), -3)
+    deque([3, 4, 0, 1, 2])
+
+    :param values: The values to rotate.
+    :param count: The rotation.
+    :return: The rotated values.
+    """
+    values = deque(values)
+
+    values.rotate(count)
+
+    return values
+
+
 def divmod(dividend: int, divisor: int) -> tuple[int, int]:
     """Divide the amount.
 
@@ -762,27 +788,56 @@ def rake(
 def parse_value(raw_value: str) -> int:
     """Convert ``str`` to a number.
 
+    If integral, an ``int`` instance is returned. Otherwise, a
+    ``decimal.Decimal`` instance is returned.
+
     >>> parse_value('3')
     3
     >>> parse_value('3.0')
-    3.0
+    Decimal('3.0')
     >>> parse_value('3.5')
-    3.5
+    Decimal('3.5')
     >>> parse_value('9,999.99')
-    9999.99
+    Decimal('9999.99')
 
     :param raw_value: The raw value.
     :return: The converted value.
     """
     raw_value = raw_value.replace(',', '')
-    value: int | float
+    value: int | Decimal
 
     try:
         value = int(raw_value)
     except ValueError:
-        value = float(raw_value)
+        value = Decimal(raw_value)
 
     return cast(int, value)
+
+
+def parse_time(raw_time: str) -> time:
+    """Convert ``str`` to a ``datetime.time``.
+
+    >>> parse_time('12:34:56')
+    datetime.time(12, 34, 56)
+
+    :param raw_time: The raw time.
+    :return: The converted time.
+    """
+    return datetime.strptime(raw_time, '%H:%M:%S').time()
+
+
+def parse_month(raw_month: str) -> int:
+    """Convert ``str`` to a month (``int``).
+
+    >>> parse_month('July')
+    7
+    >>> parse_month('december')
+    12
+
+    :param raw_month: The raw month.
+    :return: The converted month.
+    """
+    return datetime.strptime(raw_month, '%B').month
 
 
 def sign(value: int) -> int:

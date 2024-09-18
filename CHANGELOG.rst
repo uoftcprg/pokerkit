@@ -4,6 +4,54 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.0 (Planned)
+-----------------------
+
+This version release introduces backward incompatible changes. Please read the below content carefully!
+
+**Added**
+
+- Parsing hands from logs of online poker rooms/research environments. The testing has been limited to old data and is known to fail parsing certain hands. Please open an issue if you find incompatibilities. I would be happy to support them.
+
+  - Absolute Poker: ``pokerkit.notation.HandHistory.from_absolute_poker()`` via ``pokerkit.notation.AbsolutePokerParser``.
+  - Full Tilt Poker: ``pokerkit.notation.HandHistory.from_full_tilt_poker()`` via ``pokerkit.notation.FullTiltPokerParser``.
+  - iPoker Network: ``pokerkit.notation.HandHistory.from_ipoker_network()`` via ``pokerkit.notation.IPokerNetworkParser``.
+  - Ongame Network: ``pokerkit.notation.HandHistory.from_ongame_network()`` via ``pokerkit.notation.OngameNetworkParser``.
+  - PartyPoker: ``pokerkit.notation.HandHistory.from_partypoker()`` via ``pokerkit.notation.PartyPokerParser``.
+  - PokerStars: ``pokerkit.notation.HandHistory.from_pokerstars()`` via ``pokerkit.notation.PokerStarsParser``.
+  - Annual Computer Poker Competition: ``pokerkit.notation.HandHistory.from_acpc_protocol()`` via ``pokerkit.notation.ACPCProtocolParser``.
+
+- Base classes for hand history log parser using regular expression like ``pokerkit.notation.Parser`` and ``pokerkit.notation.REParser``.
+
+- ``pokerkit.utilities.Card.UNKNOWN`` static variable as a constant for a card with unknown rank and suit.
+- Pending additions of the PHH specification is also added in ``pokerkit.notation.HandHistory``. Namely, the new fields ``pokerkit.notation.HandHistory.venue``, ``pokerkit.notation.HandHistory.time_zone_abbreviation``, ``pokerkit.notation.HandHistory.winnings``, and ``pokerkit.notation.HandHistory.currency_symbol``.
+- A helper unmatchable regular expression pattern ``pokerkit.utilities.UNMATCHABLE_PATTERN``.
+- Helper methods ``pokerkit.utilities.rotated``, ``pokerkit.utilities.parse_time``, and ``pokerkit.utilities.parse_month``.
+
+**Changed**
+
+- Automatic repair of broken hand histories during iteration.
+- Allow non-standard folds (i.e. folding even when you don't need to) in a cash-game mode.
+- Allow showing hole cards of the last remaining player after everyone folds around.
+- Allow only showing a part of a player's hand.
+
+  - Only available in the cash-game mode.
+  - A player may want to keep cards face-down (even in all-in situations or final showdown).
+  - Simply pass in something like ``??As`` or an empty iterable to ``pokerkit.state.State.show_or_muck_hole_cards()``.
+
+    - If an empty iterable is passed in or all passed cards are unknown (i.e. ``??``), all hole cards of the current showdown player will stay face down.
+    - If known cards are among the passed cards, the known cards will become face-up while all others will stay face-down.
+
+- ``pokerkit.utilities.Card`` instances are truthy or falsy depending on the Boolean value of ``pokerkit.utilities.Card.unknown_status``.
+- Pending additions of the PHH specification is also added in ``pokerkit.notation.HandHistory``. Namely, the widening of types for ``pokerkit.notation.HandHistory.hand`` and ``pokerkit.notation.HandHistory.table``.
+- Commas are handled ``pokerkit.utilities.Card.parse`` and ``pokerkit.utilities.parse_value``.
+- ``"10"`` is now a valid way to express the rank of 10 for cards in ``pokerkit.utilities.Card.parse``.
+- ``pokerkit.utilities.parse_value`` returns ``decimal.Decimal`` for decimal values instead of ``float``, as it used to. If integral, it returns ``int`` as it used to.
+
+**Removed**
+
+- The previously deprecated ``pokerkit.notation.HandHistory.iter_state_actions()``. This was deprecated and renamed to ``pokerkit.notation.HandHistory.state_actions`` in Version 0.5.4.
+
 Version 0.5.4 (September 7, 2024)
 ---------------------------------
 

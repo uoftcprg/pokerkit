@@ -8,6 +8,7 @@ from unittest import TestCase, main
 from warnings import resetwarnings, simplefilter
 
 from pokerkit.notation import HandHistory
+from pokerkit.state import Operation, RunoutCountSelection
 
 
 class Kim2023TestCase(TestCase):
@@ -146,6 +147,16 @@ class Kim2023TestCase(TestCase):
 
 
 class Kim2024TestCase(TestCase):
+    @classmethod
+    def filter_operations(
+            cls,
+            operations: list[Operation],
+    ) -> list[Operation]:
+        return [
+            operation for operation in operations
+            if not isinstance(operation, RunoutCountSelection)
+        ]
+
     def test_dwan_ivey_2009(self) -> None:
         s = dedent(
             '''\
@@ -234,7 +245,10 @@ class Kim2024TestCase(TestCase):
             hh.actions,
         )
         self.assertEqual(new_state.stacks, [572100, 1997500, 1109500])
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_operations(new_state.operations),
+            self.filter_operations(state.operations),
+        )
         self.assertEqual(s, hh.dumps())
 
     def test_phua_xuan_2019(self) -> None:
@@ -345,7 +359,10 @@ class Kim2024TestCase(TestCase):
             new_state.stacks,
             [489000, 226000, 684000, 400000, 0, 198000],
         )
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_operations(new_state.operations),
+            self.filter_operations(state.operations),
+        )
         self.assertEqual(s, hh.dumps())
 
     def test_antonius_blom_2009(self) -> None:
@@ -433,7 +450,10 @@ class Kim2024TestCase(TestCase):
             hh.actions,
         )
         self.assertEqual(new_state.stacks, [1937923.75, 0.0])
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_operations(new_state.operations),
+            self.filter_operations(state.operations),
+        )
         self.assertEqual(s, hh.dumps())
 
     def test_arieh_yockey_2019(self) -> None:
@@ -598,7 +618,10 @@ class Kim2024TestCase(TestCase):
                 hh.actions,
             )
             self.assertEqual(new_state.stacks, [0, 4190000, 5910000, 12095000])
-            self.assertEqual(new_state.operations, state.operations)
+            self.assertEqual(
+                self.filter_operations(new_state.operations),
+                self.filter_operations(state.operations),
+            )
             self.assertEqual(s, hh.dumps())
 
     def test_alice_carol_wikipedia(self) -> None:
@@ -705,7 +728,10 @@ class Kim2024TestCase(TestCase):
             hh.actions,
         )
         self.assertEqual(new_state.stacks, [196, 220, 200, 184])
-        self.assertEqual(new_state.operations, state.operations)
+        self.assertEqual(
+            self.filter_operations(new_state.operations),
+            self.filter_operations(state.operations),
+        )
         self.assertEqual(s, hh.dumps())
 
 
