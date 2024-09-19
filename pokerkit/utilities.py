@@ -4,8 +4,8 @@ utilities.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping
 from collections import deque
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from datetime import datetime, time
 from decimal import Decimal
@@ -13,8 +13,7 @@ from enum import Enum, StrEnum, unique
 from functools import partial
 from itertools import product, starmap
 from math import inf
-from numbers import Integral
-from numbers import Number
+from numbers import Integral, Number
 from operator import is_not
 from random import shuffle
 from re import compile, Pattern
@@ -32,9 +31,9 @@ UNMATCHABLE_PATTERN: Pattern[str] = compile(r'(?!)')
 class Rank(StrEnum):
     """The enum class for ranks.
 
-    A card of lower rank is said to be less than that of a higher rank.
     The ordering of the ranks is decided in accordance to the rules of
-    the poker variant being played.
+    the poker variant being played. A card of lower rank is said to be
+    less than that of a higher rank.
 
     >>> Rank.DEUCE
     <Rank.DEUCE: '2'>
