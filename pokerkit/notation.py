@@ -2577,7 +2577,7 @@ class ACPCProtocolParser(Parser):
                 try:
                     hh = self._parse(m, parse_value)
                 except (KeyError, ValueError):
-                    message = f'Unable to parse {repr(s)}.'
+                    message = f'Unable to parse {repr(m[0])}.'
 
                     if error_status:
                         raise ValueError(message)
@@ -2620,7 +2620,8 @@ class ACPCProtocolParser(Parser):
             elif n := match(self.FOLDING, actions):
                 state.fold()
             elif n := match(self.CHECKING_OR_CALLING, actions):
-                state.check_or_call()
+                if not state.all_in_status:
+                    state.check_or_call()
             elif n := match(self.BETTING_OR_RAISING_TO, actions):
                 raw_amount = n['amount']
                 amount = parse_value(raw_amount) if raw_amount else None
