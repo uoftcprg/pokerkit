@@ -1748,7 +1748,7 @@ class AbsolutePokerParser(REParser):
         (
             r' -'
             r' (?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)'
-            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time>\d{1,2}:\d{2}:\d{2})'
             r' \((?P<time_zone_abbreviation>\S+)\)'
         ),
     )
@@ -1851,7 +1851,7 @@ class FullTiltPokerParser(REParser):
     DATETIME: ClassVar[Pattern[str]] = compile(
         (
             r' -'
-            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time>\d{1,2}:\d{2}:\d{2})'
             r' (?P<time_zone_abbreviation>\S+)'
             r' -'
             r' (?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)'
@@ -2003,7 +2003,7 @@ class IPokerNetworkParser(REParser):
         (
             r'<startdate>'
             r'(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)'
-            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time>\d{1,2}:\d{2}:\d{2})'
             r'</startdate>'
         ),
     )
@@ -2060,7 +2060,8 @@ class IPokerNetworkParser(REParser):
                 return_value = e.value
             else:
                 for key, value in variables.items():
-                    setattr(hh, key, value)
+                    if getattr(hh, key, None) is None:
+                        setattr(hh, key, value)
 
                 yield hh
 
@@ -2220,7 +2221,7 @@ class OngameNetworkParser(REParser):
             r' \w+'
             r' (?P<month>\w+)'
             r' (?P<day>\d+)'
-            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time>\d{1,2}:\d{2}:\d{2})'
             r' (?P<time_zone_abbreviation>\S+)'
             r' (?P<year>\d+)'
         ),
@@ -2357,7 +2358,7 @@ class PartyPokerParser(REParser):
             r' \w+,'
             r' (?P<month>\w+)'
             r' (?P<day>\d+),'
-            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time>\d{1,2}:\d{2}:\d{2})'
             r' (?P<time_zone_abbreviation>\S+)'
             r' (?P<year>\d+)'
         ),
@@ -2463,7 +2464,7 @@ class PokerStarsParser(REParser):
         (
             r' -'
             r' (?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)'
-            r' (?P<time>\d{2}:\d{2}:\d{2})'
+            r' (?P<time>\d{1,2}:\d{2}:\d{2})'
             r' (?P<time_zone_abbreviation>\S+)'
         ),
     )
