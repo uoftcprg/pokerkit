@@ -451,7 +451,7 @@ class HandHistory(Iterable[State]):
             parse_value: Callable[[str], int] = parse_value,
             **kwargs: Any,
     ) -> HandHistory:
-        """Load PHH from ``str`` object.
+        """Load PHH from a ``str`` object.
 
         :param s: The ``str`` object.
         :param parse_value: The value parsing function.
@@ -460,7 +460,7 @@ class HandHistory(Iterable[State]):
         """
         return cls(
             **cls._filter_non_fields(
-                **kwargs | loads_toml(s, parse_float=parse_value),
+                **loads_toml(s, parse_float=parse_value) | kwargs,
             ),
         )
 
@@ -473,6 +473,58 @@ class HandHistory(Iterable[State]):
         :return: The hand history object.
         """
         return cls.loads(fp.read().decode(), **kwargs)
+
+    @classmethod
+    def loads_all(
+            cls,
+            s: str,
+            *,
+            parse_value: Callable[[str], int] = parse_value,
+            **kwargs: Any,
+    ) -> Iterator[HandHistory]:
+        """Load PHHs from a ``str`` object.
+
+        :param s: The ``str`` object.
+        :param parse_value: The value parsing function.
+        :param kwargs: The metadata.
+        :return: The hand history object.
+        """
+        for raw_phh in loads_toml(s, parse_float=parse_value).values():
+            yield cls(**cls._filter_non_fields(**raw_phh | kwargs))
+
+    @classmethod
+    def load_all(cls, fp: BinaryIO, **kwargs: Any) -> Iterator[HandHistory]:
+        """Load PHHs from a file pointer.
+
+        :param fp: The file pointer.
+        :param kwargs: The metadata.
+        :return: The hand history object.
+        """
+        yield from cls.loads_all(fp.read().decode(), **kwargs)
+
+    @classmethod
+    def dumps_all(cls, phhs: Iterable[HandHistory]) -> str:
+        """Dump PHHs as a ``str`` object.
+
+        :return: a ``str`` object.
+        """
+        raw_phhs = []
+
+        for i, phh in enumerate(phhs):
+            raw_phh = f'[{i + 1}]\n{phh.dumps()}'
+
+            raw_phhs.append(raw_phh)
+
+        return '\n\n'.join(raw_phhs)
+
+    @classmethod
+    def dump_all(cls, phhs: Iterable[HandHistory], fp: BinaryIO) -> None:
+        """Dump PHH to a file pointer.
+
+        :param fp: The file pointer.
+        :return: ``None``.
+        """
+        fp.write(cls.dumps_all(phhs).encode())
 
     @classmethod
     def from_game_state(
