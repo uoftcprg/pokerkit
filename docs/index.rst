@@ -7,7 +7,7 @@
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: Contents
 
    examples
    simulation
@@ -20,7 +20,7 @@
    reference
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

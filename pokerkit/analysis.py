@@ -310,7 +310,7 @@ def calculate_equities(
 
     fn = partial(
         __calculate_equities_1,
-        hole_cards,
+        hole_cards,  # type: ignore[arg-type]
         board_cards,
         hole_dealing_count,
         board_dealing_count,

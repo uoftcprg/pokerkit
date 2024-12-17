@@ -1,11 +1,14 @@
 """:mod:`pokerkit.utilities` implements classes related to poker
 utilities.
+
+These utilities (helper constants, functions, classes, methods, etc.)
+are used throughout the PokerKit project.
 """
 
 from __future__ import annotations
 
-from collections import deque
 from collections.abc import Iterable, Iterator, Mapping
+from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, time
 from decimal import Decimal
@@ -25,6 +28,7 @@ if TYPE_CHECKING:
 
 _T = TypeVar('_T')
 UNMATCHABLE_PATTERN: Pattern[str] = compile(r'(?!)')
+"""A regular expression pattern that can never be matched."""
 
 
 @unique
@@ -35,14 +39,20 @@ class Rank(StrEnum):
     the poker variant being played. A card of lower rank is said to be
     less than that of a higher rank.
 
+    An enum element can be accessed through the following two ways:
+
     >>> Rank.DEUCE
     <Rank.DEUCE: '2'>
     >>> Rank('2')
     <Rank.DEUCE: '2'>
-    >>> Rank.DEUCE.value
-    '2'
+
+    A rank's single-character representation and full name can also be
+    accessed.
+
     >>> Rank.DEUCE.name
     'DEUCE'
+    >>> Rank.DEUCE.value
+    '2'
     """
 
     ACE: str = 'A'
@@ -77,7 +87,7 @@ class Rank(StrEnum):
 
 @unique
 class RankOrder(tuple[Rank, ...], Enum):
-    """The enum class for tuples of ranks.
+    """The enum class for ordering of ranks.
 
     Poker variants order the ranks differently between each other. Most
     games use deuce to ace ordering which is defined here as
@@ -101,8 +111,8 @@ class RankOrder(tuple[Rank, ...], Enum):
     >>> RankOrder.SHORT_DECK_HOLDEM[-1]
     <Rank.ACE: 'A'>
 
-    In some draw games, Ace is considered to be the lowest rank. This
-    ordering is accessible via :attr:`RankOrder.REGULAR`.
+    In some draw or low games, Ace is considered to be the lowest rank.
+    This ordering is accessible via :attr:`RankOrder.REGULAR`.
 
     >>> len(RankOrder.REGULAR)
     13
@@ -110,6 +120,15 @@ class RankOrder(tuple[Rank, ...], Enum):
     <Rank.ACE: 'A'>
     >>> RankOrder.REGULAR[-1]
     <Rank.KING: 'K'>
+
+    Eight-or-better low ranks are used for some split-pot games.
+
+    >>> len(RankOrder.EIGHT_OR_BETTER_LOW)
+    8
+    >>> RankOrder.EIGHT_OR_BETTER_LOW[0]
+    <Rank.ACE: 'A'>
+    >>> RankOrder.EIGHT_OR_BETTER_LOW[-1]
+    <Rank.EIGHT: '8'>
     """
 
     STANDARD: tuple[Rank, ...] = (
@@ -179,15 +198,22 @@ class Suit(StrEnum):
     diamonds, hearts, and spades, which is also alphabetical.
 
     In most poker variants, suits are completely irrelevant and are
-    never used to break ties or to decide the winner.
+    never used to break ties or to decide the winner (this is the case
+    for PokerKit).
 
     In stud games, suits are used to break ties when deciding the
     opener when there are multiple up cards with the same rank.
+
+    An enum element can be accessed through the following two ways:
 
     >>> Suit.CLUB
     <Suit.CLUB: 'c'>
     >>> Suit('c')
     <Suit.CLUB: 'c'>
+
+    A suit's single-character representation and full name can also be
+    accessed.
+
     >>> Suit.CLUB.name
     'CLUB'
     >>> Suit.CLUB.value
@@ -214,7 +240,8 @@ class Card:
 
     Cards with higher ranks are considered stronger than those with
     lower ranks. Of course, the rank ordering is variant-dependant.
-    Ties are broken by suits in some rare variants.
+    Ties are broken by suits in some rare variants (for more details,
+    please see :class:`pokerkit.utilities.Card`.
 
     >>> card = Card(Rank.ACE, Suit.SPADE)
     >>> card
@@ -226,14 +253,14 @@ class Card:
     >>> card.suit
     <Suit.SPADE: 's'>
 
-    Note that the card attributes are read-only.
+    In PokerKit, the card attributes are read-only (i.e., immutable)...
 
     >>> card.rank = Rank.KING
     Traceback (most recent call last):
         ...
     dataclasses.FrozenInstanceError: cannot assign to field 'rank'
 
-    The card is also hashable.
+    ...and hence hashable.
 
     >>> from collections.abc import Hashable
     >>> isinstance(card, Hashable)
@@ -246,7 +273,7 @@ class Card:
     """
 
     UNKNOWN: ClassVar[Card]
-    """The unknown card."""
+    """An unknown card. This is a class variable."""
     rank: Rank
     """The rank of the card."""
     suit: Suit
@@ -351,6 +378,10 @@ class Card:
     def clean(cls, values: CardsLike) -> tuple[Card, ...]:
         """Clean the cards.
 
+        This method "cleans" any cards-like object (e.g., raw string
+        representations, a single card instance, etc.) into a tuple of
+        card instances.
+
         >>> Card.clean('AsKs')
         (As, Ks)
         >>> Card.clean('AsKs')
@@ -382,18 +413,32 @@ class Card:
     def parse(cls, *raw_cards: str) -> Iterator[Card]:
         """Parse the string of the card representations.
 
+        This returns a generator of the parsed card instances.
+
         >>> Card.parse('AsKsQsJsTs')  # doctest: +ELLIPSIS
         <generator object Card.parse at 0x...>
+
+        The generator can be consumed completely to obtain a ``list`` of
+        cards.
+
         >>> list(Card.parse('2c8d5sKh'))
         [2c, 8d, 5s, Kh]
         >>> list(Card.parse('2c, 8d, 5s, Kh'))
         [2c, 8d, 5s, Kh]
+
+        Calling ``next`` will consume a single element from the
+        generator.
+
         >>> next(Card.parse('AcAh'))
         Ac
+
+        Errors are raised when invalid card representations are
+        encountered.
+
         >>> next(Card.parse('AcA'))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ValueError: The lengths of valid card representations must be multip...
+        ValueError: The sum of the lengths of valid card representations mus...
         >>> next(Card.parse('1d'))
         Traceback (most recent call last):
             ...
@@ -414,8 +459,9 @@ class Card:
                 if len(content) % 2 != 0:
                     raise ValueError(
                         (
-                            'The lengths of valid card representations must be'
-                            f' multiples of 2, unlike {repr(content)}'
+                            'The sum of the lengths of valid card'
+                            ' representations must be a multiple of 2, unlike'
+                            f' {repr(content)}'
                         ),
                     )
 
@@ -448,6 +494,9 @@ class Card:
 
 Card.UNKNOWN = Card(Rank.UNKNOWN, Suit.UNKNOWN)
 CardsLike = Iterable[Card] | Card | str
+"""A union of cards-like types. Each of these types can be "cleaned" by
+the :meth:`pokerkit.utilities.Card.clean` class method.
+"""
 
 
 @unique
@@ -484,8 +533,8 @@ class Deck(tuple[Card, ...], Enum):
     >>> deck[:6]
     [2c, 2d, 2h, As, 3c, 3d]
 
-    The standard and regular decks have identical contents. The ordering
-    of the cards are different, however.
+    The standard and regular decks have identical contents; however, the
+    ordering of the cards are different.
 
     >>> len(Deck.STANDARD)
     52
@@ -547,7 +596,7 @@ class Deck(tuple[Card, ...], Enum):
 
 
 def filter_none(values: Iterable[Any]) -> Any:
-    """Filter ``None`` from values.
+    """Filter out ``None`` from an iterable of values.
 
     >>> filter_none([1, 2, None, 3])  # doctest: +ELLIPSIS
     <filter object at 0x...>
@@ -563,6 +612,8 @@ def filter_none(values: Iterable[Any]) -> Any:
 def min_or_none(values: Iterable[Any], key: Any = None) -> Any:
     """Get the minimum value while ignoring ``None`` values.
 
+    If the iterable of values are empty, ``None`` is returned.
+
     >>> min_or_none([1, 2, 3, -2, -1])
     -2
     >>> min_or_none([1, None, 2, None, 3, -2, -1, None])
@@ -572,7 +623,7 @@ def min_or_none(values: Iterable[Any], key: Any = None) -> Any:
 
     :param values: The optional values.
     :param key: The optional key function.
-    :return: The minimum value if any, otherwise ``None``.
+    :return: The minimum value. If the values are empty, ``None``.
     """
     try:
         return min(filter_none(values), key=key)
@@ -583,6 +634,8 @@ def min_or_none(values: Iterable[Any], key: Any = None) -> Any:
 def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
     """Get the maximum value while ignoring ``None`` values.
 
+    If the iterable of values are empty, ``None`` is returned.
+
     >>> max_or_none([1, 2, 3, -2, -1])
     3
     >>> max_or_none([1, None, 2, None, 3, -2, -1, None])
@@ -592,7 +645,7 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
 
     :param values: The optional values.
     :param key: The optional key function.
-    :return: The maximum value if any, otherwise ``None``.
+    :return: The maximum value. If the values are empty, ``None``.
     """
     try:
         return max(filter_none(values), key=key)
@@ -601,10 +654,16 @@ def max_or_none(values: Iterable[Any], key: Any = None) -> Any:
 
 
 ValuesLike = Iterable[int] | Mapping[int, int] | int
+"""A union of values-like types. Each of these types can be "cleaned" by
+the :func:`pokerkit.utilities.clean_values` function.
+"""
 
 
 def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
-    """Clean the integers.
+    """Clean the numerical values.
+
+    This function "cleans" any values-like object (e.g., iterables,
+    mappings, an number, etc.) into a tuple of numerical values.
 
     >>> clean_values([1, 2, 3, 4], 4)
     (1, 2, 3, 4)
@@ -623,7 +682,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
 
     :param values: The values.
     :param count: The number of values.
-    :return: The cleaned integers.
+    :return: The cleaned numerical values.
     :raises ValueError: If the values are invalid.
     """
     if isinstance(values, Number):
@@ -651,7 +710,7 @@ def clean_values(values: ValuesLike, count: int) -> tuple[int, ...]:
 def shuffled(values: Iterable[_T]) -> list[_T]:
     """Return the shuffled values.
 
-    The shuffling is not done in-place.
+    The shuffling is performed out-of-place (i.e., not done in-place).
 
     >>> cards = shuffled(Card.parse('AcAdAhAs'))
     >>> cards  # doctest: +ELLIPSIS
@@ -670,6 +729,8 @@ def shuffled(values: Iterable[_T]) -> list[_T]:
 def rotated(values: Iterable[_T], count: int) -> deque[_T]:
     """Rotate the values.
 
+    The rotation is performed out-of-place (i.e., not done in-place).
+
     >>> rotated(['a', 'b', 'c', 'd'], 2)
     deque(['c', 'd', 'a', 'b'])
     >>> rotated(range(5), -3)
@@ -687,7 +748,7 @@ def rotated(values: Iterable[_T], count: int) -> deque[_T]:
 
 
 def divmod(dividend: int, divisor: int) -> tuple[int, int]:
-    """Divide the amount.
+    """Divide the amount and get its quotient and remainder.
 
     >>> divmod(11, 3)
     (3, 2)
@@ -717,8 +778,19 @@ def rake(
 ) -> tuple[int, int]:
     """Rake the amount.
 
+    This is a default raking function used by PokerKit (which defaults
+    to not raking anything). Through methods like ``functools.partial``,
+    parameters like the rake percentage, cap, and no-flop-no-drop can be
+    overridden.
+
     Note that the percentage value is expected to be within range
     [``0``, ``1``]. For instance, ``0.1`` represents 10%.
+
+    If ``no_flop_no_drop`` is enabled, this means that a rake will only
+    be collected if a flop is dealt. Since PokerKit caters to many
+    variants, we interpret this as being that there exists at least one
+    card on the board. Some variants do not involve board cards, so if
+    this parameter is set to ``True``, no rake will be raked whatsoever.
 
     >>> rake(100)
     (0, 100)
@@ -735,15 +807,12 @@ def rake(
         ...
     ValueError: If no-flop-no-drop is enabled, the state must be checked, bu...
 
-    In game contexts, the ``state`` parameter will not be ``None`` as it
-    is by default. This can be used to encode a more complicated raking
-    logic.
+    When this function is actually called, the ``state`` parameter will
+    not be ``None`` as it is by default. This argument can be used to
+    encode a more complicated raking logic.
 
-    If ``no_flop_no_drop`` is enabled, this means that a rake will only
-    be collected if a flop is dealt. Since PokerKit caters to many
-    variants, we interpret this as being that there exists at least one
-    card on the board. Some variants do not involve board cards, so if
-    this parameter is set to ``True``, no rake will be raked whatsoever.
+    During state creation, user can supply their own rake function,
+    corresponding with the accepted type signature.
 
     :param amount: The pot amount.
     :param state: The optional poker state whose pot is being raked.
@@ -785,7 +854,7 @@ def rake(
 
 
 def parse_value(raw_value: str) -> int:
-    """Convert ``str`` to a number.
+    """Convert ``str`` to a numerical value.
 
     If integral, an ``int`` instance is returned. Otherwise, a
     ``decimal.Decimal`` instance is returned.
@@ -799,8 +868,8 @@ def parse_value(raw_value: str) -> int:
     >>> parse_value('9,999.99')
     Decimal('9999.99')
 
-    :param raw_value: The raw value.
-    :return: The converted value.
+    :param raw_value: The raw numerical value.
+    :return: The converted numerical value.
     """
     raw_value = raw_value.replace(',', '')
     value: int | Decimal
@@ -840,7 +909,7 @@ def parse_month(raw_month: str) -> int:
 
 
 def sign(value: int) -> int:
-    """Get sign of a value.
+    """Get sign of a numerical value.
 
     >>> sign(-5)
     -1
@@ -849,8 +918,8 @@ def sign(value: int) -> int:
     >>> sign(0)
     0
 
-    :param value: The value to get a sign from.
-    :return: The sign.
+    :param value: The numerical value to get a sign from.
+    :return: The sign of a numerical value.
     """
     if value > 0:
         return 1

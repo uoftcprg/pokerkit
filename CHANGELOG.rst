@@ -30,6 +30,7 @@ This version release introduces backward incompatible changes. Please read the b
 
 **Changed**
 
+- ``pokerkit.state.ChipsPushing``'s ``board_index`` and ``hand_index`` attributes will be ``None`` when the hands terminates due to every player except one folding. Previously, ``-1`` was used to denote as such.
 - Automatic repair of broken hand histories during iteration.
 - Allow non-standard folds (i.e. folding even when you don't need to) in a cash-game mode.
 - Allow showing hole cards of the last remaining player after everyone folds around.
@@ -47,6 +48,7 @@ This version release introduces backward incompatible changes. Please read the b
 - Commas are handled ``pokerkit.utilities.Card.parse`` and ``pokerkit.utilities.parse_value``.
 - ``"10"`` is now a valid way to express the rank of 10 for cards in ``pokerkit.utilities.Card.parse``.
 - ``pokerkit.utilities.parse_value`` returns ``decimal.Decimal`` for decimal values instead of ``float``, as it used to. If integral, it returns ``int`` as it used to.
+- Cleaned up docstrings or fixed docstring inaccuracies.
 
 **Removed**
 

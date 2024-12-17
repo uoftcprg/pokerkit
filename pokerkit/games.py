@@ -73,7 +73,7 @@ class Poker(ABC):
     """The betting structure.
 
     This class attribute determines the betting limits of a particular
-    game (e.g. no-limit, pot-limit, or fixed-limit).
+    game (e.g., no-limit, pot-limit, or fixed-limit).
     """
 
     def __init__(
@@ -178,8 +178,9 @@ class Poker(ABC):
         Similar to "raw" antes and "raw" blinds/straddles, the starting
         stacks can be represented in different ways which PokerKit
         interprets when creating the games. Not all representations
-        explicitly express the number of players and therefore this
-        value is accepted as a separate parameter ``player_count``.
+        (e.g., ``dict``) explicitly express the number of players and
+        therefore this value is accepted as a separate parameter
+        ``player_count``.
 
         :param raw_starting_stacks: The "raw" starting stacks.
         :param player_count: The number of players.
@@ -205,7 +206,7 @@ class Poker(ABC):
 
     @property
     def button_status(self) -> bool:
-        """Return whether this game is a button game (i.e. has a
+        """Return whether this game is a button game (i.e., has a
         rotating button).
 
         We deem that a variant is a button game if it has betting round

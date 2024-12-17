@@ -409,7 +409,7 @@ class HandHistory(Iterable[State]):
     """The automations."""
     divmod: Callable[[int, int], tuple[int, int]] = divmod
     """The divmod function."""
-    rake: Callable[[int], tuple[int, int]] = partial(rake, rake=0)
+    rake: Callable[[int], tuple[int, int]] = partial(rake, percentage=0)
     """The rake function."""
     parse_value: Callable[[str], int] = parse_value
     """The value parsing function."""
@@ -925,6 +925,7 @@ class HandHistory(Iterable[State]):
         kwargs: dict[str, Any] = {
             'automations': tuple(automations),
             'divmod': self.divmod,
+            'rake': self.rake,
             'ante_trimming_status': self.ante_trimming_status,
         }
 

@@ -144,7 +144,7 @@ The exact parameters that must be specified differ depending on the variant bein
 Why Specify the Number of Players?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ways the chip values (e.g. antes, blinds/straddles, and starting stacks) can be supplied in PokerKit are quite liberal. For instance, the statements below are identical.
+The ways the chip values (e.g., antes, blinds/straddles, and starting stacks) can be supplied in PokerKit are quite liberal. For instance, the statements below are identical.
 
 .. code-block:: python
 
@@ -567,7 +567,7 @@ This parameter states the antes. Just like it is for starting stacks, as explain
 "Raw" Blinds or Straddles
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This parameter states the blinds or straddles. It is "raw" in that it must be cleaned by PokerKit just like "raw" antes. Standard small and big blinds can be supplied as ``[0.5, 1]``. With a UTG straddle, it would be ``[0.5, 1, 2]``. With double straddles, ``[0.5, 1, 2, 4]``. With a button straddle, ``{0: 0.5, 1: 1, -1: 2}``. If the small and big blinds are equal, then it would be ``[2, 2]``. The possibilities are endless. If the game does not use blinds or straddles, the user must supply ``0`` or its equivalent (e.g. ``[0, 0, 0, 0]``), meaning no player is blinded or straddled.
+This parameter states the blinds or straddles. It is "raw" in that it must be cleaned by PokerKit just like "raw" antes. Standard small and big blinds can be supplied as ``[0.5, 1]``. With a UTG straddle, it would be ``[0.5, 1, 2]``. With double straddles, ``[0.5, 1, 2, 4]``. With a button straddle, ``{0: 0.5, 1: 1, -1: 2}``. If the small and big blinds are equal, then it would be ``[2, 2]``. The possibilities are endless. If the game does not use blinds or straddles, the user must supply ``0`` or its equivalent (e.g., ``[0, 0, 0, 0]``), meaning no player is blinded or straddled.
 
 Bring-In
 ^^^^^^^^
@@ -637,16 +637,16 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.divmod`                  (Defined during initialization and described above in this page)
 :attr:`pokerkit.state.State.rake`                    (Defined during initialization and described above in this page)
 :attr:`pokerkit.state.State.antes`                   Cleaned ante amounts.
-:attr:`pokerkit.state.State.blinds_or_straddles`     Cleaned blind/straddle/post-bet amounts. If a value is a post bet, it must be negated (i.e. ``[1, 2, 0, 0, -2, 0]``). This is to tell PokerKit that this forced bet does not impact who opens the preflop action.
+:attr:`pokerkit.state.State.blinds_or_straddles`     Cleaned blind/straddle/post-bet amounts. If a value is a post bet, it must be negated (i.e., ``[1, 2, 0, 0, -2, 0]``). This is to tell PokerKit that this forced bet does not impact who opens the preflop action.
 :attr:`pokerkit.state.State.starting_stacks`         Cleaned starting stack chip amounts.
 :attr:`pokerkit.state.State.deck_cards`              Shuffled deck from which cards are drawn.
 :attr:`pokerkit.state.State.board_cards`             Community cards.
 :attr:`pokerkit.state.State.mucked_cards`            Cards that were mucked during folds or mucks during the showdown.
 :attr:`pokerkit.state.State.burn_cards`              Cards that were burnt before dealing operations.
-:attr:`pokerkit.state.State.statuses`                Whether or not a player at the corresponding position is still in the hand (i.e. active).
+:attr:`pokerkit.state.State.statuses`                Whether or not a player at the corresponding position is still in the hand (i.e., active).
 :attr:`pokerkit.state.State.bets`                    Outstanding bets.
 :attr:`pokerkit.state.State.stacks`                  Stack sizes.
-:attr:`pokerkit.state.State.payoffs`                 Payoffs (i.e. rewards).
+:attr:`pokerkit.state.State.payoffs`                 Payoffs (i.e., rewards).
 :attr:`pokerkit.state.State.hole_cards`              Private cards.
 :attr:`pokerkit.state.State.hole_card_statuses`      Whether each private card is an up card or a down card.
 :attr:`pokerkit.state.State.discarded_cards`         Cards that were discarded for each player.
@@ -667,16 +667,16 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.board_count`             Number of boards (maybe more than ``1`` for multi-runout or multi-board games).
 :attr:`pokerkit.state.State.board_indices`           Indices of boards.
 :meth:`pokerkit.state.State.get_board`               The n'th board.
-:meth:`pokerkit.state.State.get_censored_hole_cards` Return the hole cards of a player, but censor the down cards (i.e. convert to an unknown card ``??``).
+:meth:`pokerkit.state.State.get_censored_hole_cards` Return the hole cards of a player, but censor the down cards (i.e., convert to an unknown card ``??``).
 :meth:`pokerkit.state.State.get_down_cards`          Down cards of a player.
 :meth:`pokerkit.state.State.get_up_cards`            Up cards of a player.
 :meth:`pokerkit.state.State.get_hand`                Evaluated hand of a player for a hand type.
 :meth:`pokerkit.state.State.get_up_hand`             Evaluated open/up hand of a player for a hand type.
 :meth:`pokerkit.state.State.get_up_hands`            Evaluated open/up hand of a player for all hand types.
-:meth:`pokerkit.state.State.can_win_now`             Whether or not a player may be able to win a portion of the pots (i.e. no shown hand can prevent the player from winning a portion of the pot(s)).
+:meth:`pokerkit.state.State.can_win_now`             Whether or not a player may be able to win a portion of the pots (i.e., no shown hand can prevent the player from winning a portion of the pot(s)).
 :attr:`pokerkit.state.State.reserved_cards`          Cards that are tapped into when replenishing an emptied deck.
-:attr:`pokerkit.state.State.cards_in_play`           Cards that are in play (i.e. visible to at least one active player).
-:attr:`pokerkit.state.State.cards_not_in_play`       Cards that are not in play (i.e. not visible to any active player).
+:attr:`pokerkit.state.State.cards_in_play`           Cards that are in play (i.e., visible to at least one active player).
+:attr:`pokerkit.state.State.cards_not_in_play`       Cards that are not in play (i.e., not visible to any active player).
 :meth:`pokerkit.state.State.get_dealable_cards`      Cards that are "recommended" to be dealt from (handles deck replenishing if the deck is/will be out of cards).
 :meth:`pokerkit.state.State.get_effective_stack`     Effective stack of a player.
 :attr:`pokerkit.state.State.pot_amounts`             The amounts (unraked) of each main (and side) pot(s).
@@ -976,7 +976,7 @@ Helper Method/Attribute                                                  Descrip
 Folding Operation
 ^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.fold`) corresponds to a folding action. It accepts no positional argument. The actor is automatically kept track of by the state. Non-standard folds (i.e. even when there are no outstanding bets or raises) are only allowed in a cash-game mode (typically forbidden in tournaments).
+This operation (:meth:`pokerkit.state.State.fold`) corresponds to a folding action. It accepts no positional argument. The actor is automatically kept track of by the state. Non-standard folds (i.e., even when there are no outstanding bets or raises) are only allowed in a cash-game mode (typically forbidden in tournaments).
 
 Checking/Calling Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1017,9 +1017,9 @@ This operation (:meth:`pokerkit.state.State.select_runout_count`) corresponds to
 Hole Cards Showing/Mucking Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This operation (:meth:`pokerkit.state.State.show_or_muck_hole_cards`) corresponds to showing or mucking of one's cards. It accepts one optional positional argument on whether to show or muck. If ``True``, this denotes that the player is showing all his/her hole cards. If ``False``, this denotes that the player is mucking his hand. If some card values are supplied, the caller is saying that the player is showing the supplied cards. This is useful when the hole cards previously dealt were unknown (e.g. ``"????"``). Note that even when known cards are held by the player, the caller can override what cards are shown with this method call. If no argument is supplied, whether or not the player shows or mucks their hand is decided automatically. If they hold a hand that may win a piece of the pot as it ties with or wins over all other shown hands or is in an all-in situation, the player will opt to show. Otherwise, the player will automatically muck.
+This operation (:meth:`pokerkit.state.State.show_or_muck_hole_cards`) corresponds to showing or mucking of one's cards. It accepts one optional positional argument on whether to show or muck. If ``True``, this denotes that the player is showing all his/her hole cards. If ``False``, this denotes that the player is mucking his hand. If some card values are supplied, the caller is saying that the player is showing the supplied cards. This is useful when the hole cards previously dealt were unknown (e.g., ``"????"``). Note that even when known cards are held by the player, the caller can override what cards are shown with this method call. If no argument is supplied, whether or not the player shows or mucks their hand is decided automatically. If they hold a hand that may win a piece of the pot as it ties with or wins over all other shown hands or is in an all-in situation, the player will opt to show. Otherwise, the player will automatically muck.
 
-In tournament mode, no matter what happens, if shown, the shown hole cards must all be known (i.e. contains no question marks). This restriction does not apply in cash-game mode (i.e. not a tournament). For instance, a player may opt to keep their hands (or part of their hole cards) face-down even when all-in and there are community cards still left to come (this is not allowed in tournaments to prevent chip dumping). Or, when a player has a chance to show their hands, they may only want to show part of their hand (again, typically prohibited in tournaments).
+In tournament mode, no matter what happens, if shown, the shown hole cards must all be known (i.e., contains no question marks). This restriction does not apply in cash-game mode (i.e., not a tournament). For instance, a player may opt to keep their hands (or part of their hole cards) face-down even when all-in and there are community cards still left to come (this is not allowed in tournaments to prevent chip dumping). Or, when a player has a chance to show their hands, they may only want to show part of their hand (again, typically prohibited in tournaments).
 
 In poker games, the showdown order is determined through action. The last bettor/raiser must show first. In practice, it is encouraged for people who know they won for sure to show first. This means that the "correct" showdown order may deviate from the actually practiced showdown order.
 

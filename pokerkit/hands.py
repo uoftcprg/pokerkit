@@ -45,13 +45,17 @@ class Hand(Hashable, ABC):
 
     It does not make sense to compare hands of different types.
 
-    >>> h = BadugiHand('6d7s8h9c')
-    >>> h < 500
+    >>> h3 = BadugiHand('6d7s8h9c')
+    >>> h3 < h0  # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    TypeError: '<' not supported between instances of 'BadugiHand' and 'Shor...
+    >>> h3 < 500
     Traceback (most recent call last):
         ...
     TypeError: '<' not supported between instances of 'BadugiHand' and 'int'
 
-    The hands are hashable.
+    The hands are immutable and hence hashable.
 
     >>> h0 = ShortDeckHoldemHand('6s7s8s9sTs')
     >>> h1 = ShortDeckHoldemHand('7c8c9cTcJc')
@@ -155,7 +159,11 @@ class Hand(Hashable, ABC):
 
 
 class CombinationHand(Hand, ABC):
-    """The abstract base class for combination hands."""
+    """The abstract base class for combination hands.
+
+    Here, the hands are formed by combining hole cards and board cards
+    in whatever way possible.
+    """
 
     card_count: ClassVar[int]
     """The number of cards."""
@@ -479,7 +487,11 @@ class GreekHoldemHand(BoardCombinationHand):
 
 
 class HoleBoardCombinationHand(BoardCombinationHand, ABC):
-    """The abstract base class for hole-board-combination hands."""
+    """The abstract base class for hole-board-combination hands.
+
+    Here, the hands are formed by combining a specific number of hole
+    cards and board cards.
+    """
 
     hole_card_count: ClassVar[int]
     """The number of hole cards."""
@@ -589,7 +601,7 @@ class OmahaEightOrBetterLowHand(HoleBoardCombinationHand):
 
 
 class BadugiHand(Hand):
-    """The class for badugi hands.
+    """The class for badugi hands (ace-to-five).
 
     >>> h0 = BadugiHand('Kc')
     >>> h1 = BadugiHand('Ac')
@@ -698,7 +710,7 @@ class BadugiHand(Hand):
 
 
 class StandardBadugiHand(BadugiHand):
-    """The class for standard badugi hands."""
+    """The class for standard badugi hands (deuce-to-seven)."""
 
     lookup = StandardBadugiLookup()
 

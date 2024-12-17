@@ -1,5 +1,7 @@
 """:mod:`pokerkit.lookups` implements classes related to poker hand
 lookups.
+
+Lookups are used by PokerKit's hand types to discern hand strengths.
 """
 
 from abc import ABC, abstractmethod
@@ -19,6 +21,8 @@ from pokerkit.utilities import Card, CardsLike, Rank, RankOrder
 @unique
 class Label(StrEnum):
     """The enum class for all hand classification labels.
+
+    The label describes the type of each hand.
 
     >>> Label.ONE_PAIR
     <Label.ONE_PAIR: 'One pair'>
@@ -439,7 +443,7 @@ class RegularLookup(Lookup):
 
 @dataclass
 class BadugiLookup(Lookup):
-    """The class for badugi hand lookups.
+    """The class for badugi hand lookups (ace-to-five).
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
     please use :class:`pokerkit.hands.BadugiHand`.
@@ -471,8 +475,8 @@ class BadugiLookup(Lookup):
         if not Card.are_rainbow(cards):
             raise ValueError(
                 (
-                    'Badugi hands must be rainbow (i.e. of distinct suits) but'
-                    f' the cards {repr(cards)} are not.'
+                    'Badugi hands must be rainbow (i.e., of distinct suits)'
+                    f' but the cards {repr(cards)} are not.'
                 ),
             )
 
@@ -481,7 +485,7 @@ class BadugiLookup(Lookup):
 
 @dataclass
 class StandardBadugiLookup(BadugiLookup):
-    """The class for standard badugi hand lookups.
+    """The class for standard badugi hand lookups (deuce-to-seven).
 
     Lookups are used by evaluators. If you want to evaluate poker hands,
     please use :class:`pokerkit.hands.StandardBadugiHand`.

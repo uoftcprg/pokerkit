@@ -44,7 +44,7 @@ Metric            PokerKit  Treys
 Speed (# hands/s) 1016740.7 3230966.4
 ================= ========= =========
 
-PokerKit performs in the same magnitude as ``treys``. But, it is a bit faster. This is an inevitable consequence of having a generalized high-level interface for evaluating hands. If speed is paramount, the user is recommended to explore various C++ solutions such as ``OMPEval``.
+PokerKit performs in the same magnitude as ``treys``. But, ``treys`` is a bit faster. This is an inevitable consequence of having a generalized high-level interface for evaluating hands. If speed is paramount, the reader is recommended to explore various C++ solutions such as ``OMPEval``.
 
 Representing Cards
 ------------------
