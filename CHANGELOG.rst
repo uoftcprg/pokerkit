@@ -49,6 +49,8 @@ This version release introduces backward incompatible changes. Please read the b
 - ``"10"`` is now a valid way to express the rank of 10 for cards in ``pokerkit.utilities.Card.parse``.
 - ``pokerkit.utilities.parse_value`` returns ``decimal.Decimal`` for decimal values instead of ``float``, as it used to. If integral, it returns ``int`` as it used to.
 - Cleaned up docstrings or fixed docstring inaccuracies.
+- Fix inaccurate error messages.
+- Fix error raised during equity calculation when no valid hand can be formed.
 
 **Removed**
 

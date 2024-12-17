@@ -181,7 +181,7 @@ def __calculate_equities_0(
     for hand_type in hand_types:
         hands = list(
             map(
-                partial(hand_type.from_game, board_cards=board_cards),
+                partial(hand_type.from_game_or_none, board_cards=board_cards),
                 hole_cards,
             ),
         )

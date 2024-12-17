@@ -85,8 +85,33 @@ class Hand(Hashable, ABC):
         :param hole_cards: The hole cards.
         :param board_cards: The optional board cards.
         :return: The strongest hand from possible card combinations.
+        :raises ValueError: If no valid hand can be formed.
         """
         pass  # pragma: no cover
+
+    @classmethod
+    def from_game_or_none(
+            cls,
+            hole_cards: CardsLike,
+            board_cards: CardsLike = (),
+    ) -> Hand | None:
+        """Create a poker hand from a game setting or return ``None``
+        if no valid hand can be formed.
+
+        In a game setting, a player uses private cards from their hole
+        and the public cards from the board to make their hand.
+
+        :param hole_cards: The hole cards.
+        :param board_cards: The optional board cards.
+        :return: The strongest hand from possible card combinations, or
+                 ``None`` if no valid hand can be formed.
+        """
+        try:
+            hand = cls.from_game(hole_cards, board_cards)
+        except ValueError:
+            hand = None
+
+        return hand
 
     def __init__(self, cards: CardsLike) -> None:
         self.__cards = Card.clean(cards)
@@ -241,7 +266,7 @@ class CombinationHand(Hand, ABC):
         if max_hand is None:
             raise ValueError(
                 (
-                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    f'No valid {cls.__qualname__} hand can be formed'
                     ' from the hole and board cards.'
                 ),
             )
@@ -457,7 +482,7 @@ class BoardCombinationHand(CombinationHand, ABC):
         if max_hand is None:
             raise ValueError(
                 (
-                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    f'No valid {cls.__qualname__} hand can be formed'
                     ' from the hole and board cards.'
                 ),
             )
@@ -553,7 +578,7 @@ class HoleBoardCombinationHand(BoardCombinationHand, ABC):
         if max_hand is None:
             raise ValueError(
                 (
-                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    f'No valid {cls.__qualname__} hand can be formed'
                     ' from the hole and board cards.'
                 ),
             )
@@ -701,7 +726,7 @@ class BadugiHand(Hand):
         if max_hand is None:
             raise ValueError(
                 (
-                    f'No valid {type(cls).__qualname__} hand can be formed'
+                    f'No valid {cls.__qualname__} hand can be formed'
                     ' from the hole and board cards.'
                 ),
             )
