@@ -21,3 +21,4 @@ Here are some of the features that are planned to be implemented in the future.
 - In non-uniform ante situations (e.g. button ante, BB ante), the paid ante(s) does not impact the pot bet during pre-flop (after flop, ante contributions are also considered to calculate the pot value).
 - Faster hand evaluation for 6/7 card combinations.
 - Faster hand strength and equity calculations.
+- Allow callbacks with sampled hands in equity and hand strength calculations. This can be used for getting winning hand's distributions.
