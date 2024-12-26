@@ -15,8 +15,8 @@ Reading hands
 
    from pokerkit import *
 
-   # Hand loading
-   with open("...", "rb") as file:
+   # Load hand
+   with open("path/to/file.phh", "rb") as file:
        hh = HandHistory.load(file)
 
    # Create game
@@ -31,6 +31,20 @@ Reading hands
 
    # Iterate through each action step
    for state, action in hh.state_actions:
+       ...
+
+If you have multiple hands in a single file, they can be loaded together.
+
+.. code-block:: python
+
+   from pokerkit import *
+
+   # Load hands
+   with open("path/to/file.phhs", "rb") as file:
+       hhs = HandHistory.load_all(file)
+
+   # Iterate through each hand history
+   for hh in hhs:
        ...
 
 Logs from third-party platforms like online casinos or research environments can be loaded as well. Feel free to open an issue if incompatibilities are found.
@@ -162,8 +176,20 @@ Writing Hands
    hh.players = ["Patrik Antonius", "Viktor Blom"]
 
    # Dump hand
-   with open("...", "wb") as file:
+   with open("path/to/file.phh", "wb") as file:
        hh.dump(file)
+
+If you have multiple hands, they can be dumped together in a single file.
+
+.. code-block:: python
+
+   from pokerkit import *
+
+   hhs = [...]
+
+   # Dump hands
+   with open("path/to/file.phhs", "wb") as file:
+       HandHistory.dump_all(hhs, file)
 
 Annual Computer Poker Competition (ACPC) Protocol
 -------------------------------------------------
