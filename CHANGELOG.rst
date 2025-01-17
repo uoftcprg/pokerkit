@@ -4,8 +4,8 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.6.0 (Planned)
------------------------
+Version 0.6.0 (January 17, 2025)
+--------------------------------
 
 This version release introduces backward incompatible changes. Please read the below content carefully!
 
