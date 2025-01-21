@@ -4140,6 +4140,16 @@ class State:
 
     This attribute is incremented with each completion/bet/raises.
     """
+    acted_player_indices: set[int] = field(default_factory=set, init=False)
+    """The indices of players who acted."""
+    consecutive_all_in_completion_betting_or_raising_amounts: list[int] = (
+        field(default_factory=list, init=False)
+    )
+    """The consecutive completion, betting, or raising amounts.
+
+    This is used to track whether successive non-full wagers combine to
+    form a full one, in which case a new betting round is started.
+    """
 
     def _setup_betting(self) -> None:
         pass
@@ -4239,6 +4249,8 @@ class State:
         self.completion_betting_or_raising_amount = 0
         self.completion_betting_or_raising_count = 0
 
+        self.acted_player_indices.clear()
+        self.consecutive_all_in_completion_betting_or_raising_amounts.clear()
         self._update_betting(
             status=(
                 len(self.actor_indices) == 1
@@ -4282,7 +4294,11 @@ class State:
         self._begin_bet_collection()
 
     def _pop_actor_index(self) -> int:
-        return self.actor_indices.popleft()
+        actor_index = self.actor_indices.popleft()
+
+        self.acted_player_indices.add(actor_index)
+
+        return actor_index
 
     @property
     def actor_index(self) -> int | None:
@@ -4732,6 +4748,26 @@ class State:
         assert player_index is not None
 
         if (
+                self.consecutive_all_in_completion_betting_or_raising_amounts
+                and (
+                    sum(
+                        (
+                            self
+                            .consecutive_all_in_completion_betting_or_raising_amounts  # noqa: E501
+                        ),
+                    )
+                    < self.completion_betting_or_raising_amount
+                )
+                and player_index in self.acted_player_indices
+        ):
+            raise ValueError(
+                (
+                    'The player already acted and hence cannot raise in face'
+                    ' of a non-full all-in wager'
+                ),
+            )
+
+        if (
                 self.stacks[player_index]
                 <= max(self.bets) - self.bets[player_index]
         ):
@@ -4945,12 +4981,6 @@ class State:
         self.bring_in_status = False
         self.completion_status = False
         self.actor_indices = deque(self.player_indices)
-        self.opener_index = player_index
-        self.completion_betting_or_raising_amount = max(
-            self.completion_betting_or_raising_amount,
-            completion_betting_or_raising_amount,
-        )
-        self.completion_betting_or_raising_count += 1
 
         self.actor_indices.rotate(-player_index)
         self.actor_indices.popleft()
@@ -4961,6 +4991,26 @@ class State:
                     self.actor_indices.remove(i)
 
         assert self.actor_indices
+
+        self.opener_index = player_index
+        self.completion_betting_or_raising_amount = max(
+            self.completion_betting_or_raising_amount,
+            completion_betting_or_raising_amount,
+        )
+        self.completion_betting_or_raising_count += 1
+
+        if self.stacks[player_index]:
+            (
+                self
+                .consecutive_all_in_completion_betting_or_raising_amounts
+                .clear()
+            )
+        else:
+            (
+                self
+                .consecutive_all_in_completion_betting_or_raising_amounts
+                .append(completion_betting_or_raising_amount)
+            )
 
         operation = CompletionBettingOrRaisingTo(
             player_index,

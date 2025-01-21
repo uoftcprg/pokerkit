@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.1 (January 20, 2025)
+--------------------------------
+
+**Changed**
+
+- Implement Rule 96 and 96a (its exception) of the 2024 WSOP Tournament Rules which states the following: "In no-limit and pot-limit, all raises must be equal to or greater than the size of the previous bet or raise on that betting round. An all-in wager of less than a full raise does not reopen the betting to a Participant who has already acted." The exception to this rule is triggered when "two or more consecutive all-in wagers that exceed the minimum allowable bet or raise." I would like to thank `Phenom Poker <https://www.phenompoker.com/>`_ for reporting this issue.
+
 Version 0.6.0 (January 17, 2025)
 --------------------------------
 
