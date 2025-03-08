@@ -897,6 +897,44 @@ class NoLimitTexasHoldem(
             rake=rake,
         )(raw_starting_stacks, player_count)
 
+class NoLimitRoyalHoldem(NoLimitPokerMixin, TexasHoldemMixin, UnfixedLimitHoldem):
+    """The class for no-limit royal hold'em games."""
+
+    deck = Deck.ROYAL_POKER
+    #hand_types = (RoyalHoldemHand,)
+    #hole_dealing_count = 2
+
+    @classmethod
+    def create_state(
+            cls,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool,
+            raw_antes: ValuesLike,
+            raw_blinds_or_straddles: ValuesLike,
+            min_bet: int,
+            raw_starting_stacks: ValuesLike,
+            player_count: int,
+            *,
+            mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
+            rake: Callable[[int, State], tuple[int, int]] = rake,
+    ) -> State:
+        """Create a no-limit royal hold'em game.
+
+        """
+        return cls(
+            automations,
+            ante_trimming_status,
+            raw_antes,
+            raw_blinds_or_straddles,
+            min_bet,
+            mode=mode,
+            starting_board_count=starting_board_count,
+            divmod=divmod,
+            rake=rake,
+        )(raw_starting_stacks, player_count)
+
 
 class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
     """The class for no-limit short-deck hold'em games."""

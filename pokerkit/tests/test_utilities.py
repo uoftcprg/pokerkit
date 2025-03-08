@@ -18,6 +18,7 @@ class RankOrderTestCase(TestCase):
         self.assertEqual(''.join(RankOrder.STANDARD), '23456789TJQKA')
         self.assertEqual(''.join(RankOrder.SHORT_DECK_HOLDEM), '6789TJQKA')
         self.assertEqual(''.join(RankOrder.REGULAR), 'A23456789TJQK')
+        self.assertEqual(''.join(RankOrder.ROYAL_POKER), 'TJQKA')
 
 
 class SuitTestCase(TestCase):
@@ -45,6 +46,16 @@ class DeckTestCase(TestCase):
                 '6d7d8d9dTdJdQdKdAd',
                 '6h7h8h9hThJhQhKhAh',
                 '6s7s8s9sTsJsQsKsAs',
+            ),
+        )
+        self.assertEqual(len(Deck.ROYAL_POKER), 20)
+        self.assertCountEqual(
+            Deck.ROYAL_POKER,
+            Card.parse(
+                'TcJcQcKcAc',
+                'TdJdQdKdAd',
+                'ThJhQhKhAh',
+                'TsJsQsKsAs',
             ),
         )
         self.assertEqual(len(Deck.REGULAR), 52)

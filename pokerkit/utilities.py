@@ -188,6 +188,13 @@ class RankOrder(tuple[Rank, ...], Enum):
     """The eight or better low ranks (from ace to eight)."""
     KUHN_POKER: tuple[Rank, ...] = Rank.JACK, Rank.QUEEN, Rank.KING
     """The Kuhn poker ranks (from jack to king)."""
+    ROYAL_POKER: tuple[Rank, ...] = (
+        Rank.TEN,
+        Rank.JACK,
+        Rank.QUEEN,
+        Rank.KING,
+        Rank.ACE,
+    )
 
 
 @unique
@@ -592,6 +599,19 @@ class Deck(tuple[Card, ...], Enum):
 
     The cards in it are jack of spades, queen of spades, and king of
     spades.
+    """
+    ROYAL_POKER: tuple[Card, ...] = tuple(
+        starmap(
+            Card,
+            product(
+                RankOrder.ROYAL_POKER,
+               (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
+            ),
+        ),
+    )
+    """The 20-card royal poker deck cards.
+    
+    The cards in it are ten, jack, queen, king, and ace of each suit.
     """
 
 
