@@ -28,6 +28,7 @@ Fixed-limit seven card stud                                  :class:`pokerkit.ga
 Fixed-limit seven card stud hi-low split-eight or better low :class:`pokerkit.games.FixedLimitSevenCardStudHighLowSplitEightOrBetter`
 Fixed-limit Texas hold'em                                    :class:`pokerkit.games.FixedLimitTexasHoldem`
 No-limit deuce-to-seven single draw                          :class:`pokerkit.games.NoLimitDeuceToSevenLowballSingleDraw`
+No-limit royal hold'em                                       :class:`pokerkit.games.NoLimitRoyalHoldem`
 No-limit short-deck hold'em                                  :class:`pokerkit.games.NoLimitShortDeckHoldem`
 No-limit Texas hold'em                                       :class:`pokerkit.games.NoLimitTexasHoldem`
 Pot-limit Omaha hold'em                                      :class:`pokerkit.games.PotLimitOmahaHoldem`

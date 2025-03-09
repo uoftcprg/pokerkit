@@ -4,6 +4,15 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.2 (March 9, 2025)
+-----------------------------
+
+**Added**
+
+- No-limit royal hold'em pre-defined variant ``pokerkit.games.NoLimitRoyalHoldem``.
+- Royal poker deck ``pokerkit.utilities.Deck.ROYAL_POKER``.
+- Royal poker rank ordering ``pokerkit.utilities.RankOrder.ROYAL_POKER``.
+
 Version 0.6.1 (January 20, 2025)
 --------------------------------
 
