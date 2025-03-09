@@ -48,16 +48,6 @@ class DeckTestCase(TestCase):
                 '6s7s8s9sTsJsQsKsAs',
             ),
         )
-        self.assertEqual(len(Deck.ROYAL_POKER), 20)
-        self.assertCountEqual(
-            Deck.ROYAL_POKER,
-            Card.parse(
-                'TcJcQcKcAc',
-                'TdJdQdKdAd',
-                'ThJhQhKhAh',
-                'TsJsQsKsAs',
-            ),
-        )
         self.assertEqual(len(Deck.REGULAR), 52)
         self.assertCountEqual(
             Deck.STANDARD,
@@ -70,6 +60,16 @@ class DeckTestCase(TestCase):
         )
         self.assertEqual(len(Deck.KUHN_POKER), 3)
         self.assertCountEqual(Deck.KUHN_POKER, Card.parse('JsQsKs'))
+        self.assertEqual(len(Deck.ROYAL_POKER), 20)
+        self.assertCountEqual(
+            Deck.ROYAL_POKER,
+            Card.parse(
+                'TcJcQcKcAc',
+                'TdJdQdKdAd',
+                'ThJhQhKhAh',
+                'TsJsQsKsAs',
+            ),
+        )
 
 
 if __name__ == '__main__':

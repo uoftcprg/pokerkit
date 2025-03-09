@@ -195,6 +195,7 @@ class RankOrder(tuple[Rank, ...], Enum):
         Rank.KING,
         Rank.ACE,
     )
+    """The royal poker ranks (from ten to king)."""
 
 
 @unique
@@ -605,12 +606,12 @@ class Deck(tuple[Card, ...], Enum):
             Card,
             product(
                 RankOrder.ROYAL_POKER,
-               (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
+                (Suit.CLUB, Suit.DIAMOND, Suit.HEART, Suit.SPADE),
             ),
         ),
     )
     """The 20-card royal poker deck cards.
-    
+
     The cards in it are ten, jack, queen, king, and ace of each suit.
     """
 
