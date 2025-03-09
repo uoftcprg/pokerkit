@@ -898,6 +898,12 @@ class NoLimitTexasHoldem(
         )(raw_starting_stacks, player_count)
 
 
+class NoLimitRoyalHoldem(NoLimitTexasHoldem):
+    """The class for no-limit royal hold'em games."""
+
+    deck = Deck.ROYAL_POKER
+
+
 class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
     """The class for no-limit short-deck hold'em games."""
 

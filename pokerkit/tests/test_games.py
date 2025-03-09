@@ -4,7 +4,7 @@
 
 from unittest import main, TestCase
 
-from pokerkit.games import PotLimitOmahaHoldem
+from pokerkit.games import NoLimitRoyalHoldem, PotLimitOmahaHoldem
 from pokerkit.state import Automation, Mode
 from pokerkit.utilities import Card
 
@@ -217,6 +217,42 @@ class PotLimitOmahaHoldemTestCase(TestCase):
             list(state.get_board_cards(3)),
             list(Card.parse('QdJhTs7s6s')),
         )
+
+
+class NoLimitRoyalHoldemTestCase(TestCase):
+    def test_create_state(self) -> None:
+        state = NoLimitRoyalHoldem.create_state(
+            tuple(Automation),
+            True,
+            0,
+            [1, 2],
+            2,
+            200,
+            3,
+        )
+
+        self.assertEqual(len(state.deck), 20)
+        self.assertEqual(len(state.deck_cards), 14)
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        self.assertEqual(len(state.deck_cards), 10)
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        self.assertEqual(len(state.deck_cards), 8)
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        self.assertEqual(len(state.deck_cards), 6)
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        self.assertFalse(state.status)
 
 
 if __name__ == '__main__':
