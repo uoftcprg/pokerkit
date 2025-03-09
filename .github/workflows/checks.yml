@@ -1,0 +1,19 @@
+name: Run style checking, static type checking, unit test, and doctests
+on: [pull_request, push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Run style checking
+        run: flake8 pokerkit
+      - name: Run static type checking
+        run: mypy --strict pokerkit
+      - name: Run unit tests
+        run: python -m unittest
+      - name: Run doctests
+        run: python -m doctest pokerkit/*.py
