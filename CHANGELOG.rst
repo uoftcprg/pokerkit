@@ -9,7 +9,7 @@ Version 0.6.3 (March 28, 2025)
 
 **Changed**
 
-- Implement another exception to Rule 96 of the 2024 WSOP Tournament Rules. The rule states that "An all-in wager of less than a full raise does not reopen the betting to a Participant who has already acted." However, it is reasonable to interpret this rule as saying that a full raise turns all non-all-in players a participant who has not yet acted. For more information, please take a look at the corresponding unit test method of this rule.
+- Implement another exception to Rule 96 of the 2024 WSOP Tournament Rules. The rule states that "An all-in wager of less than a full raise does not reopen the betting to a Participant who has already acted." However, it is reasonable to interpret this rule as saying that a full raise turns all non-all-in players into participants who have not yet acted. For more information, please take a look at the corresponding unit test method of this rule.
 
 Version 0.6.2 (March 9, 2025)
 -----------------------------
