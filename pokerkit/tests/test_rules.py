@@ -5,7 +5,7 @@ the various rules of poker.
 from copy import deepcopy
 from unittest import TestCase, main
 
-from pokerkit.games import NoLimitTexasHoldem
+from pokerkit.games import NoLimitTexasHoldem, PotLimitOmahaHoldem
 from pokerkit.state import Automation
 
 
@@ -26,6 +26,24 @@ class WSOPTournamentRulesTestCase(TestCase):
         state.check_or_call()
 
         self.assertFalse(state.can_complete_bet_or_raise_to())
+
+        state = PotLimitOmahaHoldem.create_state(
+            tuple(Automation),
+            True,
+            0,
+            [5, 10],
+            10,
+            (400, 400, 1000, 400, 100),
+            5,
+        )
+
+        state.complete_bet_or_raise_to(30)
+        state.complete_bet_or_raise_to(90)
+        state.complete_bet_or_raise_to(100)
+        state.fold()
+        state.fold()
+
+        self.assertTrue(state.can_complete_bet_or_raise_to(200))
 
     def test_2024_96_a(self) -> None:
         state = NoLimitTexasHoldem.create_state(

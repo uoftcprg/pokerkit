@@ -4993,6 +4993,14 @@ class State:
         assert self.actor_indices
 
         self.opener_index = player_index
+
+        if (
+                completion_betting_or_raising_amount
+                >= self.completion_betting_or_raising_amount
+        ):
+            self.acted_player_indices.clear()
+            self.acted_player_indices.add(player_index)
+
         self.completion_betting_or_raising_amount = max(
             self.completion_betting_or_raising_amount,
             completion_betting_or_raising_amount,
