@@ -9,8 +9,8 @@ setup(
     long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
     url='https://github.com/uoftcprg/pokerkit',
-    author='University of Toronto Computer Poker Student Research Group',
-    author_email='uoftcprg@studentorg.utoronto.ca',
+    author='Universal, Open, Free, and Transparent Computer Poker Research Group',
+    author_email='juhok@andrew.cmu.edu',
     license='MIT',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
