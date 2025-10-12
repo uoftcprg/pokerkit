@@ -2540,11 +2540,10 @@ class PokerStarsParser(REParser):
         'winnings': (
             compile(
                 (
-                    r'Seat'
-                    r' \d+:'
                     r' (?P<player>.+)'
                     r' collected'
-                    r' \(\D?(?P<winnings>[0-9.,]+)\)'
+                    r' \D?(?P<winnings>[0-9.,]+)'
+                    r' from pot'
                 ),
             ),
             None,
