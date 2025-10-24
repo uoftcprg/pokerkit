@@ -2357,6 +2357,7 @@ class State:
     def get_dealable_cards(
             self,
             deal_count: int | None = None,
+            warning_status: bool = True,
     ) -> Iterator[Card]:
         """Iterate through the available cards that can be dealt or
         burned.
@@ -2379,12 +2380,24 @@ class State:
 
         :param deal_count: The number of dealt cards, maybe ``None`` to
                            denote an arbitrary number of cards.
+        :param warning_status: Show warnings when relevant.
         :return: The "recommended" dealable cards, from deck and maybe
                  reserve.
         """
         cards = tuple(self.deck_cards)
 
+        if deal_count is None and warning_status:
+            warn(
+                (
+                    'The number of cards dealt is unspecified. PokerKit will'
+                    ' assume the worst case scenario'
+                ),
+            )
+
         if deal_count is None or deal_count > len(self.deck_cards):
+            if warning_status:
+                warn('Returning reserved (mucked, etc.) cards as dealable.')
+
             cards += tuple(shuffled(self.reserved_cards))
 
         yield from cards
@@ -3544,7 +3557,7 @@ class State:
 
         if (
                 sum(map(len, self.hole_dealing_statuses))
-                > len(tuple(self.get_dealable_cards()))
+                > len(tuple(self.get_dealable_cards(warning_status=False)))
         ):
             for i in range(self.starting_board_count):
                 self.board_dealing_counts[i] += len(

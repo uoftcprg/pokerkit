@@ -6,6 +6,7 @@ from functools import partial
 from hashlib import md5
 from itertools import combinations
 from unittest import main, TestCase
+from warnings import resetwarnings, simplefilter
 
 from pokerkit.games import (
     FixedLimitDeuceToSevenLowballTripleDraw,
@@ -766,6 +767,8 @@ class StateTestCase(TestCase):
         self.assertEqual(state.stacks, [525, 0, 0])
 
     def test_automated_dealing(self) -> None:
+        simplefilter('ignore')
+
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (
                 Automation.ANTE_POSTING,
@@ -802,6 +805,8 @@ class StateTestCase(TestCase):
         state.stand_pat_or_discard(state.hole_cards[5])
         state.burn_card('??')
         state.check_or_call()
+
+        resetwarnings()
 
     def test_turn_index(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
@@ -888,6 +893,8 @@ class StateTestCase(TestCase):
         self.assertEqual(state.showdown_index, 1)
 
     def test_reshuffling(self) -> None:
+        simplefilter('ignore')
+
         state = FixedLimitDeuceToSevenLowballTripleDraw.create_state(
             (
                 Automation.ANTE_POSTING,
@@ -955,6 +962,8 @@ class StateTestCase(TestCase):
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
+
+        resetwarnings()
 
     def test_hole_to_board_dealing(self) -> None:
         state = FixedLimitRazz.create_state(
