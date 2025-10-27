@@ -4,6 +4,16 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.4 (October 27, 2025)
+--------------------------------
+
+**Changed**
+
+- Set default ``deal_count`` parameter for ``pokerkit.state.State.get_dealable_cards`` to ``0`` to prevent confusion since previous default of ``None`` denoted arbitrary number of dealings which also fetches the reserved cards. This caused some confusion among users.
+- Add ``warning_status`` parameter for ``pokerkit.state.State.get_dealable_cards`` to silence newly added warnings when passing ``None`` as ``deal_count``.
+- Warn when users pass ``None`` as ``deal_count`` parameter to ``pokerkit.state.State.get_dealable_cards``.
+- Update PokerStars winnings pattern to make it compatible with newer hand histories.
+
 Version 0.6.3 (March 28, 2025)
 ------------------------------
 

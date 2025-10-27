@@ -4,12 +4,17 @@ from setuptools import find_packages, setup
 
 setup(
     name='pokerkit',
-    version='0.6.3',
-    description='An open-source Python library for poker game simulations, hand evaluations, and statistical analysis',
+    version='0.6.4',
+    description=(
+        'An open-source Python library for poker game simulations, hand'
+        ' evaluations, and statistical analysis'
+    ),
     long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
     url='https://github.com/uoftcprg/pokerkit',
-    author='Universal, Open, Free, and Transparent Computer Poker Research Group',
+    author=(
+        'Universal, Open, Free, and Transparent Computer Poker Research Group'
+    ),
     author_email='juhok@andrew.cmu.edu',
     license='MIT',
     classifiers=[

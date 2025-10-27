@@ -2356,7 +2356,7 @@ class State:
 
     def get_dealable_cards(
             self,
-            deal_count: int | None = None,
+            deal_count: int | None = 0,
             warning_status: bool = True,
     ) -> Iterator[Card]:
         """Iterate through the available cards that can be dealt or
@@ -2378,7 +2378,7 @@ class State:
         the value returned by this method, a warning is issued by
         PokerKit.
 
-        :param deal_count: The number of dealt cards, maybe ``None`` to
+        :param deal_count: The number of dealt cards, may be ``None`` to
                            denote an arbitrary number of cards.
         :param warning_status: Show warnings when relevant.
         :return: The "recommended" dealable cards, from deck and maybe
@@ -3557,7 +3557,7 @@ class State:
 
         if (
                 sum(map(len, self.hole_dealing_statuses))
-                > len(tuple(self.get_dealable_cards(warning_status=False)))
+                > len(tuple(self.get_dealable_cards(None, False)))
         ):
             for i in range(self.starting_board_count):
                 self.board_dealing_counts[i] += len(
