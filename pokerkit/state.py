@@ -2390,7 +2390,7 @@ class State:
             warn(
                 (
                     'The number of cards dealt is unspecified. PokerKit will'
-                    ' assume the worst case scenario'
+                    ' assume the worst case scenario.'
                 ),
             )
 
@@ -2439,7 +2439,7 @@ class State:
                             f'A card being dealt {repr(card)} is not'
                             ' recommended to be dealt. For more details,'
                             ' please consult the method'
-                            ' \'pokerkit.state.State.get_dealable_cards()\''
+                            ' \'pokerkit.state.State.get_dealable_cards()\'.'
                         ),
                     )
 
@@ -6142,17 +6142,21 @@ class State:
             player_indices = [
                 i for i in pot.player_indices if hands[i] == max_hand
             ]
-            quotient, remainder = self.divmod(amount, len(player_indices))
 
-            for i in player_indices:
-                assert self.statuses[i]
+            if player_indices:
+                quotient, remainder = self.divmod(amount, len(player_indices))
 
-                sub_sub_sub_amount = quotient
+                for i in player_indices:
+                    assert self.statuses[i]
 
-                if i == player_indices[0]:
-                    sub_sub_sub_amount += remainder
+                    sub_sub_sub_amount = quotient
 
-                self.bets[i] += sub_sub_sub_amount
+                    if i == player_indices[0]:
+                        sub_sub_sub_amount += remainder
+
+                    self.bets[i] += sub_sub_sub_amount
+            else:
+                warn('Due to non-standard folds, some chips will be burned.')
 
         operation = ChipsPushing(
             tuple(starmap(sub, zip(self.bets, bets))),

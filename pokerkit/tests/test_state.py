@@ -18,6 +18,7 @@ from pokerkit.games import (
     NoLimitTexasHoldem,
 )
 from pokerkit.hands import KuhnPokerHand
+from pokerkit.notation import HandHistory
 from pokerkit.state import (
     Automation,
     BettingStructure,
@@ -1376,6 +1377,57 @@ class StateTestCase(TestCase):
             state.check_or_call(),
             CheckingOrCalling(commentary=None, player_index=0, amount=0),
         )
+
+    def test_nonstandard_folds(self) -> None:
+        simplefilter('ignore')
+
+        hh = HandHistory(
+            variant='NT',
+            ante_trimming_status=False,
+            antes=[125, 125, 125, 125, 125, 125, 125, 125],
+            blinds_or_straddles=[250, 500, 0, 0, 0, 0, 0, 0],
+            min_bet=125,
+            starting_stacks=[2198, 945, 852, 3348, 1687, 1262, 3657, 3966],
+            actions=[
+                'd dh p1 9h5c',
+                'd dh p2 KsQh',
+                'd dh p3 7sQd',
+                'd dh p4 2dKc',
+                'd dh p5 8c6d',
+                'd dh p6 Td9s',
+                'd dh p7 8hQs',
+                'd dh p8 9cKh',
+                'p3 cbr 645',
+                'p4 cc',
+                'p5 cbr 1288',
+                'p6 cc',
+                'p7 cc',
+                'p8 cc',
+                'p1 cc',
+                'p2 cc',
+                'p3 cc',
+                'p4 cbr 3178',
+                'p5 cc',
+                'p7 f',
+                'p8 cc',
+                'p1 cc',
+                'd db 2h6c4h',
+                'p4 f',
+                'p8 f',
+                'p1 sm 9h5c',
+                'p2 sm KsQh',
+                'p3 sm 7sQd',
+                'p5 sm 8c6d',
+                'p6 sm Td9s',
+                'd db Th',
+                'd db 5d',
+            ],
+        )
+        state = list(hh)[-1]
+
+        self.assertEqual(sum(state.starting_stacks) - sum(state.stacks), 2210)
+
+        resetwarnings()
 
 
 if __name__ == '__main__':
