@@ -2921,9 +2921,11 @@ class State:
 
         if not any(self.ante_posting_statuses):
             self._end_ante_posting()
-        elif Automation.ANTE_POSTING in self.automations:
-            while any(self.ante_posting_statuses):
-                self.post_ante()
+        elif (
+                Automation.ANTE_POSTING in self.automations
+                and self.can_post_ante()
+        ):
+            self.post_ante()
 
     def _end_ante_posting(self) -> None:
         assert not any(self.ante_posting_statuses)
@@ -3142,9 +3144,11 @@ class State:
 
         if not self.bet_collection_status:
             self._end_bet_collection()
-        elif Automation.BET_COLLECTION in self.automations:
-            if self.bet_collection_status:
-                self.collect_bets()
+        elif (
+                Automation.BET_COLLECTION in self.automations
+                and self.can_collect_bets()
+        ):
+            self.collect_bets()
 
     def _end_bet_collection(self) -> None:
         assert not self.bet_collection_status
@@ -3296,9 +3300,11 @@ class State:
 
         if not any(self.blind_or_straddle_posting_statuses):
             self._end_blind_or_straddle_posting()
-        elif Automation.BLIND_OR_STRADDLE_POSTING in self.automations:
-            while any(self.blind_or_straddle_posting_statuses):
-                self.post_blind_or_straddle()
+        elif (
+                Automation.BLIND_OR_STRADDLE_POSTING in self.automations
+                and self.can_post_blind_or_straddle()
+        ):
+            self.post_blind_or_straddle()
 
     def _end_blind_or_straddle_posting(self) -> None:
         assert not any(self.blind_or_straddle_posting_statuses)
@@ -3585,23 +3591,21 @@ class State:
                 and not any(self.standing_pat_or_discarding_statuses)
         ):
             self._end_dealing()
-        elif not any(self.standing_pat_or_discarding_statuses):
-            if (
-                    Automation.CARD_BURNING in self.automations
-                    and self.card_burning_status
-            ):
-                self.burn_card()
-
-            if not self.card_burning_status:
-                if Automation.HOLE_DEALING in self.automations:
-                    while any(self.hole_dealing_statuses):
-                        self.deal_hole()
-
-                if (
-                        Automation.BOARD_DEALING in self.automations
-                        and any(self.board_dealing_counts)
-                ):
-                    self.deal_board()
+        elif (
+                Automation.CARD_BURNING in self.automations
+                and self.can_burn_card()
+        ):
+            self.burn_card()
+        elif (
+                Automation.HOLE_DEALING in self.automations
+                and self.can_deal_hole()
+        ):
+            self.deal_hole()
+        elif (
+                Automation.BOARD_DEALING in self.automations
+                and self.can_deal_board()
+        ):
+            self.deal_board()
 
     def _end_dealing(self) -> None:
         assert not self.card_burning_status
@@ -3630,6 +3634,11 @@ class State:
 
         if not self.card_burning_status:
             raise ValueError('No card burning is pending.')
+        elif (
+                any(self.hole_dealing_statuses)
+                and any(self.board_dealing_counts)
+        ):
+            raise ValueError('Hole cards should be dealt first.')
         elif any(self.standing_pat_or_discarding_statuses):
             raise ValueError(
                 (
@@ -3740,7 +3749,7 @@ class State:
             )
 
     def _verify_hole_dealing(self) -> None:
-        if self.card_burning_status:
+        if self.card_burning_status and not any(self.board_dealing_counts):
             raise ValueError('A card must be burnt before hole dealing.')
         elif not any(self.hole_dealing_statuses):
             raise ValueError('Currently, nobody can be dealt hole cards.')
@@ -5130,14 +5139,16 @@ class State:
                 and not self.showdown_indices
         ):
             self._end_showdown()
-        else:
-            if Automation.RUNOUT_COUNT_SELECTION in self.automations:
-                while any(self.runout_count_selector_statuses):
-                    self.select_runout_count()
-
-            if Automation.HOLE_CARDS_SHOWING_OR_MUCKING in self.automations:
-                while self.showdown_indices:
-                    self.show_or_muck_hole_cards()
+        elif (
+                Automation.RUNOUT_COUNT_SELECTION in self.automations
+                and self.can_select_runout_count()
+        ):
+            self.select_runout_count()
+        elif (
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING in self.automations
+                and self.can_show_or_muck_hole_cards()
+        ):
+            self.show_or_muck_hole_cards()
 
     def _end_showdown(self) -> None:
         assert not any(self.runout_count_selector_statuses)
@@ -5755,9 +5766,11 @@ class State:
 
         if not any(self.hand_killing_statuses):
             self._end_hand_killing()
-        elif Automation.HAND_KILLING in self.automations:
-            while any(self.hand_killing_statuses):
-                self.kill_hand()
+        elif (
+                Automation.HAND_KILLING in self.automations
+                and self.can_kill_hand()
+        ):
+            self.kill_hand()
 
     def _end_hand_killing(self) -> None:
         for i in self.player_indices:
@@ -6042,9 +6055,11 @@ class State:
 
         if not self._sub_pots:
             self._end_chips_pushing()
-        elif Automation.CHIPS_PUSHING in self.automations:
-            while self._sub_pots:
-                self.push_chips()
+        elif (
+                Automation.CHIPS_PUSHING in self.automations
+                and self.can_push_chips()
+        ):
+            self.push_chips()
 
     def _end_chips_pushing(self) -> None:
         assert self._pots is not None
@@ -6205,9 +6220,11 @@ class State:
 
         if not any(self.chips_pulling_statuses):
             self._end_chips_pulling()
-        elif Automation.CHIPS_PULLING in self.automations:
-            while any(self.chips_pulling_statuses):
-                self.pull_chips()
+        elif (
+                Automation.CHIPS_PULLING in self.automations
+                and self.can_pull_chips()
+        ):
+            self.pull_chips()
 
     def _end_chips_pulling(self) -> None:
         for i in self.player_indices:

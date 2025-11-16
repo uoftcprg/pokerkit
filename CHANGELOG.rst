@@ -4,6 +4,19 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.5 (November 16, 2025)
+---------------------------------
+
+**Bugfixes**
+
+- ``ZeroDivisionError`` when non-standard folds are performed in all-in pots (cash-game mode only).
+- Incorrect opener index in heads-up when blinds are ``[0, 2]``.
+
+**Changed**
+
+- Add trailing period ``'.'`` to some warning messages.
+- Enforce correct card burning/dealing sequence in bomb pots and Courchevel: hole dealing -> card burning -> board dealing.
+
 Version 0.6.4 (October 27, 2025)
 --------------------------------
 

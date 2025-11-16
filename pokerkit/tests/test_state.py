@@ -17,13 +17,16 @@ from pokerkit.games import (
     NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
 )
-from pokerkit.hands import KuhnPokerHand
+from pokerkit.hands import KuhnPokerHand, StandardHighHand
 from pokerkit.notation import HandHistory
 from pokerkit.state import (
     Automation,
     BettingStructure,
+    BoardDealing,
+    CardBurning,
     CheckingOrCalling,
     _HighHandOpeningLookup,
+    HoleDealing,
     _LowHandOpeningLookup,
     Opening,
     Pot,
@@ -808,6 +811,239 @@ class StateTestCase(TestCase):
         state.check_or_call()
 
         resetwarnings()
+
+        state = State(
+            tuple(Automation),
+            Deck.STANDARD,
+            (StandardHighHand,),
+            (
+                Street(
+                    True,
+                    (False, False),
+                    3,
+                    False,
+                    Opening.POSITION,
+                    2,
+                    None,
+                ),
+            ),
+            BettingStructure.NO_LIMIT,
+            True,
+            10,
+            0,
+            0,
+            200,
+            6,
+        )
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertEqual(state.actor_index, 0)
+        self.assertIsInstance(state.operations[-3], HoleDealing)
+        self.assertIsInstance(state.operations[-2], CardBurning)
+        self.assertIsInstance(state.operations[-1], BoardDealing)
+
+        state = State(
+            tuple(Automation),
+            Deck.STANDARD,
+            (StandardHighHand,),
+            (
+                Street(
+                    True,
+                    (False, False),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    2,
+                    None,
+                ),
+            ),
+            BettingStructure.NO_LIMIT,
+            True,
+            10,
+            0,
+            0,
+            200,
+            6,
+        )
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertEqual(state.actor_index, 0)
+        self.assertIsInstance(state.operations[-13], CardBurning)
+
+        for i in range(-12, 0):
+            self.assertIsInstance(state.operations[i], HoleDealing)
+
+        state = NoLimitTexasHoldem.create_state(
+            tuple(Automation),
+            True,
+            0,
+            (0, 2),
+            2,
+            200,
+            6,
+        )
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.check_or_call()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertEqual(state.actor_index, 0)
+        self.assertIsInstance(state.operations[-2], CardBurning)
+        self.assertIsInstance(state.operations[-1], BoardDealing)
+
+    def test_dealing_action_queries(self) -> None:
+        automations = (
+            Automation.ANTE_POSTING,
+            Automation.BET_COLLECTION,
+            Automation.BLIND_OR_STRADDLE_POSTING,
+            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+            Automation.HAND_KILLING,
+            Automation.CHIPS_PUSHING,
+            Automation.CHIPS_PULLING,
+        )
+        state = State(
+            automations,
+            Deck.STANDARD,
+            (StandardHighHand,),
+            (
+                Street(
+                    True,
+                    (False, False),
+                    3,
+                    False,
+                    Opening.POSITION,
+                    2,
+                    None,
+                ),
+            ),
+            BettingStructure.NO_LIMIT,
+            True,
+            10,
+            0,
+            0,
+            200,
+            6,
+        )
+
+        self.assertFalse(state.can_burn_card())
+        self.assertTrue(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        while state.can_deal_hole():
+            state.deal_hole()
+
+        self.assertTrue(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        state.burn_card()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertTrue(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        state.deal_board()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertEqual(state.actor_index, 0)
+
+        state = State(
+            automations,
+            Deck.STANDARD,
+            (StandardHighHand,),
+            (
+                Street(
+                    True,
+                    (False, False),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    2,
+                    None,
+                ),
+            ),
+            BettingStructure.NO_LIMIT,
+            True,
+            10,
+            0,
+            0,
+            200,
+            6,
+        )
+
+        self.assertTrue(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        state.burn_card()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertTrue(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        while state.can_deal_hole():
+            state.deal_hole()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertEqual(state.actor_index, 0)
+
+        state = NoLimitTexasHoldem.create_state(
+            automations,
+            True,
+            0,
+            (0, 2),
+            2,
+            200,
+            6,
+        )
+
+        while state.can_deal_hole():
+            state.deal_hole()
+
+        state.fold()
+        state.fold()
+        state.fold()
+        state.fold()
+        state.check_or_call()
+        state.check_or_call()
+
+        self.assertTrue(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        state.burn_card()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertTrue(state.can_deal_board())
+        self.assertIsNone(state.actor_index)
+
+        state.deal_board()
+
+        self.assertFalse(state.can_burn_card())
+        self.assertFalse(state.can_deal_hole())
+        self.assertFalse(state.can_deal_board())
+        self.assertEqual(state.actor_index, 0)
 
     def test_turn_index(self) -> None:
         state = NoLimitDeuceToSevenLowballSingleDraw.create_state(
