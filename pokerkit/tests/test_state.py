@@ -1047,6 +1047,29 @@ class StateTestCase(TestCase):
         self.assertEqual(create_state((1, 2, 0, 0, 0, 4), 6).actor_index, 0)
         self.assertEqual(create_state((1, 2, 4, 0, 0, 8), 6).actor_index, 0)
 
+        state = NoLimitShortDeckHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+                Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+                Automation.HAND_KILLING,
+                Automation.CHIPS_PUSHING,
+                Automation.CHIPS_PULLING,
+                Automation.HOLE_DEALING,
+                Automation.BOARD_DEALING,
+                Automation.CARD_BURNING,
+            ),
+            True,
+            1,
+            (0, 2),
+            2,
+            (400, 400),
+            2,
+        )
+
+        self.assertEqual(state.actor_index, 1)
+
     def test_chips_pushing(self) -> None:
         state = NoLimitTexasHoldem.create_state(
             (

@@ -4178,10 +4178,15 @@ class State:
 
         match self.street.opening:
             case Opening.POSITION:
+                blinds_or_straddles = self.blinds_or_straddles
+
+                if self.player_count == 2:
+                    blinds_or_straddles = blinds_or_straddles[::-1]
+
                 max_bet_index = max(
                     self.player_indices,
                     key=lambda i: (
-                        (self.bets[i] * sign(self.blinds_or_straddles[i]), i)
+                        (self.bets[i] * sign(blinds_or_straddles[i]), i)
                     ),
                 )
                 self.opener_index = (max_bet_index + 1) % self.player_count
