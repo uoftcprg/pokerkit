@@ -43,7 +43,7 @@ In some use cases, it might be better not to use any automation and handle each 
 Type Checking
 -------------
 
-All code in PokerKit passes ``--strict`` type checking with MyPy, with one caveat: all chip values are pretended to be integral (``int``). Technically, PokerKit also supports alternative numeric types like ``float``, etc. However, the type annotations for chip values do not reflect this as there is no simple way to express the acceptance of different numeric types (although I suspect it is possible).
+All code in PokerKit passes ``--strict`` type checking with MyPy, with one caveat: all chip values are pretended to be integral (``int``). Technically, PokerKit also supports alternative numeric types like ``float``, etc.
 
 Game Tree Construction
 ----------------------
@@ -71,3 +71,5 @@ Standpatters
 ------------
 
 Unfortunately, when I was writing this library, I did not realize the word "standpatter" (or "stand-patter") exists (see `this Wikipedia entry <https://en.wikipedia.org/wiki/Standpatter_Republican>`_). This is why I used the term "stander-pat" instead (e.g., :attr:`stander_pat_or_discarder_index`). If I had known this earlier, I would have named the attribute differently.
+
+I plan on renaming the relevant methods in the future before the ``1.0.0`` release.
