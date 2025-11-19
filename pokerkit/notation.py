@@ -1300,10 +1300,10 @@ def parse_action(
                 commentary=commentary,
             )
         case player, 'sd':
-            verify_player(state.stander_pat_or_discarder_index)
+            verify_player(state.stand_patter_or_discarder_index)
             state.stand_pat_or_discard(commentary=commentary)
         case player, 'sd', cards:
-            verify_player(state.stander_pat_or_discarder_index)
+            verify_player(state.stand_patter_or_discarder_index)
             state.stand_pat_or_discard(cards, commentary=commentary)
         case player, 'pb':
             verify_player(state.actor_index)

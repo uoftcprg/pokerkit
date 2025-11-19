@@ -1602,7 +1602,7 @@ class State:
         Regardless of what stage the state is in, whoever must make a
         decision will be returned, which is one of the following:
 
-        - :attr:`pokerkit.state.State.stander_pat_or_discarder_index`
+        - :attr:`pokerkit.state.State.stand_patter_or_discarder_index`
         - :attr:`pokerkit.state.State.actor_index`
         - :attr:`pokerkit.state.State.showdown_index`
 
@@ -1611,8 +1611,8 @@ class State:
         :return: The index of the player who is in turn, or ``None`` if
                  no one is in turn.
         """
-        if self.stander_pat_or_discarder_index is not None:
-            player_index = self.stander_pat_or_discarder_index
+        if self.stand_patter_or_discarder_index is not None:
+            player_index = self.stand_patter_or_discarder_index
         elif self.actor_index is not None:
             player_index = self.actor_index
         elif self.showdown_index is not None:
@@ -4008,10 +4008,10 @@ class State:
         return operation
 
     @property
-    def stander_pat_or_discarder_index(self) -> int | None:
-        """Return the stander pat or discarder index.
+    def stand_patter_or_discarder_index(self) -> int | None:
+        """Return the stand-patter or discarder index.
 
-        :return: The stander pat or discarder index if applicable,
+        :return: The stand-patter or discarder index if applicable,
                  otherwise ``None``.
         """
         try:
@@ -4041,7 +4041,7 @@ class State:
         self._verify_standing_pat_or_discarding()
 
         cards = Card.clean(cards)
-        player_index = self.stander_pat_or_discarder_index
+        player_index = self.stand_patter_or_discarder_index
 
         assert player_index is not None
 
@@ -4085,7 +4085,7 @@ class State:
         hole cards.
 
         The player currently standing pat/discarding can be accessed via
-        :attr:`pokerkit.state.State.stander_pat_or_discarder_index`.
+        :attr:`pokerkit.state.State.stand_patter_or_discarder_index`.
 
         After the standing pat or discarding is done for all pending
         players, their hole should be replenished by the subsequent hole
@@ -4097,7 +4097,7 @@ class State:
         :raises ValueError: If the discard cannot be done.
         """
         cards = self.verify_standing_pat_or_discarding(cards)
-        player_index = self.stander_pat_or_discarder_index
+        player_index = self.stand_patter_or_discarder_index
 
         assert player_index is not None
         assert self.street_index is not None

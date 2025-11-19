@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.0 (Planned)
+-----------------------
+
+**Changed**
+
+- Rename ``pokerkit.state.State.stander_pat_or_discarder_index`` to ``pokerkit.state.State.stand_patter_or_discarder_index``.
+
 Version 0.6.5 (November 16, 2025)
 ---------------------------------
 

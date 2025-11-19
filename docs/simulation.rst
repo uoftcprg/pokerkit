@@ -664,7 +664,7 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.street_count`            Number of streets.
 :attr:`pokerkit.state.State.street_indices`          Indices of streets.
 :attr:`pokerkit.state.State.street`                  Current street.
-:attr:`pokerkit.state.State.turn_index`              The index of the player who is in turn to act (draw, betting street, showdown). This attribute exists to combine the three following attributes: :attr:`pokerkit.state.State.stander_pat_or_discarder_index`, :attr:`pokerkit.state.State.actor_index`, and :attr:`pokerkit.state.State.showdown_index`.
+:attr:`pokerkit.state.State.turn_index`              The index of the player who is in turn to act (draw, betting street, showdown). This attribute exists to combine the three following attributes: :attr:`pokerkit.state.State.stand_patter_or_discarder_index`, :attr:`pokerkit.state.State.actor_index`, and :attr:`pokerkit.state.State.showdown_index`.
 :attr:`pokerkit.state.State.board_count`             Number of boards (maybe more than ``1`` for multi-runout or multi-board games).
 :attr:`pokerkit.state.State.board_indices`           Indices of boards.
 :meth:`pokerkit.state.State.get_board`               The n'th board.
@@ -920,7 +920,7 @@ Helper Method/Attribute                                          Description
 :attr:`pokerkit.state.State.board_dealing_counts`                Numbers of cards that are pending to be dealt to the board.
 :attr:`pokerkit.state.State.standing_pat_or_discarding_statuses` Boolean values on whether the player should stand pat/discard.
 :attr:`pokerkit.state.State.hole_dealee_index`                   Next player being dealt the hole cards by the dealer.
-:attr:`pokerkit.state.State.stander_pat_or_discarder_index`      Next player standing pat or discarding.
+:attr:`pokerkit.state.State.stand_patter_or_discarder_index`     Next player standing pat or discarding.
 ================================================================ =============================================================================================
 
 Card Burning Operation
