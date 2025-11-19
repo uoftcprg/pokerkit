@@ -25,6 +25,8 @@ In some use cases, it might be better not to use any automation and handle each 
            state.post_blind_or_straddle()
        elif state.can_burn_card():
            state.burn_card('??')
+       elif state.can_select_runout_count():  # Cash-game mode only
+           state.select_runout_count()
        elif state.can_deal_hole():
            state.deal_hole()
        elif state.can_deal_board():
