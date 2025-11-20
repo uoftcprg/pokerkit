@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 Version 0.7.0 (Planned)
 -----------------------
 
+This version release introduces **backward incompatible changes**. Please read the below content carefully!
+
 **Changed**
 
 - Rename ``pokerkit.state.State.stander_pat_or_discarder_index`` to ``pokerkit.state.State.stand_patter_or_discarder_index``.
