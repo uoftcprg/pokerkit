@@ -61,9 +61,7 @@ Note that the starting stacks for some players are set to be ``math.inf`` as the
        mode=Mode.CASH_GAME,
    )
 
-Below are the pre-flop dealings and actions.
-
-.. code-block:: python
+   # Below are the pre-flop dealings and actions.
 
    state.deal_hole('JsTh')  # Tony G
    state.deal_hole('Ah9d')  # Hellmuth
@@ -81,9 +79,7 @@ Below are the pre-flop dealings and actions.
    state.check_or_call()  # Brunson
    state.check_or_call()  # Tony G
 
-Below are the flop dealing and actions.
-
-.. code-block:: python
+   # Below are the flop dealing and actions.
 
    state.burn_card('??')
    state.deal_board('9hTs9s')
@@ -96,52 +92,40 @@ Below are the flop dealing and actions.
    state.complete_bet_or_raise_to(103800)  # Hellmuth
    state.check_or_call()  # Wiggins
 
-Below is selecting the number of runouts.
-
-.. code-block:: python
+   # Below is selecting the number of runouts.
 
    state.select_runout_count(4)  # Hellmuth
    state.select_runout_count(None)  # Wiggins
 
-Below is the first runout.
-
-.. code-block:: python
+   # Below is the first runout.
 
    state.burn_card('??')
    state.deal_board('Jh')  # Turn
    state.burn_card('??')
    state.deal_board('Ad')  # River
 
-Below is the second runout.
-
-.. code-block:: python
+   # Below is the second runout.
 
    state.burn_card('??')
    state.deal_board('Kh')  # Turn
    state.burn_card('??')
    state.deal_board('3c')  # River
 
-Below is the third runout.
-
-.. code-block:: python
+   # Below is the third runout.
 
    state.burn_card('??')
    state.deal_board('7s')  # Turn
    state.burn_card('??')
    state.deal_board('8s')  # River
 
-Below is the fourth runout.
-
-.. code-block:: python
+   # Below is the fourth runout.
 
    state.burn_card('??')
    state.deal_board('Qc')  # Turn
    state.burn_card('??')
    state.deal_board('Kd')  # River
 
-Below are the final stacks.
-
-.. code-block:: python
+   # Below are the final stacks.
 
    print(state.stacks)  # [inf, 79400, 149700, inf, 37400, inf]
 
@@ -179,9 +163,7 @@ Note that the starting stack of Patrik Antonius is set to be ``math.inf`` as it 
        3,  # Number of players
    )
 
-Below are the pre-flop dealings and actions.
-
-.. code-block:: python
+   # Below are the pre-flop dealings and actions.
 
    state.deal_hole('Ac2d')  # Ivey
    state.deal_hole('????')  # Antonius
@@ -192,9 +174,7 @@ Below are the pre-flop dealings and actions.
    state.fold()  # Antonius
    state.check_or_call()  # Dwan
 
-Below are the flop dealing and actions.
-
-.. code-block:: python
+   # Below are the flop dealing and actions.
 
    state.burn_card('??')
    state.deal_board('Jc3d5c')
@@ -202,9 +182,7 @@ Below are the flop dealing and actions.
    state.complete_bet_or_raise_to(35000)  # Ivey
    state.check_or_call()  # Dwan
 
-Below are the turn dealing and actions.
-
-.. code-block:: python
+   # Below are the turn dealing and actions.
 
    state.burn_card('??')
    state.deal_board('4h')
@@ -214,16 +192,12 @@ Below are the turn dealing and actions.
    state.complete_bet_or_raise_to(1067100)  # Ivey
    state.check_or_call()  # Dwan
 
-Below is the river dealing.
-
-.. code-block:: python
+   # Below is the river dealing.
 
    state.burn_card('??')
    state.deal_board('Jh')
 
-Below are the final stacks.
-
-.. code-block:: python
+   # Below are the final stacks.
 
    print(state.stacks)  # [572100, inf, 1109500]
 
@@ -257,9 +231,7 @@ Link: https://youtu.be/QlgCcphLjaQ
        6,  # Number of players
    )
 
-Below are the pre-flop dealings and actions.
-
-.. code-block:: python
+   # Below are the pre-flop dealings and actions.
 
    state.deal_hole('Th8h')  # Badziakouski
    state.deal_hole('QsJd')  # Zhong
@@ -278,30 +250,22 @@ Below are the pre-flop dealings and actions.
    state.fold()  # Zhong
    state.check_or_call()  # Xuan
 
-Below is the flop dealing.
-
-.. code-block:: python
+   # Below is the flop dealing.
 
    state.burn_card('??')
    state.deal_board('9h6cKc')
 
-Below is the turn dealing.
-
-.. code-block:: python
+   # Below is the turn dealing.
 
    state.burn_card('??')
    state.deal_board('Jh')
 
-Below is the river dealing.
-
-.. code-block:: python
+   # Below is the river dealing.
 
    state.burn_card('??')
    state.deal_board('Ts')
 
-Below are the final stacks.
-
-.. code-block:: python
+   # Below are the final stacks.
 
    print(state.stacks)  # [489000, 226000, 684000, 400000, 0, 198000]
 
@@ -335,9 +299,7 @@ Link: https://youtu.be/UMBm66Id2AA
        2,  # Number of players
    )
 
-Below are the pre-flop dealings and actions.
-
-.. code-block:: python
+   # Below are the pre-flop dealings and actions.
 
    state.deal_hole('Ah3sKsKh')  # Antonius
    state.deal_hole('6d9s7d8h')  # Blom
@@ -348,9 +310,7 @@ Below are the pre-flop dealings and actions.
    state.complete_bet_or_raise_to(81000)  # Antonius
    state.check_or_call()  # Blom
 
-Below are the flop dealing and actions.
-
-.. code-block:: python
+   # Below are the flop dealing and actions.
 
    state.burn_card('??')
    state.deal_board('4s5c2h')
@@ -360,23 +320,17 @@ Below are the flop dealing and actions.
    state.complete_bet_or_raise_to(779000)  # Antonius
    state.check_or_call()  # Blom
 
-Below is the turn dealing.
-
-.. code-block:: python
+   # Below is the turn dealing.
 
    state.burn_card('??')
    state.deal_board('5h')
 
-Below is the river dealing.
-
-.. code-block:: python
+   # Below is the river dealing.
 
    state.burn_card('??')
    state.deal_board('9c')
 
-Below are the final stacks.
-
-.. code-block:: python
+   # Below are the final stacks.
 
    print(state.stacks)  # [1937923.75, 0.0]
 
@@ -411,9 +365,7 @@ Link: https://youtu.be/pChCqb2FNxY
        4,  # Number of players
    )
 
-Below are the pre-flop dealings and actions.
-
-.. code-block:: python
+   # Below are the pre-flop dealings and actions.
 
    state.deal_hole('7h6c4c3d2c')  # Yockey
    state.deal_hole('??????????')  # Hui
@@ -426,9 +378,7 @@ Below are the pre-flop dealings and actions.
    state.fold()  # Hui
    state.check_or_call()  # Arieh
 
-Below are the first draw and actions.
-
-.. code-block:: python
+   # Below are the first draw and actions.
 
    state.stand_pat_or_discard()  # Yockey
    state.stand_pat_or_discard('AsQs')  # Arieh
@@ -438,9 +388,7 @@ Below are the first draw and actions.
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-Below are the second draw and actions.
-
-.. code-block:: python
+   # Below are the second draw and actions.
 
    state.stand_pat_or_discard()  # Yockey
    state.stand_pat_or_discard('Qh')  # Arieh
@@ -450,9 +398,7 @@ Below are the second draw and actions.
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-Below are the third draw and actions.
-
-.. code-block:: python
+   # Below are the third draw and actions.
 
    state.stand_pat_or_discard()  # Yockey
    state.stand_pat_or_discard('6s')  # Arieh
@@ -462,9 +408,7 @@ Below are the third draw and actions.
    state.complete_bet_or_raise_to()  # Yockey
    state.check_or_call()  # Arieh
 
-Below are the final stacks.
-
-.. code-block:: python
+   # Below are the final stacks.
 
    print(state.stacks)  # [0, 4190000, 5910000, 12095000]
 
@@ -502,9 +446,7 @@ Note that the starting stacks are set to be ``math.inf`` as they are not mention
        4,  # Number of players
    )
 
-Below are the pre-flop dealings and actions.
-
-.. code-block:: python
+   # Below are the pre-flop dealings and actions.
 
    state.deal_hole('????????')  # Bob
    state.deal_hole('????????')  # Carol
@@ -516,9 +458,7 @@ Below are the pre-flop dealings and actions.
    state.check_or_call()  # Bob
    state.check_or_call()  # Carol
 
-Below are the first draw and actions.
-
-.. code-block:: python
+   # Below are the first draw and actions.
 
    state.stand_pat_or_discard('????')  # Bob
    state.stand_pat_or_discard('????')  # Carol
@@ -533,9 +473,7 @@ Below are the first draw and actions.
    state.check_or_call()  # Alice
    state.check_or_call()  # Bob
 
-Below are the second draw and actions.
-
-.. code-block:: python
+   # Below are the second draw and actions.
 
    state.stand_pat_or_discard('??')  # Bob
    state.stand_pat_or_discard()  # Carol
@@ -550,9 +488,7 @@ Below are the second draw and actions.
    state.fold()  # Bob
    state.check_or_call()  # Carol
 
-Below are the third draw and actions.
-
-.. code-block:: python
+   # Below are the third draw and actions.
 
    state.stand_pat_or_discard('??')  # Carol
    state.stand_pat_or_discard()  # Alice
@@ -563,16 +499,12 @@ Below are the third draw and actions.
    state.complete_bet_or_raise_to()  # Alice
    state.check_or_call()  # Carol
 
-Below is the showdown.
-
-.. code-block:: python
+   # Below is the showdown.
 
    state.show_or_muck_hole_cards('2s4c6d9h')  # Alice
    state.show_or_muck_hole_cards('3s5d7c8h')  # Carol
 
-Below are the final stacks.
-
-.. code-block:: python
+   # Below are the final stacks.
 
    print(state.stacks)  # [inf, inf, inf, inf]
    print(state.payoffs)  # [-4, 20, 0, -16]

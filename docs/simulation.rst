@@ -297,15 +297,16 @@ For example, if you are trying to create a poker AI, you are not worried about h
 
    # Automate everything except player actions.
    # Manual:
-   #   - Standing pat
-   #   - Discarding
-   #   - Folding
-   #   - Checking
-   #   - Calling
-   #   - Posting bring-in
-   #   - Completing
-   #   - Betting
-   #   - Raising
+   # - Standing pat
+   # - Discarding
+   # - Folding
+   # - Checking
+   # - Calling
+   # - Posting bring-in
+   # - Completing
+   # - Betting
+   # - Raising
+   # - Selecting the number of runouts (cash-game only)
    automations = (
        Automation.ANTE_POSTING,
        Automation.BET_COLLECTION,
@@ -321,19 +322,20 @@ For example, if you are trying to create a poker AI, you are not worried about h
 
    # Automate everything except player actions and dealings.
    # Manual:
-   #   - Player:
-   #     - Standing pat
-   #     - Discarding
-   #     - Folding
-   #     - Checking
-   #     - Calling
-   #     - Posting bring-in
-   #     - Completing
-   #     - Betting
-   #     - Raising
-   #   - Dealer:
-   #     - Deal hole cards
-   #     - Deal board cards
+   # - Player:
+   #   - Standing pat
+   #   - Discarding
+   #   - Folding
+   #   - Checking
+   #   - Calling
+   #   - Posting bring-in
+   #   - Completing
+   #   - Betting
+   #   - Raising
+   #   - Selecting the number of runouts (cash-game only)
+   # - Dealer:
+   #   - Deal hole cards
+   #   - Deal board cards
    automations = (
        Automation.ANTE_POSTING,
        Automation.BET_COLLECTION,
@@ -345,7 +347,17 @@ For example, if you are trying to create a poker AI, you are not worried about h
        Automation.CHIPS_PULLING,
    )
 
-However, if you are trying to create an online poker room, you need to represent all these fine changes to create a smooth user experience. In such a case, nothing must be automated, as below.
+In cash-games only, if you are not interested in letting players select the number of runouts after going all-in, you can add the following entry to force it to a single runout.
+
+.. code-block:: python
+
+   automations = (
+        ...,
+        Automation.RUNOUT_COUNT_SELECTION,  # Cash-game only
+        ...,
+   )
+
+If you are trying to create an online poker room, you need to represent all these fine changes to create a smooth user experience. In such a case, nothing must be automated, as below.
 
 .. code-block:: python
 
@@ -365,6 +377,7 @@ However, if you are trying to create an online poker room, you need to represent
    #   - Completing
    #   - Betting
    #   - Raising
+   #   - Selecting the number of runouts (cash-game only)
    #   - Showdown (show/muck)
    #   - Incorporating won chips into the stack
    # - Dealer:
