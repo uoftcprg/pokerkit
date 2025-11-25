@@ -18,11 +18,9 @@ Here are some of the features that are planned to be implemented in the future.
 
   - Do not care about errors.
 
-- If both hole and board dealings are pending, allow card burning to be deferred so that one of the dealings is carried out before (this is necessary for Courchevel).
 - In non-uniform ante situations (e.g. button ante, BB ante), make it so the paid ante(s) does not impact the pot bet during pre-flop (right now, after flop, ante contributions are also considered to calculate the pot value).
 - Faster hand evaluation for 6/7 card combinations.
 - Faster hand strength and equity calculations.
 - Allow callbacks with sampled hands in equity and hand strength calculations. This can be used for getting winning hand's distributions.
 - Keep track of more things in ``pokerkit.analysis.Statistics`` while avoiding requiring new dependencies to PokerKit like ``numpy``.
 - More robust implementation of poker hand history parsers (it seems quite fragile as it stands right now).
-- Integrate PokerKit with Google Deepmind OpenSpiel. Marc Lanctot, the lead developer, was very open to creating a Python poker game implementation using PokerKit. When doing this, I think the code should exclusively be written in OpenSpiel.
