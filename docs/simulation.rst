@@ -254,7 +254,7 @@ The below definition shows a definition of a Kuhn poker state:
                False,  # standing pat or discarding
                Opening.POSITION,  # who opens the betting?
                1,  # min bet
-               None,  # maximum number of completions/bettings/raisings
+               1,  # maximum number of completions/bettings/raisings
            ),
        ),
        BettingStructure.FIXED_LIMIT,  # betting structure

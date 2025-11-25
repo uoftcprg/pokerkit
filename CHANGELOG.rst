@@ -13,6 +13,13 @@ This version release introduces **backward incompatible changes**. Please read t
 
 - Rename ``pokerkit.state.State.stander_pat_or_discarder_index`` to ``pokerkit.state.State.stand_patter_or_discarder_index``.
 
+**Added**
+
+- Added ``pokerkit.games.KuhnPoker``.
+- Added ``pokerkit.games.RhodeIslandHoldem``.
+- Added ``pokerkit.hands.RhodeIslandHoldemHand``.
+- Added ``pokerkit.lookups.RhodeIslandHoldemLookup``.
+
 Version 0.6.5 (November 16, 2025)
 ---------------------------------
 

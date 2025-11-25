@@ -520,3 +520,36 @@ class KuhnPokerLookup(Lookup):
 
     def _add_entries(self) -> None:
         self._add_multisets(Counter({1: 1}), (True,), Label.HIGH_CARD)
+
+
+@dataclass
+class RhodeIslandHoldemLookup(Lookup):
+    """The class for Rhode Island Hold'em hand lookups.
+
+    Lookups are used by evaluators. If you want to evaluate poker hands,
+    please use :class:`pokerkit.hands.RhodeIslandHoldemHand`.
+
+    >>> lookup = RhodeIslandHoldemLookup()
+    >>> e0 = lookup.get_entry('6s7h8c')
+    >>> e1 = lookup.get_entry('TsTdTh')
+    >>> e2 = lookup.get_entry('3h3c')
+    Traceback (most recent call last):
+        ...
+    ValueError: The cards '3h3c' form an invalid hand.
+    >>> e0 < e1
+    True
+    >>> e0.label
+    <Label.STRAIGHT: 'Straight'>
+    >>> e1.label
+    <Label.THREE_OF_A_KIND: 'Three of a kind'>
+    """
+
+    rank_order = RankOrder.STANDARD
+
+    def _add_entries(self) -> None:
+        self._add_multisets(Counter({1: 3}), (False,), Label.HIGH_CARD)
+        self._add_multisets(Counter({2: 1, 1: 1}), (False,), Label.ONE_PAIR)
+        self._add_multisets(Counter({1: 3}), (True,), Label.FLUSH)
+        self._add_straights(3, (False,), Label.STRAIGHT)
+        self._add_multisets(Counter({3: 1}), (False,), Label.THREE_OF_A_KIND)
+        self._add_straights(3, (True,), Label.STRAIGHT_FLUSH)

@@ -4,9 +4,22 @@
 
 from unittest import main, TestCase
 
-from pokerkit.games import NoLimitRoyalHoldem, PotLimitOmahaHoldem
-from pokerkit.state import Automation, Mode
-from pokerkit.utilities import Card
+from pokerkit.games import (
+    KuhnPoker,
+    NoLimitRoyalHoldem,
+    PotLimitOmahaHoldem,
+    RhodeIslandHoldem,
+)
+from pokerkit.hands import KuhnPokerHand
+from pokerkit.state import (
+    Automation,
+    BettingStructure,
+    Mode,
+    Opening,
+    State,
+    Street,
+)
+from pokerkit.utilities import Card, Deck
 
 
 class PotLimitOmahaHoldemTestCase(TestCase):
@@ -253,6 +266,122 @@ class NoLimitRoyalHoldemTestCase(TestCase):
         state.check_or_call()
 
         self.assertFalse(state.status)
+
+
+class KuhnPokerTestCase(TestCase):
+    def test_create_state(self) -> None:
+        state_0 = State(
+            (),
+            Deck.KUHN_POKER,
+            (KuhnPokerHand,),
+            (
+                Street(
+                    False,
+                    (False,),
+                    0,
+                    False,
+                    Opening.POSITION,
+                    1,
+                    1,
+                ),
+            ),
+            BettingStructure.FIXED_LIMIT,
+            True,
+            (1,) * 2,
+            (0,) * 2,
+            0,
+            (2,) * 2,
+            2,
+        )
+        state_1 = KuhnPoker.create_state(())
+
+        state_0.deck_cards.clear()
+        state_1.deck_cards.clear()
+        self.assertEqual(state_0, state_1)
+
+
+class RhodeIslandHoldemTestCase(TestCase):
+    def test_create_state(self) -> None:
+        state = RhodeIslandHoldem.create_state(())
+
+        self.assertEqual(state.starting_stacks, (155,) * 2)
+
+        state.post_ante()
+        state.post_ante()
+        state.collect_bets()
+
+        state.deal_hole('As')
+        state.deal_hole('Kc')
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+
+        state.burn_card('??')
+        state.deal_board('Ac')
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+
+        state.burn_card('??')
+        state.deal_board('Qc')
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        state.collect_bets()
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+        state.kill_hand()
+        state.push_chips()
+        state.pull_chips()
+
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [100, 210])
+
+        state = RhodeIslandHoldem.create_state(())
+
+        self.assertEqual(state.starting_stacks, (155,) * 2)
+
+        state.post_ante()
+        state.post_ante()
+        state.collect_bets()
+
+        state.deal_hole('As')
+        state.deal_hole('Kc')
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        self.assertFalse(state.can_complete_bet_or_raise_to())
+        state.check_or_call()
+        state.collect_bets()
+
+        state.burn_card('??')
+        state.deal_board('Ac')
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        self.assertFalse(state.can_complete_bet_or_raise_to())
+        state.check_or_call()
+        state.collect_bets()
+
+        state.burn_card('??')
+        state.deal_board('Qc')
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        self.assertFalse(state.can_complete_bet_or_raise_to())
+        state.check_or_call()
+        state.collect_bets()
+
+        state.show_or_muck_hole_cards()
+        state.show_or_muck_hole_cards()
+        state.kill_hand()
+        state.push_chips()
+        state.pull_chips()
+
+        self.assertFalse(state.status)
+        self.assertEqual(state.stacks, [000, 310])
 
 
 if __name__ == '__main__':

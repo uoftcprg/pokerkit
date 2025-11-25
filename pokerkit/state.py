@@ -732,7 +732,7 @@ class State:
     ...             False,
     ...             Opening.POSITION,
     ...             1,
-    ...             None,
+    ...             1,
     ...         ),
     ...     ),
     ...     BettingStructure.FIXED_LIMIT,

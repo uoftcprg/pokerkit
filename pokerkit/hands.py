@@ -15,6 +15,7 @@ from pokerkit.lookups import (
     KuhnPokerLookup,
     Lookup,
     RegularLookup,
+    RhodeIslandHoldemLookup,
     ShortDeckHoldemLookup,
     StandardBadugiLookup,
     StandardLookup,
@@ -242,6 +243,16 @@ class CombinationHand(Hand, ABC):
         True
         >>> h0 = RegularLowHand.from_game('AcAd', 'AhAsKcQd')
         >>> h1 = RegularLowHand('AdAhAsKcQd')
+        >>> h0 == h1
+        True
+
+        >>> h0 = KuhnPokerHand.from_game('Ks')
+        >>> h1 = KuhnPokerHand('Ks')
+        >>> h0 == h1
+        True
+
+        >>> h0 = RhodeIslandHoldemHand.from_game('Ks', 'QdAh')
+        >>> h1 = RhodeIslandHoldemHand('KsQdAh')
         >>> h0 == h1
         True
 
@@ -740,7 +751,7 @@ class StandardBadugiHand(BadugiHand):
     lookup = StandardBadugiLookup()
 
 
-class KuhnPokerHand(Hand):
+class KuhnPokerHand(CombinationHand):
     """The class for Kuhn poker hands.
 
     >>> h0 = KuhnPokerHand('Js')
@@ -757,27 +768,25 @@ class KuhnPokerHand(Hand):
 
     lookup = KuhnPokerLookup()
     low = False
+    card_count = 1
 
-    @classmethod
-    def from_game(
-            cls,
-            hole_cards: CardsLike,
-            board_cards: CardsLike = (),
-    ) -> Hand:
-        """Create a poker hand from a game setting.
 
-        In a game setting, a player uses private cards from their hole
-        and the public cards from the board to make their hand.
+class RhodeIslandHoldemHand(CombinationHand):
+    """The class for Rhode Island Holdem hands.
 
-        >>> h0 = KuhnPokerHand.from_game('Ks')
-        >>> h1 = KuhnPokerHand('Ks')
-        >>> h0 == h1
-        True
+    >>> h0 = RhodeIslandHoldemHand('JsJc2h')
+    >>> h1 = RhodeIslandHoldemHand('2sQsAs')
+    >>> h2 = RhodeIslandHoldemHand('KcQdAh')
+    >>> h3 = RhodeIslandHoldemHand('3s3c3h')
+    >>> h0 < h1 < h2 < h3
+    True
 
-        :param hole_cards: The hole cards.
-        :param board_cards: The optional board cards.
-        :return: The strongest hand from possible card combinations.
-        """
-        return max(
-            map(cls, chain(Card.clean(hole_cards), Card.clean(board_cards))),
-        )
+    >>> h = RhodeIslandHoldemHand('AsKh')
+    Traceback (most recent call last):
+        ...
+    ValueError: The cards 'AsKh' form an invalid RhodeIslandHoldemHand hand.
+    """
+
+    lookup = RhodeIslandHoldemLookup()
+    low = False
+    card_count = 3
