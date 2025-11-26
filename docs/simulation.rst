@@ -668,6 +668,7 @@ Helper Method/Attribute                              Description
 :attr:`pokerkit.state.State.street_return_index`     At what street to return to when multiple runouts are enabled.
 :attr:`pokerkit.state.State.street_return_count`     Number of times to return to a specific street to perform multiple runouts.
 :attr:`pokerkit.state.State.all_in_status`           All active players are all-in.
+:attr:`pokerkit.state.State.folded_status`           Everyone except one folded.
 :attr:`pokerkit.state.State.status`                  Whether or not the hand is active (ongoing).
 :attr:`pokerkit.state.State.operations`              History of operations carried out so far.
 :attr:`pokerkit.state.State.hand_type_count`         Number of hand types.

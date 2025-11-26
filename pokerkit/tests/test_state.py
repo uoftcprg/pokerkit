@@ -16,6 +16,7 @@ from pokerkit.games import (
     NoLimitDeuceToSevenLowballSingleDraw,
     NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
+    RhodeIslandHoldem,
 )
 from pokerkit.hands import KuhnPokerHand, StandardHighHand
 from pokerkit.notation import HandHistory
@@ -1687,6 +1688,36 @@ class StateTestCase(TestCase):
         self.assertEqual(sum(state.starting_stacks) - sum(state.stacks), 2210)
 
         resetwarnings()
+
+    def test_folded_status(self) -> None:
+        state = RhodeIslandHoldem.create_state(tuple(Automation))
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.check_or_call()
+        self.assertFalse(state.folded_status)
+
+        state = RhodeIslandHoldem.create_state(tuple(Automation))
+
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertTrue(state.folded_status)
+
+        state = RhodeIslandHoldem.create_state(tuple(Automation))
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.complete_bet_or_raise_to()
+        state.complete_bet_or_raise_to()
+        state.fold()
+        self.assertTrue(state.folded_status)
 
 
 if __name__ == '__main__':

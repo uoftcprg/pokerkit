@@ -1152,6 +1152,12 @@ class State:
     Simply put, are all active players all-in? ``True`` if yes,
     ``False`` otherwise.
     """
+    folded_status: bool = field(default=False, init=False)
+    """The folded status.
+
+    Simply put, did everyone except one fold? ``True`` if yes, ``False``
+    otherwise.
+    """
     status: bool = field(default=True, init=False)
     """The game status.
 
@@ -3160,6 +3166,8 @@ class State:
             self.street_return_count -= 1
 
         if sum(self.statuses) == 1:
+            self.folded_status = True
+
             self._begin_chips_pushing()
         elif self.street is None:
             self._begin_blind_or_straddle_posting()

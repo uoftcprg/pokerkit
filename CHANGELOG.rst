@@ -19,6 +19,7 @@ This version release introduces **backward incompatible changes**. Please read t
 - Added ``pokerkit.games.RhodeIslandHoldem``.
 - Added ``pokerkit.hands.RhodeIslandHoldemHand``.
 - Added ``pokerkit.lookups.RhodeIslandHoldemLookup``.
+- Added ``pokerkit.state.State.folded_status``.
 
 Version 0.6.5 (November 16, 2025)
 ---------------------------------
