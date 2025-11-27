@@ -6004,6 +6004,8 @@ class State:
         default_factory=list,
         init=False,
     )
+    total_pushed_amount: int = field(default=0, init=False)
+    """The total pushed amount."""
 
     def _setup_chips_pushing(self) -> None:
         pass
@@ -6186,8 +6188,10 @@ class State:
             else:
                 warn('Due to non-standard folds, some chips will be burned.')
 
+        amounts = tuple(starmap(sub, zip(self.bets, bets)))
+        self.total_pushed_amount += sum(amounts)
         operation = ChipsPushing(
-            tuple(starmap(sub, zip(self.bets, bets))),
+            amounts,
             pot_index,
             board_index,
             hand_type_index,
