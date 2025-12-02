@@ -32,6 +32,9 @@ No-limit royal hold'em                                       :class:`pokerkit.ga
 No-limit short-deck hold'em                                  :class:`pokerkit.games.NoLimitShortDeckHoldem`
 No-limit Texas hold'em                                       :class:`pokerkit.games.NoLimitTexasHoldem`
 Pot-limit Omaha hold'em                                      :class:`pokerkit.games.PotLimitOmahaHoldem`
+Kuhn poker                                                   :class:`pokerkit.games.KuhnPoker`
+Rhode Island hold'em                                         :class:`pokerkit.games.RhodeIslandHoldem`
+Royal Rhode Island hold'em                                   :class:`pokerkit.games.RoyalRhodeIslandHoldem`
 ============================================================ ========================================================================
 
 These pre-defined games can be created as shown below:
@@ -1054,6 +1057,12 @@ Chips Pushing Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This operation (:meth:`pokerkit.state.State.push_chips`) corresponds to pushing the chips to the winner(s). Each call pushes one split pot (main/side). If there are multiple hand types (or boards) and/or multiple players with differing starting stack sizes that are all-in and are entitled to the piece of the pot, multiple split pots (main + side) will exist and therefore, this method must be invoked multiple times until all pots are pushed to the players.
+
+================================================ ====================================================
+Helper Method/Attribute                          Description
+================================================ ====================================================
+:attr:`pokerkit.state.State.total_pushed_amount` The total amount pushed from the pot to each player.
+================================================ ====================================================
 
 Chips Pulling Phase/Operation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

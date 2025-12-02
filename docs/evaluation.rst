@@ -5,29 +5,33 @@ Not every poker software involves game simulations. Beyond its use of providing 
 
 The following is the list of hand types supported by PokerKit.
 
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| **Hand Type**               | **Class**                                         | **Lookup**                                      |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| Standard high hands         | :class:`pokerkit.hands.StandardHighHand`          | :class:`pokerkit.lookups.StandardLookup`        |
-+-----------------------------+---------------------------------------------------+                                                 |
-| Standard low hands          | :class:`pokerkit.hands.StandardLowHand`           |                                                 |
-+-----------------------------+---------------------------------------------------+                                                 |
-| Greek hold'em hands         | :class:`pokerkit.hands.GreekHoldemHand`           |                                                 |
-+-----------------------------+---------------------------------------------------+                                                 |
-| Omaha hold'em hands         | :class:`pokerkit.hands.OmahaHoldemHand`           |                                                 |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| 8 or better low hands       | :class:`pokerkit.hands.EightOrBetterLowHand`      | :class:`pokerkit.lookups.EightOrBetterLookup`   |
-+-----------------------------+---------------------------------------------------+                                                 |
-| Omaha 8 or better low hands | :class:`pokerkit.hands.OmahaEightOrBetterLowHand` |                                                 |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| Short-deck hold'em hands    | :class:`pokerkit.hands.ShortDeckHoldemHand`       | :class:`pokerkit.lookups.ShortDeckHoldemLookup` |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| Regular low hands           | :class:`pokerkit.hands.RegularLowHand`            | :class:`pokerkit.lookups.RegularLookup`         |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| Badugi hands                | :class:`pokerkit.hands.BadugiHand`                | :class:`pokerkit.lookups.BadugiLookup`          |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
-| Standard badugi hands       | :class:`pokerkit.hands.StandardBadugiHand`        | :class:`pokerkit.lookups.StandardBadugiLookup`  |
-+-----------------------------+---------------------------------------------------+-------------------------------------------------+
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| **Hand Type**               | **Class**                                         | **Lookup**                                        |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Standard high hands         | :class:`pokerkit.hands.StandardHighHand`          | :class:`pokerkit.lookups.StandardLookup`          |
++-----------------------------+---------------------------------------------------+                                                   |
+| Standard low hands          | :class:`pokerkit.hands.StandardLowHand`           |                                                   |
++-----------------------------+---------------------------------------------------+                                                   |
+| Greek hold'em hands         | :class:`pokerkit.hands.GreekHoldemHand`           |                                                   |
++-----------------------------+---------------------------------------------------+                                                   |
+| Omaha hold'em hands         | :class:`pokerkit.hands.OmahaHoldemHand`           |                                                   |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| 8 or better low hands       | :class:`pokerkit.hands.EightOrBetterLowHand`      | :class:`pokerkit.lookups.EightOrBetterLookup`     |
++-----------------------------+---------------------------------------------------+                                                   |
+| Omaha 8 or better low hands | :class:`pokerkit.hands.OmahaEightOrBetterLowHand` |                                                   |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Short-deck hold'em hands    | :class:`pokerkit.hands.ShortDeckHoldemHand`       | :class:`pokerkit.lookups.ShortDeckHoldemLookup`   |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Regular low hands           | :class:`pokerkit.hands.RegularLowHand`            | :class:`pokerkit.lookups.RegularLookup`           |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Badugi hands                | :class:`pokerkit.hands.BadugiHand`                | :class:`pokerkit.lookups.BadugiLookup`            |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Standard badugi hands       | :class:`pokerkit.hands.StandardBadugiHand`        | :class:`pokerkit.lookups.StandardBadugiLookup`    |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Kuhn poker hands            | :class:`pokerkit.hands.KuhnPokerHand`             | :class:`pokerkit.lookups.KuhnPokerLookup`         |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
+| Rhode Island hold'em hands  | :class:`pokerkit.hands.RhodeIslandHoldemHand`     | :class:`pokerkit.lookups.RhodeIslandHoldemLookup` |
++-----------------------------+---------------------------------------------------+---------------------------------------------------+
 
 Some of these types share the same base lookup. They just differ in the way the hands are evaluated. For example, standard high hands and Omaha hold'em hands use the same lookup.
 

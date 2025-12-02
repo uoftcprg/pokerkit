@@ -900,10 +900,14 @@ class NoLimitTexasHoldem(
         )(raw_starting_stacks, player_count)
 
 
-class NoLimitRoyalHoldem(NoLimitTexasHoldem):
-    """The class for no-limit royal hold'em games."""
+class RoyalHoldemMixin:
+    """The mixin for royal hold'em games."""
 
     deck = Deck.ROYAL_POKER
+
+
+class NoLimitRoyalHoldem(RoyalHoldemMixin, NoLimitTexasHoldem):
+    """The class for no-limit royal hold'em games."""
 
 
 class NoLimitShortDeckHoldem(NoLimitPokerMixin, UnfixedLimitHoldem):
@@ -2264,3 +2268,7 @@ class RhodeIslandHoldem(FixedLimitPokerMixin, Poker):
             player_count: int = 2,
     ) -> State:
         return super().__call__(raw_starting_stacks, player_count)
+
+
+class RoyalRhodeIslandHoldem(RoyalHoldemMixin, RhodeIslandHoldem):
+    """The class for royal Rhode Island hold'em games."""

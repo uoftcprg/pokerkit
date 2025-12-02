@@ -15,12 +15,22 @@ This version release introduces **backward incompatible changes**. Please read t
 
 **Added**
 
-- Added ``pokerkit.games.KuhnPoker``.
-- Added ``pokerkit.games.RhodeIslandHoldem``.
-- Added ``pokerkit.hands.RhodeIslandHoldemHand``.
-- Added ``pokerkit.lookups.RhodeIslandHoldemLookup``.
-- Added ``pokerkit.state.State.folded_status``.
-- Added ``pokerkit.state.State.total_pushed_amount``.
+- New pre-defined variants:
+
+  - Added ``pokerkit.games.KuhnPoker``.
+  - Added ``pokerkit.games.RhodeIslandHoldem``.
+  - Added ``pokerkit.games.RoyalHoldemMixin``.
+  - Added ``pokerkit.games.RoyalRhodeIslandHoldem``.
+
+- New hand types:
+
+  - Added ``pokerkit.hands.RhodeIslandHoldemHand``.
+  - Added ``pokerkit.lookups.RhodeIslandHoldemLookup``.
+
+- New helper attributes:
+
+  - Added ``pokerkit.state.State.folded_status``.
+  - Added ``pokerkit.state.State.total_pushed_amount``.
 
 Version 0.6.5 (November 16, 2025)
 ---------------------------------
