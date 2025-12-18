@@ -12,6 +12,7 @@ from pokerkit.lookups import (
     EightOrBetterLookup,
     KuhnPokerLookup,
     RegularLookup,
+    RhodeIslandHoldemLookup,
     ShortDeckHoldemLookup,
     StandardBadugiLookup,
     StandardLookup,
@@ -168,6 +169,23 @@ class KuhnPokerLookupTestCase(LookupTestCaseMixin, TestCase):
         self.assertEqual(
             algorithm.hexdigest(),
             'bb7d5e9f8fe4f404fd1551d8995ca1a2',
+        )
+
+
+class RhodeIslandHoldemLookupTestCase(LookupTestCaseMixin, TestCase):
+    def test_get_entry(self) -> None:
+        lookup = RhodeIslandHoldemLookup()
+        combinations_ = sorted(
+            combinations(Deck.STANDARD, 3),
+            key=lookup.get_entry,
+        )
+        string = self.serialize_combinations(combinations_)
+        algorithm = md5()
+        algorithm.update(string.encode())
+
+        self.assertEqual(
+            algorithm.hexdigest(),
+            'fcf110834e2232b3303cb039dcdd024b',
         )
 
 
