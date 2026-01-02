@@ -2462,7 +2462,10 @@ class PartyPokerParser(REParser):
 class PokerStarsParser(REParser):
     """A class for PokerStars hand history parser."""
 
-    HAND = compile(r'^PokerStars .+?(?=^\n{2,})', DOTALL | MULTILINE)
+    HAND = compile(
+        r'^PokerStars .+?(?=^\n{2,}|^Hand #|\Z)',
+        DOTALL | MULTILINE,
+    )
     FINAL_SEAT = compile(r'#(?P<final_seat>\d+) is the button')
     VARIANT = compile(r":  (?P<variant>Hold'em No Limit) \(")
     VARIANTS = {'Hold\'em No Limit': 'NT'}
