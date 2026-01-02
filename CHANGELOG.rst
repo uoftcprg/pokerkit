@@ -4,6 +4,13 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.1 (January 2, 2026)
+-------------------------------
+
+**Changed**
+
+- Update PokerStars parser format to accept the latest logs.
+
 Version 0.7.0 (December 7, 2025)
 --------------------------------
 
