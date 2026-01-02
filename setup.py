@@ -15,7 +15,7 @@ setup(
     author=(
         'Universal, Open, Free, and Transparent Computer Poker Research Group'
     ),
-    author_email='juhok@andrew.cmu.edu',
+    author_email='juhok@cs.cmu.edu',
     license='MIT',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
