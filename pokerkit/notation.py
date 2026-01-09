@@ -1431,6 +1431,8 @@ class REParser(Parser, ABC):
             try:
                 hh = self._parse(s, parse_value)
             except (KeyError, ValueError):
+                from traceback import print_exc
+                print_exc()
                 message = f'Unable to parse {repr(s)}.'
 
                 if error_status:
@@ -2467,7 +2469,7 @@ class PokerStarsParser(REParser):
         DOTALL | MULTILINE,
     )
     FINAL_SEAT = compile(r'#(?P<final_seat>\d+) is the button')
-    VARIANT = compile(r":  (?P<variant>Hold'em No Limit) \(")
+    VARIANT = compile(r" (?P<variant>Hold'em No Limit) ")
     VARIANTS = {'Hold\'em No Limit': 'NT'}
     SEATS = compile(r'Seat (?P<seat>\d+): (?P<player>.+) \(')
     ANTE_POSTING = UNMATCHABLE_PATTERN
