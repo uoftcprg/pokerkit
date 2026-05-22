@@ -55,33 +55,33 @@ class Rank(StrEnum):
     '2'
     """
 
-    ACE: str = 'A'
+    ACE = 'A'
     """The rank of aces."""
-    DEUCE: str = '2'
+    DEUCE = '2'
     """The rank of deuces."""
-    TREY: str = '3'
+    TREY = '3'
     """The rank of treys."""
-    FOUR: str = '4'
+    FOUR = '4'
     """The rank of fours."""
-    FIVE: str = '5'
+    FIVE = '5'
     """The rank of fives."""
-    SIX: str = '6'
+    SIX = '6'
     """The rank of sixes."""
-    SEVEN: str = '7'
+    SEVEN = '7'
     """The rank of sevens."""
-    EIGHT: str = '8'
+    EIGHT = '8'
     """The rank of eights."""
-    NINE: str = '9'
+    NINE = '9'
     """The rank of nines."""
-    TEN: str = 'T'
+    TEN = 'T'
     """The rank of tens."""
-    JACK: str = 'J'
+    JACK = 'J'
     """The rank of Jacks."""
-    QUEEN: str = 'Q'
+    QUEEN = 'Q'
     """The rank of Queens."""
-    KING: str = 'K'
+    KING = 'K'
     """The rank of Kings."""
-    UNKNOWN: str = '?'
+    UNKNOWN = '?'
     """The unknown rank."""
 
 
@@ -131,7 +131,7 @@ class RankOrder(tuple[Rank, ...], Enum):
     <Rank.EIGHT: '8'>
     """
 
-    STANDARD: tuple[Rank, ...] = (
+    STANDARD = (
         Rank.DEUCE,
         Rank.TREY,
         Rank.FOUR,
@@ -147,7 +147,7 @@ class RankOrder(tuple[Rank, ...], Enum):
         Rank.ACE,
     )
     """The standard ranks (from deuce to ace)."""
-    SHORT_DECK_HOLDEM: tuple[Rank, ...] = (
+    SHORT_DECK_HOLDEM = (
         Rank.SIX,
         Rank.SEVEN,
         Rank.EIGHT,
@@ -159,7 +159,7 @@ class RankOrder(tuple[Rank, ...], Enum):
         Rank.ACE,
     )
     """The short-deck hold'em ranks (from six to ace)."""
-    REGULAR: tuple[Rank, ...] = (
+    REGULAR = (
         Rank.ACE,
         Rank.DEUCE,
         Rank.TREY,
@@ -175,7 +175,7 @@ class RankOrder(tuple[Rank, ...], Enum):
         Rank.KING,
     )
     """The regular ranks (from ace to king)."""
-    EIGHT_OR_BETTER_LOW: tuple[Rank, ...] = (
+    EIGHT_OR_BETTER_LOW = (
         Rank.ACE,
         Rank.DEUCE,
         Rank.TREY,
@@ -186,9 +186,9 @@ class RankOrder(tuple[Rank, ...], Enum):
         Rank.EIGHT,
     )
     """The eight or better low ranks (from ace to eight)."""
-    KUHN_POKER: tuple[Rank, ...] = Rank.JACK, Rank.QUEEN, Rank.KING
+    KUHN_POKER = Rank.JACK, Rank.QUEEN, Rank.KING
     """The Kuhn poker ranks (from jack to king)."""
-    ROYAL_POKER: tuple[Rank, ...] = (
+    ROYAL_POKER = (
         Rank.TEN,
         Rank.JACK,
         Rank.QUEEN,
@@ -228,15 +228,15 @@ class Suit(StrEnum):
     'c'
     """
 
-    CLUB: str = 'c'
+    CLUB = 'c'
     """The suit of clubs."""
-    DIAMOND: str = 'd'
+    DIAMOND = 'd'
     """The suit of diamonds."""
-    HEART: str = 'h'
+    HEART = 'h'
     """The suit of hearts."""
-    SPADE: str = 's'
+    SPADE = 's'
     """The suit of spades."""
-    UNKNOWN: str = '?'
+    UNKNOWN = '?'
     """The unknown suit."""
 
 
@@ -554,7 +554,7 @@ class Deck(tuple[Card, ...], Enum):
     (Ac, Ad, Ah, As, 2c, 2d)
     """
 
-    STANDARD: tuple[Card, ...] = tuple(
+    STANDARD = tuple(
         starmap(
             Card,
             product(
@@ -567,7 +567,7 @@ class Deck(tuple[Card, ...], Enum):
 
     The ranks are ordered from deuces to aces.
     """
-    SHORT_DECK_HOLDEM: tuple[Card, ...] = tuple(
+    SHORT_DECK_HOLDEM = tuple(
         starmap(
             Card,
             product(
@@ -580,7 +580,7 @@ class Deck(tuple[Card, ...], Enum):
 
     In this deck, deuces to fives are stripped away.
     """
-    REGULAR: tuple[Card, ...] = tuple(
+    REGULAR = tuple(
         starmap(
             Card,
             product(
@@ -593,7 +593,7 @@ class Deck(tuple[Card, ...], Enum):
 
     The ranks are ordered from aces to kings.
     """
-    KUHN_POKER: tuple[Card, ...] = tuple(
+    KUHN_POKER = tuple(
         starmap(Card, product(RankOrder.KUHN_POKER, (Suit.SPADE,))),
     )
     """The 3-card Kuhn poker deck cards.
@@ -601,7 +601,7 @@ class Deck(tuple[Card, ...], Enum):
     The cards in it are jack of spades, queen of spades, and king of
     spades.
     """
-    ROYAL_POKER: tuple[Card, ...] = tuple(
+    ROYAL_POKER = tuple(
         starmap(
             Card,
             product(

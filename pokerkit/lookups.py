@@ -30,23 +30,23 @@ class Label(StrEnum):
     <Label.FULL_HOUSE: 'Full house'>
     """
 
-    HIGH_CARD: str = 'High card'
+    HIGH_CARD = 'High card'
     """The label of high cards."""
-    ONE_PAIR: str = 'One pair'
+    ONE_PAIR = 'One pair'
     """The label of one pair."""
-    TWO_PAIR: str = 'Two pair'
+    TWO_PAIR = 'Two pair'
     """The label of two pair."""
-    THREE_OF_A_KIND: str = 'Three of a kind'
+    THREE_OF_A_KIND = 'Three of a kind'
     """The label of three of a kind."""
-    STRAIGHT: str = 'Straight'
+    STRAIGHT = 'Straight'
     """The label of straight."""
-    FLUSH: str = 'Flush'
+    FLUSH = 'Flush'
     """The label of flush."""
-    FULL_HOUSE: str = 'Full house'
+    FULL_HOUSE = 'Full house'
     """The label of full house."""
-    FOUR_OF_A_KIND: str = 'Four of a kind'
+    FOUR_OF_A_KIND = 'Four of a kind'
     """The label of four of a kind."""
-    STRAIGHT_FLUSH: str = 'Straight flush'
+    STRAIGHT_FLUSH = 'Straight flush'
     """The label of straight flush."""
 
 

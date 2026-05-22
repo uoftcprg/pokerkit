@@ -58,7 +58,7 @@ class BettingStructure(StrEnum):
     attributes.
     """
 
-    FIXED_LIMIT: str = 'Fixed-limit'
+    FIXED_LIMIT = 'Fixed-limit'
     """The fixed-limit.
 
     Here, min and max completion, bet, and raise amounts are identical.
@@ -67,7 +67,7 @@ class BettingStructure(StrEnum):
     is not the case in some tournament settings when heads-up play is
     reached.
     """
-    POT_LIMIT: str = 'Pot-limit'
+    POT_LIMIT = 'Pot-limit'
     """The pot-limit.
 
     This limits the bet/raise amount to the pot bet amount, following
@@ -79,7 +79,7 @@ class BettingStructure(StrEnum):
     The number of bet/raises is typically unlimited when this limit is
     used.
     """
-    NO_LIMIT: str = 'No-limit'
+    NO_LIMIT = 'No-limit'
     """The no-limit.
 
     This denotes unlimited bet/raises in both the amounts (limited by
@@ -104,20 +104,20 @@ class Opening(StrEnum):
     <Opening.LOW_HAND: 'Low hand'>
     """
 
-    POSITION: str = 'Position'
+    POSITION = 'Position'
     """The opener is decided by position.
 
     If blinds or straddles are present, they are taken account of.
     """
-    LOW_CARD: str = 'Low card'
+    LOW_CARD = 'Low card'
     """The opener is decided by having the lowest exposed card."""
-    HIGH_CARD: str = 'High card'
+    HIGH_CARD = 'High card'
     """The opener is decided by having the highest exposed card."""
-    LOW_HAND: str = 'Low hand'
+    LOW_HAND = 'Low hand'
     """The opener is decided by having the lowest exposed hand, then
     position.
     """
-    HIGH_HAND: str = 'High hand'
+    HIGH_HAND = 'High hand'
     """The opener is decided by having the highest exposed hand, then
     position.
     """
@@ -341,35 +341,35 @@ class Automation(StrEnum):
     <Automation.CARD_BURNING: 'Card burning'>
     """
 
-    ANTE_POSTING: str = 'Ante posting'
+    ANTE_POSTING = 'Ante posting'
     """The ante posting automation.
 
     By default, the players' antes are posted in order of their player
     indices.
     """
-    BET_COLLECTION: str = 'Bet collection'
+    BET_COLLECTION = 'Bet collection'
     """The bet collection automation.
 
     This is performed typically after a betting round or ante postings.
     """
-    BLIND_OR_STRADDLE_POSTING: str = 'Blind or straddle posting'
+    BLIND_OR_STRADDLE_POSTING = 'Blind or straddle posting'
     """The blind or straddle posting automation.
 
     On automation, the players' blinds or straddles are posted in order
     of their player indices.
     """
-    CARD_BURNING: str = 'Card burning'
+    CARD_BURNING = 'Card burning'
     """The card burning automation.
 
     When automated, the burnt card is dealt from the deck.
     """
-    HOLE_DEALING: str = 'Hole dealing'
+    HOLE_DEALING = 'Hole dealing'
     """The hole dealing automation.
 
     When automated, the hole cards are dealt from the deck, in proper
     hole card dealing order (in accordance to player indices).
     """
-    BOARD_DEALING: str = 'Board dealing'
+    BOARD_DEALING = 'Board dealing'
     """The board dealing automation.
 
     The automated dealing behavior is simply drawing from the deck.
@@ -377,32 +377,32 @@ class Automation(StrEnum):
     If there are multiple boards, the boards are dealt in the order of
     increasing board indices (from the zeroth board).
     """
-    RUNOUT_COUNT_SELECTION: str = 'Runout-count selection'
+    RUNOUT_COUNT_SELECTION = 'Runout-count selection'
     """The runout-count selection automation.
 
     This automation is useless in tournament mode, as tournament mode
     automatically skips runout-count selection phase since only a single
     runout is performed by rule.
     """
-    HOLE_CARDS_SHOWING_OR_MUCKING: str = 'Hole cards showing or mucking'
+    HOLE_CARDS_SHOWING_OR_MUCKING = 'Hole cards showing or mucking'
     """The hole cards showing or mucking automation.
 
     By default, proper showdown order is followed and players show only
     when necessary.
     """
-    HAND_KILLING: str = 'Hand killing'
+    HAND_KILLING = 'Hand killing'
     """The hand killing automation.
 
     When automated, the hand killing is done in the order of player
     indices.
     """
-    CHIPS_PUSHING: str = 'Chips pushing'
+    CHIPS_PUSHING = 'Chips pushing'
     """The chips pushing automation.
 
     When automated, the chips pushing is done one by one, for each
     split main/side pot.
     """
-    CHIPS_PULLING: str = 'Chips pulling'
+    CHIPS_PULLING = 'Chips pulling'
     """The chips pulling automation.
 
     When automated, the chips-pulling is done in the order of player
