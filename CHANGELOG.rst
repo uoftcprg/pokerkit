@@ -9,6 +9,7 @@ Version 0.7.4 (May 22, 2026)
 
 **Changed**
 
+- Min bet/raise amount no longer considers the effective stack (arguably more correct).
 - Remove unnecessary type annotations of enum members.
 
 Version 0.7.3 (January 15, 2026)

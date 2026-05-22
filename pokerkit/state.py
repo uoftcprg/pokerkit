@@ -4698,10 +4698,7 @@ class State:
 
         assert player_index is not None
 
-        return min(
-            self.get_effective_stack(player_index) + self.bets[player_index],
-            amount,
-        )
+        return min(self.stacks[player_index] + self.bets[player_index], amount)
 
     @property
     def pot_completion_betting_or_raising_to_amount(self) -> int | None:
