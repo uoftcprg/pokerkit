@@ -4,6 +4,19 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.5 (August 22, 2026)
+-------------------------------
+
+This update includes an important bug fix.
+
+**Bugfixes**
+
+- A-2-3-4-5 is no longer erroneously evaluated as a straight by ``pokerkit.hands.StandardLowHand``, i.e., standard low (deuce-to-seven) hand rankings.
+
+**Added**
+
+- Add ``pokerkit.lookup.Standard2Lookup``, which is almost identical to standard lookup except that straights do not wrap (i.e., A-2-3-4-5 is not a straight).
+
 Version 0.7.4 (May 22, 2026)
 ----------------------------
 

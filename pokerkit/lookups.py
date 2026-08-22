@@ -266,12 +266,16 @@ class Lookup(ABC):
             count: int,
             suitednesses: tuple[bool, ...],
             label: Label,
+            wrap: bool = True,
     ) -> None:
-        self.__add_entry(
-            self.__hash(self.rank_order[-1:] + self.rank_order[: count - 1]),
-            suitednesses,
-            label,
-        )
+        if wrap:
+            self.__add_entry(
+                self.__hash(
+                    self.rank_order[-1:] + self.rank_order[: count - 1],
+                ),
+                suitednesses,
+                label,
+            )
 
         for i in range(len(self.rank_order) - count + 1):
             self.__add_entry(
@@ -336,6 +340,51 @@ class StandardLookup(Lookup):
             Label.FOUR_OF_A_KIND,
         )
         self._add_straights(5, (True,), Label.STRAIGHT_FLUSH)
+
+
+@dataclass
+class Standard2Lookup(Lookup):
+    """The class for standard hand lookups whose straights do not wrap.
+
+    Lookups are used by evaluators. If you want to evaluate poker hands,
+    please subclasses of :class:`pokerkit.hands.Hand` that use this
+    lookup.
+
+    >>> lookup = Standard2Lookup()
+    >>> e0 = lookup.get_entry('Ah6h7s8c9s')
+    >>> e1 = lookup.get_entry('AhAc6s6hTd')
+    >>> e2 = lookup.get_entry('AcAdAhAsAc')
+    Traceback (most recent call last):
+        ...
+    ValueError: The cards 'AcAdAhAsAc' form an invalid hand.
+    >>> e0 < e1
+    True
+    >>> e0.label
+    <Label.HIGH_CARD: 'High card'>
+    >>> e1.label
+    <Label.TWO_PAIR: 'Two pair'>
+    """
+
+    rank_order = RankOrder.STANDARD
+
+    def _add_entries(self) -> None:
+        self._add_multisets(Counter({1: 5}), (False,), Label.HIGH_CARD)
+        self._add_multisets(Counter({2: 1, 1: 3}), (False,), Label.ONE_PAIR)
+        self._add_multisets(Counter({2: 2, 1: 1}), (False,), Label.TWO_PAIR)
+        self._add_multisets(
+            Counter({3: 1, 1: 2}),
+            (False,),
+            Label.THREE_OF_A_KIND,
+        )
+        self._add_straights(5, (False,), Label.STRAIGHT, False)
+        self._add_multisets(Counter({1: 5}), (True,), Label.FLUSH)
+        self._add_multisets(Counter({3: 1, 2: 1}), (False,), Label.FULL_HOUSE)
+        self._add_multisets(
+            Counter({4: 1, 1: 1}),
+            (False,),
+            Label.FOUR_OF_A_KIND,
+        )
+        self._add_straights(5, (True,), Label.STRAIGHT_FLUSH, False)
 
 
 @dataclass

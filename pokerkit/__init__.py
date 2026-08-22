@@ -106,6 +106,7 @@ __all__ = (
     'shuffled',
     'sign',
     'SingleDraw',
+    'Standard2Lookup',
     'StandardBadugiHand',
     'StandardBadugiLookup',
     'StandardHand',
@@ -191,6 +192,7 @@ from pokerkit.lookups import (
     RegularLookup,
     RhodeIslandHoldemLookup,
     ShortDeckHoldemLookup,
+    Standard2Lookup,
     StandardBadugiLookup,
     StandardLookup,
 )

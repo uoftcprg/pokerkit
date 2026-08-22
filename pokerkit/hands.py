@@ -17,6 +17,7 @@ from pokerkit.lookups import (
     RegularLookup,
     RhodeIslandHoldemLookup,
     ShortDeckHoldemLookup,
+    Standard2Lookup,
     StandardBadugiLookup,
     StandardLookup,
 )
@@ -288,7 +289,7 @@ class CombinationHand(Hand, ABC):
 class StandardHand(CombinationHand, ABC):
     """The abstract base class for standard hands."""
 
-    lookup = StandardLookup()
+    lookup: ClassVar[Lookup] = StandardLookup()
     card_count = 5
 
 
@@ -321,7 +322,7 @@ class StandardHighHand(StandardHand):
 
 
 class StandardLowHand(StandardHand):
-    """The class for standard low hands.
+    """The class for standard low hands whose straights do not wrap.
 
     >>> h0 = StandardLowHand('TsJsQsKsAs')
     >>> h1 = StandardLowHand('AcAsAd2s4s')
@@ -330,6 +331,19 @@ class StandardLowHand(StandardHand):
     >>> h4 = StandardLowHand('7c5d4h3s2c')
     >>> h0 < h1 < h2 < h3 < h4
     True
+
+    >>> h0 = StandardLowHand('2c2d7h8s9c')
+    >>> h1 = StandardLowHand('Ac2d3h4s5c')
+    >>> h2 = StandardLowHand('Kc5d4h3s2c')
+    >>> h0 < h1 < h2
+    True
+
+    >>> print(h0)
+    One pair (2c2d7h8s9c)
+    >>> print(h1)
+    High card (Ac2d3h4s5c)
+    >>> print(h2)
+    High card (Kc5d4h3s2c)
 
     >>> h = StandardLowHand('4c5dThJsAcKh2h')  # doctest: +ELLIPSIS
     Traceback (most recent call last):
@@ -345,6 +359,7 @@ class StandardLowHand(StandardHand):
     ValueError: The cards () form an invalid StandardLowHand hand.
     """
 
+    lookup = Standard2Lookup()
     low = True
 
 

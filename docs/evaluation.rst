@@ -10,11 +10,11 @@ The following is the list of hand types supported by PokerKit.
 +-----------------------------+---------------------------------------------------+---------------------------------------------------+
 | Standard high hands         | :class:`pokerkit.hands.StandardHighHand`          | :class:`pokerkit.lookups.StandardLookup`          |
 +-----------------------------+---------------------------------------------------+                                                   |
-| Standard low hands          | :class:`pokerkit.hands.StandardLowHand`           |                                                   |
-+-----------------------------+---------------------------------------------------+                                                   |
 | Greek hold'em hands         | :class:`pokerkit.hands.GreekHoldemHand`           |                                                   |
 +-----------------------------+---------------------------------------------------+                                                   |
 | Omaha hold'em hands         | :class:`pokerkit.hands.OmahaHoldemHand`           |                                                   |
++-----------------------------+---------------------------------------------------+---------------------------------------------------|
+| Standard low hands          | :class:`pokerkit.hands.StandardLowHand`           | :class:`pokerkit.lookups.Standard2Lookup`         |
 +-----------------------------+---------------------------------------------------+---------------------------------------------------+
 | 8 or better low hands       | :class:`pokerkit.hands.EightOrBetterLowHand`      | :class:`pokerkit.lookups.EightOrBetterLookup`     |
 +-----------------------------+---------------------------------------------------+                                                   |
