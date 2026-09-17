@@ -4172,10 +4172,10 @@ class State:
     """
     acted_player_indices: set[int] = field(default_factory=set, init=False)
     """The indices of players who acted."""
-    consecutive_all_in_completion_betting_or_raising_amounts: list[int] = (
+    consecutive_short_all_in_amounts: list[int] = (
         field(default_factory=list, init=False)
     )
-    """The consecutive completion, betting, or raising amounts.
+    """The consecutive short all-in amounts.
 
     This is used to track whether successive non-full wagers combine to
     form a full one, in which case a new betting round is started.
@@ -4285,7 +4285,7 @@ class State:
         self.completion_betting_or_raising_count = 0
 
         self.acted_player_indices.clear()
-        self.consecutive_all_in_completion_betting_or_raising_amounts.clear()
+        self.consecutive_short_all_in_amounts.clear()
         self._update_betting(
             status=(
                 len(self.actor_indices) == 1
@@ -4780,14 +4780,9 @@ class State:
         assert player_index is not None
 
         if (
-                self.consecutive_all_in_completion_betting_or_raising_amounts
+                self.consecutive_short_all_in_amounts
                 and (
-                    sum(
-                        (
-                            self
-                            .consecutive_all_in_completion_betting_or_raising_amounts  # noqa: E501
-                        ),
-                    )
+                    sum(self.consecutive_short_all_in_amounts)
                     < self.completion_betting_or_raising_amount
                 )
                 and player_index in self.acted_player_indices
@@ -5040,17 +5035,17 @@ class State:
         self.completion_betting_or_raising_count += 1
 
         if self.stacks[player_index]:
-            (
-                self
-                .consecutive_all_in_completion_betting_or_raising_amounts
-                .clear()
-            )
+            self.consecutive_short_all_in_amounts.clear()
         else:
-            (
-                self
-                .consecutive_all_in_completion_betting_or_raising_amounts
-                .append(completion_betting_or_raising_amount)
+            self.consecutive_short_all_in_amounts.append(
+                completion_betting_or_raising_amount,
             )
+
+        if (
+                sum(self.consecutive_short_all_in_amounts)
+                >= self.completion_betting_or_raising_amount
+        ):
+            self.consecutive_short_all_in_amounts.clear()
 
         operation = CompletionBettingOrRaisingTo(
             player_index,

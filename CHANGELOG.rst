@@ -4,6 +4,19 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.6 (Work in progress)
+--------------------------------
+
+This update includes some bug fixes.
+
+**Bugfixes**
+
+- Better full/short all-in bet/raise detection.
+
+**Changed**
+
+- Renamed ``pokerkit.state.State.consecutive_all_in_completion_betting_or_raising_amounts`` to ``pokerkit.state.State.consecutive_short_all_in_amounts``.
+
 Version 0.7.5 (August 22, 2026)
 -------------------------------
 

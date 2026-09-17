@@ -29,6 +29,7 @@ from pokerkit.state import (
     _HighHandOpeningLookup,
     HoleDealing,
     _LowHandOpeningLookup,
+    Mode,
     Opening,
     Pot,
     State,
@@ -1718,6 +1719,53 @@ class StateTestCase(TestCase):
         state.complete_bet_or_raise_to()
         state.fold()
         self.assertTrue(state.folded_status)
+
+    def test_full_and_short_all_ins(self) -> None:
+        automations = (
+            Automation.ANTE_POSTING,
+            Automation.BET_COLLECTION,
+            Automation.BLIND_OR_STRADDLE_POSTING,
+            Automation.CARD_BURNING,
+            Automation.HOLE_DEALING,
+            Automation.BOARD_DEALING,
+        )
+        state = NoLimitTexasHoldem.create_state(
+            automations,
+            True,
+            0,
+            (1, 2),
+            2,
+            (19, 200, 16, 200),
+            4,
+            mode=Mode.CASH_GAME,
+        )
+
+        state.complete_bet_or_raise_to(16)
+        state.check_or_call()
+        state.complete_bet_or_raise_to(19)
+        state.check_or_call()
+        self.assertEqual(state.actor_index, 3)
+        self.assertFalse(state.can_complete_bet_or_raise_to())
+
+        state = NoLimitTexasHoldem.create_state(
+            automations,
+            True,
+            0,
+            (1, 2),
+            2,
+            (19, 200, 200, 200),
+            4,
+            mode=Mode.CASH_GAME,
+        )
+        state.complete_bet_or_raise_to(16)
+        state.check_or_call()
+        state.complete_bet_or_raise_to(19)
+        state.check_or_call()
+        self.assertEqual(state.actor_index, 2)
+        self.assertFalse(state.can_complete_bet_or_raise_to(), False)
+        state.check_or_call()
+        self.assertEqual(state.actor_index, 3)
+        self.assertFalse(state.can_complete_bet_or_raise_to(), False)
 
 
 if __name__ == '__main__':
