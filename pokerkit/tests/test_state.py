@@ -1767,6 +1767,67 @@ class StateTestCase(TestCase):
         self.assertEqual(state.actor_index, 3)
         self.assertFalse(state.can_complete_bet_or_raise_to(), False)
 
+    def test_can_win_now(self) -> None:
+        automation = (
+            Automation.ANTE_POSTING,
+            Automation.BET_COLLECTION,
+            Automation.BLIND_OR_STRADDLE_POSTING,
+            Automation.RUNOUT_COUNT_SELECTION,
+            Automation.HOLE_CARDS_SHOWING_OR_MUCKING,
+        )
+        state = NoLimitTexasHoldem.create_state(
+            automation,
+            True,
+            1,
+            (1, 2),
+            2,
+            (76, 181, 300, 117, 5, 66, 27),
+            7,
+            mode=Mode.CASH_GAME,
+        )
+
+        state.deal_hole('QhTs')
+        state.deal_hole('8h2s')
+        state.deal_hole('AsKh')
+        state.deal_hole('4s6d')
+        state.deal_hole('Ah6c')
+        state.deal_hole('TcQd')
+        state.deal_hole('4dQc')
+
+        state.complete_bet_or_raise_to(114)
+        state.complete_bet_or_raise_to(116)
+        state.fold()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.fold()
+
+        state.burn_card('??')
+        state.deal_board('7c2hTd')
+        state.burn_card('??')
+        state.deal_board('Kc')
+        state.burn_card('??')
+        state.deal_board('Qs')
+
+        self.assertFalse(state.can_win_now(6))
+        self.assertEqual(
+            state.hand_killing_statuses,
+            [False, False, False, True, False, False, True],
+        )
+
+        state.kill_hand()
+        state.kill_hand()
+        state.push_chips()
+        state.push_chips()
+        state.push_chips()
+        state.pull_chips()
+        state.pull_chips()
+        state.pull_chips()
+
+        self.assertFalse(state.status)
+        self.assertEqual(state.payoffs, [143, 4, -115, -117, -1, 113, -27])
+
 
 if __name__ == '__main__':
     main()  # pragma: no cover

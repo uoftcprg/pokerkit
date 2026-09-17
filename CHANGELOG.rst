@@ -4,14 +4,15 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.7.6 (Work in progress)
---------------------------------
+Version 0.7.6 (September 17, 2026)
+----------------------------------
 
 This update includes some bug fixes.
 
 **Bugfixes**
 
 - Better full/short all-in bet/raise detection.
+- Fixed false positives for ``pokerkit.state.State.can_win_now``.
 
 **Changed**
 

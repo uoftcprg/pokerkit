@@ -2294,6 +2294,9 @@ class State:
                 hand = self.get_hand(player_index, i, j)
 
                 for pot in self.pots:
+                    if player_index not in pot.player_indices:
+                        continue
+
                     max_hand = max_or_none(
                         map(partial(getitem, hands), pot.player_indices),
                     )
