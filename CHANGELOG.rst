@@ -4,6 +4,31 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.7 (Work in progress)
+--------------------------------
+
+**Added**
+
+- Added Leduc hold'em.
+
+  - Added ``pokerkit.utilities.Deck.LEDUC_HOLDEM``.
+  - Added ``pokerkit.lookups.LeducHoldemLookup``.
+  - Added ``pokerkit.hands.LeducHoldemHand``.
+  - Added ``pokerkit.games.LeducHoldem``.
+
+- Added Numeral211 Hold'em.
+
+  - Added ``pokerkit.utilities.RankOrder.NUMERAL211_HOLDEM``.
+  - Added ``pokerkit.utilities.Deck.NUMERAL211_HOLDEM``.
+  - Added ``pokerkit.lookups.Numeral211HoldemLookup``.
+  - Added ``pokerkit.hands.Numeral211HoldemHand``.
+  - Added ``pokerkit.games.Numeral211Holdem``.
+
+**Changed**
+
+- Renamed ``pokerkit.utilities.RankOrder.ROYAL_POKER`` to ``pokerkit.utilities.RankOrder.ROYAL_HOLDEM``.
+- Renamed ``pokerkit.utilities.Deck.ROYAL_POKER`` to ``pokerkit.utilities.Deck.ROYAL_HOLDEM``.
+
 Version 0.7.6 (September 17, 2026)
 ----------------------------------
 

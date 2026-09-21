@@ -13,9 +13,11 @@ from pokerkit.games import (
     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
     FixedLimitRazz,
     FixedLimitSevenCardStud,
+    LeducHoldem,
     NoLimitDeuceToSevenLowballSingleDraw,
     NoLimitShortDeckHoldem,
     NoLimitTexasHoldem,
+    Numeral211Holdem,
     RhodeIslandHoldem,
 )
 from pokerkit.hands import KuhnPokerHand, StandardHighHand
@@ -1827,6 +1829,16 @@ class StateTestCase(TestCase):
 
         self.assertFalse(state.status)
         self.assertEqual(state.payoffs, [143, 4, -115, -117, -1, 113, -27])
+
+    def test_leduc_holdem(self) -> None:
+        state = LeducHoldem.create_state(tuple(Automation))
+
+        self.assertEqual(state.deck, Deck.LEDUC_HOLDEM)
+
+    def test_numeral211_holdem(self) -> None:
+        state = Numeral211Holdem.create_state(tuple(Automation))
+
+        self.assertEqual(state.deck, Deck.NUMERAL211_HOLDEM)
 
 
 if __name__ == '__main__':

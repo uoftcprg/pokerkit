@@ -13,7 +13,9 @@ from pokerkit.lookups import (
     EightOrBetterLookup,
     Entry,
     KuhnPokerLookup,
+    LeducHoldemLookup,
     Lookup,
+    Numeral211HoldemLookup,
     RegularLookup,
     RhodeIslandHoldemLookup,
     ShortDeckHoldemLookup,
@@ -786,8 +788,29 @@ class KuhnPokerHand(CombinationHand):
     card_count = 1
 
 
+class LeducHoldemHand(CombinationHand):
+    """The class for Leduc hold'em hands.
+
+    >>> h0 = LeducHoldemHand('JsQs')
+    >>> h1 = LeducHoldemHand('KsJc')
+    >>> h2 = LeducHoldemHand('JhJs')
+    >>> h3 = LeducHoldemHand('KsKh')
+    >>> h0 < h1 < h2 < h3
+    True
+
+    >>> h = LeducHoldemHand('Ks')
+    Traceback (most recent call last):
+        ...
+    ValueError: The cards 'Ks' form an invalid LeducHoldemHand hand.
+    """
+
+    lookup = LeducHoldemLookup()
+    low = False
+    card_count = 2
+
+
 class RhodeIslandHoldemHand(CombinationHand):
-    """The class for Rhode Island Holdem hands.
+    """The class for Rhode Island hold'em hands.
 
     >>> h0 = RhodeIslandHoldemHand('JsJc2h')
     >>> h1 = RhodeIslandHoldemHand('2sQsAs')
@@ -805,3 +828,24 @@ class RhodeIslandHoldemHand(CombinationHand):
     lookup = RhodeIslandHoldemLookup()
     low = False
     card_count = 3
+
+
+class Numeral211HoldemHand(RhodeIslandHoldemHand):
+    """The class for Numeral211 hold'em hands.
+
+    >>> h0 = Numeral211HoldemHand('Ts8h6c')
+    >>> h1 = Numeral211HoldemHand('TsTh8c')
+    >>> h2 = Numeral211HoldemHand('Ts8s6s')
+    >>> h3 = Numeral211HoldemHand('Ts9h8c')
+    >>> h4 = Numeral211HoldemHand('TsThTc')
+    >>> h5 = Numeral211HoldemHand('Ts9s8s')
+    >>> h0 < h1 < h2 < h3 < h4 < h5
+    True
+
+    >>> h = Numeral211HoldemHand('JsJc2h')
+    Traceback (most recent call last):
+        ...
+    ValueError: The cards 'JsJc2h' form an invalid Numeral211HoldemHand hand.
+    """
+
+    lookup = Numeral211HoldemLookup()

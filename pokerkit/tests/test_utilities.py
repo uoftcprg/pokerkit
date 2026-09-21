@@ -14,11 +14,13 @@ class RankTestCase(TestCase):
 
 class RankOrderTestCase(TestCase):
     def test_members(self) -> None:
-        self.assertEqual(''.join(RankOrder.EIGHT_OR_BETTER_LOW), 'A2345678')
         self.assertEqual(''.join(RankOrder.STANDARD), '23456789TJQKA')
         self.assertEqual(''.join(RankOrder.SHORT_DECK_HOLDEM), '6789TJQKA')
         self.assertEqual(''.join(RankOrder.REGULAR), 'A23456789TJQK')
-        self.assertEqual(''.join(RankOrder.ROYAL_POKER), 'TJQKA')
+        self.assertEqual(''.join(RankOrder.EIGHT_OR_BETTER_LOW), 'A2345678')
+        self.assertEqual(''.join(RankOrder.KUHN_POKER), 'JQK')
+        self.assertEqual(''.join(RankOrder.NUMERAL211_HOLDEM), '23456789TA')
+        self.assertEqual(''.join(RankOrder.ROYAL_HOLDEM), 'TJQKA')
 
 
 class SuitTestCase(TestCase):
@@ -60,15 +62,22 @@ class DeckTestCase(TestCase):
         )
         self.assertEqual(len(Deck.KUHN_POKER), 3)
         self.assertCountEqual(Deck.KUHN_POKER, Card.parse('JsQsKs'))
-        self.assertEqual(len(Deck.ROYAL_POKER), 20)
+        self.assertEqual(len(Deck.LEDUC_HOLDEM), 6)
+        self.assertCountEqual(Deck.LEDUC_HOLDEM, Card.parse('JhJsQhQsKhKs'))
+        self.assertEqual(len(Deck.NUMERAL211_HOLDEM), 40)
         self.assertCountEqual(
-            Deck.ROYAL_POKER,
+            Deck.NUMERAL211_HOLDEM,
             Card.parse(
-                'TcJcQcKcAc',
-                'TdJdQdKdAd',
-                'ThJhQhKhAh',
-                'TsJsQsKsAs',
+                '2c3c4c5c6c7c8c9cTcAc',
+                '2d3d4d5d6d7d8d9dTdAd',
+                '2h3h4h5h6h7h8h9hThAh',
+                '2s3s4s5s6s7s8s9sTsAs',
             ),
+        )
+        self.assertEqual(len(Deck.ROYAL_HOLDEM), 20)
+        self.assertCountEqual(
+            Deck.ROYAL_HOLDEM,
+            Card.parse('TcTdThTsJcJdJhJsQcQdQhQsKcKdKhKsAcAdAhAs'),
         )
 
 

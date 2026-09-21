@@ -11,9 +11,12 @@ from pokerkit.lookups import (
     BadugiLookup,
     EightOrBetterLookup,
     KuhnPokerLookup,
+    LeducHoldemLookup,
+    Numeral211HoldemLookup,
     RegularLookup,
     RhodeIslandHoldemLookup,
     ShortDeckHoldemLookup,
+    Standard2Lookup,
     StandardBadugiLookup,
     StandardLookup,
 )
@@ -47,6 +50,23 @@ class StandardLookupTestCase(LookupTestCaseMixin, TestCase):
         self.assertEqual(
             algorithm.hexdigest(),
             '488cdd27873395ba75205cd02fb9d6b2',
+        )
+
+
+class Standard2LookupTestCase(LookupTestCaseMixin, TestCase):
+    def test_get_entry(self) -> None:
+        lookup = Standard2Lookup()
+        combinations_ = sorted(
+            combinations(Deck.STANDARD, 5),
+            key=lookup.get_entry,
+        )
+        string = self.serialize_combinations(combinations_)
+        algorithm = md5()
+        algorithm.update(string.encode())
+
+        self.assertEqual(
+            algorithm.hexdigest(),
+            '3f1565279b892b21f843b9b038ced8f9',
         )
 
 
@@ -172,6 +192,23 @@ class KuhnPokerLookupTestCase(LookupTestCaseMixin, TestCase):
         )
 
 
+class LeducHoldemLookupTestCase(LookupTestCaseMixin, TestCase):
+    def test_get_entry(self) -> None:
+        lookup = LeducHoldemLookup()
+        combinations_ = sorted(
+            combinations(Deck.LEDUC_HOLDEM, 2),
+            key=lookup.get_entry,
+        )
+        string = self.serialize_combinations(combinations_)
+        algorithm = md5()
+        algorithm.update(string.encode())
+
+        self.assertEqual(
+            algorithm.hexdigest(),
+            '12148ab771ed5520678f5d28fe65af00',
+        )
+
+
 class RhodeIslandHoldemLookupTestCase(LookupTestCaseMixin, TestCase):
     def test_get_entry(self) -> None:
         lookup = RhodeIslandHoldemLookup()
@@ -186,6 +223,23 @@ class RhodeIslandHoldemLookupTestCase(LookupTestCaseMixin, TestCase):
         self.assertEqual(
             algorithm.hexdigest(),
             'fcf110834e2232b3303cb039dcdd024b',
+        )
+
+
+class Numeral211LookupTestCase(LookupTestCaseMixin, TestCase):
+    def test_get_entry(self) -> None:
+        lookup = Numeral211HoldemLookup()
+        combinations_ = sorted(
+            combinations(Deck.NUMERAL211_HOLDEM, 3),
+            key=lookup.get_entry,
+        )
+        string = self.serialize_combinations(combinations_)
+        algorithm = md5()
+        algorithm.update(string.encode())
+
+        self.assertEqual(
+            algorithm.hexdigest(),
+            '69fdf0a3b86d2514e6fd335c4c59a90c',
         )
 
 

@@ -16,6 +16,8 @@ from pokerkit.hands import (
     EightOrBetterLowHand,
     Hand,
     KuhnPokerHand,
+    LeducHoldemHand,
+    Numeral211HoldemHand,
     OmahaEightOrBetterLowHand,
     OmahaHoldemHand,
     RegularLowHand,
@@ -903,7 +905,7 @@ class NoLimitTexasHoldem(
 class RoyalHoldemMixin:
     """The mixin for royal hold'em games."""
 
-    deck = Deck.ROYAL_POKER
+    deck = Deck.ROYAL_HOLDEM
 
 
 class NoLimitRoyalHoldem(RoyalHoldemMixin, NoLimitTexasHoldem):
@@ -2157,6 +2159,111 @@ class KuhnPoker(FixedLimitPokerMixin, Poker):
         return super().__call__(raw_starting_stacks, player_count)
 
 
+class LeducHoldem(FixedLimitPokerMixin, Poker):
+    """The class for Leduc hold'em games."""
+
+    deck = Deck.LEDUC_HOLDEM
+    hand_types = (LeducHoldemHand,)
+    hole_dealing_count = 1
+    max_completion_betting_or_raising_count = 2
+
+    @classmethod
+    def create_state(
+            cls,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool = True,
+            raw_antes: ValuesLike = 1,
+            small_bet: int = 2,
+            big_bet: int = 4,
+            raw_starting_stacks: ValuesLike = 13,
+            player_count: int = 2,
+            *,
+            mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
+            rake: Callable[[int, State], tuple[int, int]] = rake,
+    ) -> State:
+        """Create a Leduc hold'em game.
+
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The antes.
+        :param small_bet: The small bet.
+        :param big_bet: The big bet.
+        :param raw_starting_stacks: The starting stacks.
+        :param player_count: The number of players.
+        :param mode: The mode.
+        :param starting_board_count: The starting board count.
+        :param divmod: The divmod function.
+        :param rake: The rake function.
+        :return: The created state.
+        """
+        return cls(
+            automations,
+            ante_trimming_status,
+            raw_antes,
+            small_bet,
+            big_bet,
+            mode=mode,
+            starting_board_count=starting_board_count,
+            divmod=divmod,
+            rake=rake,
+        )(raw_starting_stacks, player_count)
+
+    def __init__(
+            self,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool = True,
+            raw_antes: ValuesLike = 1,
+            small_bet: int = 2,
+            big_bet: int = 4,
+            raw_starting_stacks: ValuesLike = 13,
+            *,
+            mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
+            rake: Callable[[int, State], tuple[int, int]] = rake,
+    ) -> None:
+        super().__init__(
+            automations,
+            (
+                Street(
+                    False,
+                    (False,) * self.hole_dealing_count,
+                    0,
+                    False,
+                    Opening.POSITION,
+                    small_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+                Street(
+                    True,
+                    (),
+                    1,
+                    False,
+                    Opening.POSITION,
+                    big_bet,
+                    self.max_completion_betting_or_raising_count,
+                ),
+            ),
+            ante_trimming_status,
+            raw_antes,
+            0,
+            0,
+            mode=mode,
+            starting_board_count=starting_board_count,
+            divmod=divmod,
+            rake=rake,
+        )
+
+    def __call__(
+            self,
+            raw_starting_stacks: ValuesLike = 13,
+            player_count: int = 2,
+    ) -> State:
+        return super().__call__(raw_starting_stacks, player_count)
+
+
 class RhodeIslandHoldem(FixedLimitPokerMixin, Poker):
     """The class for Rhode Island hold'em games."""
 
@@ -2272,3 +2379,64 @@ class RhodeIslandHoldem(FixedLimitPokerMixin, Poker):
 
 class RoyalRhodeIslandHoldem(RoyalHoldemMixin, RhodeIslandHoldem):
     """The class for royal Rhode Island hold'em games."""
+
+
+class Numeral211Holdem(RhodeIslandHoldem):
+    """The class for Numeral211 hold'em games."""
+
+    deck = Deck.NUMERAL211_HOLDEM
+    hand_types = (Numeral211HoldemHand,)
+    hole_dealing_count = 1
+    max_completion_betting_or_raising_count = 4
+
+    @classmethod
+    def create_state(
+            cls,
+            automations: tuple[Automation, ...],
+            ante_trimming_status: bool = True,
+            raw_antes: ValuesLike = 5,
+            small_bet: int = 10,
+            big_bet: int = 20,
+            raw_starting_stacks: ValuesLike = 205,
+            player_count: int = 2,
+            *,
+            mode: Mode = Mode.TOURNAMENT,
+            starting_board_count: int = 1,
+            divmod: Callable[[int, int], tuple[int, int]] = divmod,
+            rake: Callable[[int, State], tuple[int, int]] = rake,
+    ) -> State:
+        """Create a Numeral211 hold'em game.
+
+        :param automations: The automations.
+        :param ante_trimming_status: The ante trimming status.
+        :param raw_antes: The antes.
+        :param small_bet: The small bet.
+        :param big_bet: The big bet.
+        :param raw_starting_stacks: The starting stacks.
+        :param player_count: The number of players.
+        :param mode: The mode.
+        :param starting_board_count: The starting board count.
+        :param divmod: The divmod function.
+        :param rake: The rake function.
+        :return: The created state.
+        """
+        return super().create_state(
+            automations,
+            ante_trimming_status,
+            raw_antes,
+            small_bet,
+            big_bet,
+            raw_starting_stacks,
+            player_count,
+            mode=mode,
+            starting_board_count=starting_board_count,
+            divmod=divmod,
+            rake=rake,
+        )
+
+    def __call__(
+            self,
+            raw_starting_stacks: ValuesLike = 205,
+            player_count: int = 2,
+    ) -> State:
+        return super().__call__(raw_starting_stacks, player_count)
