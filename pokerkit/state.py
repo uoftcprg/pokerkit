@@ -4773,11 +4773,24 @@ class State:
         if (
                 self.checking_or_calling_amount is not None
                 and (
+                    self.betting_structure == BettingStructure.POT_LIMIT
+                    or self.betting_structure == BettingStructure.NO_LIMIT
+                )
+                and (
                     self.checking_or_calling_amount
                     < self.completion_betting_or_raising_amount
                 )
         ):
             raise ValueError('Short all-in cannot be raised.')
+        elif (
+                self.checking_or_calling_amount is not None
+                and self.betting_structure == BettingStructure.FIXED_LIMIT
+                and (
+                    2 * self.checking_or_calling_amount
+                    < self.completion_betting_or_raising_amount
+                )
+        ):
+            raise ValueError('Half-bet all-in cannot be raised.')
         elif (
                 self.completion_betting_or_raising_count
                 == self.street.max_completion_betting_or_raising_count
@@ -4793,6 +4806,10 @@ class State:
         if (
                 self.consecutive_short_all_in_amounts
                 and (
+                    self.betting_structure == BettingStructure.POT_LIMIT
+                    or self.betting_structure == BettingStructure.NO_LIMIT
+                )
+                and (
                     sum(self.consecutive_short_all_in_amounts)
                     < self.completion_betting_or_raising_amount
                 )
@@ -4804,8 +4821,22 @@ class State:
                     ' of a non-full all-in wager'
                 ),
             )
-
-        if (
+        elif (
+                self.consecutive_short_all_in_amounts
+                and self.betting_structure == BettingStructure.FIXED_LIMIT
+                and (
+                    2 * sum(self.consecutive_short_all_in_amounts)
+                    < self.completion_betting_or_raising_amount
+                )
+                and player_index in self.acted_player_indices
+        ):
+            raise ValueError(
+                (
+                    'The player already acted and hence cannot raise in face'
+                    ' of a non-half-bet all-in wager'
+                ),
+            )
+        elif (
                 self.stacks[player_index]
                 <= max(self.bets) - self.bets[player_index]
         ):

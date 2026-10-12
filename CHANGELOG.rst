@@ -4,6 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.8 (Work in progress)
+--------------------------------
+
+**Bugfixes**
+
+- Prohibit invalid cases of raising when not allowed, facing short all-ins (no-/pot-limit only).
+- Prohibit invalid cases of raising when not allowed, facing half-bet all-ins (fixed-limit only).
+
 Version 0.7.7 (October 12, 2026)
 --------------------------------
 

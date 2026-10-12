@@ -13,6 +13,7 @@ from pokerkit.games import (
     FixedLimitOmahaHoldemHighLowSplitEightOrBetter,
     FixedLimitRazz,
     FixedLimitSevenCardStud,
+    FixedLimitTexasHoldem,
     LeducHoldem,
     NoLimitDeuceToSevenLowballSingleDraw,
     NoLimitShortDeckHoldem,
@@ -1842,11 +1843,7 @@ class StateTestCase(TestCase):
 
     def test_short_all_ins(self) -> None:
         state = NoLimitTexasHoldem.create_state(
-            (
-                Automation.ANTE_POSTING,
-                Automation.BET_COLLECTION,
-                Automation.BLIND_OR_STRADDLE_POSTING,
-            ),
+            tuple(Automation),
             True,
             0,
             (1, 2),
@@ -1855,18 +1852,10 @@ class StateTestCase(TestCase):
             4,
         )
 
-        state.deal_hole('AsAd')
-        state.deal_hole('KsKd')
-        state.deal_hole('QsQd')
-        state.deal_hole('JsJd')
-
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
         state.check_or_call()
-
-        state.burn_card('??')
-        state.deal_board('2c3c4c')
 
         state.complete_bet_or_raise_to(100)
         state.complete_bet_or_raise_to(150)
@@ -1877,6 +1866,55 @@ class StateTestCase(TestCase):
         self.assertEqual(state.actor_index, 2)
         self.assertEqual(state.checking_or_calling_amount, 50)
         self.assertFalse(state.can_complete_bet_or_raise_to(300))
+
+    def test_half_bet_all_in(self) -> None:
+        state = FixedLimitTexasHoldem.create_state(
+            tuple(Automation),
+            True,
+            0,
+            (5, 10),
+            10,
+            20,
+            (200, 25, 200, 200),
+            4,
+        )
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.complete_bet_or_raise_to(10)
+        state.complete_bet_or_raise_to(15)
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.actor_index, 0)
+        self.assertEqual(state.checking_or_calling_amount, 5)
+        self.assertTrue(state.can_complete_bet_or_raise_to())
+
+        state = FixedLimitTexasHoldem.create_state(
+            tuple(Automation),
+            True,
+            0,
+            (5, 10),
+            10,
+            20,
+            (200, 24, 200, 200),
+            4,
+        )
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.complete_bet_or_raise_to(10)
+        state.complete_bet_or_raise_to(14)
+        state.check_or_call()
+        state.check_or_call()
+        self.assertEqual(state.actor_index, 0)
+        self.assertEqual(state.checking_or_calling_amount, 4)
+        self.assertFalse(state.can_complete_bet_or_raise_to())
 
 
 if __name__ == '__main__':
