@@ -32,6 +32,7 @@ Version 0.7.7 (Work in progress)
 **Bugfixes**
 
 - Fix hand equity calculations in situations where the high hand scoops the pot when there is no low qualifier.
+- Prohibit invalid cases of raising when not allowed, facing short all-ins.
 
 Version 0.7.6 (September 17, 2026)
 ----------------------------------

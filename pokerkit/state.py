@@ -4771,6 +4771,14 @@ class State:
         assert self.street is not None
 
         if (
+                self.checking_or_calling_amount is not None
+                and (
+                    self.checking_or_calling_amount
+                    < self.completion_betting_or_raising_amount
+                )
+        ):
+            raise ValueError('Short all-in cannot be raised.')
+        elif (
                 self.completion_betting_or_raising_count
                 == self.street.max_completion_betting_or_raising_count
         ):

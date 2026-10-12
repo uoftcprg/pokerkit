@@ -1840,6 +1840,44 @@ class StateTestCase(TestCase):
 
         self.assertEqual(state.deck, Deck.NUMERAL211_HOLDEM)
 
+    def test_short_all_ins(self) -> None:
+        state = NoLimitTexasHoldem.create_state(
+            (
+                Automation.ANTE_POSTING,
+                Automation.BET_COLLECTION,
+                Automation.BLIND_OR_STRADDLE_POSTING,
+            ),
+            True,
+            0,
+            (1, 2),
+            2,
+            (1002, 152, 1002, 202),
+            4,
+        )
+
+        state.deal_hole('AsAd')
+        state.deal_hole('KsKd')
+        state.deal_hole('QsQd')
+        state.deal_hole('JsJd')
+
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+        state.check_or_call()
+
+        state.burn_card('??')
+        state.deal_board('2c3c4c')
+
+        state.complete_bet_or_raise_to(100)
+        state.complete_bet_or_raise_to(150)
+        state.check_or_call()
+        state.complete_bet_or_raise_to(200)
+        self.assertTrue(state.can_complete_bet_or_raise_to(300))
+        state.check_or_call()
+        self.assertEqual(state.actor_index, 2)
+        self.assertEqual(state.checking_or_calling_amount, 50)
+        self.assertFalse(state.can_complete_bet_or_raise_to(300))
+
 
 if __name__ == '__main__':
     main()  # pragma: no cover
