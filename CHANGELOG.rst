@@ -4,7 +4,7 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.7.7 (Work in progress)
+Version 0.7.7 (October 12, 2026)
 --------------------------------
 
 **Added**
