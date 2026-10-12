@@ -6,7 +6,11 @@ from concurrent.futures import ProcessPoolExecutor
 from unittest import TestCase, main
 
 from pokerkit.analysis import calculate_equities, parse_range
-from pokerkit.hands import StandardHighHand
+from pokerkit.hands import (
+    OmahaEightOrBetterLowHand,
+    OmahaHoldemHand,
+    StandardHighHand,
+)
 from pokerkit.utilities import Card, Deck
 
 
@@ -490,6 +494,37 @@ class HandHistoryTestCase(TestCase):
             self.assertAlmostEqual(sum(equities), 1)
             self.assertAlmostEqual(equities[0], 0.5)
             self.assertAlmostEqual(equities[1], 0.5)
+
+    def test_scoops(self) -> None:
+        board_cards = tuple(Card.parse('KhQdJc9s8h'))
+        hole_cards = tuple(
+            map(tuple, map(Card.parse, ('AcAd2s3s', 'KcKd4s5s'))),
+        )
+
+        for cards in hole_cards:
+            self.assertIsNone(
+                OmahaEightOrBetterLowHand.from_game_or_none(
+                    cards,
+                    board_cards,
+                ),
+            )
+
+        self.assertLess(
+            OmahaHoldemHand.from_game(hole_cards[0], board_cards),
+            OmahaHoldemHand.from_game(hole_cards[1], board_cards),
+        )
+
+        actual = calculate_equities(
+            ((cards,) for cards in hole_cards),
+            board_cards,
+            4,
+            5,
+            Deck.STANDARD,
+            (OmahaHoldemHand, OmahaEightOrBetterLowHand),
+            sample_count=1,
+        )
+
+        self.assertSequenceEqual(actual, [0, 1])
 
 
 if __name__ == '__main__':

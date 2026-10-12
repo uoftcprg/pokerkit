@@ -29,6 +29,10 @@ Version 0.7.7 (Work in progress)
 - Renamed ``pokerkit.utilities.RankOrder.ROYAL_POKER`` to ``pokerkit.utilities.RankOrder.ROYAL_HOLDEM``.
 - Renamed ``pokerkit.utilities.Deck.ROYAL_POKER`` to ``pokerkit.utilities.Deck.ROYAL_HOLDEM``.
 
+**Bugfixes**
+
+- Fix hand equity calculations in situations where the high hand scoops the pot when there is no low qualifier.
+
 Version 0.7.6 (September 17, 2026)
 ----------------------------------
 

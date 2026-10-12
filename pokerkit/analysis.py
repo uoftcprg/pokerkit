@@ -177,6 +177,7 @@ def __calculate_equities_0(
     assert len(board_cards) == board_dealing_count
 
     equities = [0.0] * len(hole_cards)
+    qualification_count = 0
 
     for hand_type in hand_types:
         hands = list(
@@ -186,12 +187,18 @@ def __calculate_equities_0(
             ),
         )
         max_hand = max_or_none(hands)
-        statuses = list(map(partial(eq, max_hand), hands))
-        increment = 1 / (len(hand_types) * sum(statuses))
 
-        for i, status in enumerate(statuses):
-            if status:
-                equities[i] += increment
+        if max_hand is not None:
+            qualification_count += 1
+            statuses = list(map(partial(eq, max_hand), hands))
+            increment = 1 / sum(statuses)
+
+            for i, status in enumerate(statuses):
+                if status:
+                    equities[i] += increment
+
+    for i, equity in enumerate(equities):
+        equities[i] = equity / qualification_count
 
     return equities
 
