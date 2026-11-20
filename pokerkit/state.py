@@ -6068,11 +6068,18 @@ class State:
                     hand_type_indices = []
 
                     for k in self.hand_type_indices:
-                        for hand in self.get_up_hands(j, k):
-                            if hand is not None:
+                        for player_index in pot.player_indices:
+                            if self.get_up_hand(
+                                    player_index,
+                                    j,
+                                    k,
+                            ) is not None:
                                 hand_type_indices.append(k)
 
                                 break
+
+                    if not hand_type_indices:
+                        hand_type_indices = list(self.hand_type_indices)
 
                     hand_type_count = len(hand_type_indices)
                     sub_quotient, sub_remainder = self.divmod(
