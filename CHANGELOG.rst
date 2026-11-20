@@ -4,13 +4,17 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-Version 0.7.8 (Work in progress)
---------------------------------
+Version 0.7.8 (November 20, 2026)
+---------------------------------
+
+This update includes some bug fixes.
 
 **Bugfixes**
 
 - Prohibit invalid cases of raising when not allowed, facing short all-ins (no-/pot-limit only).
 - Prohibit invalid cases of raising when not allowed, facing half-bet all-ins (fixed-limit only).
+- Make ``FixedLimitOmahaHoldemHighLowSplitEightOrBetter`` inherit ``FixedLimitPokerMixin`` instead of ``PotLimitPokerMixin``.
+- Fix incorrect hi-lo side-pot logic involving ineligible hands.
 
 Version 0.7.7 (October 12, 2026)
 --------------------------------
