@@ -1194,7 +1194,7 @@ class PotLimitOmahaHoldem(
 
 
 class FixedLimitOmahaHoldemHighLowSplitEightOrBetter(
-        PotLimitPokerMixin,
+        FixedLimitPokerMixin,
         OmahaHoldemMixin,
         Holdem,
 ):
